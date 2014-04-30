@@ -141,7 +141,9 @@
 		"uiRestrictionsUpdateSuccess": "UI restrictions updated successfully!",
 		"uiRestrictionsUpdateError": "An unexpected error occured when updating the UI restrictions, please try again later.",
 		"notesUpdateSuccess": "Notes updated successfully!",
-		"notesUpdateError": "An unexpected error occured when updating the notes, please try again later."
+		"notesUpdateError": "An unexpected error occured when updating the notes, please try again later.",
+		"triggerMasquerading": "You are now masquerading the account \"{{accountName}}\".",
+		"restoreMasquerading": "You are not masquerading anymore."
 	},
 	"uiRestrictionsLegend": "Select what your customer can view",
 	"uiRestrictionsTooltip": "When you click on your name from top right corner of the screen, you will see a dropdown menu. You can restrict the view of these options to your Sub-Account by simply uncheck it from account permissions.",
@@ -204,5 +206,10 @@
 		"undo": "Undo",
 		"redo": "Redo",
 		"horizontalRule": "Horizontal Rule"
-	}
+	},
+	"landingContent": [
+		"You can edit a sub-account by selecting it from the list on the left",
+		"Or",
+		"Create a new sub-account by clicking on the \"Add New Account\" button."
+	]
 }

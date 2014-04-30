@@ -141,7 +141,9 @@
 		"uiRestrictionsUpdateSuccess": "Restrictions d'interface mises à jour avec succès!",
 		"uiRestrictionsUpdateError": "Une erreur inattendue s'est produite lors de la mise à jour des restrictions d'interface, veuillez réessayer plus tard.",
 		"notesUpdateSuccess": "Notes mises à jour avec succès!",
-		"notesUpdateError": "Une erreur inattendue s'est produite lors de la mise à jour des notes, veuillez réessayer plus tard."
+		"notesUpdateError": "Une erreur inattendue s'est produite lors de la mise à jour des notes, veuillez réessayer plus tard.",
+		"triggerMasquerading": "Vous utilisez désormais le compte \"{{accountName}}\".",
+		"restoreMasquerading": "Vous utilisez à nouveau votre propre compte."
 	},
 	"uiRestrictionsLegend": "Sélectionnez ce que l'utilisateur peut voir",
 	"uiRestrictionsTooltip": "Lorsque vous cliquez sur votre nom dans le coin supérieur droit de l'écran, vous verrez un menu s'afficher. Vous pouvez restreindre l'accès à ces option en les décochant dans les permissions du compte.",
@@ -204,5 +206,10 @@
 		"undo": "Annuler l'action",
 		"redo": "Refaire l'action",
 		"horizontalRule": "Ligne horizontale"
-	}
+	},
+	"landingContent": [
+		"Vous pouvez modifier un compte en le sélectionnant dans la liste de gauche",
+		"Ou",
+		"Créer un nouveau compte en cliquant sur le bouton \"Ajouter un compte\"."
+	]
 }

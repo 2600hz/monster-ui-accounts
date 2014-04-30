@@ -1955,37 +1955,41 @@ define(function(require){
 		},
 
 		triggerMasquerading: function(account) {
-            var self = this;
+			var self = this;
 
-            monster.apps['auth'].currentAccount = $.extend(true, {}, account);
-            self.updateApps(account.id);
+			monster.apps['auth'].currentAccount = $.extend(true, {}, account);
+			self.updateApps(account.id);
 
-            monster.pub('myaccount.renderNavLinks', {
+			monster.pub('myaccount.renderNavLinks', {
 				name: account.name,
 				isMasquerading: true
 			});
 
 			self.render();
-        },
 
-        updateApps: function(accountId) {
-            $.each(monster.apps, function(key, val) {
-                if( (val.isMasqueradable && val.apiUrl === monster.apps['accounts'].apiUrl) || key === 'auth' ) {
-                    val.accountId = accountId;
-                }
-            });
-        },
+			toastr.info(monster.template(self, '!' + self.i18n.active().toastrMessages.triggerMasquerading, { accountName: account.name }));
+		},
 
-        _restoreMasquerading: function() {
-            var self = this;
+		updateApps: function(accountId) {
+			$.each(monster.apps, function(key, val) {
+				if( (val.isMasqueradable && val.apiUrl === monster.apps['accounts'].apiUrl) || key === 'auth' ) {
+					val.accountId = accountId;
+				}
+			});
+		},
 
-            monster.apps['auth'].currentAccount = $.extend(true, {}, monster.apps['auth'].originalAccount);
-            self.updateApps(monster.apps['auth'].originalAccount.id);
+		_restoreMasquerading: function() {
+			var self = this;
 
-            monster.pub('myaccount.renderNavLinks');
+			monster.apps['auth'].currentAccount = $.extend(true, {}, monster.apps['auth'].originalAccount);
+			self.updateApps(monster.apps['auth'].originalAccount.id);
+
+			monster.pub('myaccount.renderNavLinks');
 
 			self.render();
-        }
+
+			toastr.info(self.i18n.active().toastrMessages.restoreMasquerading);
+		}
 
 
 	};

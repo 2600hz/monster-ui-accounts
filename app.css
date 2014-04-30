@@ -172,6 +172,18 @@
 	box-sizing: border-box;
 }
 
+#accounts_manager_view .main-content .landing-content {
+	text-align: center;
+	color: #22ccff;
+	font-size: 26px;
+	line-height: 30px;
+	text-shadow: 1px 1px 0px #ccc;
+}
+
+#accounts_manager_view .main-content .landing-content > * {
+	padding: 5px 0px;
+}
+
 #accounts_manager_view .main-content .controls .input-prepend span.add-on {
 	width: 16px;
 }
