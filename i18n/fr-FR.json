@@ -117,6 +117,11 @@
 	},
 	"wizardProcessingMessage1": "Traitement en cours...",
 	"wizardProcessingMessage2": "Veuillez patientez durant la création du compte.",
+	"autogenPasswordPopup": {
+		"message": "Un mot-de-passe a été auto-généré pour l'administrateur {{adminName}}. Veuillez noter ce mot-de-passe, il ne vous sera pas ré-affiché ultérieurement.",
+		"login": "Identifiant:",
+		"password": "Mot-de-passe:"
+	},
 	"deleteUserConfirm": "Cet utilisateur sera supprimé de manière permanente. Continuer?",
 	"deleteAccountConfirm": "Ce compte sera supprimé de manière permanente. Continuer?",
 	"toastrMessages": {

@@ -455,7 +455,7 @@ define(function(require){
 							monster.parallel({
 								admin: function(callback) {
 									if(formData.user.email) {
-										if(formData.extra.autogenPassword === true) {
+										if(formData.extra.autogenPassword) {
 											formData.user.password = self.autoGeneratePassword();
 										}
 										formData.user.username = formData.user.email;
@@ -468,6 +468,13 @@ define(function(require){
 											},
 											success: function(data, status) {
 												callback(null, data.data);
+												if(formData.extra.autogenPassword) {
+													var popupContent = monster.template(self, '!' + self.i18n.active().autogenPasswordPopup.message, { adminName: data.data.first_name + ' ' + data.data.last_name })
+																	 + '<br>'
+																	 + '<br>' + self.i18n.active().autogenPasswordPopup.login + ' ' + data.data.username
+																	 + '<br>' + self.i18n.active().autogenPasswordPopup.password + ' ' + formData.user.password;
+													monster.ui.alert('info', popupContent);
+												}
 											},
 											error: function(data, status) {
 												toastr.error(self.i18n.active().toastrMessages.newAccount.adminError, '', {"timeOut": 5000});
@@ -1068,6 +1075,13 @@ define(function(require){
 									success: function(data, status) {
 										self.renderEditAdminsForm(parent, editAccountId);
 										refreshAdminsHeader();
+										if(autoGen) {
+											var popupContent = monster.template(self, '!' + self.i18n.active().autogenPasswordPopup.message, { adminName: data.data.first_name + ' ' + data.data.last_name })
+															 + '<br>'
+															 + '<br>' + self.i18n.active().autogenPasswordPopup.login + ' ' + data.data.username
+															 + '<br>' + self.i18n.active().autogenPasswordPopup.password + ' ' + formData.password;
+											monster.ui.alert('info', popupContent);
+										}
 									}
 								});
 								$newAdminBtn.click();
