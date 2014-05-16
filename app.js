@@ -1120,7 +1120,7 @@ define(function(require){
 						monster.ui.validate($(this), {
 							rules: {
 								'extra.password_confirm': {
-									equalTo: 'input[name="password"]'
+									equalTo: $(this).find('input[name="password"]')
 								}
 							},
 							messages: {
