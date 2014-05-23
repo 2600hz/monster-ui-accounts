@@ -15,104 +15,7 @@ define(function(require){
 
 		i18n: [ 'en-US', 'fr-FR' ],
 
-		requests: {
-			'accountsManager.listAll': {
-				url: 'accounts/{accountId}/descendants',
-				verb: 'GET'
-			},
-			'accountsManager.get': {
-				url: 'accounts/{accountId}',
-				verb: 'GET'
-			},
-			'accountsManager.create': {
-				url: 'accounts/{accountId}',
-				verb: 'PUT'
-			},
-			'accountsManager.update': {
-				url: 'accounts/{accountId}',
-				verb: 'POST'
-			},
-			'accountsManager.delete': {
-				url: 'accounts/{accountId}',
-				verb: 'DELETE'
-			},
-			'accountsManager.users.list': {
-				url: 'accounts/{accountId}/users',
-				verb: 'GET'
-			},
-			'accountsManager.users.listAdmins': {
-				url: 'accounts/{accountId}/users?filter_priv_level=admin',
-				verb: 'GET'
-			},
-			'accountsManager.users.get': {
-				url: 'accounts/{accountId}/users/{userId}',
-				verb: 'GET'
-			},
-			'accountsManager.users.update': {
-				url: 'accounts/{accountId}/users/{userId}',
-				verb: 'POST'
-			},
-			'accountsManager.users.create': {
-				url: 'accounts/{accountId}/users',
-				verb: 'PUT'
-			},
-			'accountsManager.users.delete': {
-				url: 'accounts/{accountId}/users/{userId}',
-				verb: 'DELETE'
-			},
-			'accountsManager.servicePlans.list': {
-				url: 'accounts/{accountId}/service_plans',
-				verb: 'GET'
-			},
-			'accountsManager.servicePlans.current': {
-				url: 'accounts/{accountId}/service_plans/current',
-				verb: 'GET'
-			},
-			'accountsManager.servicePlans.get': {
-				url: 'accounts/{accountId}/service_plans/{planId}',
-				verb: 'GET'
-			},
-			'accountsManager.servicePlans.add': {
-				url: 'accounts/{accountId}/service_plans/{planId}',
-				verb: 'POST'
-			},
-			'accountsManager.servicePlans.delete': {
-				url: 'accounts/{accountId}/service_plans/{planId}',
-				verb: 'DELETE'
-			},
-			'accountsManager.servicePlans.reconciliation': {
-				url: 'accounts/{accountId}/service_plans/reconciliation',
-				verb: 'POST'
-			},
-			'accountsManager.servicePlans.synchronization': {
-				url: 'accounts/{accountId}/service_plans/synchronization',
-				verb: 'POST'
-			},
-			'accountsManager.limits.get': {
-				url: 'accounts/{accountId}/limits',
-				verb: 'GET'
-			},
-			'accountsManager.limits.update': {
-				url: 'accounts/{accountId}/limits',
-				verb: 'POST'
-			},
-			'accountsManager.classifiers.get': {
-				url: 'accounts/{accountId}/phone_numbers/classifiers',
-				verb: 'GET'
-			},
-			'accountsManager.balance.get': {
-				url: 'accounts/{accountId}/transactions/current_balance',
-				verb: 'GET'
-			},
-			'accountsManager.balance.add': {
-				url: 'accounts/{accountId}/braintree/credits',
-				verb: 'PUT'
-			},
-			'accountsManager.callflows.add': {
-				url: 'accounts/{accountId}/callflows',
-				verb: 'PUT'
-			}
-		},
+		requests: {},
 
 		subscribe: {
 			'accountsManager.activate': '_render',
@@ -159,8 +62,8 @@ define(function(require){
 
 		loadAccountList: function(callback) {
 			var self = this;
-			monster.request({
-				resource: 'accountsManager.listAll',
+			self.callApi({
+				resource: 'account.listDescendants',
 				data: {
 					accountId: self.accountId,
 				},
@@ -444,8 +347,8 @@ define(function(require){
 
 					toggleProcessing(true);
 
-					monster.request({
-						resource: 'accountsManager.create',
+					self.callApi({
+						resource: 'account.create',
 						data: {
 							accountId: parentAccountId,
 							data: formData.account
@@ -460,8 +363,8 @@ define(function(require){
 										}
 										formData.user.username = formData.user.email;
 										formData.user.priv_level = "admin";
-										monster.request({
-											resource: 'accountsManager.users.create',
+										self.callApi({
+											resource: 'user.create',
 											data: {
 												accountId: newAccountId,
 												data: formData.user
@@ -494,8 +397,8 @@ define(function(require){
 										}
 									};
 
-									monster.request({
-										resource: 'accountsManager.callflows.add',
+									self.callApi({
+										resource: 'callflow.create',
 										data: {
 											accountId: newAccountId,
 											data: noMatchCallflow
@@ -506,8 +409,8 @@ define(function(require){
 									});
 								},
 								limits: function(callback) {
-									monster.request({
-										resource: 'accountsManager.limits.get',
+									self.callApi({
+										resource: 'limits.get',
 										data: {
 											accountId: newAccountId
 										},
@@ -518,8 +421,8 @@ define(function(require){
 												twoway_trunks: parseInt(formData.limits.twoway_trunks, 10),
 												call_restriction: callRestrictions
 											};
-											monster.request({
-												resource: 'accountsManager.limits.update',
+											self.callApi({
+												resource: 'limits.update',
 												data: {
 													accountId: newAccountId,
 													data: $.extend(true, {}, data.data, newLimits)
@@ -538,8 +441,8 @@ define(function(require){
 								},
 								credit: function(callback) {
 									if(formData.addCreditBalance) {
-										monster.request({
-											resource: 'accountsManager.balance.add',
+										self.callApi({
+											resource: 'balance.add',
 											data: {
 												accountId: newAccountId,
 												data: {
@@ -559,8 +462,8 @@ define(function(require){
 								},
 								servicePlans: function(callback) {
 									if(formData.servicePlan) {
-										monster.request({
-											resource: 'accountsManager.servicePlans.add',
+										self.callApi({
+											resource: 'servicePlan.add',
 											data: {
 												accountId: newAccountId,
 												planId: formData.servicePlan,
@@ -621,8 +524,8 @@ define(function(require){
 			monster.parallel({
 					servicePlans: function(callback) {
 						if(monster.apps['auth'].isReseller) {
-							monster.request({
-								resource: 'accountsManager.servicePlans.list',
+							self.callApi({
+								resource: 'servicePlan.list',
 								data: {
 									accountId: self.accountId
 								},
@@ -635,8 +538,8 @@ define(function(require){
 						}
 					},
 					classifiers: function(callback) {
-						monster.request({
-							resource: 'accountsManager.classifiers.get',
+						self.callApi({
+							resource: 'numbers.listClassifiers',
 							data: {
 								accountId: self.accountId
 							},
@@ -865,10 +768,13 @@ define(function(require){
 					$settingsItem.find('a.settings-link').show();
 				},
 				refreshAdminsHeader = function() {
-					monster.request({
-						resource: 'accountsManager.users.listAdmins',
+					self.callApi({
+						resource: 'user.list',
 						data: {
-							accountId: editAccountId
+							accountId: editAccountId,
+							filters: {
+								'filter_priv_level': 'admin'
+							}
 						},
 						success: function(data, status) {
 							$settingsItem.find('.total-admins').text(data.data.length);
@@ -886,8 +792,8 @@ define(function(require){
 					});
 				};
 
-			monster.request({
-				resource: 'accountsManager.users.list',
+			self.callApi({
+				resource: 'user.list',
 				data: {
 					accountId: editAccountId,
 				},
@@ -945,8 +851,8 @@ define(function(require){
 						e.preventDefault();
 						var userId = $(this).parent().parent().data('user_id');
 						monster.ui.confirm(self.i18n.active().deleteUserConfirm, function() {
-							monster.request({
-								resource: 'accountsManager.users.delete',
+							self.callApi({
+								resource: 'user.delete',
 								data: {
 									accountId: editAccountId,
 									userId: userId,
@@ -1016,8 +922,8 @@ define(function(require){
 								if(!$adminPasswordDiv.is(":visible")) {
 									delete formData.password;
 								}
-								monster.request({
-									resource: 'accountsManager.users.get',
+								self.callApi({
+									resource: 'user.get',
 									data: {
 										accountId: editAccountId,
 										userId: userId
@@ -1028,8 +934,8 @@ define(function(require){
 										}
 										var newData = $.extend(true, {}, data.data, formData);
 
-										monster.request({
-											resource: 'accountsManager.users.update',
+										self.callApi({
+											resource: 'user.update',
 											data: {
 												accountId: editAccountId,
 												userId: userId,
@@ -1066,8 +972,8 @@ define(function(require){
 									formData.password = self.autoGeneratePassword();
 								}
 
-								monster.request({
-									resource: 'accountsManager.users.create',
+								self.callApi({
+									resource: 'user.create',
 									data: {
 										accountId: editAccountId,
 										data: formData
@@ -1088,16 +994,16 @@ define(function(require){
 							}
 						} else {
 							var userId = contentHtml.find('#accountsmanager_promote_user_select option:selected').val();
-							monster.request({
-								resource: 'accountsManager.users.get',
+							self.callApi({
+								resource: 'user.get',
 								data: {
 									accountId: editAccountId,
 									userId: userId
 								},
 								success: function(data, status) {
 									data.data.priv_level = "admin";
-									monster.request({
-										resource: 'accountsManager.users.update',
+									self.callApi({
+										resource: 'user.update',
 										data: {
 											accountId: editAccountId,
 											userId: userId,
@@ -1143,8 +1049,8 @@ define(function(require){
 
 			monster.parallel({
 					account: function(callback) {
-						monster.request({
-							resource: 'accountsManager.get',
+						self.callApi({
+							resource: 'account.get',
 							data: {
 								accountId: accountId
 							},
@@ -1154,8 +1060,8 @@ define(function(require){
 						});
 					},
 					users: function(callback) {
-						monster.request({
-							resource: 'accountsManager.users.list',
+						self.callApi({
+							resource: 'user.list',
 							data: {
 								accountId: accountId
 							},
@@ -1165,8 +1071,8 @@ define(function(require){
 						});
 					},
 					listServicePlans: function(callback) {
-						monster.request({
-							resource: 'accountsManager.servicePlans.list',
+						self.callApi({
+							resource: 'servicePlan.list',
 							data: {
 								accountId: accountId
 							},
@@ -1176,15 +1082,15 @@ define(function(require){
 						});
 					},
 					currentServicePlan: function(callback) {
-						monster.request({
-							resource: 'accountsManager.servicePlans.current',
+						self.callApi({
+							resource: 'servicePlan.listCurrent',
 							data: {
 								accountId: accountId
 							},
 							success: function(data, status) {
 								if(!$.isEmptyObject(data.data.plans)) {
-									monster.request({
-										resource: 'accountsManager.servicePlans.get',
+									self.callApi({
+										resource: 'servicePlan.get',
 										data: {
 											accountId: accountId,
 											planId: Object.keys(data.data.plans)[0]
@@ -1203,8 +1109,8 @@ define(function(require){
 						});
 					},
 					limits: function(callback) {
-						monster.request({
-							resource: 'accountsManager.limits.get',
+						self.callApi({
+							resource: 'limits.get',
 							data: {
 								accountId: accountId
 							},
@@ -1214,8 +1120,8 @@ define(function(require){
 						});
 					},
 					classifiers: function(callback) {
-						monster.request({
-							resource: 'accountsManager.classifiers.get',
+						self.callApi({
+							resource: 'numbers.listClassifiers',
 							data: {
 								accountId: accountId
 							},
@@ -1225,8 +1131,8 @@ define(function(require){
 						});
 					},
 					currentBalance: function(callback) {
-						monster.request({
-							resource: 'accountsManager.balance.get',
+						self.callApi({
+							resource: 'balance.get',
 							data: {
 								accountId: accountId
 							},
@@ -1371,8 +1277,8 @@ define(function(require){
 				e.preventDefault();
 
 				monster.ui.confirm(self.i18n.active().deleteAccountConfirm, function() {
-					monster.request({
-						resource: 'accountsManager.delete',
+					self.callApi({
+						resource: 'account.delete',
 						data: {
 							accountId: accountData.id,
 							data: {}
@@ -1468,8 +1374,8 @@ define(function(require){
 								$btn_save.removeClass('disabled');
 							};
 						if(servicePlans.current.id) {
-							monster.request({
-								resource: 'accountsManager.servicePlans.delete',
+							self.callApi({
+								resource: 'servicePlan.remove',
 								data: {
 									accountId: accountData.id,
 									planId: servicePlans.current.id,
@@ -1477,8 +1383,8 @@ define(function(require){
 								},
 								success: function(data, status) {
 									if (newPlanId) {
-										monster.request({
-											resource: 'accountsManager.servicePlans.add',
+										self.callApi({
+											resource: 'servicePlan.add',
 											data: {
 												accountId: accountData.id,
 												planId: newPlanId,
@@ -1500,8 +1406,8 @@ define(function(require){
 								}
 							});
 						} else if (newPlanId) {
-							monster.request({
-								resource: 'accountsManager.servicePlans.add',
+							self.callApi({
+								resource: 'servicePlan.add',
 								data: {
 									accountId: accountData.id,
 									planId: newPlanId,
@@ -1525,8 +1431,8 @@ define(function(require){
 					if(!$btn_rec.hasClass('disabled') && !$btn_sync.hasClass('disabled')) {
 						$btn_rec.addClass('disabled');
 						$btn_sync.addClass('disabled');
-						monster.request({
-							resource: 'accountsManager.servicePlans.reconciliation',
+						self.callApi({
+							resource: 'servicePlan.reconciliate',
 							data: {
 								accountId: accountData.id,
 								data: {}
@@ -1551,8 +1457,8 @@ define(function(require){
 					if(!$btn_rec.hasClass('disabled') && !$btn_sync.hasClass('disabled')) {
 						$btn_rec.addClass('disabled');
 						$btn_sync.addClass('disabled');
-						monster.request({
-							resource: 'accountsManager.servicePlans.synchronization',
+						self.callApi({
+							resource: 'servicePlan.synchronize',
 							data: {
 								accountId: accountData.id,
 								data: {}
@@ -1692,8 +1598,8 @@ define(function(require){
 					monster.ui.confirm(self.i18n.active().chargeReminder.line1 + '<br/><br/>' + self.i18n.active().chargeReminder.line2,
 						function() {
 
-							monster.request({
-								resource: 'accountsManager.limits.update',
+							self.callApi({
+								resource: 'limits.update',
 								data: {
 									accountId: accountData.id,
 									data: $.extend(true, {}, limits, {
@@ -1712,8 +1618,8 @@ define(function(require){
 							});
 
 							if(addCredit) {
-								monster.request({
-									resource: 'accountsManager.balance.add',
+								self.callApi({
+									resource: 'balance.add',
 									data: {
 										accountId: accountData.id,
 										data: {
@@ -1949,8 +1855,8 @@ define(function(require){
 
 			dataToUpdate = self.cleanMergedData(dataToUpdate);
 
-			monster.request({
-				resource: 'accountsManager.update',
+			self.callApi({
+				resource: 'account.update',
 				data: {
 					accountId: data.id,
 					data: dataToUpdate
