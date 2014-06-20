@@ -635,6 +635,55 @@ define(function(require){
 					isReseller: monster.apps['auth'].isReseller
 				}));
 
+				stepTemplate.find('.service-plan-select').on('change', function(e) {
+					var servicePlanId = $(this).val();
+						twowayTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.twoway'),
+						inboundTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.inbound'),
+						setTrunksPrice = function(trunksDiv, price) {
+							var trunksSlider = trunksDiv.find('.slider-div');
+							if(price && price > 0) {
+								trunksDiv.data('price', price);
+								trunksDiv.find('.total-amount').show();
+							} else {
+								trunksDiv.removeData('price');
+								trunksDiv.find('.total-amount').hide();
+							}
+							
+							trunksSlider.slider('option', 'slide').call(trunksSlider, null, {value: trunksSlider.slider('value')});
+						};
+
+					if(servicePlanId) {
+						self.callApi({
+							resource: 'servicePlan.get',
+							data: {
+								accountId: self.accountId,
+								planId: servicePlanId
+							},
+							success: function(data, status) {
+								var plan = data.data.plan;
+								if(plan.limits && plan.limits && plan.limits.inbound_trunks && plan.limits.inbound_trunks.rate) {
+									setTrunksPrice(inboundTrunksDiv, plan.limits.inbound_trunks.rate);
+								} else {
+									setTrunksPrice(inboundTrunksDiv, 0);
+								}
+
+								if(plan.limits && plan.limits && plan.limits.twoway_trunks && plan.limits.twoway_trunks.rate) {
+									setTrunksPrice(twowayTrunksDiv, plan.limits.twoway_trunks.rate);
+								} else {
+									setTrunksPrice(twowayTrunksDiv, 0);
+								}
+							},
+							error: function(data, status) {
+								setTrunksPrice(inboundTrunksDiv, 0);
+								setTrunksPrice(twowayTrunksDiv, 0);
+							}
+						});
+					} else {
+						setTrunksPrice(inboundTrunksDiv, 0);
+						setTrunksPrice(twowayTrunksDiv, 0);
+					}
+				});
+
 				parent.append(stepTemplate);
 		},
 
@@ -702,60 +751,11 @@ define(function(require){
 
 		validateStep: function(step, parent, callback) {
 			var self = this,
-				validated = monster.ui.valid($('#accountsmanager_new_account_form'));/*,
-				step = parseInt(step),
-				errorMessage = self.i18n.active().wizardErrorMessages.pleaseCorrect,
-				formData = form2object('accountsmanager_new_account_form');*/
-
-
-
-			// switch(step) {
-			// 	case 1:
-			// 		if(!formData.account.name) {
-			// 			errorMessage += '<br/>- ' + self.i18n.active().wizardErrorMessages.accountMandatoryFields;
-			// 			validated = false;
-			// 		}
-			// 		if(parent.find('.new-admin-div').hasClass('active')) {
-			// 			if(!formData.user.first_name || !formData.user.last_name || !formData.user.email) {
-			// 				errorMessage += '<br/>- ' + self.i18n.active().wizardErrorMessages.adminMandatoryFields;
-			// 				validated = false;
-			// 			}
-			// 			if(!formData.extra.autogenPassword) {
-			// 				if(formData.user.password.length < 6 || !/[A-Za-z]/.test(formData.user.password) || !/[0-9]/.test(formData.user.password)) {
-			// 					errorMessage += '<br/>- ' + self.i18n.active().wizardErrorMessages.adminPasswordError;
-			// 					validated = false;
-			// 				} else if(!formData.user.password || formData.user.password !== formData.extra.confirmPassword) {
-			// 					errorMessage += '<br/>- ' + self.i18n.active().wizardErrorMessages.adminPasswordConfirmError;
-			// 					validated = false;
-			// 				}
-			// 			}
-			// 		}
-			// 		break;
-			// 	case 2:
-			// 		break;
-			// 	case 3:
-			// 		if(!/^(\d+(\.\d{1,2})?)?$/.test(formData.addCreditBalance)) {
-			// 			errorMessage += '<br/>- ' + self.i18n.active().wizardErrorMessages.incorrectBalanceFormat;
-			// 			validated = false;
-			// 		} else {
-			// 			if(formData.addCreditBalance && parseFloat(formData.addCreditBalance) < 5.0) {
-			// 				errorMessage += '<br/>- ' + self.i18n.active().wizardErrorMessages.balanceMinimumAmount;
-			// 				validated = false;
-			// 			}
-			// 		}
-			// 		break;
-			// 	case 4:
-			// 		break;
-			// 	default:
-			// 		validated = false;
-			// 		break;
-			// }
+				validated = monster.ui.valid($('#accountsmanager_new_account_form'));
 
 			if(validated) {
 				callback && callback();
-			}/* else {
-				monster.ui.alert(errorMessage);
-			}*/
+			}
 		},
 
 		renderEditAdminsForm: function(parent, editAccountId) {
@@ -1096,10 +1096,7 @@ define(function(require){
 											planId: Object.keys(data.data.plans)[0]
 										},
 										success: function(data, status) {
-											callback(null, {
-												id: data.data.id,
-												name: data.data.name
-											});
+											callback(null, data.data);
 										}
 									});
 								} else {
@@ -1487,6 +1484,7 @@ define(function(require){
 				limits: accountLimits,
 				balance: accountBalance,
 				formattedClassifiers: formattedClassifiers,
+				servicePlan: servicePlans.current,
 				parent: contentHtml.find('#accountsmanager_limits_tab')
 			});
 
@@ -1653,16 +1651,17 @@ define(function(require){
 		getLimitsTabContent: function(params) {
 			var self = this,
 				formattedClassifiers = params.formattedClassifiers,
+				servicePlan = params.servicePlan || {},
 				limits = params.limits || {};
 				template = $(monster.template(self, 'limitsTabContent', {
 					classifiers: formattedClassifiers,
 					allowPrepay: limits.allow_prepay
 				})),
-				amountTwoway = 29.99,
+				amountTwoway = (servicePlan.plan && servicePlan.plan.limits && servicePlan.plan.limits.twoway_trunks) ? servicePlan.plan.limits.twoway_trunks.rate : 0,
 				twoway = limits.twoway_trunks || 0,
 				totalAmountTwoway = amountTwoway * twoway,
 				twowayTrunksDiv = template.find('.trunks-div.twoway'),
-				amountInbound = 6.99,
+				amountInbound = (servicePlan.plan && servicePlan.plan.limits && servicePlan.plan.limits.inbound_trunks) ? servicePlan.plan.limits.inbound_trunks.rate : 0,
 				inbound = limits.inbound_trunks || 0,
 				totalAmountInbound = amountInbound * inbound,
 				inboundTrunksDiv = template.find('.trunks-div.inbound'),
@@ -1677,12 +1676,17 @@ define(function(require){
 						range: 'min',
 						value: args.currentValue,
 						slide: function(event, ui) {
-							var totalAmount = ui.value * args.amount;
+							var amount = (trunksDiv.data('price') ? parseFloat(trunksDiv.data('price')) : args.amount) || args.amount,
+								totalAmount = ui.value * amount;
 							sliderValue.html(ui.value);
 							totalAmountValue.html(totalAmount.toFixed(2));
 							trunksValue.val(ui.value);
 						}
 					});
+
+					if(args.amount <= 0) {
+						trunksDiv.find('.total-amount').hide();
+					}
 				};
 
 			createSlider({
