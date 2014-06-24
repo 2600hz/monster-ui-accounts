@@ -340,6 +340,10 @@
 	text-decoration: underline;
 }
 
+#form_accountsmanager_account_admins {
+	position: relative;
+}
+
 #form_accountsmanager_account_admins form {
 	margin-bottom: 0px;
 }
@@ -724,6 +728,10 @@
 #accountsmanager_new_account_form .account-settings-step .new-admin-div .btn-group {
 	margin-top: 10px;
 	margin-bottom: 10px;
+}
+
+#accountsmanager_new_account_form .account-settings-step .new-admin-div i.help-popover {
+	margin-left: 10px;
 }
 
 #accountsmanager_new_account_form .error-message {

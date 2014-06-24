@@ -88,6 +88,7 @@
 		"firstName": "Prénom de l'administrateur",
 		"lastName": "Nom de l'administrateur",
 		"email": "Adresse e-mail de l'administrateur",
+		"emailTooltip": "Cette adresse e-mail servira de nom d'utilisateur pour se connecter à Monster-UI.",
 		"number": "Numéro de téléphone de l'administrateur",
 		"password": "Mot-de-passe de l'administrateur",
 		"confirm": "Confirmez le mot-de-passe"

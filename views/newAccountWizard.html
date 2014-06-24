@@ -82,7 +82,10 @@
 							</div>
 							<div class="control-group clearfix">
 								<div class="span5 offset1">
-									<label>{{ i18n.adminLabels.email }}</label>
+									<label>
+										{{ i18n.adminLabels.email }}
+										<i class="help-popover icon-question-sign" data-original-title="{{i18n.adminLabels.emailTooltip}}" data-placement="top" data-toggle="tooltip"></i>
+									</label>
 	    							<input required type="email" name="user.email" />
 								</div>
 								<div class="span5">

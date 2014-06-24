@@ -625,6 +625,8 @@ define(function(require){
 				pwdToggleDiv.find('input[type=password]').val('');
 				pwdToggleDiv.slideUp();
 			});
+
+			parent.find('[data-toggle="tooltip"]').tooltip();
 		},
 
 		renderServicePlanStep: function(params) {
@@ -1039,6 +1041,8 @@ define(function(require){
 							}
 						});
 					});
+
+					contentHtml.find('[data-toggle="tooltip"]').tooltip();
 
 				}
 			});

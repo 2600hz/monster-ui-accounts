@@ -88,6 +88,7 @@
 		"firstName": "Admin first name",
 		"lastName": "Admin last name",
 		"email": "Admin email address",
+		"emailTooltip": "This email address will serve as the user name to log-in to Monster-UI.",
 		"number": "Admin contact number",
 		"password": "Admin password",
 		"confirm": "Confirm password"
