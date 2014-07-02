@@ -674,6 +674,11 @@ define(function(require){
 								} else {
 									setTrunksPrice(twowayTrunksDiv, 0);
 								}
+
+								monster.pub('common.servicePlanDetails.render', {
+									container: stepTemplate.find('.serviceplans-details-container'),
+									servicePlan: data.data
+								});
 							},
 							error: function(data, status) {
 								setTrunksPrice(inboundTrunksDiv, 0);
@@ -683,6 +688,7 @@ define(function(require){
 					} else {
 						setTrunksPrice(inboundTrunksDiv, 0);
 						setTrunksPrice(twowayTrunksDiv, 0);
+						stepTemplate.find('.serviceplans-details-container').empty();
 					}
 				});
 
@@ -1361,6 +1367,19 @@ define(function(require){
 					$btn_rec = contentHtml.find('#accountsmanager_serviceplan_reconciliation'),
 					$btn_sync = contentHtml.find('#accountsmanager_serviceplan_synchronization');
 
+				contentHtml.find('#accountsmanager_serviceplan_select').on('change', function() {
+					var planId = $(this).val();
+
+					if(planId) {
+						monster.pub('common.servicePlanDetails.render', {
+							container: contentHtml.find('.serviceplans-details-container'),
+							servicePlan: planId
+						});
+					} else {
+						contentHtml.find('.serviceplans-details-container').empty();
+					}
+				});
+
 				$btn_save.click(function(e) {
 					e.preventDefault();
 					if(!$btn_save.hasClass('disabled')) {
@@ -1482,6 +1501,13 @@ define(function(require){
 			timezone.populateDropdown(contentHtml.find('#accountsmanager_account_timezone'), accountData.timezone);
 
 			contentHtml.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: "100%"});
+
+			if(servicePlans.current.id) {
+				monster.pub('common.servicePlanDetails.render', {
+					container: contentHtml.find('.serviceplans-details-container'),
+					servicePlan: servicePlans.current.id
+				});
+			}
 
 			self.renderLimitsTab({
 				accountData: accountData,

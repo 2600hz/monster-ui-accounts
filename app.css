@@ -499,6 +499,10 @@
 	width: 100%;
 }
 
+#accountsmanager_serviceplans_tab .serviceplans-container .serviceplans-details-container {
+	margin: 10px 0px;
+}
+
 
 /***** Edit: Limits *****/
 
