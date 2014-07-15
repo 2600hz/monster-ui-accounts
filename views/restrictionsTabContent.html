@@ -8,7 +8,7 @@
 			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.account }}</li>
 			<li class="restrictions-element" data-content="restrictions-profile">
 				<a href="javascript:void(0);">
-					<input type="checkbox" name="account.ui_restrictions.profile.show_tab" {{#compare account.ui_restrictions.profile.show_tab '!==' false }}checked{{/compare}}>
+					<input type="checkbox" name="account.ui_restrictions.myaccount.profile.show_tab" {{#compare ui_restrictions.profile.show_tab '!==' false }}checked{{/compare}}>
 					{{ i18n.uiRestrictionsMenu.settings }}
 					<i class="icon-caret-right pull-right"></i>
 				</a>
@@ -16,17 +16,17 @@
 			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.billing }}</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.transactions.show_tab" {{#compare account.ui_restrictions.transactions.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.transactions }}
+					<input type="checkbox" name="account.ui_restrictions.myaccount.transactions.show_tab" {{#compare ui_restrictions.transactions.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.transactions }}
 				</a>
 			</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.service_plan.show_tab" {{#compare account.ui_restrictions.service_plan.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.servicePlan }}
+					<input type="checkbox" name="account.ui_restrictions.myaccount.service_plan.show_tab" {{#compare ui_restrictions.service_plan.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.servicePlan }}
 				</a>
 			</li>
 			<li class="restrictions-element" data-content="restrictions-balance">
 				<a href="javascript:void(0);">
-					<input type="checkbox" name="account.ui_restrictions.balance.show_tab" {{#compare account.ui_restrictions.balance.show_tab '!==' false }}checked{{/compare}}>
+					<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_tab" {{#compare ui_restrictions.balance.show_tab '!==' false }}checked{{/compare}}>
 					{{ i18n.uiRestrictionsMenu.perMinute }}
 					<i class="icon-caret-right pull-right"></i>
 				</a>
@@ -34,12 +34,12 @@
 			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.trunking }}</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.inbound.show_tab" {{#compare account.ui_restrictions.inbound.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.inbound }}
+					<input type="checkbox" name="account.ui_restrictions.myaccount.inbound.show_tab" {{#compare ui_restrictions.inbound.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.inbound }}
 				</a>
 			</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.outbound.show_tab" {{#compare account.ui_restrictions.outbound.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.outbound }}
+					<input type="checkbox" name="account.ui_restrictions.myaccount.outbound.show_tab" {{#compare ui_restrictions.outbound.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.outbound }}
 				</a>
 			</li>
 		</ul>
@@ -48,22 +48,22 @@
 		<div class="restrictions-profile container-fluid" data-content="restrictions-profile">
 			<legend>{{ i18n.uiRestrictionsExtraSettings.profile.legend }}</legend>
 			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.profile.show_user" {{#compare account.ui_restrictions.profile.show_user '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showUserTab }}
+				<input type="checkbox" name="account.ui_restrictions.myaccount.profile.show_user" {{#compare ui_restrictions.profile.show_user '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showUserTab }}
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.profile.show_account" {{#compare account.ui_restrictions.profile.show_account '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showAccountTab }}
+				<input type="checkbox" name="account.ui_restrictions.myaccount.profile.show_account" {{#compare ui_restrictions.profile.show_account '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showAccountTab }}
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.profile.show_billing" {{#compare account.ui_restrictions.profile.show_billing '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showBillingTab }}
+				<input type="checkbox" name="account.ui_restrictions.myaccount.profile.show_billing" {{#compare ui_restrictions.profile.show_billing '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showBillingTab }}
 			</label>
 		</div>
 		<div class="restrictions-balance container-fluid" data-content="restrictions-balance">
 			<legend>{{ i18n.uiRestrictionsExtraSettings.perMinute.legend }}</legend>
 			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.balance.show_credit" {{#compare account.ui_restrictions.balance.show_credit '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.perMinute.showCreditInfo }}
+				<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_credit" {{#compare ui_restrictions.balance.show_credit '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.perMinute.showCreditInfo }}
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.balance.show_minutes" {{#compare account.ui_restrictions.balance.show_minutes '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.perMinute.showMinutesInfo }}
+				<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_minutes" {{#compare ui_restrictions.balance.show_minutes '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.perMinute.showMinutesInfo }}
 			</label>
 		</div>
 	</div>

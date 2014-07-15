@@ -1766,9 +1766,18 @@ define(function(require){
 			parent.find('#accountsmanager_uirestrictions_save').click(function(event) {
 				event.preventDefault();
 
-				var UIRestrictions = form2object('accountsmanager_uirestrictions_form').account;
+				var uiRestrictions = form2object('accountsmanager_uirestrictions_form').account,
+					restrictionsList = ['balance', 'inbound', 'outbound', 'profile', 'service_plan', 'transactions'];
 
-				self.updateData(accountData, UIRestrictions,
+				if ( accountData.hasOwnProperty('ui_restrictions') ) {
+					restrictionsList.forEach(function(element) {
+						if ( accountData.ui_restrictions.hasOwnProperty('myaccount') ) {
+							delete accountData.ui_restrictions[element];
+						}
+					});
+				}
+
+				self.updateData(accountData, uiRestrictions,
 					function(data, status) {
 						toastr.success(self.i18n.active().toastrMessages.uiRestrictionsUpdateSuccess, '', {"timeOut": 5000});
 					},
@@ -1782,7 +1791,7 @@ define(function(require){
 		getRestrictionsTabContent: function(params) {
 			var self = this,
 				template = $(monster.template(self, 'restrictionsTabContent', {
-					account: params.accountData
+					ui_restrictions: params.accountData ? params.accountData.ui_restrictions.myaccount || params.accountData.ui_restrictions : {}
 				}));
 
 			template.find('.restrictions-element input').each(function() {
