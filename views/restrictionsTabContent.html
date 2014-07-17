@@ -14,9 +14,11 @@
 				</a>
 			</li>
 			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.billing }}</li>
-			<li class="restrictions-element">
-				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.transactions.show_tab" {{#compare ui_restrictions.transactions.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.transactions }}
+			<li class="restrictions-element" data-content="restrictions-balance">
+				<a href="javascript:void(0);">
+					<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_tab" {{#compare ui_restrictions.balance.show_tab '!==' false }}checked{{/compare}}>
+					{{ i18n.uiRestrictionsMenu.perMinute }}
+					<i class="icon-caret-right pull-right"></i>
 				</a>
 			</li>
 			<li class="restrictions-element">
@@ -24,11 +26,9 @@
 					<input type="checkbox" name="account.ui_restrictions.myaccount.service_plan.show_tab" {{#compare ui_restrictions.service_plan.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.servicePlan }}
 				</a>
 			</li>
-			<li class="restrictions-element" data-content="restrictions-balance">
-				<a href="javascript:void(0);">
-					<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_tab" {{#compare ui_restrictions.balance.show_tab '!==' false }}checked{{/compare}}>
-					{{ i18n.uiRestrictionsMenu.perMinute }}
-					<i class="icon-caret-right pull-right"></i>
+			<li class="restrictions-element">
+				<a>
+					<input type="checkbox" name="account.ui_restrictions.myaccount.transactions.show_tab" {{#compare ui_restrictions.transactions.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.transactions }}
 				</a>
 			</li>
 			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.trunking }}</li>
