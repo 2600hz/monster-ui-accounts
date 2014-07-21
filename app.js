@@ -249,7 +249,8 @@ define(function(require){
 				parent = params.parent,
 				parentAccountId = params.accountId,
 				newAccountWizard = $(monster.template(self, 'newAccountWizard')),
-				maxStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('max_step'));
+				maxStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('max_step')),
+				newAccountWizardForm = newAccountWizard.find('#accountsmanager_new_account_form');
 
 			newAccountWizard.find('.wizard-top-bar').data('active_step', '1');
 
@@ -273,11 +274,14 @@ define(function(require){
 				var currentStep = newAccountWizard.find('.wizard-top-bar').data('active_step'),
 					newStep = $(this).data('step');
 				if($(this).hasClass('completed') && currentStep !== newStep) {
-					self.validateStep(currentStep,
-									  newAccountWizard.find('.wizard-content-step[data-step="'+currentStep+'"]'),
-									  function() {
+					if(newStep < currentStep) {
+						if(!monster.ui.valid(newAccountWizardForm)) {
+							newAccountWizard.find('.step:gt('+newStep+')').removeClass('completed');
+						}
 						self.changeStep(newStep, maxStep, newAccountWizard);
-					});
+					} else if(monster.ui.valid(newAccountWizardForm)) {
+						self.changeStep(newStep, maxStep, newAccountWizard);
+					}
 				}
 			});
 
@@ -289,9 +293,9 @@ define(function(require){
 				if(newStep === 2 && !monster.apps['auth'].isReseller) {
 					newStep++;
 				}
-				self.validateStep(currentStep, newAccountWizard.find('.wizard-content-step[data-step="'+currentStep+'"]'), function() {
+				if(monster.ui.valid(newAccountWizardForm)) {
 					self.changeStep(newStep, maxStep, newAccountWizard);
-				});
+				}
 			});
 
 			newAccountWizard.find('.prev-step').on('click', function(ev) {
@@ -300,6 +304,9 @@ define(function(require){
 				var newStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('active_step'))-1;
 				if(newStep === 2 && !monster.apps['auth'].isReseller) {
 					newStep--;
+				}
+				if(!monster.ui.valid(newAccountWizardForm)) {
+					newAccountWizard.find('.step:gt('+newStep+')').removeClass('completed');
 				}
 				self.changeStep(newStep, maxStep, newAccountWizard);
 			});
@@ -333,7 +340,8 @@ define(function(require){
 							newAccountWizard.find('.step').addClass('completed');
 						}
 					};
-				self.validateStep(currentStep, newAccountWizard.find('.wizard-content-step[data-step="'+currentStep+'"]'), function() {
+
+				if(monster.ui.valid(newAccountWizardForm)) {
 
 					var formData = form2object('accountsmanager_new_account_form'),
 						callRestrictions = {}; // Can't use form data for this since unchecked checkboxes are not retrieved by form2object
@@ -497,7 +505,7 @@ define(function(require){
 						}
 					});
 
-				});
+				}
 			});
 
 			self.renderWizardSteps(newAccountWizard);
@@ -755,15 +763,6 @@ define(function(require){
 			}
 
 			parent.find('.wizard-top-bar').data('active_step', stepIndex);
-		},
-
-		validateStep: function(step, parent, callback) {
-			var self = this,
-				validated = monster.ui.valid($('#accountsmanager_new_account_form'));
-
-			if(validated) {
-				callback && callback();
-			}
 		},
 
 		renderEditAdminsForm: function(parent, editAccountId) {
