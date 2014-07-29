@@ -31,7 +31,7 @@
 #accounts_manager_view .left-menu .account-list-add {
 	line-height: 50px;
 	max-height: 50px;
-	font-weight: 500;
+	font-weight: 600;
 	background-color: #ddd;
 	width: 240px;
 }
@@ -250,7 +250,7 @@
 	color: #333;
 	cursor: pointer;
 	display: block;
-	font-weight: 500;
+	font-weight: 600;
 	padding: 0px 15px;
 	text-decoration: none;
 	height: 60px;
@@ -271,7 +271,7 @@
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item .settings-link .description {
-	font-weight: 500;
+	font-weight: 600;
 	display: inline-block;
 }
 
@@ -551,7 +551,7 @@
 }
 
 .limits-tab-container .total-amount {
-	font-weight: 500;
+	font-weight: 600;
 }
 
 .limits-tab-container .slider-div .ui-slider-range,
@@ -561,7 +561,7 @@
 
 .limits-tab-container .slider-div .ui-slider-handle.ui-state-hover,
 .limits-tab-container .slider-div .ui-slider-handle.ui-state-focus {
-	font-weight: 500;
+	font-weight: 600;
 	color: inherit;
 }
 
@@ -624,7 +624,7 @@
 .limits-tab-container .call-restrictions-div .title {
 	font-size: 16px;
 	margin-bottom: 10px;
-	font-weight: 500;
+	font-weight: 600;
 }
 
 .limits-tab-container .call-restrictions-div .call-restrictions-list {
@@ -788,7 +788,7 @@
 	color: #22ccff;
 	line-height: 46px;
 	vertical-align: bottom;
-	font-weight: 500;
+	font-weight: 600;
 }
 #accounts_manager_view .wizard .processing-div i {
 	margin-right: 15px;
