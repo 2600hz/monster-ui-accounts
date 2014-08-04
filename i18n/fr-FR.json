@@ -154,8 +154,9 @@
 	"uiRestrictionsLegend": "Sélectionnez ce que l'utilisateur peut voir",
 	"uiRestrictionsTooltip": "Lorsque vous cliquez sur votre nom dans le coin supérieur droit de l'écran, vous verrez un menu s'afficher. Vous pouvez restreindre l'accès à ces option en les décochant dans les permissions du compte.",
 	"uiRestrictionsMenu": {
-		"account": "Compte",
 		"settings": "Réglages",
+		"user": "Utilisateur",
+		"account": "Compte",
 		"billing": "Facturation",
 		"transactions": "Transactions",
 		"servicePlan": "Abonnement",
@@ -165,12 +166,6 @@
 		"outbound": "Sortants"
 	},
 	"uiRestrictionsExtraSettings": {
-		"profile": {
-			"legend":"Plus de réglages",
-			"showUserTab":"Afficher l'onglet \"Réglages utilisateurs\"",
-			"showAccountTab":"Afficher l'onglet \"Réglages du compte\"",
-			"showBillingTab":"Afficher l'onglet \"Réglages de facturation\""
-		},
 		"perMinute": {
 			"legend":"Plus de réglages",
 			"showCreditInfo":"Afficher les informations de solde",

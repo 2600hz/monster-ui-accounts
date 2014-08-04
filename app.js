@@ -1766,7 +1766,7 @@ define(function(require){
 				event.preventDefault();
 
 				var uiRestrictions = form2object('accountsmanager_uirestrictions_form').account,
-					restrictionsList = ['balance', 'inbound', 'outbound', 'profile', 'service_plan', 'transactions'];
+					restrictionsList = ['account', 'balance', 'billing', 'inbound', 'outbound', 'service_plan', 'transactions', 'user'];
 
 				if ( accountData.hasOwnProperty('ui_restrictions') ) {
 					restrictionsList.forEach(function(element) {
@@ -1789,9 +1789,10 @@ define(function(require){
 
 		getRestrictionsTabContent: function(params) {
 			var self = this,
+				uiRestrictions = params.hasOwnProperty('accountData') && params.accountData.hasOwnProperty('ui_restrictions') ? params.accountData.ui_restrictions.myaccount || params.accountData.ui_restrictions : {},
 				template = $(monster.template(self, 'restrictionsTabContent', {
-					ui_restrictions: params.accountData ? params.accountData.ui_restrictions.myaccount || params.accountData.ui_restrictions : {}
-				}));
+						ui_restrictions: uiRestrictions
+					}));
 
 			template.find('.restrictions-element input').each(function() {
 				if ($(this).is(':checked')) {

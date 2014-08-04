@@ -154,8 +154,9 @@
 	"uiRestrictionsLegend": "Select what your customer can view",
 	"uiRestrictionsTooltip": "When you click on your name from top right corner of the screen, you will see a dropdown menu. You can restrict the view of these options to your Sub-Account by simply uncheck it from account permissions.",
 	"uiRestrictionsMenu": {
-		"account": "Account",
 		"settings": "Settings",
+		"user": "User",
+		"account": "Account",
 		"billing": "Billing",
 		"transactions": "Transactions",
 		"servicePlan": "Service Plan",
@@ -165,12 +166,6 @@
 		"outbound": "Outbound"
 	},
 	"uiRestrictionsExtraSettings": {
-		"profile": {
-			"legend":"More Account Settings",
-			"showUserTab":"Show User Settings Tab",
-			"showAccountTab":"Show Account Settings Tab",
-			"showBillingTab":"Show Billing Settings Tab"
-		},
 		"perMinute": {
 			"legend":"More Balance Settings",
 			"showCreditInfo":"Show Credit Information",

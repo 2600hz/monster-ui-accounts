@@ -5,12 +5,20 @@
 	</legend>
 	<div class="restrictions-menu">
 		<ul class="nav">
-			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.account }}</li>
-			<li class="restrictions-element" data-content="restrictions-profile">
-				<a href="javascript:void(0);">
-					<input type="checkbox" name="account.ui_restrictions.myaccount.profile.show_tab" {{#compare ui_restrictions.profile.show_tab '!==' false }}checked{{/compare}}>
-					{{ i18n.uiRestrictionsMenu.settings }}
-					<i class="icon-caret-right pull-right"></i>
+			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.settings }}</li>
+			<li class="restrictions-element">
+				<a>
+					<input type="checkbox" name="account.ui_restrictions.myaccount.user.show_tab" {{#compare ui_restrictions.user.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.user }}
+				</a>
+			</li>
+			<li class="restrictions-element">
+				<a>
+					<input type="checkbox" name="account.ui_restrictions.myaccount.account.show_tab"{{#compare ui_restrictions.account.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.account }}
+				</a>
+			</li>
+			<li class="restrictions-element">
+				<a>
+					<input type="checkbox" name="account.ui_restrictions.myaccount.billing.show_tab"{{#compare ui_restrictions.billing.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.billing }}
 				</a>
 			</li>
 			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.billing }}</li>
@@ -45,18 +53,6 @@
 		</ul>
 	</div>
 	<div class="restrictions-right">
-		<div class="restrictions-profile container-fluid" data-content="restrictions-profile">
-			<legend>{{ i18n.uiRestrictionsExtraSettings.profile.legend }}</legend>
-			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.myaccount.profile.show_user" {{#compare ui_restrictions.profile.show_user '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showUserTab }}
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.myaccount.profile.show_account" {{#compare ui_restrictions.profile.show_account '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showAccountTab }}
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.myaccount.profile.show_billing" {{#compare ui_restrictions.profile.show_billing '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.profile.showBillingTab }}
-			</label>
-		</div>
 		<div class="restrictions-balance container-fluid" data-content="restrictions-balance">
 			<legend>{{ i18n.uiRestrictionsExtraSettings.perMinute.legend }}</legend>
 			<label class="checkbox">
