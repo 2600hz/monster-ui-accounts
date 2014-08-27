@@ -1,0 +1,34 @@
+{
+	"name": "accounts",
+	"source_url": "http://webdev/monster-modules/accounts",
+	"i18n": {
+		"en-US": {
+			"label": "Accounts Manager",
+			"description": "The Accounts app allows you to create, customize, and manage of all your client accounts.",
+			"extended_description": "This application allows resellers and service providers to handle anything related to all their customer accounts, giving you all the granular control you need to ensure your customers have an enjoyable experience with your service. In the Accounts app you can create a white labeled portal, choose which apps are available to each account, and manage each client's billing in our native billing software. Via this tool you can easily see and manage all the sub-accounts you have under your main account. Easily edit and configure all the accounts while saving time and money, allowing you to stay on top of all your sub accounts with ease.",
+			"features": [
+				"Customizable sub accounts",
+				"White-labeled portal",
+				"Easy monitoring when sub account deregisters",
+				"Native Billing software"
+			]
+		}
+	},
+	"tags": [
+		"reseller",
+		"developer"
+	],
+	"icon": "Accounts_app.png",
+	"api_url": "http://10.26.0.41:8000/v2",
+	"author": "2600Hz",
+	"version": "1.0",
+	"license": "-",
+	"price": 0,
+	"screenshots": [
+	],
+	"urls": {
+		"documentation": "{documentation_url}",
+		"howto": "{howto_video_url}"
+	},
+	"pvt_type": "app"
+}
