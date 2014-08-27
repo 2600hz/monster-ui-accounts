@@ -158,6 +158,7 @@
 		"user": "User",
 		"account": "Account",
 		"billing": "Billing",
+		"creditCard": "Credit Card",
 		"transactions": "Transactions",
 		"servicePlan": "Service Plan",
 		"perMinute": "Per Minute",

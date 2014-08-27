@@ -158,6 +158,7 @@
 		"user": "Utilisateur",
 		"account": "Compte",
 		"billing": "Facturation",
+		"creditCard": "Carte de crédit",
 		"transactions": "Transactions",
 		"servicePlan": "Abonnement",
 		"perMinute": "Par Minute",

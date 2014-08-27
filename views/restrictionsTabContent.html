@@ -16,12 +16,12 @@
 					<input type="checkbox" name="account.ui_restrictions.myaccount.account.show_tab"{{#compare ui_restrictions.account.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.account }}
 				</a>
 			</li>
+			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.billing }}</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.billing.show_tab"{{#compare ui_restrictions.billing.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.billing }}
+					<input type="checkbox" name="account.ui_restrictions.myaccount.billing.show_tab"{{#compare ui_restrictions.billing.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.creditCard }}
 				</a>
 			</li>
-			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.billing }}</li>
 			<li class="restrictions-element" data-content="restrictions-balance">
 				<a href="javascript:void(0);">
 					<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_tab" {{#compare ui_restrictions.balance.show_tab '!==' false }}checked{{/compare}}>
