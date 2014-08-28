@@ -455,7 +455,8 @@ define(function(require){
 												accountId: newAccountId,
 												data: {
 													amount: parseFloat(formData.addCreditBalance)
-												}
+												},
+												generateError: false
 											},
 											success: function(data, status) {
 												callback(null, data.data);
@@ -1651,7 +1652,8 @@ define(function(require){
 										accountId: accountData.id,
 										data: {
 											amount: parseFloat(addCredit)
-										}
+										},
+										generateError: false
 									},
 									success: function(data, status) {
 										balance += parseFloat(addCredit);
