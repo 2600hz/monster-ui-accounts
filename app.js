@@ -66,6 +66,9 @@ define(function(require){
 				resource: 'account.listDescendants',
 				data: {
 					accountId: self.accountId,
+					filters: {
+						'paginate': 'false'
+					}
 				},
 				success: function(data, status) {
 					self.accountTree = monster.ui.accountArrayToTree(data.data, self.accountId);
