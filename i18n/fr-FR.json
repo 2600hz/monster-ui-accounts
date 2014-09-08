@@ -141,6 +141,7 @@
 			"accountError": "Une erreur inattendue s'est produite lors de la création du compte.",
 			"adminError": "L'administrateur n'a pas pu être créé.",
 			"limitsError": "Une erreur s'est produite lors de la configuration des limites.",
+			"forbiddenLimitsError": "Vous n'êtes pas autorisé à configurer ces limites. Veuillez contacter votre représentant commercial.",
 			"creditError": "Une erreur s'est produite lors de l'ajout de solde au compte.",
 			"servicePlanError": "Une erreur s'est produite lors de la sélection de l'abonnement."
 		},

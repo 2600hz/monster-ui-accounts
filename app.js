@@ -436,12 +436,16 @@ define(function(require){
 												resource: 'limits.update',
 												data: {
 													accountId: newAccountId,
-													data: $.extend(true, {}, data.data, newLimits)
+													data: $.extend(true, {}, data.data, newLimits),
+													generateError: false
 												},
 												success: function(data, status) {
 													callback(null, data.data);
 												},
 												error: function(data, status) {
+													if(data.error == 403) {
+														monster.ui.alert('error', self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError);
+													}
 													toastr.error(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 5000});
 												}
 											});
