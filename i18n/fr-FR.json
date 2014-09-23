@@ -66,8 +66,14 @@
 	},
 	"activeServicePlan": "Abonnement actif",
 	"servicePlanMaintenance": "Maintenance",
-	"servicePlanReconciliation": "Réconciliation",
-	"servicePlanSynchronization": "Synchronisation",
+	"servicePlanReconciliation": {
+		"button": "Réconcilier",
+		"tooltip": "Vérifier que les quantités d'objets facturables sont correctes."
+	},
+	"servicePlanSynchronization": {
+		"button": "Synchroniser",
+		"tooltip": "Mettre à jour les informations de facturation auprès du processeur de carte banquaire."
+	},
 	"servicePlanWizardLegend": "Choisir un abonnement pour ce compte:",
 	"servicePlanResellerOnly": "Seuls les revendeurs sont autorisés à gérer les abonnements.",
 	"trunksLegend": "Définissez les limites pour les appels entrants et sortants simultanés",

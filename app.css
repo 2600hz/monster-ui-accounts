@@ -503,6 +503,9 @@
 	margin: 10px 0px;
 }
 
+#accountsmanager_serviceplans_tab .serviceplans-container .serviceplans-maintenance .controls button {
+	cursor: pointer;
+}
 
 /***** Edit: Limits *****/
 

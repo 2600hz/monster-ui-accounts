@@ -1509,6 +1509,8 @@ define(function(require){
 
 			contentHtml.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: "100%"});
 
+			contentHtml.find('[data-toggle="tooltip"]').tooltip();
+
 			if(servicePlans.current.id) {
 				monster.pub('common.servicePlanDetails.render', {
 					container: contentHtml.find('.serviceplans-details-container'),

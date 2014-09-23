@@ -66,8 +66,14 @@
 	},
 	"activeServicePlan": "Active service plan",
 	"servicePlanMaintenance": "Service plan maintenance",
-	"servicePlanReconciliation": "Reconciliation",
-	"servicePlanSynchronization": "Synchronization",
+	"servicePlanReconciliation": {
+		"button": "Reconciliate",
+		"tooltip": "Insure that the quantities of billable objects are correct."
+	},
+	"servicePlanSynchronization": {
+		"button": "Synchronize",
+		"tooltip": "Update the billing information on the credit card processor."
+	},
 	"servicePlanWizardLegend": "Choose a service plan for this account:",
 	"servicePlanResellerOnly": "Only resellers are allowed to manage service plans.",
 	"trunksLegend": "Set limits for included simultaneous inbound and outbound calls",
