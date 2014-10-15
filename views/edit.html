@@ -8,6 +8,9 @@
 				<li class="{{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_limits_tab">{{ i18n.tabTitles.limits }}</a></li>
 				<li class="{{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_restrictions_tab">{{ i18n.tabTitles.restrictions }}</a></li>
 				<li><a href="#accountsmanager_notes_tab">{{ i18n.tabTitles.notes }}</a></li>
+				{{#unless carrierInfo.disabled}}
+					<li><a href="#accountsmanager_carrier_tab"> {{ i18n.carrier.title }}</a></li>
+				{{/unless}}
 			</ul>
 		</div>
 		<div class="tab-content">
@@ -483,6 +486,46 @@
 					<button type="button" id="accountsmanager_notes_save" class="btn btn-success">{{ i18n.update }}</button>
 				</div>
 			</div>
+
+			{{#unless carrierInfo.disabled}}
+				<div class="tab-pane" id="accountsmanager_carrier_tab">
+
+					<div class="help-box gray-box">
+						<div class="wrapper-icon">
+							&nbsp;<i class="icon-info-sign2"></i>&nbsp;
+						</div>
+						<div class="text-wrapper">
+							{{#each carrierInfo.choices}}
+								{{this.help}}</br>
+							{{/each}}
+						</div>
+					</div>
+
+					{{#if carrierInfo.huntError}}
+						<div class="hunt-error alert">
+							{{ i18n.carrier.huntError }}
+						</div>
+					{{/if}}
+
+					<form id="accountsmanager_carrier_form">
+						<div class="control-group">
+							<label class="control-label" for="accountsmanager_carrier_type">{{ i18n.carrier.title }}</label>
+							<div class="controls">
+								<select id="accountsmanager_carrier_type" name="extra.carrierType">
+									{{#select carrierInfo.type}}
+										{{#each carrierInfo.choices}}
+											<option value="{{ value }}">{{ friendlyName }}</option>
+										{{/each}}
+									{{/select}}
+								</select>
+							</div>
+						</div>
+					</form>
+					<div class="clearfix buttons-div">
+						<button type="button" id="accountsmanager_carrier_save" class="btn btn-success">{{ i18n.update }}</button>
+					</div>
+				</div>
+			{{/unless}}
 		</div>
 	</div>
 </div>

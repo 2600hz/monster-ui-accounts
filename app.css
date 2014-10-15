@@ -1041,3 +1041,9 @@
 	font-size: inherit;
 	color: inherit;
 }
+
+/************ Carrier Tab ************/
+
+#accountsmanager_carrier_tab {
+	padding: 20px;
+}

@@ -399,24 +399,8 @@ define(function(require){
 									}
 								},
 								noMatch: function(callback) {
-									var noMatchCallflow = {
-										numbers: ['no_match'],
-										flow: {
-											children: {},
-											data: {},
-											module: 'offnet'
-										}
-									};
-
-									self.callApi({
-										resource: 'callflow.create',
-										data: {
-											accountId: newAccountId,
-											data: noMatchCallflow
-										},
-										success: function(data, status) {
-											callback(null, data.data);
-										}
+									self.createNoMatchCallflow({ accountId: newAccountId, resellerId: data.data.reseller_id }, function(data) {
+										callback(null, data);
 									});
 								},
 								limits: function(callback) {
@@ -1072,7 +1056,23 @@ define(function(require){
 								accountId: accountId
 							},
 							success: function(data, status) {
-								callback(null, data.data);
+								if(data.data.reseller_id) {
+									self.callApi({
+										resource: 'account.get',
+										data: {
+											accountId: data.data.reseller_id
+										},
+										success: function(dataReseller, status) {
+											data.data.extra = {};
+											data.data.extra.resellerName = dataReseller.data.name;
+
+											callback(null, data.data);
+										}
+									})
+								}
+								else {
+									callback(null, data.data);
+								}
 							}
 						});
 					},
@@ -1154,6 +1154,34 @@ define(function(require){
 								callback(null, data.data);
 							}
 						});
+					},
+					noMatch: function(callback) {
+						self.callApi({
+							resource: 'callflow.list',
+							data: {
+								accountId: accountId,
+								filters: {
+									filter_numbers: 'no_match'
+								}
+							},
+							success: function(listCallflows) {
+								if(listCallflows.data.length === 1) {
+									self.callApi({
+										resource: 'callflow.get',
+										data: {
+											callflowId: listCallflows.data[0].id,
+											accountId: accountId
+										},
+										success: function(callflow) {
+											callback(null, callflow.data);
+										}
+									});
+								}
+								else {
+									callback(null, {});
+								}
+							}
+						});
 					}
 				},
 				function(err, results) {
@@ -1170,12 +1198,96 @@ define(function(require){
 							accountLimits: results.limits,
 							classifiers: results.classifiers,
 							accountBalance: 'balance' in results.currentBalance ? results.currentBalance.balance : 0,
-							parent: parent
+							parent: parent,
+							noMatch: results.noMatch
 						};
+
+					params = self.formatDataEditAccount(params);
 
 					self.editAccount(params);
 				}
 			);
+		},
+
+		formatDataEditAccount: function(params) {
+			var self = this,
+				defaultResellerName = params.accountData.hasOwnProperty('extra') ? params.accountData.extra.resellerName : monster.config.whitelabel.companyName,
+				resellerName = monster.config.whitelabel.hasOwnProperty('carrier') ? monster.config.whitelabel.companyName : defaultResellerName,
+				carrierInfo = {
+					noMatchCallflow: params.noMatch,
+					type: 'useBlended',
+					choices: [
+						{
+							friendlyName: self.i18n.active().carrier['useBlended'].friendlyName,
+							help: self.i18n.active().carrier['useBlended'].help,
+							value: 'useBlended'
+						},
+						{
+							friendlyName: monster.template(self, '!'+self.i18n.active().carrier['useReseller'].friendlyName, { variable: resellerName }),
+							help: monster.template(self, '!'+self.i18n.active().carrier['useReseller'].help, { variable: resellerName }),
+							value: 'useReseller'
+						},
+						{
+							friendlyName: self.i18n.active().carrier['byoc'].friendlyName,
+							help: self.i18n.active().carrier['byoc'].help,
+							value: 'byoc'
+						}
+					]
+				};
+
+			// If the branding defined its own order, honor it
+			if(monster.config.whitelabel.hasOwnProperty('carrier')) {
+				var newChoices = [],
+					mapChoices = {};
+
+				// First put the choices in a map so we can access them simply
+				_.each(carrierInfo.choices, function(choice) {
+					mapChoices[choice.value] = choice;
+				})
+
+				// Create the new choices order
+				_.each(monster.config.whitelabel.carrier.choices, function(choice) {
+					newChoices.push(mapChoices[choice]);
+				});
+
+				carrierInfo.choices = newChoices;
+			}
+
+			// If we have only one choice, it means we want to hide that tab and not allow users to customize their carriers
+			if(carrierInfo.choices.length === 1) {
+				carrierInfo.disabled = true;
+			}
+
+			// if module is offnet, they use global carriers ("blended")
+			if(params.noMatch.flow.module === 'offnet') {
+				carrierInfo.type = 'useBlended';
+			}
+			else if(params.noMatch.flow.module === 'resources'){
+				// if hunt_account_id is defined
+				if(params.noMatch.flow.data.hasOwnProperty('hunt_account_id')) {
+					// check if hunt_account_id = this account id which means he brings his own carrier
+					if(params.noMatch.flow.data.hunt_account_id === params.accountData.id) {
+						carrierInfo.type = 'byoc';
+					}
+					// else check if it's = to his resellerId, which means he uses his reseller carriers
+					else if(params.noMatch.flow.data.hunt_account_id === params.accountData.reseller_id) {
+						carrierInfo.type = 'useReseller';
+					}
+					// else it's using an accountId we don't know, so we show an error
+					else {
+						carrierInfo.huntError = 'wrong_hunt_id';
+						carrierInfo.type = 'useBlended';
+					}
+				}
+				// otherwise use the parent account resources
+				else {
+					carrierInfo.type = 'useReseller';
+				}
+			}
+
+			params.carrierInfo = carrierInfo;
+
+			return params;
 		},
 
 		/** Expected params:
@@ -1194,6 +1306,7 @@ define(function(require){
 				servicePlans = params.servicePlans,
 				accountLimits = params.accountLimits,
 				accountBalance = params.accountBalance,
+				carrierInfo = params.carrierInfo,
 				parent = params.parent,
 				callback = params.callback,
 				admins = $.map(accountUsers, function(val) {
@@ -1222,6 +1335,7 @@ define(function(require){
 					accountUsers: regularUsers,
 					accountServicePlans: servicePlans,
 					isReseller: monster.apps['auth'].isReseller,
+					carrierInfo: carrierInfo,
 					wysiwygColorList: [
 						'ffffff','000000','eeece1','1f497d','4f81bd','c0504d','9bbb59','8064a2','4bacc6','f79646','ffff00',
 						'f2f2f2','7f7f7f','ddd9c3','c6d9f0','dbe5f1','f2dcdb','ebf1dd','e5e0ec','dbeef3','fdeada','fff2ca',
@@ -1310,6 +1424,33 @@ define(function(require){
 				});
 
 				e.stopPropagation();
+			});
+
+			contentHtml.find('#accountsmanager_carrier_save').on('click', function() {
+				var carrierType = contentHtml.find('#accountsmanager_carrier_type').val();
+
+				// If the carrierType isn't the same used, we need to update the document.
+				if(carrierType !== carrierInfo.type) {
+					var callbackSuccess = function(data) {
+							carrierInfo.type = carrierType;
+							toastr.success(self.i18n.active().carrier.saveSuccess);
+							contentHtml.find('.hunt-error').remove();
+						},
+						paramsNoMatch = {
+							type: carrierType,
+							accountId: accountData.id,
+							resellerId: accountData.reseller_id
+						};
+
+					if(carrierInfo.noMatchCallflow.hasOwnProperty('id')) {
+						paramsNoMatch.callflowId = carrierInfo.noMatchCallflow.id;
+
+						self.updateNoMatchCallflow(paramsNoMatch, callbackSuccess);
+					}
+					else {
+						self.createNoMatchCallflow(paramsNoMatch, callbackSuccess);
+					}
+				}
 			});
 
 			contentHtml.find('#accountsmanager_use_account_btn').on('click', function(e) {
@@ -1963,9 +2104,70 @@ define(function(require){
 			self.render();
 
 			toastr.info(self.i18n.active().toastrMessages.restoreMasquerading);
+		},
+
+		getDataNoMatchCallflow: function(type, resellerId) {
+			var self = this,
+				noMatchCallflow = {
+					numbers: ['no_match'],
+					flow: {
+						children: {},
+						data: {},
+						module: 'offnet'
+					}
+				};
+
+			if(type !== 'useBlended') {
+				noMatchCallflow.flow.module = 'resources';
+
+				if(type === 'useReseller') {
+					noMatchCallflow.flow.data.hunt_account_id = resellerId;
+				}
+			}
+
+			return noMatchCallflow;
+		},
+
+		createNoMatchCallflow: function(params, callback) {
+			var self = this,
+				whitelabelType = monster.config.whitelabel.hasOwnProperty('carrier') ? monster.config.whitelabel.carrier.choices[0] : false,
+				type = params.type || whitelabelType || 'useBlended',
+				accountId = params.accountId,
+				resellerId = params.resellerId,
+				noMatchCallflow = self.getDataNoMatchCallflow(type, resellerId);
+
+			self.callApi({
+				resource: 'callflow.create',
+				data: {
+					accountId: accountId,
+					data: noMatchCallflow
+				},
+				success: function(data, status) {
+					callback(data.data);
+				}
+			});
+		},
+
+		updateNoMatchCallflow: function(params, callback) {
+			var self = this,
+				type = params.type,
+				accountId = params.accountId,
+				callflowId = params.callflowId,
+				resellerId = params.resellerId,
+				noMatchCallflow = self.getDataNoMatchCallflow(type, resellerId);
+
+			self.callApi({
+				resource: 'callflow.update',
+				data: {
+					accountId: accountId,
+					callflowId: callflowId,
+					data: noMatchCallflow
+				},
+				success: function(data, status) {
+					callback(data.data);
+				}
+			});
 		}
-
-
 	};
 
 	return app;

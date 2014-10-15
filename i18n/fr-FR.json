@@ -220,5 +220,23 @@
 		"Vous pouvez modifier un compte en le sélectionnant dans la liste de gauche",
 		"Ou",
 		"Créer un nouveau compte en cliquant sur le bouton \"Ajouter un compte\"."
-	]
+	],
+	"__comment": "UI-316: Values added to setup carriers info",
+	"carrier": {
+		"title": "Opérateur téléphonique",
+		"useBlended": {
+			"friendlyName": "Utiliser les Opérateurs mixtes",
+			"help": "En sélectionnant \"Utiliser les opérateurs mixtes\", tous les appels de ce compte utiliseront les opérateurs configurés sur le compte principal"
+		},
+		"useReseller": {
+			"friendlyName": "Utiliser les opérateurs de {{variable}}",
+			"help": "En sélectionnant \"Utiliser les opérateurs de {{variable}}\", tous les appels de ce compte utiliseront les opérateurs configurés de {{variable}}"
+		},
+		"byoc": {
+			"friendlyName": "Configurer vos propres opérateurs",
+			"help": "En sélectionnant \"Configurer vos propres opérateurs\", vous laisserez ce compte configurer ses opérateurs manuellement."
+		},
+		"saveSuccess": "Vous avez mis à jours les options d'opérateurs avec succès!",
+		"huntError": "Vos réglages d'opérateur actuels ne fonctionnent pas dans cette interface, si vous souhaitez conserver ces réglages, ne changez rien dans ce menu. Sinon, vous pouvez sélectionner une option dans le menu et sauvegarder!"
+	}
 }
