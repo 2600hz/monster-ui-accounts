@@ -10,10 +10,14 @@ define(function(require){
 		wysiwyg = require('wysiwyg');
 
 	var app = {
+		name: 'accounts',
 
-		name: "accounts",
+		css: [ 'app' ],
 
-		i18n: [ 'en-US', 'fr-FR' ],
+		i18n: { 
+			'en-US': { customCss: false },
+			'fr-FR': { customCss: false }
+		},
 
 		requests: {},
 
