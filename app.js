@@ -53,7 +53,7 @@ define(function(require){
 		_render: function(container, selectedId, callback) {
 			var self = this,
 				accountsManager = $(monster.template(self, 'accountsManager')),
-				parent = container || $('#ws-content');
+				parent = container || $('#monster-content');
 
 			parent.empty()
 				  .append(accountsManager);
