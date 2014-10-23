@@ -5,9 +5,7 @@ define(function(require){
 		monster = require('monster'),
 		toastr = require('toastr'),
 		timezone = require('monster-timezone'),
-		nicescroll = require('nicescroll'),
-		hotkeys = require('hotkeys'),
-		wysiwyg = require('wysiwyg');
+		nicescroll = require('nicescroll');
 
 	var app = {
 		name: 'accounts',
