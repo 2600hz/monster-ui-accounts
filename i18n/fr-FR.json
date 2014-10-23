@@ -184,38 +184,6 @@
 		"invalidPasswordConfirm": "Confirmation erronée."
 	},
 	"notesLegend": "Ecrivez un commentaire sur ce compte",
-	"wysiwygLabels": {
-		"fontSize": {
-			"title": "Taille de Police",
-			"huge": "Grande",
-			"normal": "Normale",
-			"small": "Petite"
-		},
-		"bold": "Gras",
-		"italic": "Italique",
-		"underline": "Sousligné",
-		"strikethrough": "Barré",
-		"fontColor": "Couleur",
-		"alignment": {
-			"title": "Alignement",
-			"left": "Aligné à gauche",
-			"center": "Centré",
-			"right": "Aligné à droite",
-			"justify": "Justifié"
-		},
-		"list": {
-			"title": "Liste",
-			"bullet": "Liste à puces",
-			"number": "Liste numérale"
-		},
-		"indent": "Indenter",
-		"reverseIndent": "Reduire l'indentation",
-		"insertLink": "Lien hypertexte",
-		"removeLink": "Supprimer le lien hypertexte",
-		"undo": "Annuler l'action",
-		"redo": "Refaire l'action",
-		"horizontalRule": "Ligne horizontale"
-	},
 	"landingContent": [
 		"Vous pouvez modifier un compte en le sélectionnant dans la liste de gauche",
 		"Ou",

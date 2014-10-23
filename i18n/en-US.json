@@ -184,38 +184,6 @@
 		"invalidPasswordConfirm": "Passwords do not match."
 	},
 	"notesLegend": "Write some notes on this account",
-	"wysiwygLabels": {
-		"fontSize": {
-			"title": "Font Size",
-			"huge": "Huge",
-			"normal": "Normal",
-			"small": "Small"
-		},
-		"bold": "Bold",
-		"italic": "Italic",
-		"underline": "Underline",
-		"strikethrough": "Strikethrough",
-		"fontColor": "Font Color",
-		"alignment": {
-			"title": "Alignment",
-			"left": "Align Left",
-			"center": "Center",
-			"right": "Align Right",
-			"justify": "Justify"
-		},
-		"list": {
-			"title": "List",
-			"bullet": "Bullet List",
-			"number": "Number List"
-		},
-		"indent": "Indent",
-		"reverseIndent": "Reduce Indent",
-		"insertLink": "HyperLink",
-		"removeLink": "Remove Hyperlink",
-		"undo": "Undo",
-		"redo": "Redo",
-		"horizontalRule": "Horizontal Rule"
-	},
 	"landingContent": [
 		"You can edit a sub-account by selecting it from the list on the left",
 		"Or",
