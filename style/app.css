@@ -1,12 +1,12 @@
 /***** Left Menu *****/
 #accounts_manager_view .left-menu {
-	float: left;
-	background-color: #F3F3F3;
-	border-right: solid 1px #999;
-	width: 240px;
-	overflow: hidden;
+	/*float: left;*/
+	/*background-color: #F3F3F3;*/
+	/*border-right: solid 1px #999;*/
+	/*width: 240px;*/
+	/*overflow: hidden;*/
 }
-
+/*
 #accounts_manager_view .left-menu .search-box {
 	width: 220px;
 	padding: 20px 10px;
@@ -56,7 +56,7 @@
 	overflow: hidden;
 	border-top: solid 1px #ccc;
 	border-right: solid 1px #ccc;
-	font-size: 0px; /* This is a trick to remove the spacing between inline-block elements */
+	font-size: 0px; /* This is a trick to remove the spacing between inline-block elements *
 }
 
 #accounts_manager_view .left-menu .account-list-container li:last-child {
@@ -133,7 +133,7 @@
 #accounts_manager_view .left-menu .account-children-link > i {
 	vertical-align: middle;
 	margin-left: 17px;
-}
+}*/
 
 /***** Top bar *****/
 

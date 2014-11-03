@@ -4,8 +4,7 @@ define(function(require){
 		chosen = require('chosen'),
 		monster = require('monster'),
 		toastr = require('toastr'),
-		timezone = require('monster-timezone'),
-		nicescroll = require('nicescroll');
+		timezone = require('monster-timezone');
 
 	var app = {
 		name: 'accounts',
@@ -41,212 +40,92 @@ define(function(require){
 			});
 		},
 
-		render: function(container, selectedId, callback){
+		/* Available args *
+		 * `container`: Container of the App, defaults to $('#monster-content')
+		 * `parentId`: ID of the parent account used to display the list
+		 * `selectedId`: ID of the account to show as selected in the list
+		 * `callback`: callback to be executed after the rendering
+		 * `breadcrumbs`: list of breadcrumbs to display
+		 */
+		render: function(args){
 			var self = this;
 
-			self._render(container, selectedId, callback);
+			self._render(args);
 		},
 
 		// subscription handlers
-		_render: function(container, selectedId, callback) {
+		_render: function(args) {
 			var self = this,
+				args = args || {},
+				container = args.container,
 				accountsManager = $(monster.template(self, 'accountsManager')),
+				accountsManagerLanding = $(monster.template(self, 'accountsManagerLanding')),
 				parent = container || $('#monster-content');
+
+				accountsManager.find('.main-content')
+							   .append(accountsManagerLanding);
 
 			parent.empty()
 				  .append(accountsManager);
 
-			self.loadAccountList(function() {
-				self.renderAccountsManager(accountsManager, selectedId);
-				callback && callback(parent);
+			self.renderAccountsManager({
+				container: accountsManager,
+				parentId: args.parentId,
+				selectedId: args.selectedId,
+				callback: args.callback,
+				breadcrumbs: args.breadcrumbs
 			});
 		},
 
-		loadAccountList: function(callback) {
-			var self = this;
-			self.callApi({
-				resource: 'account.listDescendants',
-				data: {
-					accountId: self.accountId,
-					filters: {
-						'paginate': 'false'
+		renderAccountsManager: function(args) {
+			var self = this,
+				parent = args.container,
+				parentId = args.parentId,
+				selectedId = args.selectedId,
+				callback = args.callback,
+				breadcrumbsList = args.breadcrumbs;
+
+			monster.pub('common.accountBrowser.render', {
+				container: parent.find('.edition-view .left-menu'),
+				parentId: parentId,
+				selectedId: selectedId,
+				breadcrumbsContainer: parent.find('.edition-view .content .top-bar'),
+				breadcrumbsList: breadcrumbsList,
+				onNewAccountClick: function(parentAccountId, breadcrumbs) {
+					self.renderNewAccountWizard({
+						parent: parent,
+						accountId: parentAccountId || self.accountId,
+						breadcrumbs: breadcrumbs
+					});
+				},
+				onBreadcrumbClick: function(accountId, parentId) {
+					if(accountId === self.accountId) {
+						parent.find('.main-content')
+							  .empty()
+							  .append(monster.template(self, 'accountsManagerLanding'));
+					} else {
+						self.edit(accountId, parent);
 					}
 				},
-				success: function(data, status) {
-					self.accountTree = monster.ui.accountArrayToTree(data.data, self.accountId);
-					callback && callback();
+				onAccountClick: function(accountId) {
+					parent.find('.main-content').empty();
+					self.edit(accountId, parent);
+				},
+				callback: function() {
+					$(window).resize();
+					callback && callback(parent);
 				}
 			});
-		},
-
-		renderAccountsManager: function(parent, selectedId) {
-			var self = this,
-				originalAccountList = self.accountTree[self.accountId].children;
 
 			// Adjusting the layout divs height to always fit the window's size
 			$(window).resize(function(e) {
-				var $accountList = parent.find('.account-list'),
-					$accountListSlider = parent.find('.account-list-slider'),
+				var $accountListContainer = parent.find('.account-list-container'),
 					$mainContent = parent.find('.main-content'),
 					topBarHeight = $('#topbar').outerHeight(),
-					listHeight = this.innerHeight-$accountList.position().top-topBarHeight+'px'; //
-				$accountList.css('height', listHeight);
-				$accountListSlider.css('height', listHeight);
+					listHeight = this.innerHeight-$accountListContainer.position().top-topBarHeight+'px'; //
+				$accountListContainer.css('height', listHeight);
 				$mainContent.css('height', this.innerHeight-$mainContent.position().top-topBarHeight+'px');
 			});
-			$(window).resize();
-
-			self.bindAccountManagerEvents(parent);
-
-			self.renderList(originalAccountList, parent, selectedId);
-			parent.find('#main_account_link').html(self.accountTree[self.accountId].name);
-
-			parent.find('.account-list').niceScroll({
-				cursorcolor:"#333",
-				cursoropacitymin:0.5,
-				hidecursordelay:1000
-			});
-		},
-
-		bindAccountManagerEvents: function(parent) {
-			var self = this;
-
-			parent.find('#account_search_input').on('keyup', function(e) {
-				var search = $(this).val();
-				if(search) {
-					$.each(parent.find('.account-list-element'), function() {
-						if($(this).find('.account-link').html().toLowerCase().indexOf(search.toLowerCase()) >= 0) {
-							$(this).show();
-						} else {
-							$(this).hide();
-						}
-					});
-				} else {
-					parent.find('.account-list-element').show();
-				}
-			});
-
-			parent.find('#main_account_link').on('click', function(e) {
-				e.preventDefault();
-				self.render();
-			});
-
-			parent.on('click', '.account-list-add', function(e) {
-				e.preventDefault();
-				self.renderNewAccountWizard({
-					parent: parent,
-					accountId: parent.find('.account-breadcrumb').last().data('id') || self.accountId
-				});
-			});
-
-			parent.on('click', '.account-breadcrumb a', function(e) {
-				e.preventDefault();
-				var $this = $(this),
-					accountId = $this.parent().data('id');
-				parent.find('.main-content').empty();
-				self.renderList(self.accountTree, parent, accountId);
-				if(!$this.hasClass('disabled')) {
-					self.edit(accountId, parent);
-				}
-			});
-
-			parent.on('click', '.account-children-link', function() {
-				var accountId = $(this).parent().data('account_id'),
-					breadcrumbTemplate = $(monster.template(self, 'accountsBreadcrumb', {
-						id: accountId,
-						name: self.currentAccountList[accountId].name
-					}));
-
-				parent.find('.account-breadcrumbs').append(breadcrumbTemplate);
-
-				self.renderList(self.currentAccountList[accountId].children, parent, null, true);
-			});
-
-			parent.on('click', '.account-link:not(.disabled)', function() {
-				var accountId = $(this).parent().data('account_id');
-				parent.find('.main-content').empty();
-				self.edit(accountId, parent);
-				self.renderList(self.currentAccountList, parent, accountId);
-			});
-		},
-
-		findAccountInTree: function(accountTree, accountId) {
-			var self = this,
-				results = null;
-
-			if(accountId in accountTree) {
-				return {
-					accountList: accountTree,
-					breadcrumbs: [{
-						id: accountId,
-						name: accountTree[accountId].name
-					}]
-				};
-			} else {
-				$.each(accountTree, function(key, value) {
-					if('children' in value) {
-						results = self.findAccountInTree(value.children, accountId);
-					}
-					if(results !== null) {
-						results.breadcrumbs.splice(0, 0, {
-							id: key,
-							name: value.name
-						})
-						return false;
-					}
-				});
-				return results;
-			}
-		},
-
-		renderList: function(accountList, parent, selectedId, slide) {
-			var self = this,
-				accountList = accountList || [],
-				accountListHtml,
-				$list = parent.find('.account-list'),
-				$slider = parent.find('.account-list-slider');
-
-			if(selectedId && !(selectedId in accountList)) {
-				var selectedAccount = self.findAccountInTree(accountList, selectedId),
-					breadcrumbsContainer = parent.find('.account-breadcrumbs');
-
-				self.currentAccountList = selectedAccount.accountList;
-
-				breadcrumbsContainer.find('.account-breadcrumb').remove();
-				_.each(selectedAccount.breadcrumbs, function(val) {
-					if(val.id !== self.accountId && val.id !== selectedId) {
-						breadcrumbsContainer.append(monster.template(self, 'accountsBreadcrumb', val));
-					}
-				});
-			} else {
-				self.currentAccountList = accountList;
-			}
-			accountListHtml = $(monster.template(self, 'accountsList', {
-				accounts: $.map(self.currentAccountList, function(val, key) {
-					val.id = key;
-					return val;
-				}).sort(function(a,b) {
-					return (a.name || self.i18n.active().missingAccount).toLowerCase() > (b.name || self.i18n.active().missingAccount).toLowerCase() ? 1 :-1;
-				}),
-				selectedId: selectedId
-			}));
-
-			if(slide) {
-				$slider.empty()
-					   .append(accountListHtml);
-
-				$list.animate({ marginLeft: -$list.outerWidth() }, 400, "swing", function() {
-					$list.empty()
-						 .append($slider.html())
-						 .css('marginLeft','0px');
-					$slider.empty();
-				});
-
-			} else {
-				$list.empty().append(accountListHtml);
-			}
-
-			$('#account_search_input').val("").keyup();
 		},
 
 		renderNewAccountWizard: function(params) {
@@ -320,7 +199,6 @@ define(function(require){
 				ev.preventDefault();
 
 				parent.find('.edition-view').show();
-				parent.find('.account-list').getNiceScroll()[0].resize();
 
 				parent.find('.creation-view').empty();
 			});
@@ -487,10 +365,13 @@ define(function(require){
 
 							});
 
-							self.render(null, newAccountId, function(container) {
-								// var originalAccountList = self.accountTree[self.accountId].children;
-								// self.renderList(originalAccountList, parent, newAccountId);
-								self.edit(newAccountId, container);
+							self.render({
+								parentId: parentAccountId,
+								selectedId: newAccountId,
+								callback: function(container) {
+									self.edit(newAccountId, container);
+								},
+								breadcrumbs: params.breadcrumbs
 							});
 						},
 						error: function(data, status) {
@@ -517,7 +398,6 @@ define(function(require){
 
 			parent.find('.edition-view').hide();
 			parent.find('.creation-view').append(newAccountWizard);
-			parent.find('.account-list').getNiceScroll()[0].resize();
 		},
 
 		renderWizardSteps: function(parent) {
@@ -1406,10 +1286,8 @@ define(function(require){
 							data: {}
 						},
 						success: function(data, status) {
-							// self.render();
 							parent.find('.main-content').empty();
-							parent.find('.account-list-element[data-account_id="'+accountData.id+'"]').remove();
-							delete self.findAccountInTree(self.accountTree, accountData.id).accountList[accountData.id];
+							parent.find('.account-list-element[data-id="'+accountData.id+'"]').remove();
 						},
 						error: function(data, status) {
 							toastr.error(self.i18n.active().toastrMessages.deleteAccountError, '', {"timeOut": 5000});
@@ -1487,12 +1365,6 @@ define(function(require){
 							};
 
 							self.editAccount(params);
-
-							if(self.currentAccountList) {
-								self.currentAccountList[data.data.id].name = data.data.name;
-								self.currentAccountList[data.data.id].realm = data.data.realm;
-								self.renderList(self.currentAccountList, parent, data.data.id);
-							}
 						},
 						function(data) {
 							if(data && data.data && 'api_error' in data.data && 'message' in data.data.api_error) {
