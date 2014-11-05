@@ -112,7 +112,6 @@ define(function(require){
 					self.edit(accountId, parent);
 				},
 				callback: function() {
-					$(window).resize();
 					callback && callback(parent);
 				}
 			});
@@ -126,6 +125,7 @@ define(function(require){
 				$accountListContainer.css('height', listHeight);
 				$mainContent.css('height', this.innerHeight-$mainContent.position().top-topBarHeight+'px');
 			});
+			$(window).resize();
 		},
 
 		renderNewAccountWizard: function(params) {
