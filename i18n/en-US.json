@@ -171,7 +171,10 @@
 		"perMinute": "Per Minute",
 		"trunking": "Trunking",
 		"inbound": "Inbound",
-		"outbound": "Outbound"
+		"outbound": "Outbound",
+		"__comment": "UI-664: New restriction for twoway trunks",
+		"__version": "v3.19_s2",
+		"twoway": "Twoway"
 	},
 	"uiRestrictionsExtraSettings": {
 		"perMinute": {

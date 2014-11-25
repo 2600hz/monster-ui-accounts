@@ -601,11 +601,11 @@ define(function(require){
 				parent = params.parent,
 				stepTemplate = self.getRestrictionsTabContent({
 					parent: parent
-				})
+				});
 
-				parent.append(stepTemplate);
+			parent.append(stepTemplate);
 
-				parent.find('[data-toggle="tooltip"]').tooltip();
+			parent.find('[data-toggle="tooltip"]').tooltip();
 		},
 
 		changeStep: function(stepIndex, maxStep, parent) {
@@ -1808,8 +1808,8 @@ define(function(require){
 			var self = this,
 				uiRestrictions = params.hasOwnProperty('accountData') && params.accountData.hasOwnProperty('ui_restrictions') ? params.accountData.ui_restrictions.myaccount || params.accountData.ui_restrictions : {},
 				template = $(monster.template(self, 'restrictionsTabContent', {
-						ui_restrictions: uiRestrictions
-					}));
+					ui_restrictions: uiRestrictions
+				}));
 
 			template.find('.restrictions-element input').each(function() {
 				if ($(this).is(':checked')) {

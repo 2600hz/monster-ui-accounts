@@ -50,6 +50,11 @@
 					<input type="checkbox" name="account.ui_restrictions.myaccount.outbound.show_tab" {{#compare ui_restrictions.outbound.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.outbound }}
 				</a>
 			</li>
+			<li class="restrictions-element">
+				<a>
+					<input type="checkbox" name="account.ui_restrictions.myaccount.twoway.show_tab" {{#compare ui_restrictions.twoway.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.twoway }}
+				</a>
+			</li>
 		</ul>
 	</div>
 	<div class="restrictions-right">
