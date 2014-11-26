@@ -479,6 +479,12 @@
 	color: red;
 	padding: 10px;
 }
+#form_accountsmanager_account_admins #accountsmanager_promote_user_tab .admin-empty-msg {
+	padding-bottom: 0px;
+}
+#form_accountsmanager_account_admins #accountsmanager_promote_user_tab select {
+	margin: 0px;
+}
 
 #accountsmanager_autogen_pwd_toggle {
 	width: 220px;
