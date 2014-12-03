@@ -407,7 +407,7 @@ define(function(require){
 					servicePlans: function(callback) {
 						if(monster.apps['auth'].isReseller) {
 							self.callApi({
-								resource: 'servicePlan.list',
+								resource: 'servicePlan.listAvailable',
 								data: {
 									accountId: self.accountId
 								},
