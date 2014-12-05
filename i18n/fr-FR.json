@@ -195,6 +195,7 @@
 	"__comment": "UI-316: Values added to setup carriers info",
 	"carrier": {
 		"title": "Opérateur téléphonique",
+		"headline": "Sélectionner comment configurer les opérateurs de ce compte",
 		"useBlended": {
 			"friendlyName": "Utiliser les Opérateurs mixtes",
 			"help": "En sélectionnant \"Utiliser les opérateurs mixtes\", tous les appels de ce compte utiliseront les opérateurs configurés sur le compte principal"

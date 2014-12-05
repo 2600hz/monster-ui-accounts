@@ -195,17 +195,18 @@
 	"__comment": "UI-316: Values added to setup carriers info",
 	"carrier": {
 		"title": "Carrier",
+		"headline": "Select the carrier strategy for this account",
 		"useBlended": {
 			"friendlyName": "Use Blended Carriers",
-			"help": "By selecting \"Use Blended Carriers\", you will route all your calls through the global carriers setup on the master account"
+			"help": "This will route the calls to the global carriers setup on the master account"
 		},
 		"useReseller": {
-			"friendlyName": "Use {{variable}} Carriers",
-			"help": "By selecting \"Use {{variable}} Carriers\", you will simply route all the calls for this account through {{variable}}'s carriers."
+			"friendlyName": "Use {{variable}}'s Carriers",
+			"help": "This will route the calls to {{variable}}'s carriers."
 		},
 		"byoc": {
 			"friendlyName": "Bring your Own Carrier (Custom)",
-			"help": "By selecting the \"Bring your own Carrier\" option, you will let this account handle his carriers manually."
+			"help": "This will route the calls to the carriers they set up for this account via the Carriers app."
 		},
 		"saveSuccess": "You successfully updated the Carrier settings for this account!",
 		"huntError": "Your existing settings for your no_match route are not supported in Monster UI, don't change anything in this screen if you wish to continue to use these settings. Otherwise, select one of the option in the dropdown!"

@@ -1161,9 +1161,9 @@ define(function(require){
 						carrierInfo.type = 'useBlended';
 					}
 				}
-				// otherwise use the parent account resources
+				// otherwise it means this accounts will setup their own carriers
 				else {
-					carrierInfo.type = 'useReseller';
+					carrierInfo.type = 'byoc';
 				}
 			}
 
@@ -1298,8 +1298,21 @@ define(function(require){
 				e.stopPropagation();
 			});
 
+			contentHtml.find('.carrier-choice').on('click', function() {
+				var $this = $(this),
+					saveButton = contentHtml.find('#accountsmanager_carrier_save');
+
+				contentHtml.find('.carrier-choice')
+						   .removeClass('selected');
+
+				$this.addClass('selected');
+
+				$this.data('type') !== carrierInfo.type ? saveButton.removeClass('disabled') : saveButton.addClass('disabled');
+			});
+
 			contentHtml.find('#accountsmanager_carrier_save').on('click', function() {
-				var carrierType = contentHtml.find('#accountsmanager_carrier_type').val();
+				var $this = $(this),
+					carrierType = contentHtml.find('.carrier-choice.selected').data('type');
 
 				// If the carrierType isn't the same used, we need to update the document.
 				if(carrierType !== carrierInfo.type) {
@@ -1307,6 +1320,7 @@ define(function(require){
 							carrierInfo.type = carrierType;
 							toastr.success(self.i18n.active().carrier.saveSuccess);
 							contentHtml.find('.hunt-error').remove();
+							$this.addClass('disabled');
 						},
 						paramsNoMatch = {
 							type: carrierType,

@@ -416,17 +416,7 @@
 
 			{{#unless carrierInfo.disabled}}
 				<div class="tab-pane" id="accountsmanager_carrier_tab">
-
-					<div class="help-box gray-box">
-						<div class="wrapper-icon">
-							&nbsp;<i class="icon-info-sign2"></i>&nbsp;
-						</div>
-						<div class="text-wrapper">
-							{{#each carrierInfo.choices}}
-								{{this.help}}</br>
-							{{/each}}
-						</div>
-					</div>
+					<h3>{{ i18n.carrier.headline }}</h3>
 
 					{{#if carrierInfo.huntError}}
 						<div class="hunt-error alert">
@@ -434,22 +424,17 @@
 						</div>
 					{{/if}}
 
-					<form id="accountsmanager_carrier_form">
-						<div class="control-group">
-							<label class="control-label" for="accountsmanager_carrier_type">{{ i18n.carrier.title }}</label>
-							<div class="controls">
-								<select id="accountsmanager_carrier_type" name="extra.carrierType">
-									{{#select carrierInfo.type}}
-										{{#each carrierInfo.choices}}
-											<option value="{{ value }}">{{ friendlyName }}</option>
-										{{/each}}
-									{{/select}}
-								</select>
+					<div class="choices-wrapper clearfix">
+						{{#each carrierInfo.choices}}
+							<div class="carrier-choice{{#compare ../carrierInfo.type "===" value}} selected{{/compare}}" data-type="{{ value }}">
+								<i class="help-popover icon-question-sign" data-original-title="{{this.help}}" data-placement="top" data-toggle="tooltip"></i>{{ friendlyName }}
 							</div>
-						</div>
-					</form>
+							<div class="table-split"></div>
+						{{/each}}
+					</div>
+
 					<div class="clearfix buttons-div">
-						<button type="button" id="accountsmanager_carrier_save" class="btn btn-success">{{ i18n.update }}</button>
+						<button type="button" id="accountsmanager_carrier_save" class="btn btn-success disabled">{{ i18n.update }}</button>
 					</div>
 				</div>
 			{{/unless}}
