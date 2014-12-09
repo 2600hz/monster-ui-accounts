@@ -1652,51 +1652,48 @@ define(function(require){
 						}
 					});
 
-					monster.ui.confirm(self.i18n.active().chargeReminder.line1 + '<br/><br/>' + self.i18n.active().chargeReminder.line2,
-						function() {
-
-							self.callApi({
-								resource: 'limits.update',
-								data: {
-									accountId: accountData.id,
-									data: $.extend(true, {}, limits, {
-										twoway_trunks: newTwowayValue,
-										inbound_trunks: newInboundValue,
-										allow_prepay: allowPrepay,
-										call_restriction: callRestrictions
-									})
-								},
-								success: function(data, status) {
-									toastr.success(self.i18n.active().toastrMessages.limitsUpdateSuccess, '', {"timeOut": 5000});
-								},
-								error: function(data, status) {
-									toastr.error(self.i18n.active().toastrMessages.limitsUpdateError, '', {"timeOut": 5000});
-								}
-							});
-
-							if(addCredit) {
-								self.callApi({
-									resource: 'balance.add',
-									data: {
-										accountId: accountData.id,
-										data: {
-											amount: parseFloat(addCredit)
-										},
-										generateError: false
-									},
-									success: function(data, status) {
-										balance += parseFloat(addCredit);
-										creditBalanceSpan.html(self.i18n.active().currencyUsed+balance);
-										addCreditInput.val('');
-										toastr.success(self.i18n.active().toastrMessages.creditAddSuccess, '', {"timeOut": 5000});
-									},
-									error: function(data, status) {
-										toastr.error(self.i18n.active().toastrMessages.creditAddError, '', {"timeOut": 5000});
-									}
-								});
+					self.callApi({
+						resource: 'limits.update',
+						data: {
+							accountId: accountData.id,
+							data: $.extend(true, {}, limits, {
+								twoway_trunks: newTwowayValue,
+								inbound_trunks: newInboundValue,
+								allow_prepay: allowPrepay,
+								call_restriction: callRestrictions
+							})
+						},
+						success: function(data, status) {
+							toastr.success(self.i18n.active().toastrMessages.limitsUpdateSuccess, '', {"timeOut": 5000});
+						},
+						error: function(data, status) {
+							if(data.error != 402) {
+								toastr.error(self.i18n.active().toastrMessages.limitsUpdateError, '', {"timeOut": 5000});
 							}
 						}
-					);
+					});
+
+					if(addCredit) {
+						self.callApi({
+							resource: 'balance.add',
+							data: {
+								accountId: accountData.id,
+								data: {
+									amount: parseFloat(addCredit)
+								},
+								generateError: false
+							},
+							success: function(data, status) {
+								balance += parseFloat(addCredit);
+								creditBalanceSpan.html(self.i18n.active().currencyUsed+balance);
+								addCreditInput.val('');
+								toastr.success(self.i18n.active().toastrMessages.creditAddSuccess, '', {"timeOut": 5000});
+							},
+							error: function(data, status) {
+								toastr.error(self.i18n.active().toastrMessages.creditAddError, '', {"timeOut": 5000});
+							}
+						});
+					}
 
 				}
 
