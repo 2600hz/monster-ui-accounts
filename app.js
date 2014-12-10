@@ -362,16 +362,14 @@ define(function(require){
 								}
 							},
 							function(err, results) {
-
-							});
-
-							self.render({
-								parentId: parentAccountId,
-								selectedId: newAccountId,
-								callback: function(container) {
-									self.edit(newAccountId, container);
-								},
-								breadcrumbs: params.breadcrumbs
+								self.render({
+									parentId: parentAccountId,
+									selectedId: newAccountId,
+									callback: function(container) {
+										self.edit(newAccountId, container);
+									},
+									breadcrumbs: params.breadcrumbs
+								});
 							});
 						},
 						error: function(data, status) {
