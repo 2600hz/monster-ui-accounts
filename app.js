@@ -1647,6 +1647,7 @@ define(function(require){
 
 				var newTwowayValue = twowayTrunksDiv.find('.slider-div').slider('value'),
 					newInboundValue = inboundTrunksDiv.find('.slider-div').slider('value'),
+					newOutboundValue = outboundTrunksDiv.find('.slider-div').slider('value'),
 					callRestrictions = form2object('accountsmanager_callrestrictions_form').limits.call_restriction,
 					addCredit = addCreditInput.val(),
 					allowPrepay = tabContentTemplate.find('.allow-prepay-ckb').is(':checked');
@@ -1668,6 +1669,7 @@ define(function(require){
 							data: $.extend(true, {}, limits, {
 								twoway_trunks: newTwowayValue,
 								inbound_trunks: newInboundValue,
+								outbound_trunks: newOutboundValue,
 								allow_prepay: allowPrepay,
 								call_restriction: callRestrictions
 							})
@@ -1731,6 +1733,10 @@ define(function(require){
 				inbound = limits.inbound_trunks || 0,
 				totalAmountInbound = amountInbound * inbound,
 				inboundTrunksDiv = template.find('.trunks-div.inbound'),
+				amountOutbound = (servicePlan.plan && servicePlan.plan.limits && servicePlan.plan.limits.outbound_trunks) ? servicePlan.plan.limits.outbound_trunks.rate : 0,
+				outbound = limits.outbound_trunks || 0,
+				totalAmountOutbound = amountOutbound * outbound,
+				outboundTrunksDiv = template.find('.trunks-div.outbound'),
 				createSlider = function(args) {
 					var trunksDiv = args.trunksDiv,
 						sliderValue = trunksDiv.find('.slider-value'),
