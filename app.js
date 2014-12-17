@@ -1776,11 +1776,21 @@ define(function(require){
 				currentValue: inbound,
 				amount: amountInbound
 			});
+			
+			createSlider({
+				trunksDiv: outboundTrunksDiv,
+				minValue: 0,
+				maxValue: 100,
+				currentValue: outbound,
+				amount: amountOutbound
+			});
 
 			twowayTrunksDiv.find('.slider-value').html(twoway);
 			twowayTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountTwoway.toFixed(2));
 			inboundTrunksDiv.find('.slider-value').html(inbound);
 			inboundTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountInbound.toFixed(2));
+			outboundTrunksDiv.find('.slider-value').html(outbound);
+			outboundTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountOutbound.toFixed(2));
 			$.each(template.find('.trunks-div'), function() {
 				var $this = $(this);
 				$this.find('.ui-slider-handle').append($this.find('.section-slider-value'));
@@ -1809,7 +1819,7 @@ define(function(require){
 				event.preventDefault();
 
 				var uiRestrictions = form2object('accountsmanager_uirestrictions_form').account,
-					restrictionsList = ['account', 'balance', 'billing', 'inbound', 'outbound', 'service_plan', 'transactions', 'user'];
+					restrictionsList = ['account', 'balance', 'billing', 'inbound', 'outbound', 'twoway', 'service_plan', 'transactions', 'user'];
 
 				if ( accountData.hasOwnProperty('ui_restrictions') ) {
 					restrictionsList.forEach(function(element) {
