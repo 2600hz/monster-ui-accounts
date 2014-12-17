@@ -294,6 +294,7 @@ define(function(require){
 											var newLimits = {
 												allow_prepay: formData.limits.allow_prepay,
 												inbound_trunks: parseInt(formData.limits.inbound_trunks, 10),
+												outbound_trunks: parseInt(formData.limits.outbound_trunks, 10),
 												twoway_trunks: parseInt(formData.limits.twoway_trunks, 10),
 												call_restriction: callRestrictions
 											};
@@ -522,6 +523,7 @@ define(function(require){
 					var servicePlanId = $(this).val();
 						twowayTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.twoway'),
 						inboundTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.inbound'),
+						outboundTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.outbound'),
 						setTrunksPrice = function(trunksDiv, price) {
 							var trunksSlider = trunksDiv.find('.slider-div');
 							if(price && price > 0) {
@@ -549,6 +551,12 @@ define(function(require){
 								} else {
 									setTrunksPrice(inboundTrunksDiv, 0);
 								}
+								
+								if(plan.limits && plan.limits && plan.limits.outbound_trunks && plan.limits.outbound_trunks.rate) {
+									setTrunksPrice(outboundTrunksDiv, plan.limits.outbound_trunks.rate);
+								} else {
+									setTrunksPrice(outboundTrunksDiv, 0);
+								}
 
 								if(plan.limits && plan.limits && plan.limits.twoway_trunks && plan.limits.twoway_trunks.rate) {
 									setTrunksPrice(twowayTrunksDiv, plan.limits.twoway_trunks.rate);
@@ -563,11 +571,13 @@ define(function(require){
 							},
 							error: function(data, status) {
 								setTrunksPrice(inboundTrunksDiv, 0);
+								setTrunksPrice(outboundTrunksDiv, 0);
 								setTrunksPrice(twowayTrunksDiv, 0);
 							}
 						});
 					} else {
 						setTrunksPrice(inboundTrunksDiv, 0);
+						setTrunksPrice(outboundTrunksDiv, 0);
 						setTrunksPrice(twowayTrunksDiv, 0);
 						stepTemplate.find('.serviceplans-details-container').empty();
 					}
