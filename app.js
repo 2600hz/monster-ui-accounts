@@ -558,6 +558,7 @@ define(function(require){
 
 								monster.pub('common.servicePlanDetails.render', {
 									container: stepTemplate.find('.serviceplans-details-container'),
+									useOwnPlans: true,
 									servicePlan: data.data
 								});
 							},
@@ -988,7 +989,7 @@ define(function(require){
 							success: function(data, status) {
 								if(!$.isEmptyObject(data.data.plans)) {
 									self.callApi({
-										resource: 'servicePlan.get',
+										resource: 'servicePlan.getAvailable',
 										data: {
 											accountId: accountId,
 											planId: Object.keys(data.data.plans)[0]
