@@ -937,23 +937,7 @@ define(function(require){
 								accountId: accountId
 							},
 							success: function(data, status) {
-								if(data.data.reseller_id) {
-									self.callApi({
-										resource: 'account.get',
-										data: {
-											accountId: data.data.reseller_id
-										},
-										success: function(dataReseller, status) {
-											data.data.extra = {};
-											data.data.extra.resellerName = dataReseller.data.name;
-
-											callback(null, data.data);
-										}
-									})
-								}
-								else {
-									callback(null, data.data);
-								}
+								callback(null, data.data);
 							}
 						});
 					},
@@ -1092,9 +1076,15 @@ define(function(require){
 
 		formatDataEditAccount: function(params) {
 			var self = this,
-				defaultResellerName = params.accountData.hasOwnProperty('extra') ? params.accountData.extra.resellerName : monster.config.whitelabel.companyName,
-				resellerName = monster.config.whitelabel.hasOwnProperty('carrier') ? monster.config.whitelabel.companyName : defaultResellerName,
-				carrierInfo = {
+				resellerString = self.i18n.active().carrier['useReseller'].defaultFriendlyName,
+				resellerHelp = self.i18n.active().carrier['useReseller'].defaultHelp;
+
+			if(monster.config.whitelabel.hasOwnProperty('companyName')) {
+				resellerString = monster.template(self, '!'+self.i18n.active().carrier['useReseller'].friendlyName, { variable: monster.config.whitelabel.companyName });
+				resellerHelp = monster.template(self, '!'+self.i18n.active().carrier['useReseller'].help, { variable: monster.config.whitelabel.companyName });
+			}
+
+			var carrierInfo = {
 					noMatchCallflow: params.noMatch,
 					type: 'useBlended',
 					choices: [
@@ -1104,8 +1094,8 @@ define(function(require){
 							value: 'useBlended'
 						},
 						{
-							friendlyName: monster.template(self, '!'+self.i18n.active().carrier['useReseller'].friendlyName, { variable: resellerName }),
-							help: monster.template(self, '!'+self.i18n.active().carrier['useReseller'].help, { variable: resellerName }),
+							friendlyName: resellerString,
+							help: resellerHelp,
 							value: 'useReseller'
 						},
 						{

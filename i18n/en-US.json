@@ -202,7 +202,11 @@
 		},
 		"useReseller": {
 			"friendlyName": "Use {{variable}}'s Carriers",
-			"help": "This will route the calls to {{variable}}'s carriers."
+			"help": "This will route the calls to {{variable}}'s carriers.",
+			"__comment": "UI-1041: Needed to add a default message for people who aren't white labeling",
+			"__version": "v3.19_s3",
+			"defaultFriendlyName": "Use your Reseller's Carriers",
+			"defaultHelp": "This will route the calls to your Reseller's Carriers"
 		},
 		"byoc": {
 			"friendlyName": "Bring your Own Carrier (Custom)",

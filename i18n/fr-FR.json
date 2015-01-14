@@ -202,7 +202,11 @@
 		},
 		"useReseller": {
 			"friendlyName": "Utiliser les opérateurs de {{variable}}",
-			"help": "En sélectionnant \"Utiliser les opérateurs de {{variable}}\", tous les appels de ce compte utiliseront les opérateurs configurés de {{variable}}"
+			"help": "En sélectionnant \"Utiliser les opérateurs de {{variable}}\", tous les appels de ce compte utiliseront les opérateurs configurés de {{variable}}",
+			"__comment": "UI-1041: Needed to add a default message for people who aren't white labeling",
+			"__version": "v3.19_s3",
+			"defaultFriendlyName": "Utiliser les opérateurs de votre revendeur",
+			"defaultHelp": "En sélectionnant \"Utiliser les opérateurs de votre revendeur\", tous les appels de ce compte utiliseront les opérateurs configurés de votre revendeur"
 		},
 		"byoc": {
 			"friendlyName": "Configurer vos propres opérateurs",
