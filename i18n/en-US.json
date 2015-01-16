@@ -191,5 +191,8 @@
 		"You can edit a sub-account by selecting it from the list on the left",
 		"Or",
 		"Create a new sub-account by clicking on the \"Add New Account\" button."
-	]
+	],
+	"__comment": "UI-966: created common control for carrier selection",
+	"__version": "v3.20_s0",
+	"carrierTab": "Carrier"
 }

@@ -191,5 +191,8 @@
 		"Vous pouvez modifier un compte en le sélectionnant dans la liste de gauche",
 		"Ou",
 		"Créer un nouveau compte en cliquant sur le bouton \"Ajouter un compte\"."
-	]
+	],
+	"__comment": "UI-966: created common control for carrier selection",
+	"__version": "v3.20_s0",
+	"carrierTab": "Opérateur téléphonique"
 }
