@@ -1202,9 +1202,6 @@ define(function(require){
 						success: function(data, status) {
 							parent.find('.main-content').empty();
 							parent.find('.account-list-element[data-id="'+accountData.id+'"]').remove();
-						},
-						error: function(data, status) {
-							toastr.error(self.i18n.active().toastrMessages.deleteAccountError, '', {"timeOut": 5000});
 						}
 					});
 				});
