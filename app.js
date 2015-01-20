@@ -227,7 +227,7 @@ define(function(require){
 
 				if(monster.ui.valid(newAccountWizardForm)) {
 
-					var formData = form2object('accountsmanager_new_account_form'),
+					var formData = monster.ui.getFormData('accountsmanager_new_account_form'),
 						callRestrictions = {}; // Can't use form data for this since unchecked checkboxes are not retrieved by form2object
 
 					$.each(newAccountWizard.find('.call-restrictions-element input[type="checkbox"]'), function() {
@@ -796,7 +796,7 @@ define(function(require){
 						$adminElement.find('.admin-save-btn').click(function(e) {
 							e.preventDefault();
 							var form = $adminElement.find('form'),
-								formData = form2object(form[0]);
+								formData = monster.ui.getFormData(form[0]);
 
 							if(monster.ui.valid(form)) {
 								formData = self.cleanFormData(formData);
@@ -842,7 +842,7 @@ define(function(require){
 					$newAdminElem.find('.admin-add-btn').click(function(e) {
 						e.preventDefault();
 						if($newAdminElem.find('.tab-pane.active').hasClass('create-user-div')) {
-							var formData = form2object('accountsmanager_add_admin_form'),
+							var formData = monster.ui.getFormData('accountsmanager_add_admin_form'),
 								autoGen = ($createUserDiv.find('input[name="extra.autogen_password"]:checked').val() === "true");
 
 							if(monster.ui.valid(contentHtml.find('#accountsmanager_add_admin_form'))) {
@@ -1223,7 +1223,7 @@ define(function(require){
 				var $this = $(this),
 					module = $this.data('module'),
 					fieldName = $this.data('field'),
-					newData = self.cleanFormData(form2object('form_'+fieldName));
+					newData = self.cleanFormData(monster.ui.getFormData('form_'+fieldName));
 
 				if(monster.ui.valid(contentHtml.find('#form_'+fieldName))) {
 					self.updateData(accountData, newData,
@@ -1508,7 +1508,7 @@ define(function(require){
 
 				var newTwowayValue = twowayTrunksDiv.find('.slider-div').slider('value'),
 					newInboundValue = inboundTrunksDiv.find('.slider-div').slider('value'),
-					callRestrictions = form2object('accountsmanager_callrestrictions_form').limits.call_restriction,
+					callRestrictions = monster.ui.getFormData('accountsmanager_callrestrictions_form').limits.call_restriction,
 					addCredit = addCreditInput.val(),
 					allowPrepay = tabContentTemplate.find('.allow-prepay-ckb').is(':checked');
 
@@ -1663,7 +1663,7 @@ define(function(require){
 			parent.find('#accountsmanager_uirestrictions_save').click(function(event) {
 				event.preventDefault();
 
-				var uiRestrictions = form2object('accountsmanager_uirestrictions_form').account,
+				var uiRestrictions = monster.ui.getFormData('accountsmanager_uirestrictions_form').account,
 					restrictionsList = ['account', 'balance', 'billing', 'inbound', 'outbound', 'service_plan', 'transactions', 'user'];
 
 				if ( accountData.hasOwnProperty('ui_restrictions') ) {
