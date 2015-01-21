@@ -1053,7 +1053,7 @@ define(function(require){
 									});
 								}
 								else {
-									callback(null, {});
+									callback(null, null);
 								}
 							}
 						});
@@ -1075,11 +1075,24 @@ define(function(require){
 							accountBalance: 'balance' in results.currentBalance ? results.currentBalance.balance : 0,
 							parent: parent,
 							noMatch: results.noMatch
+						},
+						editCallback = function() {
+							params = self.formatDataEditAccount(params);
+							self.editAccount(params);
 						};
 
-					params = self.formatDataEditAccount(params);
-
-					self.editAccount(params);
+					if(!_.isObject(params.noMatch)) {
+						self.createNoMatchCallflow({
+								accountId: params.accountData.id,
+								resellerId: params.accountData.reseller_id
+							}, function(data) {
+								params.noMatch = data;
+								editCallback();
+							}
+						);
+					} else {
+						editCallback();
+					}
 				}
 			);
 		},
