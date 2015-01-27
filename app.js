@@ -272,7 +272,8 @@ define(function(require){
 												}
 											},
 											error: function(data, status) {
-												toastr.error(self.i18n.active().toastrMessages.newAccount.adminError, '', {"timeOut": 5000});
+												toastr.error(self.i18n.active().toastrMessages.newAccount.adminError, '', {"timeOut": 10000});
+												callback(null, {});
 											}
 										});
 									} else {
@@ -311,11 +312,14 @@ define(function(require){
 													if(data.error == 403) {
 														monster.ui.alert('error', self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError);
 													}
-													toastr.error(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 5000});
+
+													callback(null, {});
+													toastr.error(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 10000});
 												}
 											});
 										},
 										error: function(data, status) {
+											callback(null, {});
 										}
 									});
 								},
@@ -334,7 +338,8 @@ define(function(require){
 												callback(null, data.data);
 											},
 											error: function(data, status) {
-												toastr.error(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 5000});
+												callback(null, {});
+												toastr.error(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 10000});
 											}
 										});
 									} else {
@@ -354,7 +359,8 @@ define(function(require){
 												callback(null, data.data);
 											},
 											error: function(data, status) {
-												toastr.error(self.i18n.active().toastrMessages.newAccount.servicePlanError, '', {"timeOut": 5000});
+												callback(null, {});
+												toastr.error(self.i18n.active().toastrMessages.newAccount.servicePlanError, '', {"timeOut": 10000});
 											}
 										});
 									} else {
@@ -2010,6 +2016,9 @@ define(function(require){
 				},
 				success: function(data, status) {
 					callback(data.data);
+				},
+				error: function(data) {
+					callback();
 				}
 			});
 		},

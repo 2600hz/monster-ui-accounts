@@ -148,7 +148,7 @@
 			"adminError": "The account administrator could not be created.",
 			"limitsError": "An error occured while setting up the limits.",
 			"forbiddenLimitsError": "You are not allowed to set those limits. Please contact your sales representative.",
-			"creditError": "An error occured while adding credit to the account.",
+			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid.",
 			"servicePlanError": "An error occured while assigning the service plan to the account."
 		},
 		"uiRestrictionsUpdateSuccess": "UI restrictions updated successfully!",
