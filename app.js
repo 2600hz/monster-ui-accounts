@@ -310,11 +310,14 @@ define(function(require){
 												},
 												error: function(data, status) {
 													if(data.error == 403) {
-														monster.ui.alert('error', self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError);
+														toastr.info(self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError, '', {"timeOut": 10000});
+														callback(null, {});
 													}
-
-													callback(null, {});
-													toastr.error(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 10000});
+													// Only show error if error isn't a 402, because a 402 is handled generically
+													else if(data.error != 402) {
+														toastr.info(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 10000});
+														callback(null, {});
+													}
 												}
 											});
 										},
@@ -339,7 +342,7 @@ define(function(require){
 											},
 											error: function(data, status) {
 												callback(null, {});
-												toastr.error(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 10000});
+												toastr.info(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 10000});
 											}
 										});
 									} else {
