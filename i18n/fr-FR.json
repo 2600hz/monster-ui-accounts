@@ -192,23 +192,7 @@
 		"Ou",
 		"Créer un nouveau compte en cliquant sur le bouton \"Ajouter un compte\"."
 	],
-	"__comment": "UI-316: Values added to setup carriers info",
-	"carrier": {
-		"title": "Opérateur téléphonique",
-		"headline": "Sélectionner comment configurer les opérateurs de ce compte",
-		"useBlended": {
-			"friendlyName": "Utiliser les Opérateurs mixtes",
-			"help": "En sélectionnant \"Utiliser les opérateurs mixtes\", tous les appels de ce compte utiliseront les opérateurs configurés sur le compte principal"
-		},
-		"useReseller": {
-			"friendlyName": "Utiliser les opérateurs de {{variable}}",
-			"help": "En sélectionnant \"Utiliser les opérateurs de {{variable}}\", tous les appels de ce compte utiliseront les opérateurs configurés de {{variable}}"
-		},
-		"byoc": {
-			"friendlyName": "Configurer vos propres opérateurs",
-			"help": "En sélectionnant \"Configurer vos propres opérateurs\", vous laisserez ce compte configurer ses opérateurs manuellement."
-		},
-		"saveSuccess": "Vous avez mis à jours les options d'opérateurs avec succès!",
-		"huntError": "Vos réglages d'opérateur actuels ne fonctionnent pas dans cette interface, si vous souhaitez conserver ces réglages, ne changez rien dans ce menu. Sinon, vous pouvez sélectionner une option dans le menu et sauvegarder!"
-	}
+	"__comment": "UI-966: created common control for carrier selection",
+	"__version": "v3.20_s0",
+	"carrierTab": "Opérateur téléphonique"
 }

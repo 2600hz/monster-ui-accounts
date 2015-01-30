@@ -148,7 +148,7 @@
 			"adminError": "The account administrator could not be created.",
 			"limitsError": "An error occured while setting up the limits.",
 			"forbiddenLimitsError": "You are not allowed to set those limits. Please contact your sales representative.",
-			"creditError": "An error occured while adding credit to the account.",
+			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid.",
 			"servicePlanError": "An error occured while assigning the service plan to the account."
 		},
 		"uiRestrictionsUpdateSuccess": "UI restrictions updated successfully!",
@@ -192,23 +192,7 @@
 		"Or",
 		"Create a new sub-account by clicking on the \"Add New Account\" button."
 	],
-	"__comment": "UI-316: Values added to setup carriers info",
-	"carrier": {
-		"title": "Carrier",
-		"headline": "Select the carrier strategy for this account",
-		"useBlended": {
-			"friendlyName": "Use Blended Carriers",
-			"help": "This will route the calls to the global carriers setup on the master account"
-		},
-		"useReseller": {
-			"friendlyName": "Use {{variable}}'s Carriers",
-			"help": "This will route the calls to {{variable}}'s carriers."
-		},
-		"byoc": {
-			"friendlyName": "Bring your Own Carrier (Custom)",
-			"help": "This will route the calls to the carriers they set up for this account via the Carriers app."
-		},
-		"saveSuccess": "You successfully updated the Carrier settings for this account!",
-		"huntError": "Your existing settings for your no_match route are not supported in Monster UI, don't change anything in this screen if you wish to continue to use these settings. Otherwise, select one of the option in the dropdown!"
-	}
+	"__comment": "UI-966: created common control for carrier selection",
+	"__version": "v3.20_s0",
+	"carrierTab": "Carrier"
 }

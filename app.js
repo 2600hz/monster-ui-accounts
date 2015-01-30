@@ -227,7 +227,7 @@ define(function(require){
 
 				if(monster.ui.valid(newAccountWizardForm)) {
 
-					var formData = form2object('accountsmanager_new_account_form'),
+					var formData = monster.ui.getFormData('accountsmanager_new_account_form'),
 						callRestrictions = {}; // Can't use form data for this since unchecked checkboxes are not retrieved by form2object
 
 					$.each(newAccountWizard.find('.call-restrictions-element input[type="checkbox"]'), function() {
@@ -272,7 +272,8 @@ define(function(require){
 												}
 											},
 											error: function(data, status) {
-												toastr.error(self.i18n.active().toastrMessages.newAccount.adminError, '', {"timeOut": 5000});
+												toastr.error(self.i18n.active().toastrMessages.newAccount.adminError, '', {"timeOut": 10000});
+												callback(null, {});
 											}
 										});
 									} else {
@@ -309,13 +310,19 @@ define(function(require){
 												},
 												error: function(data, status) {
 													if(data.error == 403) {
-														monster.ui.alert('error', self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError);
+														toastr.info(self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError, '', {"timeOut": 10000});
+														callback(null, {});
 													}
-													toastr.error(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 5000});
+													// Only show error if error isn't a 402, because a 402 is handled generically
+													else if(data.error != 402) {
+														toastr.info(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 10000});
+														callback(null, {});
+													}
 												}
 											});
 										},
 										error: function(data, status) {
+											callback(null, {});
 										}
 									});
 								},
@@ -334,7 +341,8 @@ define(function(require){
 												callback(null, data.data);
 											},
 											error: function(data, status) {
-												toastr.error(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 5000});
+												callback(null, {});
+												toastr.info(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 10000});
 											}
 										});
 									} else {
@@ -354,7 +362,8 @@ define(function(require){
 												callback(null, data.data);
 											},
 											error: function(data, status) {
-												toastr.error(self.i18n.active().toastrMessages.newAccount.servicePlanError, '', {"timeOut": 5000});
+												callback(null, {});
+												toastr.error(self.i18n.active().toastrMessages.newAccount.servicePlanError, '', {"timeOut": 10000});
 											}
 										});
 									} else {
@@ -406,7 +415,7 @@ define(function(require){
 					servicePlans: function(callback) {
 						if(monster.apps['auth'].isReseller) {
 							self.callApi({
-								resource: 'servicePlan.listAvailable',
+								resource: 'servicePlan.list',
 								data: {
 									accountId: self.accountId
 								},
@@ -558,6 +567,7 @@ define(function(require){
 
 								monster.pub('common.servicePlanDetails.render', {
 									container: stepTemplate.find('.serviceplans-details-container'),
+									useOwnPlans: true,
 									servicePlan: data.data
 								});
 							},
@@ -795,7 +805,7 @@ define(function(require){
 						$adminElement.find('.admin-save-btn').click(function(e) {
 							e.preventDefault();
 							var form = $adminElement.find('form'),
-								formData = form2object(form[0]);
+								formData = monster.ui.getFormData(form[0]);
 
 							if(monster.ui.valid(form)) {
 								formData = self.cleanFormData(formData);
@@ -841,7 +851,7 @@ define(function(require){
 					$newAdminElem.find('.admin-add-btn').click(function(e) {
 						e.preventDefault();
 						if($newAdminElem.find('.tab-pane.active').hasClass('create-user-div')) {
-							var formData = form2object('accountsmanager_add_admin_form'),
+							var formData = monster.ui.getFormData('accountsmanager_add_admin_form'),
 								autoGen = ($createUserDiv.find('input[name="extra.autogen_password"]:checked').val() === "true");
 
 							if(monster.ui.valid(contentHtml.find('#accountsmanager_add_admin_form'))) {
@@ -937,23 +947,7 @@ define(function(require){
 								accountId: accountId
 							},
 							success: function(data, status) {
-								if(data.data.reseller_id) {
-									self.callApi({
-										resource: 'account.get',
-										data: {
-											accountId: data.data.reseller_id
-										},
-										success: function(dataReseller, status) {
-											data.data.extra = {};
-											data.data.extra.resellerName = dataReseller.data.name;
-
-											callback(null, data.data);
-										}
-									})
-								}
-								else {
-									callback(null, data.data);
-								}
+								callback(null, data.data);
 							}
 						});
 					},
@@ -970,7 +964,7 @@ define(function(require){
 					},
 					listServicePlans: function(callback) {
 						self.callApi({
-							resource: 'servicePlan.list',
+							resource: 'servicePlan.listAvailable',
 							data: {
 								accountId: accountId
 							},
@@ -988,7 +982,7 @@ define(function(require){
 							success: function(data, status) {
 								if(!$.isEmptyObject(data.data.plans)) {
 									self.callApi({
-										resource: 'servicePlan.get',
+										resource: 'servicePlan.getAvailable',
 										data: {
 											accountId: accountId,
 											planId: Object.keys(data.data.plans)[0]
@@ -1059,7 +1053,7 @@ define(function(require){
 									});
 								}
 								else {
-									callback(null, {});
+									callback(null, null);
 								}
 							}
 						});
@@ -1081,92 +1075,30 @@ define(function(require){
 							accountBalance: 'balance' in results.currentBalance ? results.currentBalance.balance : 0,
 							parent: parent,
 							noMatch: results.noMatch
+						},
+						editCallback = function() {
+							params = self.formatDataEditAccount(params);
+							self.editAccount(params);
 						};
 
-					params = self.formatDataEditAccount(params);
-
-					self.editAccount(params);
+					if(!_.isObject(params.noMatch)) {
+						self.createNoMatchCallflow({
+								accountId: params.accountData.id,
+								resellerId: params.accountData.reseller_id
+							}, function(data) {
+								params.noMatch = data;
+								editCallback();
+							}
+						);
+					} else {
+						editCallback();
+					}
 				}
 			);
 		},
 
 		formatDataEditAccount: function(params) {
-			var self = this,
-				defaultResellerName = params.accountData.hasOwnProperty('extra') ? params.accountData.extra.resellerName : monster.config.whitelabel.companyName,
-				resellerName = monster.config.whitelabel.hasOwnProperty('carrier') ? monster.config.whitelabel.companyName : defaultResellerName,
-				carrierInfo = {
-					noMatchCallflow: params.noMatch,
-					type: 'useBlended',
-					choices: [
-						{
-							friendlyName: self.i18n.active().carrier['useBlended'].friendlyName,
-							help: self.i18n.active().carrier['useBlended'].help,
-							value: 'useBlended'
-						},
-						{
-							friendlyName: monster.template(self, '!'+self.i18n.active().carrier['useReseller'].friendlyName, { variable: resellerName }),
-							help: monster.template(self, '!'+self.i18n.active().carrier['useReseller'].help, { variable: resellerName }),
-							value: 'useReseller'
-						},
-						{
-							friendlyName: self.i18n.active().carrier['byoc'].friendlyName,
-							help: self.i18n.active().carrier['byoc'].help,
-							value: 'byoc'
-						}
-					]
-				};
-
-			// If the branding defined its own order, honor it
-			if(monster.config.whitelabel.hasOwnProperty('carrier')) {
-				var newChoices = [],
-					mapChoices = {};
-
-				// First put the choices in a map so we can access them simply
-				_.each(carrierInfo.choices, function(choice) {
-					mapChoices[choice.value] = choice;
-				})
-
-				// Create the new choices order
-				_.each(monster.config.whitelabel.carrier.choices, function(choice) {
-					newChoices.push(mapChoices[choice]);
-				});
-
-				carrierInfo.choices = newChoices;
-			}
-
-			// If we have only one choice, it means we want to hide that tab and not allow users to customize their carriers
-			if(carrierInfo.choices.length === 1) {
-				carrierInfo.disabled = true;
-			}
-
-			// if module is offnet, they use global carriers ("blended")
-			if(params.noMatch.flow.module === 'offnet') {
-				carrierInfo.type = 'useBlended';
-			}
-			else if(params.noMatch.flow.module === 'resources'){
-				// if hunt_account_id is defined
-				if(params.noMatch.flow.data.hasOwnProperty('hunt_account_id')) {
-					// check if hunt_account_id = this account id which means he brings his own carrier
-					if(params.noMatch.flow.data.hunt_account_id === params.accountData.id) {
-						carrierInfo.type = 'byoc';
-					}
-					// else check if it's = to his resellerId, which means he uses his reseller carriers
-					else if(params.noMatch.flow.data.hunt_account_id === params.accountData.reseller_id) {
-						carrierInfo.type = 'useReseller';
-					}
-					// else it's using an accountId we don't know, so we show an error
-					else {
-						carrierInfo.huntError = 'wrong_hunt_id';
-						carrierInfo.type = 'useBlended';
-					}
-				}
-				// otherwise it means this accounts will setup their own carriers
-				else {
-					carrierInfo.type = 'byoc';
-				}
-			}
-
-			params.carrierInfo = carrierInfo;
+			var self = this;
 
 			return params;
 		},
@@ -1235,6 +1167,11 @@ define(function(require){
 				},
 				notesTab = contentHtml.find('#accountsmanager_notes_tab');
 
+			monster.pub('common.carrierSelector', {
+				container: contentHtml.find('#accountsmanager_carrier_tab'),
+				data: params
+			});
+
 			contentHtml.find('.account-tabs a').click(function(e) {
 				e.preventDefault();
 				if(!$(this).parent().hasClass('disabled')) {
@@ -1287,55 +1224,11 @@ define(function(require){
 						success: function(data, status) {
 							parent.find('.main-content').empty();
 							parent.find('.account-list-element[data-id="'+accountData.id+'"]').remove();
-						},
-						error: function(data, status) {
-							toastr.error(self.i18n.active().toastrMessages.deleteAccountError, '', {"timeOut": 5000});
 						}
 					});
 				});
 
 				e.stopPropagation();
-			});
-
-			contentHtml.find('.carrier-choice').on('click', function() {
-				var $this = $(this),
-					saveButton = contentHtml.find('#accountsmanager_carrier_save');
-
-				contentHtml.find('.carrier-choice')
-						   .removeClass('selected');
-
-				$this.addClass('selected');
-
-				$this.data('type') !== carrierInfo.type ? saveButton.removeClass('disabled') : saveButton.addClass('disabled');
-			});
-
-			contentHtml.find('#accountsmanager_carrier_save').on('click', function() {
-				var $this = $(this),
-					carrierType = contentHtml.find('.carrier-choice.selected').data('type');
-
-				// If the carrierType isn't the same used, we need to update the document.
-				if(carrierType !== carrierInfo.type) {
-					var callbackSuccess = function(data) {
-							carrierInfo.type = carrierType;
-							toastr.success(self.i18n.active().carrier.saveSuccess);
-							contentHtml.find('.hunt-error').remove();
-							$this.addClass('disabled');
-						},
-						paramsNoMatch = {
-							type: carrierType,
-							accountId: accountData.id,
-							resellerId: accountData.reseller_id
-						};
-
-					if(carrierInfo.noMatchCallflow.hasOwnProperty('id')) {
-						paramsNoMatch.callflowId = carrierInfo.noMatchCallflow.id;
-
-						self.updateNoMatchCallflow(paramsNoMatch, callbackSuccess);
-					}
-					else {
-						self.createNoMatchCallflow(paramsNoMatch, callbackSuccess);
-					}
-				}
 			});
 
 			contentHtml.find('#accountsmanager_use_account_btn').on('click', function(e) {
@@ -1352,7 +1245,7 @@ define(function(require){
 				var $this = $(this),
 					module = $this.data('module'),
 					fieldName = $this.data('field'),
-					newData = self.cleanFormData(form2object('form_'+fieldName));
+					newData = self.cleanFormData(monster.ui.getFormData('form_'+fieldName));
 
 				if(monster.ui.valid(contentHtml.find('#form_'+fieldName))) {
 					self.updateData(accountData, newData,
@@ -1637,7 +1530,7 @@ define(function(require){
 
 				var newTwowayValue = twowayTrunksDiv.find('.slider-div').slider('value'),
 					newInboundValue = inboundTrunksDiv.find('.slider-div').slider('value'),
-					callRestrictions = form2object('accountsmanager_callrestrictions_form').limits.call_restriction,
+					callRestrictions = monster.ui.getFormData('accountsmanager_callrestrictions_form').limits.call_restriction,
 					addCredit = addCreditInput.val(),
 					allowPrepay = tabContentTemplate.find('.allow-prepay-ckb').is(':checked');
 
@@ -1792,7 +1685,7 @@ define(function(require){
 			parent.find('#accountsmanager_uirestrictions_save').click(function(event) {
 				event.preventDefault();
 
-				var uiRestrictions = form2object('accountsmanager_uirestrictions_form').account,
+				var uiRestrictions = monster.ui.getFormData('accountsmanager_uirestrictions_form').account,
 					restrictionsList = ['account', 'balance', 'billing', 'inbound', 'outbound', 'service_plan', 'transactions', 'user'];
 
 				if ( accountData.hasOwnProperty('ui_restrictions') ) {
@@ -2019,6 +1912,9 @@ define(function(require){
 				},
 				success: function(data, status) {
 					callback(data.data);
+				},
+				error: function(data) {
+					callback();
 				}
 			});
 		},
