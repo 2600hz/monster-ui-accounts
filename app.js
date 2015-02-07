@@ -295,6 +295,7 @@ define(function(require){
 											var newLimits = {
 												allow_prepay: formData.limits.allow_prepay,
 												inbound_trunks: parseInt(formData.limits.inbound_trunks, 10),
+												outbound_trunks: parseInt(formData.limits.outbound_trunks, 10),
 												twoway_trunks: parseInt(formData.limits.twoway_trunks, 10),
 												call_restriction: callRestrictions
 											};
@@ -531,6 +532,7 @@ define(function(require){
 					var servicePlanId = $(this).val();
 						twowayTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.twoway'),
 						inboundTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.inbound'),
+						outboundTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.outbound'),
 						setTrunksPrice = function(trunksDiv, price) {
 							var trunksSlider = trunksDiv.find('.slider-div');
 							if(price && price > 0) {
@@ -559,6 +561,12 @@ define(function(require){
 									setTrunksPrice(inboundTrunksDiv, 0);
 								}
 
+								if(plan.limits && plan.limits && plan.limits.outbound_trunks && plan.limits.outbound_trunks.rate) {
+									setTrunksPrice(outboundTrunksDiv, plan.limits.outbound_trunks.rate);
+								} else {
+									setTrunksPrice(outboundTrunksDiv, 0);
+								}
+
 								if(plan.limits && plan.limits && plan.limits.twoway_trunks && plan.limits.twoway_trunks.rate) {
 									setTrunksPrice(twowayTrunksDiv, plan.limits.twoway_trunks.rate);
 								} else {
@@ -573,11 +581,13 @@ define(function(require){
 							},
 							error: function(data, status) {
 								setTrunksPrice(inboundTrunksDiv, 0);
+								setTrunksPrice(outboundTrunksDiv, 0);
 								setTrunksPrice(twowayTrunksDiv, 0);
 							}
 						});
 					} else {
 						setTrunksPrice(inboundTrunksDiv, 0);
+						setTrunksPrice(outboundTrunksDiv, 0);
 						setTrunksPrice(twowayTrunksDiv, 0);
 						stepTemplate.find('.serviceplans-details-container').empty();
 					}
@@ -1530,6 +1540,7 @@ define(function(require){
 
 				var newTwowayValue = twowayTrunksDiv.find('.slider-div').slider('value'),
 					newInboundValue = inboundTrunksDiv.find('.slider-div').slider('value'),
+					newOutboundValue = outboundTrunksDiv.find('.slider-div').slider('value'),
 					callRestrictions = monster.ui.getFormData('accountsmanager_callrestrictions_form').limits.call_restriction,
 					addCredit = addCreditInput.val(),
 					allowPrepay = tabContentTemplate.find('.allow-prepay-ckb').is(':checked');
@@ -1551,6 +1562,7 @@ define(function(require){
 							data: $.extend(true, {}, limits, {
 								twoway_trunks: newTwowayValue,
 								inbound_trunks: newInboundValue,
+								outbound_trunks: newOutboundValue,
 								allow_prepay: allowPrepay,
 								call_restriction: callRestrictions
 							})
@@ -1614,6 +1626,10 @@ define(function(require){
 				inbound = limits.inbound_trunks || 0,
 				totalAmountInbound = amountInbound * inbound,
 				inboundTrunksDiv = template.find('.trunks-div.inbound'),
+				amountOutbound = (servicePlan.plan && servicePlan.plan.limits && servicePlan.plan.limits.outbound_trunks) ? servicePlan.plan.limits.outbound_trunks.rate : 0,
+				outbound = limits.outbound_trunks || 0,
+				totalAmountOutbound = amountOutbound * outbound,
+				outboundTrunksDiv = template.find('.trunks-div.outbound'),
 				createSlider = function(args) {
 					var trunksDiv = args.trunksDiv,
 						sliderValue = trunksDiv.find('.slider-value'),
@@ -1653,11 +1669,21 @@ define(function(require){
 				currentValue: inbound,
 				amount: amountInbound
 			});
+			
+			createSlider({
+				trunksDiv: outboundTrunksDiv,
+				minValue: 0,
+				maxValue: 100,
+				currentValue: outbound,
+				amount: amountOutbound
+			});
 
 			twowayTrunksDiv.find('.slider-value').html(twoway);
 			twowayTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountTwoway.toFixed(2));
 			inboundTrunksDiv.find('.slider-value').html(inbound);
 			inboundTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountInbound.toFixed(2));
+			outboundTrunksDiv.find('.slider-value').html(outbound);
+			outboundTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountOutbound.toFixed(2));
 			$.each(template.find('.trunks-div'), function() {
 				var $this = $(this);
 				$this.find('.ui-slider-handle').append($this.find('.section-slider-value'));
