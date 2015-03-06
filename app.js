@@ -989,11 +989,17 @@ define(function(require){
 										},
 										success: function(data, status) {
 											callback(null, data.data);
+										},
+										error: function(data, status) {
+											callback(null, {});
 										}
 									});
 								} else {
 									callback(null, {});
 								}
+							},
+							error: function(data, status) {
+								callback(null, {});
 							}
 						});
 					},
