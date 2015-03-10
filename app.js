@@ -421,6 +421,9 @@ define(function(require){
 								},
 								success: function(data, status) {
 									callback(null, data.data);
+								},
+								error: function(data, status) {
+									callback(null, {});
 								}
 							});
 						} else {
@@ -435,6 +438,9 @@ define(function(require){
 							},
 							success: function(data, status) {
 								callback(null, data.data);
+							},
+							error: function(data, status) {
+								callback(null, {});
 							}
 						});
 					}
@@ -959,6 +965,9 @@ define(function(require){
 							},
 							success: function(data, status) {
 								callback(null, data.data);
+							},
+							error: function(data, status) {
+								callback(null, {});
 							}
 						});
 					},
@@ -970,6 +979,9 @@ define(function(require){
 							},
 							success: function(data, status) {
 								callback(null, data.data);
+							},
+							error: function(data, status) {
+								callback(null, []);
 							}
 						});
 					},
@@ -1011,6 +1023,9 @@ define(function(require){
 							},
 							success: function(data, status) {
 								callback(null, data.data);
+							},
+							error: function(data, status) {
+								callback(null, {});
 							}
 						});
 					},
@@ -1022,6 +1037,9 @@ define(function(require){
 							},
 							success: function(data, status) {
 								callback(null, data.data);
+							},
+							error: function(data, status) {
+								callback(null, {});
 							}
 						});
 					},
@@ -1033,6 +1051,9 @@ define(function(require){
 							},
 							success: function(data, status) {
 								callback(null, data.data);
+							},
+							error: function(data, status) {
+								callback(null, {});
 							}
 						});
 					},
