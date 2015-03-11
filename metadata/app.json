@@ -1,6 +1,5 @@
 {
 	"name": "accounts",
-	"source_url": "http://webdev/monster-modules/accounts",
 	"i18n": {
 		"en-US": {
 			"label": "Accounts Manager",
