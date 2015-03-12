@@ -77,7 +77,7 @@
 	"servicePlanWizardLegend": "Choose a service plan for this account:",
 	"servicePlanResellerOnly": "Only resellers are allowed to manage service plans.",
 	"trunksLegend": "Set limits for included simultaneous inbound and outbound calls",
-	"twowayTrunks": "Unlimited outbound trunks",
+	"twowayTrunks": "Unlimited two-way trunks",
 	"inboundTrunks": "Unlimited inbound trunks",
 	"callRestrictionsLegend": "Call restrictions",
 	"callRestrictionsTitle": "This account can place calls to...",
