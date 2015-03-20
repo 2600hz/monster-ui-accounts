@@ -1185,7 +1185,9 @@ define(function(require){
 					accountUsers: regularUsers,
 					accountServicePlans: servicePlans,
 					isReseller: monster.apps['auth'].isReseller,
-					carrierInfo: carrierInfo
+					carrierInfo: carrierInfo,
+					isSuperDuperAdmin: monster.apps.auth.currentAccount.superduper_admin,
+					accountIsReseller: accountData.is_reseller
 				};
 
 			if($.isNumeric(templateData.account.created)) {

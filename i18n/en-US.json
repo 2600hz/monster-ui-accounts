@@ -195,5 +195,10 @@
 	],
 	"__comment": "UI-966: created common control for carrier selection",
 	"__version": "v3.20_s0",
-	"carrierTab": "Carrier"
+	"carrierTab": "Carrier",
+	"__comment": "UI-1171: Add a field to show the type of an account",
+	"__version": "v3.20_s2",
+	"accountType": "Account type",
+	"reseller": "Reseller",
+	"standard": "Standard"
 }
