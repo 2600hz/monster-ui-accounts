@@ -175,7 +175,11 @@
 		"outbound": "Outbound",
 		"__comment": "UI-664: New restriction for twoway trunks",
 		"__version": "v3.19_s2",
-		"twoway": "Twoway"
+		"twoway": "Twoway",
+		"__comment": "UI-1074: New restriction for Misc Error Tracker",
+		"__version": "v3.20_s2",
+		"errorTracker": "UI Errors Log",
+		"misc": "Misc"
 	},
 	"uiRestrictionsExtraSettings": {
 		"perMinute": {
