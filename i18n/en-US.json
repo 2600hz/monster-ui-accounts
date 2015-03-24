@@ -179,7 +179,11 @@
 		"outbound": "Outbound",
 		"__comment": "UI-664: New restriction for twoway trunks",
 		"__version": "v3.19_s2",
-		"twoway": "Twoway"
+		"twoway": "Twoway",
+		"__comment": "UI-1074: New restriction for Misc Error Tracker",
+		"__version": "v3.20_s2",
+		"errorTracker": "UI Errors Log",
+		"misc": "Misc"
 	},
 	"uiRestrictionsExtraSettings": {
 		"perMinute": {
@@ -200,6 +204,11 @@
 	"__comment": "UI-966: created common control for carrier selection",
 	"__version": "v3.20_s0",
 	"carrierTab": "Carrier",
+	"__comment": "UI-1171: Add a field to show the type of an account",
+	"__version": "v3.20_s2",
+	"accountType": "Account type",
+	"reseller": "Reseller",
+	"standard": "Standard",
 	"__comment": "UI-1169: Sending an email to newly created admins",
 	"__version": "v3.20_s3",
 	"sentEmailPopup": "An email has been sent to {{email}} with the login information."

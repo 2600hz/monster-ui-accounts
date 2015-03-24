@@ -48,6 +48,16 @@
 												<div class="plain-text">{{account.id}}</div>
 											</div>
 										</div>
+									{{#if isSuperDuperAdmin}}
+										<div class="control-group">
+											<label class="control-label">{{i18n.accountType}}</label>
+											<div class="controls">
+												<div class="plain-text">
+													{{#if accountIsReseller}}{{i18n.reseller}}{{else}}{{i18n.standard}}{{/if}}
+												</div>
+											</div>
+										</div>
+									{{/if}}
 										<div class="control-group">
 											<label class="control-label">
 												{{#if account.enabled}}

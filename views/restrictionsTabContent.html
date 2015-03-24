@@ -55,6 +55,12 @@
 					<input type="checkbox" name="account.ui_restrictions.myaccount.twoway.show_tab" {{#compare ui_restrictions.twoway.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.twoway }}
 				</a>
 			</li>
+			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.misc }}</li>
+			<li class="restrictions-element">
+				<a>
+					<input type="checkbox" name="account.ui_restrictions.myaccount.errorTracker.show_tab" {{#compare ui_restrictions.errorTracker.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.errorTracker }}
+				</a>
+			</li>
 		</ul>
 	</div>
 	<div class="restrictions-right">

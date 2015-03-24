@@ -179,7 +179,11 @@
 		"outbound": "Sortants",
 		"__comment": "UI-664: New restriction for twoway trunks",
 		"__version": "v3.19_s2",
-		"twoway": "Bi-directionnel"
+		"twoway": "Bi-directionnel",
+		"__comment": "UI-1074: New restriction for Misc Error Tracker",
+		"__version": "v3.20_s2",
+		"errorTracker": "Historique d'erreurs UI",
+		"misc": "Divers"
 	},
 	"uiRestrictionsExtraSettings": {
 		"perMinute": {
@@ -200,6 +204,11 @@
 	"__comment": "UI-966: created common control for carrier selection",
 	"__version": "v3.20_s0",
 	"carrierTab": "Opérateur téléphonique",
+	"__comment": "UI-1171: Add a field to show the type of an account",
+	"__version": "v3.20_s2",
+	"accountType": "Type de compte",
+	"reseller": "Fournisseur",
+	"standard": "Standard",
 	"__comment": "UI-1169: Sending an email to newly created admins",
 	"__version": "v3.20_s3",
 	"sentEmailPopup": "Un email contenant les informations de connexion a été envoyé à {{email}}."
