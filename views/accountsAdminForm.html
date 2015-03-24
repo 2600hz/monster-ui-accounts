@@ -95,6 +95,11 @@
 									<div class="controls controls-row new-admin-password-div clearfix">
 											<input required type="password" class="span6" name="password" placeholder="Password"/>
 											<input required type="password" class="span6" name="extra.password_confirm" placeholder="Confirm"/>
+											<div>
+												{{#monsterCheckbox 'large-checkbox' i18n.adminLabels.sendCredentialsEmailShort}}
+													<input type="checkbox" name="send_email_on_creation"></input>
+												{{/monsterCheckbox}}
+											</div>
 									</div>
 								</div>
 								<div class="controls controls-row admin-btn-div">

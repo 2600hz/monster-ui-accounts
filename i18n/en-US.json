@@ -98,7 +98,11 @@
 		"emailTooltip": "This email address will serve as the user name to log-in to Monster-UI.",
 		"number": "Admin contact number",
 		"password": "Admin password",
-		"confirm": "Confirm password"
+		"confirm": "Confirm password",
+		"__comment": "UI-1169: Sending an email to newly created admins",
+		"__version": "v3.20_s3",
+		"sendCredentialsEmail": "Send an email to this admin with a reminder of these credentials",
+		"sendCredentialsEmailShort": "Send a summary email with credentials"
 	},
 	"adminPlaceholders": {
 		"firstName": "First name",
@@ -195,5 +199,8 @@
 	],
 	"__comment": "UI-966: created common control for carrier selection",
 	"__version": "v3.20_s0",
-	"carrierTab": "Carrier"
+	"carrierTab": "Carrier",
+	"__comment": "UI-1169: Sending an email to newly created admins",
+	"__version": "v3.20_s3",
+	"sentEmailPopup": "An email has been sent to {{email}} with the login information."
 }

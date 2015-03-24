@@ -252,6 +252,7 @@ define(function(require){
 									if(formData.user.email) {
 										if(formData.extra.autogenPassword) {
 											formData.user.password = self.autoGeneratePassword();
+											formData.user.send_email_on_creation = true;
 										}
 										formData.user.username = formData.user.email;
 										formData.user.priv_level = "admin";
@@ -263,11 +264,8 @@ define(function(require){
 											},
 											success: function(data, status) {
 												callback(null, data.data);
-												if(formData.extra.autogenPassword) {
-													var popupContent = monster.template(self, '!' + self.i18n.active().autogenPasswordPopup.message, { adminName: data.data.first_name + ' ' + data.data.last_name })
-																	 + '<br>'
-																	 + '<br>' + self.i18n.active().autogenPasswordPopup.login + ' ' + data.data.username
-																	 + '<br>' + self.i18n.active().autogenPasswordPopup.password + ' ' + formData.user.password;
+												if(formData.user.send_email_on_creation) {
+													var popupContent = monster.template(self, '!' + self.i18n.active().sentEmailPopup, { email: data.data.email });
 													monster.ui.alert('info', popupContent);
 												}
 											},
@@ -876,6 +874,7 @@ define(function(require){
 								formData.username = formData.email;
 								if(autoGen) {
 									formData.password = self.autoGeneratePassword();
+									formData.send_email_on_creation = true;
 								}
 
 								self.callApi({
@@ -887,11 +886,8 @@ define(function(require){
 									success: function(data, status) {
 										self.renderEditAdminsForm(parent, editAccountId);
 										refreshAdminsHeader();
-										if(autoGen) {
-											var popupContent = monster.template(self, '!' + self.i18n.active().autogenPasswordPopup.message, { adminName: data.data.first_name + ' ' + data.data.last_name })
-															 + '<br>'
-															 + '<br>' + self.i18n.active().autogenPasswordPopup.login + ' ' + data.data.username
-															 + '<br>' + self.i18n.active().autogenPasswordPopup.password + ' ' + formData.password;
+										if(formData.send_email_on_creation) {
+											var popupContent = monster.template(self, '!' + self.i18n.active().sentEmailPopup, { email: data.data.email });
 											monster.ui.alert('info', popupContent);
 										}
 									}

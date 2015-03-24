@@ -98,7 +98,11 @@
 		"emailTooltip": "Cette adresse e-mail servira de nom d'utilisateur pour se connecter à Monster-UI.",
 		"number": "Numéro de téléphone de l'administrateur",
 		"password": "Mot-de-passe de l'administrateur",
-		"confirm": "Confirmez le mot-de-passe"
+		"confirm": "Confirmez le mot-de-passe",
+		"__comment": "UI-1169: Sending an email to newly created admins",
+		"__version": "v3.20_s3",
+		"sendCredentialsEmail": "Envoyer un email a l'administrateur avec ses informations de connexion",
+		"sendCredentialsEmailShort": "Envoyer un email avec les info de connexion"
 	},
 	"adminPlaceholders": {
 		"firstName": "Prénom",
@@ -195,5 +199,8 @@
 	],
 	"__comment": "UI-966: created common control for carrier selection",
 	"__version": "v3.20_s0",
-	"carrierTab": "Opérateur téléphonique"
+	"carrierTab": "Opérateur téléphonique",
+	"__comment": "UI-1169: Sending an email to newly created admins",
+	"__version": "v3.20_s3",
+	"sentEmailPopup": "Un email contenant les informations de connexion a été envoyé à {{email}}."
 }
