@@ -5,7 +5,7 @@
 	</legend>
 	<div class="restrictions-menu">
 		<ul class="nav">
-			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.settings }}</li>
+			<li class="nav-header">{{ i18n.uiRestrictionsMenu.settings }}</li>
 			<li class="restrictions-element">
 				<a>
 					<input type="checkbox" name="account.ui_restrictions.myaccount.user.show_tab" {{#compare ui_restrictions.user.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.user }}
@@ -16,7 +16,7 @@
 					<input type="checkbox" name="account.ui_restrictions.myaccount.account.show_tab"{{#compare ui_restrictions.account.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.account }}
 				</a>
 			</li>
-			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.billing }}</li>
+			<li class="nav-header">{{ i18n.uiRestrictionsMenu.billing }}</li>
 			<li class="restrictions-element">
 				<a>
 					<input type="checkbox" name="account.ui_restrictions.myaccount.billing.show_tab"{{#compare ui_restrictions.billing.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.creditCard }}
@@ -39,7 +39,7 @@
 					<input type="checkbox" name="account.ui_restrictions.myaccount.transactions.show_tab" {{#compare ui_restrictions.transactions.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.transactions }}
 				</a>
 			</li>
-			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.trunking }}</li>
+			<li class="nav-header">{{ i18n.uiRestrictionsMenu.trunking }}</li>
 			<li class="restrictions-element">
 				<a>
 					<input type="checkbox" name="account.ui_restrictions.myaccount.inbound.show_tab" {{#compare ui_restrictions.inbound.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.inbound }}
@@ -55,7 +55,7 @@
 					<input type="checkbox" name="account.ui_restrictions.myaccount.twoway.show_tab" {{#compare ui_restrictions.twoway.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.twoway }}
 				</a>
 			</li>
-			<li class="nav-header blue-gradient-reverse">{{ i18n.uiRestrictionsMenu.misc }}</li>
+			<li class="nav-header">{{ i18n.uiRestrictionsMenu.misc }}</li>
 			<li class="restrictions-element">
 				<a>
 					<input type="checkbox" name="account.ui_restrictions.myaccount.errorTracker.show_tab" {{#compare ui_restrictions.errorTracker.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.errorTracker }}
