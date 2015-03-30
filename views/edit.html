@@ -330,10 +330,13 @@
 											<label class="control-label" for="accountsmanager_language">{{ i18n.accountLanguage }}</label>
 											<div class="controls">
 												<select id="user_language" name="language">
-                    								<option value="auto">{{i18n.languages.auto}}</option>
-                    								<option value="en-US"{{#compare account.language '===' 'en-US'}} selected{{/compare}}>{{i18n.languages.americanEnglish}}</option>
-                    								<option value="fr-FR"{{#compare account.language '===' 'fr-FR'}} selected{{/compare}}>{{i18n.languages.frenchFrench}}</option>
-                								</select>
+													{{#select account.language}}
+														<option value="auto">{{i18n.languages.auto}}</option>
+														<option value="en-US">{{i18n.languages.americanEnglish}}</option>
+														<option value="fr-FR">{{i18n.languages.frenchFrench}}</option>
+														<option value="ru-RU">{{i18n.languages.russianRussian}}</option>
+													{{/select}}
+												</select>
 											</div>
 										</div>
 										<div class="control-group">
