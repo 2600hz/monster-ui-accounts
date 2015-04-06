@@ -92,6 +92,7 @@ define(function(require){
 				selectedId: selectedId,
 				breadcrumbsContainer: parent.find('.edition-view .content .top-bar'),
 				breadcrumbsList: breadcrumbsList,
+				addBackButton: true,
 				onNewAccountClick: function(parentAccountId, breadcrumbs) {
 					self.renderNewAccountWizard({
 						parent: parent,
