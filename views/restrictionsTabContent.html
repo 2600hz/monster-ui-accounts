@@ -8,57 +8,76 @@
 			<li class="nav-header">{{ i18n.uiRestrictionsMenu.settings }}</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.user.show_tab" {{#compare ui_restrictions.user.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.user }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.user}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.user.show_tab" {{#compare ui_restrictions.user.show_tab '!==' false }}checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.account.show_tab"{{#compare ui_restrictions.account.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.account }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.account}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.account.show_tab"{{#compare ui_restrictions.account.show_tab '!==' false }} checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 			<li class="nav-header">{{ i18n.uiRestrictionsMenu.billing }}</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.billing.show_tab"{{#compare ui_restrictions.billing.show_tab '!==' false }} checked{{/compare}}>{{ i18n.uiRestrictionsMenu.creditCard }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.creditCard}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.billing.show_tab"{{#compare ui_restrictions.billing.show_tab '!==' false }} checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 			<li class="restrictions-element" data-content="restrictions-balance">
 				<a href="javascript:void(0);">
-					<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_tab" {{#compare ui_restrictions.balance.show_tab '!==' false }}checked{{/compare}}>
-					{{ i18n.uiRestrictionsMenu.perMinute }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.perMinute}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_tab" {{#compare ui_restrictions.balance.show_tab '!==' false }}checked{{/compare}}>
+					{{/monsterCheckbox}}
 					<i class="icon-caret-right pull-right"></i>
 				</a>
 			</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.service_plan.show_tab" {{#compare ui_restrictions.service_plan.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.servicePlan }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.servicePlan}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.service_plan.show_tab" {{#compare ui_restrictions.service_plan.show_tab '!==' false }}checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.transactions.show_tab" {{#compare ui_restrictions.transactions.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.transactions }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.transactions}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.transactions.show_tab" {{#compare ui_restrictions.transactions.show_tab '!==' false }}checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 			<li class="nav-header">{{ i18n.uiRestrictionsMenu.trunking }}</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.inbound.show_tab" {{#compare ui_restrictions.inbound.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.inbound }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.inbound}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.inbound.show_tab" {{#compare ui_restrictions.inbound.show_tab '!==' false }}checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.outbound.show_tab" {{#compare ui_restrictions.outbound.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.outbound }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.outbound}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.outbound.show_tab" {{#compare ui_restrictions.outbound.show_tab '!==' false }}checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.twoway.show_tab" {{#compare ui_restrictions.twoway.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.twoway }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.twoway}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.twoway.show_tab" {{#compare ui_restrictions.twoway.show_tab '!==' false }}checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 			<li class="nav-header">{{ i18n.uiRestrictionsMenu.misc }}</li>
 			<li class="restrictions-element">
 				<a>
-					<input type="checkbox" name="account.ui_restrictions.myaccount.errorTracker.show_tab" {{#compare ui_restrictions.errorTracker.show_tab '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsMenu.errorTracker }}
+					{{#monsterCheckbox i18n.uiRestrictionsMenu.errorTracker}}
+						<input type="checkbox" name="account.ui_restrictions.myaccount.errorTracker.show_tab" {{#compare ui_restrictions.errorTracker.show_tab '!==' false }}checked{{/compare}}>
+					{{/monsterCheckbox}}
 				</a>
 			</li>
 		</ul>
@@ -67,10 +86,14 @@
 		<div class="restrictions-balance container-fluid" data-content="restrictions-balance">
 			<legend>{{ i18n.uiRestrictionsExtraSettings.perMinute.legend }}</legend>
 			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_credit" {{#compare ui_restrictions.balance.show_credit '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.perMinute.showCreditInfo }}
+				{{#monsterCheckbox i18n.uiRestrictionsExtraSettings.perMinute.showCreditInfo}}
+					<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_credit" {{#compare ui_restrictions.balance.show_credit '!==' false }}checked{{/compare}}>
+				{{/monsterCheckbox}}
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_minutes" {{#compare ui_restrictions.balance.show_minutes '!==' false }}checked{{/compare}}>{{ i18n.uiRestrictionsExtraSettings.perMinute.showMinutesInfo }}
+				{{#monsterCheckbox i18n.uiRestrictionsExtraSettings.perMinute.showMinutesInfo}}
+					<input type="checkbox" name="account.ui_restrictions.myaccount.balance.show_minutes" {{#compare ui_restrictions.balance.show_minutes '!==' false }}checked{{/compare}}>
+				{{/monsterCheckbox}}
 			</label>
 		</div>
 	</div>

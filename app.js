@@ -463,8 +463,6 @@ define(function(require){
 					self.renderRestrictionsStep({
 						parent: parent.find('.wizard-content-step[data-step="4"]')
 					});
-
-					monster.ui.prettyCheck.create(parent);
 				}
 			);
 		},
@@ -1481,8 +1479,6 @@ define(function(require){
 				parent: contentHtml.find('#accountsmanager_restrictions_tab')
 			});
 
-			monster.ui.prettyCheck.create(contentHtml);
-
 			monster.ui.validate(contentHtml.find('#form_accountsmanager_account_realm'), {
 				rules: {
 					'realm': {
@@ -1774,20 +1770,18 @@ define(function(require){
 				};
 			});
 
-			template.find('.restrictions-element input').on('ifToggled', function(e) {
+			template.find('.restrictions-element input').on('change', function(e) {
 				var $this = $(this),
 					restrictionElement = $this.closest('li'),
 					restrictionType = (restrictionElement.data('content')) ? restrictionElement.data('content') : false;
 				if ($this.is(':checked')) {
 					$this.closest('a').addClass('enabled');
-
-					monster.ui.prettyCheck.action(template.find('.restrictions-right .' + restrictionType + ' input'), 'check');
+					template.find('.restrictions-right .' + restrictionType + ' input').prop('checked', true);
 				} else {
 					$this.closest('a').removeClass('enabled');
-
-					monster.ui.prettyCheck.action(template.find('.restrictions-right .' + restrictionType + ' input'), 'uncheck');
+					template.find('.restrictions-right .' + restrictionType + ' input').prop('checked', false);
 				};
-					restrictionElement.click();
+				restrictionElement.click();
 			});
 
 			template.find('.restrictions-element[data-content]').on('click', function() {
@@ -1810,7 +1804,7 @@ define(function(require){
 				}
 			});
 
-			template.find('.restrictions-right input').on('ifToggled', function(e) {
+			template.find('.restrictions-right input').on('change', function(e) {
 				var restrictionsContainer = $(this).parents().eq(2),
 					isChecked = false;
 
@@ -1822,7 +1816,7 @@ define(function(require){
 					});
 
 					if (!isChecked) {
-						monster.ui.prettyCheck.action(template.find('.restrictions-menu li[data-content="' + restrictionsContainer.data('content') + '"] input'), 'uncheck');
+						template.find('.restrictions-menu li[data-content="' + restrictionsContainer.data('content') + '"] input').prop('checked', false);
 					}
 				}
 			});

@@ -60,13 +60,12 @@
 			<ul class="call-restrictions-list">
 				{{#each classifiers}}
 				<li class="call-restrictions-element">
-					<label>
+					{{#monsterCheckbox this.name}}
 						<input type="checkbox" {{#if this.checked}}checked{{/if}} name="limits.call_restriction.{{this.id}}.action" value="allow" data-id="{{this.id}}" />
-						{{this.name}}
-						{{#if this.help}}
-							<i class="help-popover icon-question-sign" data-original-title="{{this.help}}" data-placement="top" data-toggle="tooltip"></i>
-						{{/if}}
-					</label>
+					{{/monsterCheckbox}}
+					{{#if this.help}}
+						<i class="help-popover icon-question-sign" data-original-title="{{this.help}}" data-placement="top" data-toggle="tooltip"></i>
+					{{/if}}
 				</li>
 				{{/each}}
 			</ul>
@@ -82,10 +81,9 @@
 				<input class="add-credit-input" name="addCreditBalance" type="text" />
 			</div>
 			<label class="allow-prepay">
-				<input name="limits.allow_prepay" class="allow-prepay-ckb pull-left" type="checkbox" {{#if allowPrepay}}checked{{/if}} />
-				<div class="text">
-					{{ i18n.allowPrepay }}
-				</div>
+				{{#monsterCheckbox i18n.allowPrepay}}
+					<input name="limits.allow_prepay" class="allow-prepay-ckb pull-left" type="checkbox" {{#if allowPrepay}}checked{{/if}} />
+				{{/monsterCheckbox}}
 			</label>
 		</div>
 	</div>
