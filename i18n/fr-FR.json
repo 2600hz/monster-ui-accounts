@@ -211,5 +211,6 @@
 	"standard": "Standard",
 	"__comment": "UI-1169: Sending an email to newly created admins",
 	"__version": "v3.20_s3",
-	"sentEmailPopup": "Un email contenant les informations de connexion a été envoyé à {{email}}."
+	"sentEmailPopup": "Un email contenant les informations de connexion a été envoyé à {{email}}.",
+	"disabledAddCreditTooltip": "Braintree est requis pour ajouter du crédit. Pour plus d'informations, veuillez contacter votre administrateur."
 }

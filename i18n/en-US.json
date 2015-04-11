@@ -211,5 +211,8 @@
 	"standard": "Standard",
 	"__comment": "UI-1169: Sending an email to newly created admins",
 	"__version": "v3.20_s3",
-	"sentEmailPopup": "An email has been sent to {{email}} with the login information."
+	"sentEmailPopup": "An email has been sent to {{email}} with the login information.",
+	"__comment": "UI-1324: Adding the option to disable Braintree through a config flag",
+	"__version": "v3.20_s4",
+	"disabledAddCreditTooltip": "Braintree is required to add credit. Please contact your administrator for more information."
 }

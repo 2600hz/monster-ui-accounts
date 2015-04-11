@@ -1638,7 +1638,8 @@ define(function(require){
 				limits = params.limits || {};
 				template = $(monster.template(self, 'limitsTabContent', {
 					classifiers: formattedClassifiers,
-					allowPrepay: limits.allow_prepay
+					allowPrepay: limits.allow_prepay,
+					disableBraintree: monster.config.disableBraintree
 				})),
 				amountTwoway = (servicePlan.plan && servicePlan.plan.limits && servicePlan.plan.limits.twoway_trunks) ? servicePlan.plan.limits.twoway_trunks.rate : 0,
 				twoway = limits.twoway_trunks || 0,

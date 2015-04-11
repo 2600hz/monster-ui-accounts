@@ -78,7 +78,7 @@
 			</div>
 			<div class="add-credit-container">
 				<span class="add-credit-label">{{ i18n.addToBalance }}</span>
-				<input class="add-credit-input" name="addCreditBalance" type="text" />
+				<input class="add-credit-input" name="addCreditBalance" type="text" {{#if disableBraintree}}readonly data-toggle="tooltip" data-placement="top" data-original-title="{{i18n.disabledAddCreditTooltip}}"{{/if}} />
 			</div>
 			<label class="allow-prepay">
 				{{#monsterCheckbox i18n.allowPrepay}}
