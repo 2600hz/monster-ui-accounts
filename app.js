@@ -118,6 +118,9 @@ define(function(require){
 				}
 			});
 
+			// Put the focus on the search input
+			setTimeout(function() { parent.find('.search-query').focus(); });
+
 			// Adjusting the layout divs height to always fit the window's size
 			$(window).resize(function(e) {
 				var $accountListContainer = parent.find('.account-list-container'),
