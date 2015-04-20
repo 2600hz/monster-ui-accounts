@@ -406,6 +406,7 @@ define(function(require){
 					}
 				}
 			});
+			monster.ui.showPasswordStrength(newAccountWizard.find('input[name="user.password"]'));
 
 			parent.find('.edition-view').hide();
 			parent.find('.creation-view').append(newAccountWizard);
@@ -793,6 +794,11 @@ define(function(require){
 						var $adminElement = $(this),
 							userId = $adminElement.data('user_id'),
 							$adminPasswordDiv = $adminElement.find('.edit-admin-password-div');
+
+						monster.ui.showPasswordStrength($adminElement.find('input[name="password"]'), {
+							container: $adminElement.find('.password-strength-container'),
+							display: 'icon'
+						});
 
 						$adminPasswordDiv.hide();
 

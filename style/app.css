@@ -399,6 +399,16 @@
 	padding: 10px;
 }
 
+#form_accountsmanager_account_admins .admin-element .password-strength-container {
+	position: absolute;
+	top: 0px;
+	left: 125px;
+}
+
+#form_accountsmanager_account_admins .admin-element .admin-element-edit .edit-admin-password-div {
+	position: relative;
+}
+
 #form_accountsmanager_account_admins .new-admin-element {
 	display: none;
 	position: relative;
@@ -459,8 +469,12 @@
 
 #form_accountsmanager_account_admins .create-user-div .new-admin-password-div {
 	display: none;
-	margin-top: 5px;
+	margin-top: 15px;
 	position: relative;
+}
+
+#form_accountsmanager_account_admins .create-user-div .new-admin-password-div .checkbox-container {
+	margin-top: 10px;
 }
 
 #form_accountsmanager_account_admins .create-user-div .new-admin-password-div label.monster-invalid[for="password"],
@@ -471,7 +485,7 @@
 #form_accountsmanager_account_admins .create-user-div .new-admin-password-div label.monster-invalid[for="extra.password_confirm"],
 #form_accountsmanager_account_admins .admin-element-edit .edit-admin-password-div label.monster-invalid[for="extra.password_confirm"] {
 	margin-top: 30px;
-	margin-left: 145px; /* Warning: This will be messed up if the screen is too small due to bootstraps responsive spans; */
+	margin-left: 150px; /* Warning: This will be messed up if the screen is too small due to bootstraps responsive spans; */
 }
 
 #form_accountsmanager_account_admins .admin-empty-msg {
@@ -741,6 +755,16 @@
 
 #accountsmanager_new_account_form .account-settings-step .new-admin-div i.help-popover {
 	margin-left: 10px;
+}
+
+#accountsmanager_new_account_form .account-settings-step .new-admin-div input[name="user.password"] {
+	margin-bottom: 0px;
+}
+#accountsmanager_new_account_form .account-settings-step .new-admin-div input[name="extra.confirmPassword"] {
+	margin-bottom: 25px;
+}
+#accountsmanager_new_account_form .account-settings-step .new-admin-div .monster-checkbox {
+	margin-top: 20px;
 }
 
 #accountsmanager_new_account_form .error-message {

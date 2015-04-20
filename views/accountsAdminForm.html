@@ -23,23 +23,24 @@
 								<div class="input-prepend span12">
 									<span class="add-on"><i class="icon-envelope"></i></span>
 									<input required type="email" name="email" value="{{this.email}}" data-original_value="{{this.email}}" placeholder="{{ ../i18n.adminPlaceholders.email }}" data-original-title="{{../i18n.adminLabels.emailTooltip}}" data-placement="right" data-toggle="tooltip" data-trigger="focus" data-container="#form_accountsmanager_account_admins"/>
-							    </div>
+								</div>
 							</div>
 							<div class="controls clearfix">
 								<div class="input-prepend span12">
 									<span class="add-on"><i class="icon-user"></i></span>
 									<input required type="text" name="first_name" value="{{this.first_name}}" data-original_value="{{this.first_name}}" placeholder="{{ ../i18n.adminPlaceholders.firstName }}"/>
-							    </div>
+								</div>
 							</div>
 							<div class="controls clearfix">
 								<div class="input-prepend span12">
 									<span class="add-on"><i class="icon-user"></i></span>
 									<input required type="text" name="last_name" value="{{this.last_name}}" data-original_value="{{this.last_name}}" placeholder="{{ ../i18n.adminPlaceholders.lastName }}"/>
-							    </div>
+								</div>
 							</div>
 							<div class="controls controls-row edit-admin-password-div clearfix">
-									<input required type="password" class="span6" name="password" placeholder="{{ ../i18n.adminPlaceholders.password }}"/>
-									<input required type="password" class="span6" name="extra.password_confirm" placeholder="{{ ../i18n.adminPlaceholders.confirm }}"/>
+								<input required type="password" class="span6" name="password" placeholder="{{ ../i18n.adminPlaceholders.password }}"/>
+								<input required type="password" class="span6" name="extra.password_confirm" placeholder="{{ ../i18n.adminPlaceholders.confirm }}"/>
+								<div class="password-strength-container"></div>
 							</div>
 							<div class="controls controls-row admin-btn-div">
 								<div class="span6">
@@ -75,28 +76,31 @@
 									<div class="input-prepend span12">
 										<span class="add-on"><i class="icon-envelope"></i></span>
 										<input required  type="email" name="email" placeholder="Email address" data-original-title="{{i18n.adminLabels.emailTooltip}}" data-placement="right" data-toggle="tooltip" data-trigger="focus" data-container="#form_accountsmanager_account_admins"/>
-								    </div>
+									</div>
 								</div>
 								<div class="controls clearfix">
 									<div class="input-prepend span12">
 										<span class="add-on"><i class="icon-user"></i></span>
 										<input required  type="text" name="first_name" placeholder="First name"/>
-								    </div>
+									</div>
 								</div>
 								<div class="controls clearfix">
 									<div class="input-prepend span12">
 										<span class="add-on"><i class="icon-user"></i></span>
 										<input required  type="text" name="last_name" placeholder="Last name"/>
-								    </div>
+									</div>
 								</div>
 								<div>
 									<label><input type="radio" name="extra.autogen_password" value="true" checked />{{ i18n.autogenPassword }}</label>
 									<label><input type="radio" name="extra.autogen_password" value="false" />{{ i18n.manuallyTypePassword }}</label>
 									<div class="controls controls-row new-admin-password-div clearfix">
-											<input required type="password" class="span6" name="password" placeholder="Password"/>
-											<input required type="password" class="span6" name="extra.password_confirm" placeholder="Confirm"/>
-											<div>
-												{{#monsterCheckbox 'large-checkbox' i18n.adminLabels.sendCredentialsEmailShort}}
+											<div class="input-container clearfix">
+												<input required type="password" class="span6" name="password" placeholder="Password"/>
+												<input required type="password" class="span6" name="extra.password_confirm" placeholder="Confirm"/>
+												<div class="password-strength-container"></div>
+											</div>
+											<div class="checkbox-container">
+												{{#monsterCheckbox i18n.adminLabels.sendCredentialsEmailShort}}
 													<input type="checkbox" name="send_email_on_creation"></input>
 												{{/monsterCheckbox}}
 											</div>
