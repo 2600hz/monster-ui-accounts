@@ -1336,6 +1336,7 @@ define(function(require){
 					if(planId) {
 						monster.pub('common.servicePlanDetails.render', {
 							container: contentHtml.find('.serviceplans-details-container'),
+							accountId: accountData.id,
 							servicePlan: planId
 						});
 					} else {
@@ -1470,6 +1471,7 @@ define(function(require){
 			if(servicePlans.current.id) {
 				monster.pub('common.servicePlanDetails.render', {
 					container: contentHtml.find('.serviceplans-details-container'),
+					accountId: accountData.id,
 					servicePlan: servicePlans.current.id
 				});
 			}
