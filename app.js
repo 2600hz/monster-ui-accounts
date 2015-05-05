@@ -21,7 +21,8 @@ define(function(require){
 
 		subscribe: {
 			'accountsManager.activate': '_render',
-			'accountsManager.restoreMasquerading': '_restoreMasquerading'
+			'accountsManager.restoreMasquerading': '_restoreMasquerading',
+			'accountsManager.triggerMasquerading': '_triggerMasquerading'
 		},
 
 		load: function(callback) {
@@ -1277,7 +1278,7 @@ define(function(require){
 			contentHtml.find('#accountsmanager_use_account_btn').on('click', function(e) {
 				e.preventDefault();
 
-				self.triggerMasquerading(accountData);
+				self._triggerMasquerading(accountData);
 
 				e.stopPropagation();
 			});
@@ -1895,20 +1896,30 @@ define(function(require){
 			return monster.util.randomString(4,'abcdefghjkmnpqrstuvwxyz')+monster.util.randomString(4,'0123456789');
 		},
 
-		triggerMasquerading: function(account) {
+		_triggerMasquerading: function(account) {
 			var self = this;
 
 			monster.apps['auth'].currentAccount = $.extend(true, {}, account);
 			self.updateApps(account.id);
 
-			monster.pub('myaccount.renderNavLinks', {
-				name: account.name,
-				isMasquerading: true
+			self.callApi({
+				resource: 'account.listParents',
+				data: {
+					accountId: account.id
+				},
+				success: function(data, status) {
+					data.data.shift();
+
+					monster.pub('myaccount.renderNavLinks', {
+						name: account.name,
+						isMasquerading: true,
+						parentsList: data.data
+					});
+
+					self.render();
+					toastr.info(monster.template(self, '!' + self.i18n.active().toastrMessages.triggerMasquerading, { accountName: account.name }));
+				}
 			});
-
-			self.render();
-
-			toastr.info(monster.template(self, '!' + self.i18n.active().toastrMessages.triggerMasquerading, { accountName: account.name }));
 		},
 
 		updateApps: function(accountId) {
