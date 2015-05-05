@@ -1304,7 +1304,7 @@ define(function(require){
 															  $link.find('.update').fadeIn(500);
 														  });
 
-								$link.css('background-color', '#22ccff')
+								$link.css('background-color', '#22a5ff')
 									   .animate({
 										backgroundColor: '#eee'
 									}, 2000

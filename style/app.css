@@ -42,12 +42,12 @@
 
 #accounts_manager_view .left-menu .account-list-add:hover {
 	background-color: #e6e6e6;
-	color: #22ccff;
+	color: #22a5ff;
 	cursor: pointer;
 }
 
 #accounts_manager_view .left-menu .account-list-add:hover i {
-	color: #22ccff;
+	color: #22a5ff;
 }
 
 #accounts_manager_view .left-menu .account-list-element {
@@ -65,7 +65,7 @@
 
 #accounts_manager_view .left-menu .account-list-element.active {
 	background-color: #fff;
-	border-top:  solid 2px #22ccff;
+	border-top:  solid 2px #22a5ff;
 }
 
 #accounts_manager_view .left-menu .account-list-element > div {
@@ -76,11 +76,11 @@
 #accounts_manager_view .left-menu .account-list-element > div:hover {
 	background-color: #eee;
 	cursor: pointer;
-	color: #22ccff;
+	color: #22a5ff;
 }
 
 #accounts_manager_view .left-menu .account-list-element > div:hover > i {
-	color: #22ccff;
+	color: #22a5ff;
 }
 
 #accounts_manager_view .left-menu .account-link {
@@ -174,7 +174,7 @@
 
 #accounts_manager_view .main-content .landing-content {
 	text-align: center;
-	color: #22ccff;
+	color: #22a5ff;
 	font-size: 26px;
 	line-height: 30px;
 	text-shadow: 1px 1px 0px #ccc;
@@ -230,7 +230,7 @@
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item.open {
-	border-top: 2px solid #22ccff;
+	border-top: 2px solid #22a5ff;
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item .title {
@@ -284,7 +284,7 @@
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item .settings-link .update {
-	color: #22ccff;
+	color: #22a5ff;
 	float: right;
 }
 
@@ -332,7 +332,7 @@
 #accounts_manager_view .close-link:hover,
 #accounts_manager_view .close-link:focus {
 	text-decoration: none;
-	color: #22CCFF;
+	color: #22a5ff;
 }
 
 #accounts_manager_view .close-link:hover > span,
@@ -552,7 +552,7 @@
 }
 
 .limits-tab-container .slider-value {
-	background: #22ccff;
+	background: #22a5ff;
 	border: 1px solid #FFFFFF;
 	box-shadow: 1px 1px 4px #CCCCCC;
 	color: #FFFFFF;
@@ -563,7 +563,7 @@
 }
 
 .limits-tab-container .slider-value:after {
-	border-color: #22CCFF transparent;
+	border-color: #22a5ff transparent;
 	border-style: solid;
 	border-width: 7px 7px 0;
 	content: "";
@@ -579,7 +579,7 @@
 
 .limits-tab-container .slider-div .ui-slider-range,
 .limits-tab-container .slider-div .ui-slider-handle {
-	background-color: #22ccff;
+	background-color: #22a5ff;
 }
 
 .limits-tab-container .slider-div .ui-slider-handle.ui-state-hover,
@@ -697,7 +697,7 @@
 .limits-tab-container .call-restrictions-div .credit-balance {
 	font-size: 20px;
 	font-weight: bold;
-	color: #22ccff;
+	color: #22a5ff;
 }
 
 /***************** Wizard *********************/
@@ -814,7 +814,7 @@
 }
 #accounts_manager_view .wizard .processing-div span {
 	font-size: 20px;
-	color: #22ccff;
+	color: #22a5ff;
 	line-height: 46px;
 	vertical-align: bottom;
 	font-weight: 600;
