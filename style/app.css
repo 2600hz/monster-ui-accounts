@@ -415,6 +415,7 @@
 }
 
 #form_accountsmanager_account_admins .new-admin-element .new-admin-tabs > li {
+	width: 50%;
 	text-align: center;
 }
 
