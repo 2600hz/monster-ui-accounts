@@ -50,12 +50,18 @@
 								<input required type="text" name="account.name" />
 
 								<label>{{ i18n.accountRealm }}</label>
-								<span class="generated-realm">
-									<span class="realm-text uneditable-input">Auto-generated</span><a class="realm-link change-realm"><i class="icon-pencil"></i>{{i18n.change}}</a>
-								</span>
-								<span class="manual-realm">
-									<input required type="text" name="account.realm" /><a class="realm-link cancel-edition"><i class="icon-remove"></i>{{i18n.cancel}}</a>
-								</span>
+								{{#if whitelabeledRealm}}
+									<span class="manual-realm">
+										<input required type="text" name="account.realm" value="{{whitelabeledRealm}}"/>
+									</span>
+								{{else}}
+									<span class="generated-realm">
+										<span class="realm-text uneditable-input">Auto-generated</span><a class="realm-link change-realm"><i class="icon-pencil"></i>{{i18n.change}}</a>
+									</span>
+									<span class="manual-realm inactive">
+										<input required type="text" name="account.realm"/><a class="realm-link cancel-edition"><i class="icon-remove"></i>{{i18n.cancel}}</a>
+									</span>
+								{{/if}}
 
 								<label>{{ i18n.accountTimezone }}</label>
 								<select id="accountsmanager_new_account_timezone" name="account.timezone"></select>

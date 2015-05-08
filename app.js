@@ -138,7 +138,13 @@ define(function(require){
 			var self = this,
 				parent = params.parent,
 				parentAccountId = params.accountId,
-				newAccountWizard = $(monster.template(self, 'newAccountWizard')),
+				dataTemplate = {};
+
+			if(monster.config.whitelabel.hasOwnProperty('realm_suffix') && monster.config.whitelabel.realm_suffix.length) {
+				dataTemplate.whitelabeledRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
+			}
+
+			var newAccountWizard = $(monster.template(self, 'newAccountWizard', dataTemplate)),
 				maxStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('max_step')),
 				newAccountWizardForm = newAccountWizard.find('#accountsmanager_new_account_form');
 
@@ -391,7 +397,6 @@ define(function(require){
 							toggleProcessing(false);
 						}
 					});
-
 				}
 			});
 
