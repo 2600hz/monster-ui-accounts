@@ -135,7 +135,6 @@
 		"password": "Password:"
 	},
 	"deleteUserConfirm": "This user will be permanently deleted. Continue?",
-	"deleteAccountConfirm": "This account will be permanently deleted. Continue?",
 	"toastrMessages": {
 		"servicePlanUpdateSuccess": "Active service plan updated successfully!",
 		"servicePlanUpdateError": "An unexpected error occurred! Please try again.",
@@ -214,5 +213,8 @@
 	"sentEmailPopup": "An email has been sent to {{email}} with the login information.",
 	"__comment": "UI-1324: Adding the option to disable Braintree through a config flag",
 	"__version": "v3.20_s4",
-	"disabledAddCreditTooltip": "Braintree is required to add credit. Please contact your administrator for more information."
+	"disabledAddCreditTooltip": "Braintree is required to add credit. Please contact your administrator for more information.",
+	"__comment": "UI-1448: Add name of the account to be deleted in the confirm message for a better UX",
+	"__version": "v3.20_s5",
+	"deleteAccountConfirmVar": "This account (\"{{accountName}}\") will be permanently deleted. Continue?"
 }

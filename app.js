@@ -1258,7 +1258,9 @@ define(function(require){
 			contentHtml.find('#accountsmanager_delete_account_btn').on('click', function(e) {
 				e.preventDefault();
 
-				monster.ui.confirm(self.i18n.active().deleteAccountConfirm, function() {
+				var deleteConfirmMessage = monster.template(self, '!'+self.i18n.active().deleteAccountConfirmVar, { accountName: accountData.name });
+
+				monster.ui.confirm(deleteConfirmMessage, function() {
 					self.callApi({
 						resource: 'account.delete',
 						data: {

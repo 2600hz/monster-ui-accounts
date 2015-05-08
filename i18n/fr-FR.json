@@ -135,7 +135,6 @@
 		"password": "Mot-de-passe:"
 	},
 	"deleteUserConfirm": "Cet utilisateur sera supprimé de manière permanente. Continuer?",
-	"deleteAccountConfirm": "Ce compte sera supprimé de manière permanente. Continuer?",
 	"toastrMessages": {
 		"servicePlanUpdateSuccess": "Abonnement actif mis à jour avec succès!",
 		"servicePlanUpdateError": "Une erreur inattendue s'est produite! Veuillez réessayer.",
@@ -212,5 +211,8 @@
 	"__comment": "UI-1169: Sending an email to newly created admins",
 	"__version": "v3.20_s3",
 	"sentEmailPopup": "Un email contenant les informations de connexion a été envoyé à {{email}}.",
-	"disabledAddCreditTooltip": "Braintree est requis pour ajouter du crédit. Pour plus d'informations, veuillez contacter votre administrateur."
+	"disabledAddCreditTooltip": "Braintree est requis pour ajouter du crédit. Pour plus d'informations, veuillez contacter votre administrateur.",
+	"__comment": "UI-1448: Add name of the account to be deleted in the confirm message for a better UX",
+	"__version": "v3.20_s5",
+	"deleteAccountConfirmVar": "Ce compte (\"{{accountName}}\") sera supprimé de manière permanente. Continuer?"
 }
