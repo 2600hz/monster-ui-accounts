@@ -216,5 +216,16 @@
 	"disabledAddCreditTooltip": "Braintree is required to add credit. Please contact your administrator for more information.",
 	"__comment": "UI-1448: Add name of the account to be deleted in the confirm message for a better UX",
 	"__version": "v3.20_s5",
-	"deleteAccountConfirmVar": "This account (\"{{accountName}}\") will be permanently deleted. Continue?"
+	"deleteAccountConfirmVar": "This account (\"{{accountName}}\") will be permanently deleted. Continue?",
+
+	"__comment": "UI-1460: Force user to type a string before deleting an account",
+	"__version": "v3.20_s5",
+	"deleteAccountDialog": {
+		"title": "Confirmation of Account Deletion",
+		"cancel": "Cancel",
+		"deleteAccount": "Delete Account",
+		"deleteKey": "DELETE",
+		"deleteMessageIntro": "Do you really want to delete this account (\"{{variable}}\")?",
+		"deleteMessageExplanation": "Please type the word \"{{variable}}\" in the following input and then click on the Delete button to proceed"
+	}
 }

@@ -1261,11 +1261,7 @@ define(function(require){
 			});
 
 			contentHtml.find('#accountsmanager_delete_account_btn').on('click', function(e) {
-				e.preventDefault();
-
-				var deleteConfirmMessage = monster.template(self, '!'+self.i18n.active().deleteAccountConfirmVar, { accountName: accountData.name });
-
-				monster.ui.confirm(deleteConfirmMessage, function() {
+				self.confirmDeleteDialog(accountData.name, function() {
 					self.callApi({
 						resource: 'account.delete',
 						data: {
@@ -1278,8 +1274,6 @@ define(function(require){
 						}
 					});
 				});
-
-				e.stopPropagation();
 			});
 
 			contentHtml.find('#accountsmanager_use_account_btn').on('click', function(e) {
@@ -1556,6 +1550,38 @@ define(function(require){
 			if(typeof callback === 'function') {
 				callback(contentHtml);
 			}
+		},
+
+		confirmDeleteDialog: function(accountName, callbackSuccess) {
+			var self = this,
+				template = $(monster.template(self, 'deleteAccountDialog', {accountName: accountName})),
+				optionsPopup = {
+					position: ['center', 20],
+					title: self.i18n.active().deleteAccountDialog.title
+				},
+				deleteKey = self.i18n.active().deleteAccountDialog.deleteKey;
+
+				template.find('#delete_account').on('click', function() {
+					if(!$(this).hasClass('disabled')) {
+						popup.dialog('close').remove();
+						callbackSuccess && callbackSuccess();
+					}
+				});
+
+				template.find('#delete_input').on('keyup', function() {
+					if($(this).val() === deleteKey) {
+						template.find('#delete_account').removeClass('disabled');
+					}
+					else {
+						template.find('#delete_account').addClass('disabled');
+					}
+				});
+
+				template.find('#cancel').on('click', function() {
+					popup.dialog('close').remove();
+				});
+
+				popup = monster.ui.dialog(template, optionsPopup);
 		},
 
 		/** Expected params:

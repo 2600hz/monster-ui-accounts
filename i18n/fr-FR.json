@@ -214,5 +214,15 @@
 	"disabledAddCreditTooltip": "Braintree est requis pour ajouter du crédit. Pour plus d'informations, veuillez contacter votre administrateur.",
 	"__comment": "UI-1448: Add name of the account to be deleted in the confirm message for a better UX",
 	"__version": "v3.20_s5",
-	"deleteAccountConfirmVar": "Ce compte (\"{{accountName}}\") sera supprimé de manière permanente. Continuer?"
+	"deleteAccountConfirmVar": "Ce compte (\"{{accountName}}\") sera supprimé de manière permanente. Continuer?",
+	"__comment": "UI-1460: Force user to type a string before deleting an account",
+	"__version": "v3.20_s5",
+	"deleteAccountDialog": {
+		"title": "Confirmation de la suppression du compte",
+		"cancel": "Annuler",
+		"deleteAccount": "Supprimer Compte",
+		"deleteKey": "SUPPRIMER",
+		"deleteMessageIntro": "Souhaitez-vous réellement supprimer ce compte (\"{{variable}}\")?",
+		"deleteMessageExplanation": "Veuillez taper le mot \"{{variable}}\" dans la case suivante, et cliquez ensuite sur le bouton Supprimer pour continuer"
+	}
 }
