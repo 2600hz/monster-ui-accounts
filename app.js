@@ -530,7 +530,7 @@ define(function(require){
 				pwdToggleDiv.slideUp();
 			});
 
-			parent.find('[data-toggle="tooltip"]').tooltip();
+			monster.ui.tooltips(parent);
 		},
 
 		renderServicePlanStep: function(params) {
@@ -637,7 +637,7 @@ define(function(require){
 
 			parent.append(stepTemplate);
 
-			parent.find('[data-toggle="tooltip"]').tooltip();
+			monster.ui.tooltips(parent);
 		},
 
 		changeStep: function(stepIndex, maxStep, parent) {
@@ -956,8 +956,7 @@ define(function(require){
 						});
 					});
 
-					contentHtml.find('[data-toggle="tooltip"]').tooltip();
-
+					monster.ui.tooltips(contentHtml);
 				}
 			});
 		},
@@ -1468,7 +1467,7 @@ define(function(require){
 
 			contentHtml.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: "100%"});
 
-			contentHtml.find('[data-toggle="tooltip"]').tooltip();
+			monster.ui.tooltips(contentHtml);
 
 			if(servicePlans.current.id) {
 				monster.pub('common.servicePlanDetails.render', {
@@ -1503,7 +1502,6 @@ define(function(require){
 			parent.find('.main-content').empty()
 										.append(contentHtml);
 
-			notesTab.find('a[title]').tooltip({container:'body'});
 			notesTab.find('div.dropdown-menu input')
 					.on('click', function () {
 						return false;
@@ -1757,7 +1755,7 @@ define(function(require){
 				$this.find('.ui-slider-handle').append($this.find('.section-slider-value'));
 			});
 
-			template.find('[data-toggle="tooltip"]').tooltip();
+			monster.ui.tooltips(template);
 
 			return template;
 		},
@@ -1774,7 +1772,7 @@ define(function(require){
 
 			parent.find('#accountsmanager_uirestrictions_form').append(tabContentTemplate);
 
-			parent.find('[data-toggle="tooltip"]').tooltip();
+			monster.ui.tooltips(parent);
 
 			parent.find('#accountsmanager_uirestrictions_save').click(function(event) {
 				event.preventDefault();
