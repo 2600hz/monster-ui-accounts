@@ -24,6 +24,9 @@
 	"license": "-",
 	"price": 0,
 	"screenshots": [
+		"accounts_1.png",
+		"accounts_2.png",
+		"accounts_3.png"
 	],
 	"urls": {
 		"documentation": "{documentation_url}",
