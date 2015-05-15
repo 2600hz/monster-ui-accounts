@@ -91,8 +91,16 @@
 									</div>
 								</div>
 								<div>
-									<label><input type="radio" name="extra.autogen_password" value="true" checked />{{ i18n.autogenPassword }}</label>
-									<label><input type="radio" name="extra.autogen_password" value="false" />{{ i18n.manuallyTypePassword }}</label>
+									<div>
+									{{#monsterRadio i18n.autogenPassword }}
+										<input type="radio" name="extra.autogen_password" value="true" checked />
+									{{/monsterRadio}}
+									</div>
+									<div>
+									{{#monsterRadio i18n.manuallyTypePassword }}
+										<input type="radio" name="extra.autogen_password" value="false" />
+									{{/monsterRadio}}
+									</div>
 									<div class="controls controls-row new-admin-password-div clearfix">
 											<div class="input-container clearfix">
 												<input required type="password" class="span6" name="password" placeholder="Password"/>
