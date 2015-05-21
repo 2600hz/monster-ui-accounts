@@ -226,12 +226,12 @@ define(function(require){
 						if(show) {
 							stepsDiv.hide();
 							processingDiv.show();
-							processingDiv.find('i.fa-spinner').addClass('icon-spinning');
+							processingDiv.find('i.fa-spinner').addClass('fa-spin');
 							newAccountWizard.find('.step').removeClass('completed');
 						} else {
 							stepsDiv.show();
 							processingDiv.hide();
-							processingDiv.find('i.fa-spinner').removeClass('icon-spinning');
+							processingDiv.find('i.fa-spinner').removeClass('fa-spin');
 							newAccountWizard.find('.step').addClass('completed');
 						}
 					};
