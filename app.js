@@ -238,13 +238,13 @@ define(function(require){
 
 				if(monster.ui.valid(newAccountWizardForm)) {
 
-					var formData = monster.ui.getFormData('accountsmanager_new_account_form'),
-						callRestrictions = {}; // Can't use form data for this since unchecked checkboxes are not retrieved by form2object
+					var formData = monster.ui.getFormData('accountsmanager_new_account_form');
+					formData.account.call_restriction = {}; // Can't use form data for this since unchecked checkboxes are not retrieved by form2object
 
 					$.each(newAccountWizard.find('.call-restrictions-element input[type="checkbox"]'), function() {
 						var $this = $(this);
-						callRestrictions[$this.data('id')] = {
-							action: $this.is(':checked') ? 'allow' : 'deny'
+						formData.account.call_restriction[$this.data('id')] = {
+							action: $this.is(':checked') ? 'inherit' : 'deny'
 						};
 					});
 
@@ -305,8 +305,7 @@ define(function(require){
 												allow_prepay: formData.limits.allow_prepay,
 												inbound_trunks: parseInt(formData.limits.inbound_trunks, 10),
 												outbound_trunks: parseInt(formData.limits.outbound_trunks, 10),
-												twoway_trunks: parseInt(formData.limits.twoway_trunks, 10),
-												call_restriction: callRestrictions
+												twoway_trunks: parseInt(formData.limits.twoway_trunks, 10)
 											};
 											self.callApi({
 												resource: 'limits.update',
@@ -1181,9 +1180,9 @@ define(function(require){
 						help: (self.i18n.active().classifiers[key] || {}).help,
 						checked: true
 					};
-					if(accountLimits.call_restriction
-						&& key in accountLimits.call_restriction
-						&& accountLimits.call_restriction[key].action === "deny") {
+					if(accountData.call_restriction
+						&& key in accountData.call_restriction
+						&& accountData.call_restriction[key].action === "deny") {
 						ret.checked = false;
 					}
 					return ret;
@@ -1613,12 +1612,13 @@ define(function(require){
 				if(monster.ui.valid(parent.find('#accountsmanager_callrestrictions_form'))) {
 
 					$.each(params.formattedClassifiers, function(k, v) {
-						if(!(v.id in callRestrictions) || callRestrictions[v.id].action !== "allow") {
+						if(!(v.id in callRestrictions) || callRestrictions[v.id].action !== "inherit") {
 							callRestrictions[v.id] = {
 								action: "deny"
 							};
 						}
 					});
+					accountData.call_restriction = callRestrictions;
 
 					self.callApi({
 						resource: 'limits.update',
@@ -1639,6 +1639,20 @@ define(function(require){
 							if(data.error != 402) {
 								toastr.error(self.i18n.active().toastrMessages.limitsUpdateError, '', {"timeOut": 5000});
 							}
+						}
+					});
+
+					self.callApi({
+						resource: 'account.update',
+						data: {
+							accountId: accountData.id,
+							data: accountData
+						},
+						success: function(data, status) {
+							toastr.success(self.i18n.active().toastrMessages.callRestrictionsUpdateSuccess, '', {"timeOut": 5000});
+						},
+						error: function(data, status) {
+							toastr.error(self.i18n.active().toastrMessages.callRestrictionsUpdateError, '', {"timeOut": 5000});
 						}
 					});
 

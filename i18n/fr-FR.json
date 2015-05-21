@@ -160,7 +160,11 @@
 		"notesUpdateSuccess": "Notes mises à jour avec succès!",
 		"notesUpdateError": "Une erreur inattendue s'est produite lors de la mise à jour des notes, veuillez réessayer plus tard.",
 		"triggerMasquerading": "Vous utilisez désormais le compte \"{{accountName}}\".",
-		"restoreMasquerading": "Vous utilisez à nouveau votre propre compte."
+		"restoreMasquerading": "Vous utilisez à nouveau votre propre compte.",
+		"__comment": "UI-1498: Moved call restrictions back from limits to the account document",
+		"__version": "v3.20_s5",
+		"callRestrictionsUpdateSuccess": "Restrictions d'appel mises à jour avec succès!",
+		"callRestrictionsUpdateError": "Une erreur inattendue s'est produite lors de la mise à jour des restrictions d'appel, veuillez réessayer plus tard."
 	},
 	"uiRestrictionsLegend": "Sélectionnez ce que l'utilisateur peut voir",
 	"uiRestrictionsTooltip": "Lorsque vous cliquez sur votre nom dans le coin supérieur droit de l'écran, vous verrez un menu s'afficher. Vous pouvez restreindre l'accès à ces option en les décochant dans les permissions du compte.",
