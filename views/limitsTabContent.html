@@ -64,14 +64,14 @@
 						<input type="checkbox" {{#if this.checked}}checked{{/if}} name="limits.call_restriction.{{this.id}}.action" value="allow" data-id="{{this.id}}" />
 					{{/monsterCheckbox}}
 					{{#if this.help}}
-						<i class="help-popover icon-question-sign" data-original-title="{{this.help}}" data-placement="top" data-toggle="tooltip"></i>
+						<i class="help-popover fa fa-question-circle" data-original-title="{{this.help}}" data-placement="top" data-toggle="tooltip"></i>
 					{{/if}}
 				</li>
 				{{/each}}
 			</ul>
 		</div>
 		<div class="manage-credit-div pull-left">
-			<i class="help-popover icon-question-sign icon-large pull-right" data-original-title="{{i18n.balanceTooltip}}" data-placement="top" data-toggle="tooltip"></i>
+			<i class="help-popover fa fa-question-circle fa-lg pull-right" data-original-title="{{i18n.balanceTooltip}}" data-placement="top" data-toggle="tooltip"></i>
 			<div class="title">{{ i18n.balanceTitle }}</div>
 			<div>
 				{{ i18n.balancePerMinute }} <span class="credit-balance">{{ i18n.currencyUsed }}0</span>

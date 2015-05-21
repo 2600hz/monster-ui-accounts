@@ -59,7 +59,7 @@
 										<span class="realm-text uneditable-input">Auto-generated</span><a class="realm-link change-realm"><i class="icon-pencil"></i>{{i18n.change}}</a>
 									</span>
 									<span class="manual-realm inactive">
-										<input required type="text" name="account.realm"/><a class="realm-link cancel-edition"><i class="icon-remove"></i>{{i18n.cancel}}</a>
+										<input required type="text" name="account.realm"/><a class="realm-link cancel-edition"><i class="fa fa-times"></i>{{i18n.cancel}}</a>
 									</span>
 								{{/if}}
 
@@ -70,7 +70,7 @@
 							<div class="control-group span5">
 								<div class="add-admin-pic"></div>
 								<div class="add-admin-toggle">
-									<a href="#">{{ i18n.addAdminLink.toggleOn }}</a><i class="icon-question-sign"></i>
+									<a href="#">{{ i18n.addAdminLink.toggleOn }}</a><i class="fa fa-question-circle"></i>
 								</div>
 							</div>
 
@@ -90,7 +90,7 @@
 								<div class="span5 offset1">
 									<label>
 										{{ i18n.adminLabels.email }}
-										<i class="help-popover icon-question-sign" data-original-title="{{i18n.adminLabels.emailTooltip}}" data-placement="top" data-toggle="tooltip"></i>
+										<i class="help-popover fa fa-question-circle" data-original-title="{{i18n.adminLabels.emailTooltip}}" data-placement="top" data-toggle="tooltip"></i>
 									</label>
 									<input required type="email" name="user.email" />
 								</div>
@@ -136,16 +136,16 @@
 					</div>
 
 					<div class="wizard-buttons">
-						<button type="button" class="cancel btn btn-danger pull-left"><i class="icon-double-angle-left"></i>{{ i18n.cancel }}</button>
-						<button type="button" class="prev-step btn btn-primary pull-left"><i class="icon-double-angle-left"></i>{{ i18n.previous }}</button>
-						<button type="button" class="submit-btn btn btn-success"><i class="icon-ok"></i>{{ i18n.submit }}</button>
-						<button type="button" class="next-step btn btn-primary">{{ i18n.next }}<i class="icon-double-angle-right"></i></button>
+						<button type="button" class="cancel btn btn-danger pull-left"><i class="fa fa-angle-double-left"></i>{{ i18n.cancel }}</button>
+						<button type="button" class="prev-step btn btn-primary pull-left"><i class="fa fa-angle-double-left"></i>{{ i18n.previous }}</button>
+						<button type="button" class="submit-btn btn btn-success"><i class="fa fa-check"></i>{{ i18n.submit }}</button>
+						<button type="button" class="next-step btn btn-primary">{{ i18n.next }}<i class="fa fa-angle-double-right"></i></button>
 					</div>
 				</div>
 			</div>
 		</form>
 		<div class="processing-div">
-			<div><i class="icon-spinner icon-3x monster-blue"></i><span>{{ i18n.wizardProcessingMessage1 }}</span></div>
+			<div><i class="icon-spinner fa-3x monster-blue"></i><span>{{ i18n.wizardProcessingMessage1 }}</span></div>
 			<div><span>{{ i18n.wizardProcessingMessage2 }}</span></div>
 		</div>
 	</div>

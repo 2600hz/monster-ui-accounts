@@ -1211,7 +1211,7 @@ define(function(require){
 					$liSettings.removeClass('open');
 					$liContent.slideUp('fast');
 					$aSettings.find('.update .text').text(self.i18n.active().editSetting);
-					$aSettings.find('.update i').removeClass('icon-remove').addClass('icon-cog');
+					$aSettings.find('.update i').removeClass('fa-times').addClass('icon-cog');
 				},
 				notesTab = contentHtml.find('#accountsmanager_notes_tab');
 
@@ -1238,7 +1238,7 @@ define(function(require){
 					if(!isOpen){
 						settingsItem.addClass('open');
 						$this.find('.update .text').text(self.i18n.active().closeSetting);
-						$this.find('.update i').removeClass('icon-cog').addClass('icon-remove');
+						$this.find('.update i').removeClass('icon-cog').addClass('fa-times');
 						settingsItem.find('.settings-item-content').slideDown('fast');
 
 						if(settingsItem.data('name') === 'accountsmanager_account_admins') {
