@@ -226,12 +226,12 @@ define(function(require){
 						if(show) {
 							stepsDiv.hide();
 							processingDiv.show();
-							processingDiv.find('i.icon-spinner').addClass('icon-spinning');
+							processingDiv.find('i.fa-spinner').addClass('icon-spinning');
 							newAccountWizard.find('.step').removeClass('completed');
 						} else {
 							stepsDiv.show();
 							processingDiv.hide();
-							processingDiv.find('i.icon-spinner').removeClass('icon-spinning');
+							processingDiv.find('i.fa-spinner').removeClass('icon-spinning');
 							newAccountWizard.find('.step').addClass('completed');
 						}
 					};
@@ -745,10 +745,10 @@ define(function(require){
 						var $this = $(this);
 						if(!$this.hasClass('disabled')) {
 							if($this.hasClass('active')) {
-								$this.find('i').removeClass('icon-caret-up').addClass('icon-caret-down');
+								$this.find('i').removeClass('fa-caret-up').addClass('fa-caret-down');
 								$newAdminElem.slideUp();
 							} else {
-								$this.find('i').removeClass('icon-caret-down').addClass('icon-caret-up');
+								$this.find('i').removeClass('fa-caret-down').addClass('fa-caret-up');
 								$newAdminElem.slideDown();
 							}
 						} else {
@@ -1211,7 +1211,7 @@ define(function(require){
 					$liSettings.removeClass('open');
 					$liContent.slideUp('fast');
 					$aSettings.find('.update .text').text(self.i18n.active().editSetting);
-					$aSettings.find('.update i').removeClass('fa-times').addClass('icon-cog');
+					$aSettings.find('.update i').removeClass('fa-times').addClass('fa-cog');
 				},
 				notesTab = contentHtml.find('#accountsmanager_notes_tab');
 
@@ -1238,7 +1238,7 @@ define(function(require){
 					if(!isOpen){
 						settingsItem.addClass('open');
 						$this.find('.update .text').text(self.i18n.active().closeSetting);
-						$this.find('.update i').removeClass('icon-cog').addClass('fa-times');
+						$this.find('.update i').removeClass('fa-cog').addClass('fa-times');
 						settingsItem.find('.settings-item-content').slideDown('fast');
 
 						if(settingsItem.data('name') === 'accountsmanager_account_admins') {

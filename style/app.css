@@ -432,7 +432,7 @@
 	margin-bottom: 10px;
 }
 
-#form_accountsmanager_account_admins .create-user-div .icon-user {
+#form_accountsmanager_account_admins .create-user-div .fa-user {
 	vertical-align: middle;
 }
 
@@ -904,7 +904,7 @@
 	cursor: pointer;
 }
 
-.restrictions-tab-container .restrictions-menu .nav li[data-content] i.icon-caret-right {
+.restrictions-tab-container .restrictions-menu .nav li[data-content] i.fa-caret-right {
 	position: relative;
 	top: 3px;
 	right: 0px;
