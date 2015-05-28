@@ -640,86 +640,80 @@
 	min-width: 500px;
 }
 
-.limits-tab-container .slider-value {
-	background: #22a5ff;
-	border: 1px solid #FFFFFF;
-	box-shadow: 1px 1px 4px #CCCCCC;
-	color: #FFFFFF;
-	height: 40px;
-	margin-right: 10px;
-	text-align: center;
-	width: 50px;
-}
-
-.limits-tab-container .slider-value:after {
-	border-color: #22a5ff transparent;
-	border-style: solid;
-	border-width: 7px 7px 0;
-	content: "";
-	display: block;
-	left: 18px;
-	position: relative;
-	width: 0;
-}
-
-.limits-tab-container .total-amount {
-	font-weight: 600;
-}
-
-.limits-tab-container .slider-div .ui-slider-range,
-.limits-tab-container .slider-div .ui-slider-handle {
-	background-color: #22a5ff;
-}
-
-.limits-tab-container .slider-div .ui-slider-handle.ui-state-hover,
-.limits-tab-container .slider-div .ui-slider-handle.ui-state-focus {
-	font-weight: 600;
-	color: inherit;
-}
-
-.limits-tab-container .section-button {
-	text-align: right;
-}
-
-.limits-tab-container .section-button .update-limits {
-	margin-top: 50px;
-}
-
-.limits-tab-container .section-slider-value{
-	max-width: 580px;
-}
-
-.limits-tab-container .section-slider {
-	margin-top: 60px;
-}
-
-.limits-tab-container  .slider-title {
-	width: 175px;
-	float: left;
-	margin: -5px 20px 0 0;
+.limits-tab-container .section-slider .slider-title {
+	display: inline-block;
+	min-width: 120px;
 }
 
 .limits-tab-container .section-slider .slider-wrapper {
+	display: inline-block;
 	width: 300px;
-	float: left;
-}
-
-.limits-tab-container .slider-value-wrapper {
-	display: block;
-	position: absolute;
-	top: -50px;
-	left: -17px;
-	width: 220px;
-}
-
-.limits-tab-container .slider-value-wrapper > * {
-	float: left;
-	line-height: 40px;
-}
-
-.limits-tab-container  .value-slider {
+	margin-left: 20px;
+	padding-top: 50px;
 	position: relative;
-	display: block;
+}
+
+.limits-tab-container .section-slider .slider-wrapper .ui-slider {
+	border: solid 1px #c0c0c9;
+	height: 6px;
+	background: #fff;
+}
+
+.limits-tab-container .section-slider .slider-wrapper .ui-slider .ui-slider-handle {
+	height: 18px;
+	width: 18px;
+	border-radius: 10px;
+	top: -7px;
+	background: #f0f0f9;
+	border: solid 1px #c0c0c9;
+	cursor: pointer;
+}
+
+.limits-tab-container .section-slider .slider-wrapper .ui-slider-range {
+	background: #22a5ff;
+}
+
+.limits-tab-container .section-slider .slider-wrapper .slider-value {
+	position: absolute;
+	top: 0px;
+	color: #22a5ff;
+	border: solid 1px #0297e5;
+	padding: 6px 4px;
+	font-size: 24px;
+	font-weight: 600;
+	transform: translateX(-50%);
+	margin-left: 0.5%;
+	background: #fff;
+}
+
+.limits-tab-container .section-slider .slider-wrapper .slider-value:after {
+	border-color: #fff transparent;
+	border-style: solid;
+	border-width: 9px 6px 0;
+	content: "";
+	left: 50%;
+	bottom: -7px;
+	transform: translateX(-50%);
+	position: absolute;
+	
+}
+
+.limits-tab-container .section-slider .slider-wrapper .slider-value:before {
+	border-color: #22a5ff transparent;
+	border-style: solid;
+	border-width: 9px 6px 0;
+	content: "";
+	left: 50%;
+	bottom: -9px;
+	transform: translateX(-50%);
+	position: absolute;
+}
+
+.limits-tab-container .section-slider .slider-total-amount {
+	display: inline-block;
+	margin-left: 20px;
+	font-weight: 600;
+	color: #22a5ff;
 }
 
 .limits-tab-container .call-restrictions-div > div {
@@ -835,6 +829,15 @@
 
 #accountsmanager_new_account_form .account-settings-step .new-admin-div .btn-group button {
 	width: 50%;
+}
+#accountsmanager_new_account_form .account-settings-step .new-admin-div .btn-group button:last-child {
+	margin-left: -1px;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+#accountsmanager_new_account_form .account-settings-step .new-admin-div .btn-group button:first-child {
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
 }
 
 #accountsmanager_new_account_form .account-settings-step .new-admin-div .btn-group {

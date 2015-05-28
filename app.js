@@ -521,12 +521,24 @@ define(function(require){
 			manualBtn.on('click', function(e) {
 				autogenCheckbox.prop('checked', false);
 				pwdToggleDiv.slideDown();
+				manualBtn
+					.removeClass('monster-button-secondary')
+					.addClass('monster-button-primary');
+				autogenBtn
+					.removeClass('monster-button-primary')
+					.addClass('monster-button-secondary');
 			});
 
 			autogenBtn.on('click', function(e) {
 				autogenCheckbox.prop('checked', true);
 				pwdToggleDiv.find('input[type=password]').val('');
 				pwdToggleDiv.slideUp();
+				autogenBtn
+					.removeClass('monster-button-secondary')
+					.addClass('monster-button-primary');
+				manualBtn
+					.removeClass('monster-button-primary')
+					.addClass('monster-button-secondary');
 			});
 
 			monster.ui.tooltips(parent);
@@ -549,10 +561,10 @@ define(function(require){
 							var trunksSlider = trunksDiv.find('.slider-div');
 							if(price && price > 0) {
 								trunksDiv.data('price', price);
-								trunksDiv.find('.total-amount').show();
+								trunksDiv.find('.slider-total-amount').show();
 							} else {
 								trunksDiv.removeData('price');
-								trunksDiv.find('.total-amount').hide();
+								trunksDiv.find('.slider-total-amount').hide();
 							}
 							
 							trunksSlider.slider('option', 'slide').call(trunksSlider, null, {value: trunksSlider.slider('value')});
@@ -1719,7 +1731,7 @@ define(function(require){
 				createSlider = function(args) {
 					var trunksDiv = args.trunksDiv,
 						sliderValue = trunksDiv.find('.slider-value'),
-						totalAmountValue = trunksDiv.find('.total-amount .total-amount-value'),
+						totalAmountValue = trunksDiv.find('.slider-total-amount .total-amount-value'),
 						trunksValue = trunksDiv.find('.trunks-value');
 					trunksDiv.find('.slider-div').slider({
 						min: args.minValue,
@@ -1729,14 +1741,19 @@ define(function(require){
 						slide: function(event, ui) {
 							var amount = (trunksDiv.data('price') ? parseFloat(trunksDiv.data('price')) : args.amount) || args.amount,
 								totalAmount = ui.value * amount;
-							sliderValue.html(ui.value);
+							sliderValue
+								.html(ui.value)
+								.css('left', trunksDiv.find('.ui-slider-handle').css('left'));
 							totalAmountValue.html(totalAmount.toFixed(2));
 							trunksValue.val(ui.value);
+						},
+						change: function(event, ui) {
+							sliderValue.css('left', trunksDiv.find('.ui-slider-handle').css('left'));
 						}
 					});
 
 					if(args.amount <= 0) {
-						trunksDiv.find('.total-amount').hide();
+						trunksDiv.find('.slider-total-amount').hide();
 					}
 				};
 
@@ -1753,7 +1770,7 @@ define(function(require){
 				minValue: 0,
 				maxValue: 100,
 				currentValue: inbound,
-				amount: amountInbound
+				amount: amountInbound || 5
 			});
 			
 			createSlider({
@@ -1765,15 +1782,11 @@ define(function(require){
 			});
 
 			twowayTrunksDiv.find('.slider-value').html(twoway);
-			twowayTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountTwoway.toFixed(2));
+			twowayTrunksDiv.find('.slider-total-amount .total-amount-value').html(totalAmountTwoway.toFixed(2));
 			inboundTrunksDiv.find('.slider-value').html(inbound);
-			inboundTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountInbound.toFixed(2));
+			inboundTrunksDiv.find('.slider-total-amount .total-amount-value').html(totalAmountInbound.toFixed(2));
 			outboundTrunksDiv.find('.slider-value').html(outbound);
-			outboundTrunksDiv.find('.total-amount .total-amount-value').html(totalAmountOutbound.toFixed(2));
-			$.each(template.find('.trunks-div'), function() {
-				var $this = $(this);
-				$this.find('.ui-slider-handle').append($this.find('.section-slider-value'));
-			});
+			outboundTrunksDiv.find('.slider-total-amount .total-amount-value').html(totalAmountOutbound.toFixed(2));
 
 			monster.ui.tooltips(template);
 

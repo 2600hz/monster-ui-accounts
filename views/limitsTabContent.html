@@ -2,52 +2,58 @@
 	<div class="clearfix">
 		<legend>{{ i18n.trunksLegend }}</legend>
 		<div class="trunks-div twoway clearfix">
-			<div class="section-slider-value clearfix">
+			<!-- <div class="section-slider-value clearfix">
 				<div class="slider-value-wrapper clearfix">
 					<div class="slider-value"></div>
 					<div class="total-amount">{{ i18n.currencyUsed }}<span class="total-amount-value"></span>/{{ i18n.month }}</div>
 				</div>
-			</div>
+			</div> -->
 
 			<div class="section-slider clearfix">
 				<div class="slider-title">{{ i18n.twowayTrunks }}</div>
 				<div class="slider-wrapper">
 					<div class="slider-div"></div>
+					<div class="slider-value"></div>
 				</div>
+				<div class="slider-total-amount">{{ i18n.currencyUsed }}<span class="total-amount-value"></span>/{{ i18n.month }}</div>
 			</div>
 			<input type="hidden" name="limits.twoway_trunks" class="trunks-value" value="0" />
 		</div>
 
 		<div class="trunks-div inbound clearfix">
-			<div class="section-slider-value clearfix">
+			<!-- <div class="section-slider-value clearfix">
 				<div class="slider-value-wrapper clearfix">
 					<div class="slider-value"></div>
 					<div class="total-amount">{{ i18n.currencyUsed }}<span class="total-amount-value"></span>/{{ i18n.month }}</div>
 				</div>
-			</div>
+			</div> -->
 
 			<div class="section-slider clearfix">
 				<div class="slider-title">{{ i18n.inboundTrunks }}</div>
 				<div class="slider-wrapper">
 					<div class="slider-div"></div>
+					<div class="slider-value"></div>
 				</div>
+				<div class="slider-total-amount">{{ i18n.currencyUsed }}<span class="total-amount-value"></span>/{{ i18n.month }}</div>
 			</div>
 			<input type="hidden" name="limits.inbound_trunks" class="trunks-value" value="0" />
 		</div>
 		
 		<div class="trunks-div outbound clearfix">
-			<div class="section-slider-value clearfix">
+			<!-- <div class="section-slider-value clearfix">
 				<div class="slider-value-wrapper clearfix">
 					<div class="slider-value"></div>
 					<div class="total-amount">{{ i18n.currencyUsed }}<span class="total-amount-value"></span>/{{ i18n.month }}</div>
 				</div>
-			</div>
+			</div> -->
 
 			<div class="section-slider clearfix">
 				<div class="slider-title">{{ i18n.outboundTrunks }}</div>
 				<div class="slider-wrapper">
 					<div class="slider-div"></div>
+					<div class="slider-value"></div>
 				</div>
+				<div class="slider-total-amount">{{ i18n.currencyUsed }}<span class="total-amount-value"></span>/{{ i18n.month }}</div>
 			</div>
 			<input type="hidden" name="limits.outbound_trunks" class="trunks-value" value="0" />
 		</div>
