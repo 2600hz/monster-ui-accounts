@@ -1596,7 +1596,10 @@ define(function(require){
 				accountData = params.accountData,
 				tabContentTemplate = self.getLimitsTabContent(params),
 				creditBalanceSpan = tabContentTemplate.find('.manage-credit-div .credit-balance'),
-				addCreditInput = tabContentTemplate.find('.add-credit-input');
+				addCreditInput = tabContentTemplate.find('.add-credit-input'),
+				twowayTrunksDiv = tabContentTemplate.find('.trunks-div.twoway'),
+				inboundTrunksDiv = tabContentTemplate.find('.trunks-div.inbound'),
+				outboundTrunksDiv = tabContentTemplate.find('.trunks-div.outbound');
 
 			creditBalanceSpan.html(self.i18n.active().currencyUsed+balance);
 			parent.find('#accountsmanager_limits_save').click(function(e) {
@@ -1692,10 +1695,10 @@ define(function(require){
 			var self = this,
 				formattedClassifiers = params.formattedClassifiers,
 				servicePlan = params.servicePlan || {},
-				limits = params.limits || {};
+				limits = params.limits || {},
 				template = $(monster.template(self, 'limitsTabContent', {
 					classifiers: formattedClassifiers,
-					allowPrepay: limits.allow_prepay,
+					allowPrepay: limits.hasOwnProperty('allow_prepay') ? limits.allow_prepay : true,
 					disableBraintree: monster.config.disableBraintree
 				})),
 				amountTwoway = (servicePlan.plan && servicePlan.plan.limits && servicePlan.plan.limits.twoway_trunks) ? servicePlan.plan.limits.twoway_trunks.rate : 0,
