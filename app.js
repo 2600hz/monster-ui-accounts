@@ -746,9 +746,11 @@ define(function(require){
 							if($this.hasClass('active')) {
 								$this.find('i').removeClass('fa-caret-up').addClass('fa-caret-down');
 								$newAdminElem.slideUp();
+								$this.removeClass('active')
 							} else {
 								$this.find('i').removeClass('fa-caret-down').addClass('fa-caret-up');
 								$newAdminElem.slideDown();
+								$this.addClass('active')
 							}
 						} else {
 							e.stopPropagation();
@@ -1464,7 +1466,7 @@ define(function(require){
 
 			timezone.populateDropdown(contentHtml.find('#accountsmanager_account_timezone'), accountData.timezone);
 
-			contentHtml.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: "100%"});
+			contentHtml.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: "220px"});
 
 			monster.ui.tooltips(contentHtml);
 
@@ -1554,7 +1556,8 @@ define(function(require){
 				template = $(monster.template(self, 'deleteAccountDialog', {accountName: accountName})),
 				optionsPopup = {
 					position: ['center', 20],
-					title: self.i18n.active().deleteAccountDialog.title
+					title: self.i18n.active().deleteAccountDialog.title,
+					dialogClass: 'monster-confirm'
 				},
 				deleteKey = self.i18n.active().deleteAccountDialog.deleteKey;
 

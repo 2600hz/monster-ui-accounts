@@ -1,7 +1,7 @@
 <div class="row-fluid">
 	<div class="span12">
 		<div class="tab-bar">
-			<button type="button" id="accountsmanager_use_account_btn" class="btn btn-success pull-right">{{ i18n.useAccount }}</button>
+			<button type="button" id="accountsmanager_use_account_btn" class="monster-button-success pull-right">{{ i18n.useAccount }}</button>
 			<ul class="nav nav-tabs account-tabs">
 				<li class="active"><a href="#accountsmanager_overview_tab">{{ i18n.tabTitles.overview }}</a></li>
 				<li class="{{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_serviceplans_tab">{{ i18n.tabTitles.servicePlans }}</a></li>
@@ -69,12 +69,12 @@
 											<div class="controls">
 												{{#if account.enabled}}
 												<input type="hidden" name="enabled" value="false"/>
-												<button type="button" data-field="accountsmanager_account_status" class="btn btn-warning change">
+												<button type="button" data-field="accountsmanager_account_status" class="monster-button-warning change">
 													{{ i18n.disable }}
 												</button>
 												{{else}}
 												<input type="hidden" name="enabled" value="true"/>
-												<button type="button" data-field="accountsmanager_account_status" class="btn btn-success change">
+												<button type="button" data-field="accountsmanager_account_status" class="monster-button-success change">
 													{{ i18n.enable }}
 												</button>
 												{{/if}}
@@ -85,7 +85,7 @@
 												{{ i18n.deleteAccount }}
 											</label>
 											<div class="controls">
-												<button type="button" id="accountsmanager_delete_account_btn" class="btn btn-danger">{{ i18n.delete }}</button>
+												<button type="button" id="accountsmanager_delete_account_btn" class="monster-button-danger">{{ i18n.delete }}</button>
 											</div>
 										</div>
 									</form>
@@ -114,10 +114,10 @@
 												<input required type="text" id="accountsmanager_account_name" name="name" value="{{account.name}}" data-original_value="{{account.name}}" maxlength="32" />
 											</div>
 										</div>
-										<div class="control-group">
-											<div class="controls action-bar">
-												<a href="#" class="cancel">{{ i18n.cancel }}</a>
-												<button type="submit" class="btn btn-success change" data-field="accountsmanager_account_name">{{ i18n.saveChanges }}</button>
+										<div class="action-group clearfix">
+											<div class="action-bar">
+												<button type="button" class="cancel monster-button">{{ i18n.cancel }}</button>
+												<button type="submit" class="monster-button-success change" data-field="accountsmanager_account_name">{{ i18n.saveChanges }}</button>
 											</div>
 										</div>
 									</form>
@@ -146,10 +146,10 @@
 												<input required type="text" id="accountsmanager_account_realm" name="realm" value="{{account.realm}}" data-original_value="{{account.realm}}" maxlength="32" />
 											</div>
 										</div>
-										<div class="control-group">
-											<div class="controls action-bar">
-												<a href="#" class="cancel">{{ i18n.cancel }}</a>
-												<button type="submit" class="btn btn-success change" data-field="accountsmanager_account_realm">{{ i18n.saveChanges }}</button>
+										<div class="action-group clearfix">
+											<div class="action-bar">
+												<button type="button" class="cancel monster-button">{{ i18n.cancel }}</button>
+												<button type="submit" class="monster-button-success change" data-field="accountsmanager_account_realm">{{ i18n.saveChanges }}</button>
 											</div>
 										</div>
 									</form>
@@ -233,10 +233,10 @@
 												<input type="text" id="accountsmanager_technical_contact_number" name="contact.technical.number" value="{{account.contact.technical.number}}" data-original_value="{{account.contact.technical.number}}" maxlength="12" />
 											</div>
 										</div>
-										<div class="control-group">
-											<div class="controls action-bar">
-												<a href="#" class="cancel">{{ i18n.cancel }}</a>
-												<button type="submit" class="btn btn-success change" data-field="accountsmanager_technical_contact">{{ i18n.saveChanges }}</button>
+										<div class="action-group clearfix">
+											<div class="action-bar">
+												<button type="button" class="cancel monster-button">{{ i18n.cancel }}</button>
+												<button type="submit" class="monster-button-success change" data-field="accountsmanager_technical_contact">{{ i18n.saveChanges }}</button>
 											</div>
 										</div>
 									</form>
@@ -289,10 +289,10 @@
 												<input type="text" id="accountsmanager_billing_contact_number" name="contact.billing.number" value="{{account.contact.billing.number}}" data-original_value="{{account.contact.billing.number}}" maxlength="32" />
 											</div>
 										</div>
-										<div class="control-group">
-											<div class="controls action-bar">
-												<a href="#" class="cancel">{{ i18n.cancel }}</a>
-												<button type="submit" class="btn btn-success change" data-field="accountsmanager_billing_contact">{{ i18n.saveChanges }}</button>
+										<div class="action-group clearfix">
+											<div class="action-bar">
+												<button type="button" class="cancel monster-button">{{ i18n.cancel }}</button>
+												<button type="submit" class="monster-button-success change" data-field="accountsmanager_billing_contact">{{ i18n.saveChanges }}</button>
 											</div>
 										</div>
 									</form>
@@ -339,10 +339,10 @@
 												</select>
 											</div>
 										</div>
-										<div class="control-group">
-											<div class="controls action-bar">
-												<a href="#" class="cancel">{{ i18n.cancel }}</a>
-												<button type="submit" class="btn btn-success change" data-field="accountsmanager_account_timezone">{{ i18n.saveChanges }}</button>
+										<div class="action-group clearfix">
+											<div class="action-bar">
+												<button type="button" class="cancel monster-button">{{ i18n.cancel }}</button>
+												<button type="submit" class="monster-button-success change" data-field="accountsmanager_account_timezone">{{ i18n.saveChanges }}</button>
 											</div>
 										</div>
 									</form>
@@ -372,7 +372,7 @@
 							<div class="serviceplans-details-container"></div>
 							<div class="controls-group">
 								<div class="controls">
-									<button type="button" id="accountsmanager_serviceplan_save" class="btn btn-success pull-right">{{ i18n.save }}</button>
+									<button type="button" id="accountsmanager_serviceplan_save" class="monster-button-success pull-right">{{ i18n.save }}</button>
 								</div>
 							</div>
 						</form>
@@ -393,8 +393,8 @@
 							<legend>{{ i18n.servicePlanMaintenance }}</legend>
 							<div class="controls-group">
 								<div class="controls">
-									<button type="button" id="accountsmanager_serviceplan_reconciliation" class="btn btn-primary" data-toggle="tooltip" data-placement="top" data-original-title="{{ i18n.servicePlanReconciliation.tooltip }}">{{ i18n.servicePlanReconciliation.button }}</button>
-									<button type="button" id="accountsmanager_serviceplan_synchronization" class="btn btn-primary" data-toggle="tooltip" data-placement="top" data-original-title="{{ i18n.servicePlanSynchronization.tooltip }}">{{ i18n.servicePlanSynchronization.button }}</button>
+									<button type="button" id="accountsmanager_serviceplan_reconciliation" class="monster-button-secondary" data-toggle="tooltip" data-placement="top" data-original-title="{{ i18n.servicePlanReconciliation.tooltip }}">{{ i18n.servicePlanReconciliation.button }}</button>
+									<button type="button" id="accountsmanager_serviceplan_synchronization" class="monster-button-secondary" data-toggle="tooltip" data-placement="top" data-original-title="{{ i18n.servicePlanSynchronization.tooltip }}">{{ i18n.servicePlanSynchronization.button }}</button>
 								</div>
 							</div>
 						</form>
@@ -407,23 +407,15 @@
 				<form id="accountsmanager_callrestrictions_form">
 				</form>
 				<div class="clearfix buttons-div">
-					<button type="button" id="accountsmanager_limits_save" class="btn btn-success">{{ i18n.update }}</button>
+					<button type="button" id="accountsmanager_limits_save" class="monster-button-success">{{ i18n.update }}</button>
 				</div>
 			</div>
 
 			<div class="tab-pane" id="accountsmanager_restrictions_tab">
 				<form class="clearfix" id="accountsmanager_uirestrictions_form">
 				</form>
-				<div class="buttons-div">
-					<button type="button" id="accountsmanager_uirestrictions_save" class="btn btn-success">{{ i18n.update }}</button>
-				</div>
-			</div>
-
-			<div class="tab-pane" id="accountsmanager_notes_tab">
-				<legend>{{ i18n.notesLegend }}</legend>
-				<div class="clearfix wysiwyg-container"></div>
-				<div class="buttons-div">
-					<button type="button" id="accountsmanager_notes_save" class="btn btn-success">{{ i18n.update }}</button>
+				<div class="clearfix buttons-div">
+					<button type="button" id="accountsmanager_uirestrictions_save" class="monster-button-success">{{ i18n.update }}</button>
 				</div>
 			</div>
 
@@ -431,6 +423,14 @@
 				<div class="tab-pane" id="accountsmanager_carrier_tab">
 				</div>
 			{{/unless}}
+
+			<div class="tab-pane" id="accountsmanager_notes_tab">
+				<legend>{{ i18n.notesLegend }}</legend>
+				<div class="clearfix wysiwyg-container"></div>
+				<div class="clearfix buttons-div">
+					<button type="button" id="accountsmanager_notes_save" class="monster-button-success">{{ i18n.update }}</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

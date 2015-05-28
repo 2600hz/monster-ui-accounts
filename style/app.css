@@ -1,140 +1,3 @@
-/***** Left Menu *****/
-#accounts_manager_view .left-menu {
-	/*float: left;*/
-	/*background-color: #F3F3F3;*/
-	/*border-right: solid 1px #999;*/
-	/*width: 240px;*/
-	/*overflow: hidden;*/
-}
-/*
-#accounts_manager_view .left-menu .search-box {
-	width: 220px;
-	padding: 20px 10px;
-	border-bottom: solid 1px #999;
-}
-
-#accounts_manager_view .left-menu .search-box .search-query {
-	width: 178px;
-}
-
-#accounts_manager_view .left-menu .account-list-container {
-	width: 480px;
-}
-
-#accounts_manager_view .left-menu .account-list, #accounts_manager_view .left-menu .account-list-slider {
-	margin: 0;
-	list-style: none;
-	float: left;
-	overflow-y: auto;
-}
-
-#accounts_manager_view .left-menu .account-list-add {
-	line-height: 50px;
-	max-height: 50px;
-	font-weight: 600;
-	background-color: #ddd;
-	width: 240px;
-}
-
-#accounts_manager_view .left-menu .account-list-add i {
-	margin: 10px;
-}
-
-#accounts_manager_view .left-menu .account-list-add:hover {
-	background-color: #e6e6e6;
-	color: #22a5ff;
-	cursor: pointer;
-}
-
-#accounts_manager_view .left-menu .account-list-add:hover i {
-	color: #22a5ff;
-}
-
-#accounts_manager_view .left-menu .account-list-element {
-	line-height: 60px;
-	max-height: 60px;
-	overflow: hidden;
-	border-top: solid 1px #ccc;
-	border-right: solid 1px #ccc;
-	font-size: 0px; /* This is a trick to remove the spacing between inline-block elements *
-}
-
-#accounts_manager_view .left-menu .account-list-container li:last-child {
-	border-bottom: solid 1px #ccc;
-}
-
-#accounts_manager_view .left-menu .account-list-element.active {
-	background-color: #fff;
-	border-top:  solid 2px #22a5ff;
-}
-
-#accounts_manager_view .left-menu .account-list-element > div {
-	padding: 0 10px;
-	display: inline-block;
-}
-
-#accounts_manager_view .left-menu .account-list-element > div:hover {
-	background-color: #eee;
-	cursor: pointer;
-	color: #22a5ff;
-}
-
-#accounts_manager_view .left-menu .account-list-element > div:hover > i {
-	color: #22a5ff;
-}
-
-#accounts_manager_view .left-menu .account-link {
-	width: 220px;
-}
-
-#accounts_manager_view .left-menu .account-link.smaller-link {
-	width: 159px;
-}
-
-#accounts_manager_view .left-menu .account-link.disabled:hover {
-	background-color: inherit;
-	cursor: not-allowed;
-}
-
-#accounts_manager_view .left-menu .account-link .account-name {
-	overflow: hidden;
-	height: 40px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: 16px;
-	line-height: 40px;
-}
-
-#accounts_manager_view .left-menu .account-link .account-realm {
-	overflow: hidden;
-	height: 20px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: 10px;
-	line-height: 6px;
-}
-
-#accounts_manager_view .left-menu .account-link .account-error {
-	font-size: 16px;
-	color: #ee1212;
-	font-style: italic;
-	height: 60px;
-	line-height: 60px;
-}
-
-#accounts_manager_view .left-menu .account-children-link {
-	width: 40px;
-	height: 60px;
-	vertical-align: top;
-	float: right;
-	border-left: solid 1px #ccc;
-}
-
-#accounts_manager_view .left-menu .account-children-link > i {
-	vertical-align: middle;
-	margin-left: 17px;
-}*/
-
 /***** Top bar *****/
 
 #accounts_manager_view .content {
@@ -201,8 +64,28 @@
 }
 
 #accounts_manager_view .main-content .tab-content {
-	border-radius: 4px;
+	background: transparent;
+	border: none;
 	overflow: visible;
+}
+#accounts_manager_view .main-content .tab-content .tab-pane {
+	border-radius: 2px;
+	border: solid 1px #c0c0c9;
+	background: #f0f0f9;
+}
+
+#accounts_manager_view .main-content .tab-content .tab-pane#accountsmanager_overview_tab {
+	border: none;
+}
+
+#accounts_manager_view .main-content .tab-content .buttons-div {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: solid 1px #c0c0c9;
+}
+
+#accounts_manager_view .main-content .tab-content .buttons-div > button {
+	float: right;
 }
 
 /***** Edit: Overview *****/
@@ -219,6 +102,7 @@
 	margin-right: 10px;
 }
 
+/*
 #accounts_manager_view .main-content .list-settings {
 	list-style-type: none;
 	margin: 0;
@@ -231,6 +115,7 @@
 
 #accounts_manager_view .main-content .list-settings .settings-item.open {
 	border-top: 2px solid #22a5ff;
+	border-radius: 1px 1px 0px 0px;
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item .title {
@@ -247,7 +132,7 @@
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item .settings-link {
-	color: #333;
+	color: #303039;
 	cursor: pointer;
 	display: block;
 	font-weight: 600;
@@ -257,7 +142,7 @@
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item.disabled .settings-link {
-	background-color: #eee;
+	background-color: #e0e0e9;
 	cursor: default;
 	opacity: 0.5;
 }
@@ -267,7 +152,7 @@
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item .settings-link:hover {
-	background-color: #eeeeee;
+	background-color: #e0e0e9;
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item .settings-link .description {
@@ -320,6 +205,214 @@
 #accounts_manager_view .main-content .list-settings .settings-item-content #accountsmanager_account_realm + .monster-invalid {
 	width: 420px;
 }
+*/
+#accounts_manager_view .main-content .list-settings {
+	overflow: visible;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	background-color: #f0f0f9;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item {
+	border-top: 1px solid #c0c0c9;
+	border-left: 1px solid #c0c0c9;
+	border-right: 1px solid #c0c0c9;
+}
+#accounts_manager_view .main-content .list-settings .settings-item:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+}
+#accounts_manager_view .main-content .list-settings .settings-item:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	border-bottom: 1px solid #c0c0c9;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item:last-child .settings-item-content {
+	border-radius: 0 0 4px 4px;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item.open {
+	border: 1px solid #22a5ff;
+	background-color: #fff;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item.open + .settings-item {
+	border-top: none;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .settings-link {
+	color: #303039;
+	cursor: pointer;
+	display: block;
+	font-weight: 600;
+	height: 60px;
+	line-height: 60px;
+	padding: 0px 15px;
+	text-decoration: none;
+}
+#accounts_manager_view .main-content .list-settings .settings-item.disabled .settings-link {
+	background-color: #e0e0e9;
+	cursor: default;
+	opacity: 0.5;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item:not(.open) .settings-link:hover {
+	background-color: #e0e0e9;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item.open .settings-link {
+	padding: 0px;
+	margin: 0 15px;
+	border-bottom: solid 1px #c0c0c9;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .title {
+	float: left;
+	font-size: 13px;
+	font-weight: bold;
+	width: 220px;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .date {
+	font-style: italic;
+	font-size: 12px;
+	margin-left: 20px;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .settings-link .description {
+	display: inline-block;
+	font-weight: 600;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .settings-link .description .number {
+	font-weight: bold;
+	color: #22a5ff;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .settings-link .update {
+	float: right;
+	overflow: hidden;
+}
+#accounts_manager_view .main-content .list-settings .settings-item .settings-link .update .text {
+	display: none;
+	margin-left: 5px;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .settings-link .changes-saved {
+	float: right;
+	display: none;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item:not(.disabled) .settings-link:hover .update .text {
+	display: inline-block;
+	-webkit-animation-duration: 0.5s;
+			animation-duration: 0.5s;
+	-webkit-animation-fill-mode: both;
+			animation-fill-mode: both;
+	-webkit-animation-name: accountsShowEdit;
+			animation-name: accountsShowEdit;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item-content {
+	display: none;
+	padding: 20px 15px;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item-content .form-horizontal {
+	margin: 0;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item-content label.uneditable {
+	color: #22a5ff;
+	cursor: default;
+	font-weight: 600;
+	padding-top: 5px;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item-content .edition {
+	display: none;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .settings-link .description > ul {
+	display: table-cell;
+	height: 60px;
+	list-style: none outside none;
+	margin: 0;
+	vertical-align: middle;
+}
+
+#accounts_manager_view .main-content .list-settings .control-label {
+	width: 200px;
+	text-align: left;
+}
+
+#accounts_manager_view .main-content .list-settings .controls {
+	margin-left: 220px;
+}
+#accounts_manager_view .main-content .list-settings #form_accountsmanager_account_admins .controls {
+	margin-left: initial;
+}
+
+#accounts_manager_view .main-content .list-settings .controls button,
+#accounts_manager_view .main-content .list-settings .controls input {
+	margin-right: 5px;
+}
+#accounts_manager_view .main-content .list-settings #form_accountsmanager_account_admins .controls button,
+#accounts_manager_view .main-content .list-settings #form_accountsmanager_account_admins .controls input {
+	margin-right: initial;
+}
+
+#accounts_manager_view .main-content .list-settings .controls input {
+	border-radius: 2px;
+	box-shadow: none;
+	border-color: #c0c0c9;
+}
+
+#accounts_manager_view .main-content .list-settings .controls input:focus {
+	border-color: #22a5ff;
+}
+
+#accounts_manager_view .main-content .list-settings .action-group {
+	padding-top: 20px;
+	border-top: solid 1px #c0c0c9;
+}
+
+#accounts_manager_view .main-content .list-settings .action-bar {
+	float: right;
+}
+
+#accounts_manager_view .main-content .list-settings .action-bar > *:not(:last-child) {
+	margin-right: 10px;
+}
+
+#accounts_manager_view .main-content .list-settings .controls .plain-text {
+	margin-top: 5px;
+}
+
+@-webkit-keyframes accountsShowEdit {
+	0% {
+		opacity: 0;
+		margin-right: -50px;
+	}
+	100% {
+		opacity: 1;
+		margin-right: 0px;
+	}
+}
+@keyframes accountsShowEdit {
+	0% {
+		opacity: 0;
+		margin-right: -50px;
+	}
+	100% {
+		opacity: 1;
+		margin-right: 0px;
+	}
+}
+
+/********************************************************************************************************/
 
 #accounts_manager_view .close-link {
 	float:right;
@@ -367,13 +460,13 @@
 
 #form_accountsmanager_account_admins .admin-element {
 	background-color: #F3F3F3;
-	border-radius: 4px;
+	border-radius: 2px;
 	border: solid 1px #ccc;
 	margin-bottom: 10px;
 }
 
 #form_accountsmanager_account_admins .admin-element .admin-element-link:hover {
-	background-color: #EEE;
+	background-color: #e0e0e9;
 	text-decoration: initial;
 }
 
@@ -419,9 +512,8 @@
 	text-align: center;
 }
 
-#form_accountsmanager_account_admins .new-admin-element .tab-content {
+#form_accountsmanager_account_admins .new-admin-element .tab-content .tab-pane {
 	padding: 5px;
-	border-radius: 4px;
 }
 
 #form_accountsmanager_account_admins .new-admin-element button {
@@ -524,8 +616,8 @@
 	margin: 10px 0px;
 }
 
-#accountsmanager_serviceplans_tab .serviceplans-container .serviceplans-maintenance .controls button {
-	cursor: pointer;
+#accountsmanager_serviceplans_tab .serviceplans-container .serviceplans-maintenance .controls button:not(:first-of-type) {
+	margin-left: 10px;
 }
 
 /***** Edit: Limits *****/
@@ -533,10 +625,6 @@
 
 #accountsmanager_limits_tab {
 	padding:20px;
-}
-
-#accountsmanager_limits_tab .buttons-div {
-	margin: 20px 0 0 0;
 }
 
 #accountsmanager_callrestrictions_form {
@@ -637,7 +725,7 @@
 .limits-tab-container .call-restrictions-div > div {
 	background-color: #FFF;
 	border: solid 1px #ccc;
-	border-radius: 4px;
+	border-radius: 2px;
 	padding: 10px;
 }
 
