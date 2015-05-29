@@ -27,7 +27,7 @@
 	"accountTimezone": "Часовой пояс",
 	"accountLanguage": "Язык",
 	"accountTimezoneTitle": "Часовой пояс и язык",
-	"accountAdmins": "Администраторы учётной записи",
+	"accountAdmins": "Администраторы",
 	"noAdminMessage": "У этой учётной записи нет администраторов",
 	"noUserMessage": "У этой учётной записи нет обычных пользователей",
 	"newAdmin": "Добавить нового администратора",
@@ -36,13 +36,13 @@
 	"autogenPassword": "Создать пароль автоматически",
 	"manuallyTypePassword": "Ввести пароль вручную",
 	"billingContact": {
-		"label": "Специалист по финансовым вопросам",
+		"label": "Финансовый специалист",
 		"name": "Имя специалиста по финансам",
 		"email": "Email специалиста по финансам",
 		"number": "Телефон"
 	},
 	"technicalContact": {
-		"label": "Специалист по техническим вопросам",
+		"label": "Технический специалист",
 		"name": "Имя технического специалиста",
 		"email": "Email технического специалиста",
 		"number": "Телефон"
@@ -194,5 +194,30 @@
 	],
 	"__comment": "UI-966: created common control for carrier selection",
 	"__version": "v3.20_s0",
-	"carrierTab": "Оператор"
+	"carrierTab": "Оператор",
+        "__comment": "UI-1171: Add a field to show the type of an account",
+        "__version": "v3.20_s2",
+        "accountType": "Тип клиента",
+        "reseller": "Агент",
+        "standard": "Абонент",
+        "__comment": "UI-1169: Sending an email to newly created admins",
+        "__version": "v3.20_s3",
+        "sentEmailPopup": "Информация об учётной записи была отправлена на адрес {{email}}.",
+        "__comment": "UI-1324: Adding the option to disable Braintree through a config flag",
+        "__version": "v3.20_s4",
+        "disabledAddCreditTooltip": "Для добавления средств требуется Braintree. Пожалуйста, свяжитесь с администратором.",
+        "__comment": "UI-1448: Add name of the account to be deleted in the confirm message for a better UX",
+        "__version": "v3.20_s5",
+        "deleteAccountConfirmVar": "Этот клиент (\"{{accountName}}\") будет безвозвратно удалён. Продолжить?",
+
+        "__comment": "UI-1460: Force user to type a string before deleting an account",
+        "__version": "v3.20_s5",
+        "deleteAccountDialog": {
+                "title": "Подтверждение удаления клиента",
+                "cancel": "Отмена",
+                "deleteAccount": "Удалить клиента",
+                "deleteKey": "УДАЛИТЬ",
+                "deleteMessageIntro": "Вы действительно хотите удалить этого клиента (\"{{variable}}\")?",
+                "deleteMessageExplanation": "Пожалуйста, введите слово \"{{variable}}\" ниже и нажмите кнопку УДАЛИТЬ для продолжения"
+        }
 }
