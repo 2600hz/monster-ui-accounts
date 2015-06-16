@@ -327,6 +327,9 @@ define(function(require){
 														toastr.info(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 10000});
 														callback(null, {});
 													}
+												},
+												onChargesCancelled: function() {
+													callback(null, {});
 												}
 											});
 										},
@@ -557,21 +560,6 @@ define(function(require){
 
 				stepTemplate.find('.service-plan-select').on('change', function(e) {
 					var servicePlanId = $(this).val();
-						twowayTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.twoway'),
-						inboundTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.inbound'),
-						outboundTrunksDiv = parent.parents('#accountsmanager_new_account_form').find('.limits-tab-container .trunks-div.outbound'),
-						setTrunksPrice = function(trunksDiv, price) {
-							var trunksSlider = trunksDiv.find('.slider-div');
-							if(price && price > 0) {
-								trunksDiv.data('price', price);
-								trunksDiv.find('.slider-total-amount').show();
-							} else {
-								trunksDiv.removeData('price');
-								trunksDiv.find('.slider-total-amount').hide();
-							}
-							
-							trunksSlider.slider('option', 'slide').call(trunksSlider, null, {value: trunksSlider.slider('value')});
-						};
 
 					if(servicePlanId) {
 						self.callApi({
@@ -582,40 +570,15 @@ define(function(require){
 							},
 							success: function(data, status) {
 								var plan = data.data.plan;
-								if(plan.limits && plan.limits && plan.limits.inbound_trunks && plan.limits.inbound_trunks.rate) {
-									setTrunksPrice(inboundTrunksDiv, plan.limits.inbound_trunks.rate);
-								} else {
-									setTrunksPrice(inboundTrunksDiv, 0);
-								}
-
-								if(plan.limits && plan.limits && plan.limits.outbound_trunks && plan.limits.outbound_trunks.rate) {
-									setTrunksPrice(outboundTrunksDiv, plan.limits.outbound_trunks.rate);
-								} else {
-									setTrunksPrice(outboundTrunksDiv, 0);
-								}
-
-								if(plan.limits && plan.limits && plan.limits.twoway_trunks && plan.limits.twoway_trunks.rate) {
-									setTrunksPrice(twowayTrunksDiv, plan.limits.twoway_trunks.rate);
-								} else {
-									setTrunksPrice(twowayTrunksDiv, 0);
-								}
 
 								monster.pub('common.servicePlanDetails.render', {
 									container: stepTemplate.find('.serviceplans-details-container'),
 									useOwnPlans: true,
 									servicePlan: data.data
 								});
-							},
-							error: function(data, status) {
-								setTrunksPrice(inboundTrunksDiv, 0);
-								setTrunksPrice(outboundTrunksDiv, 0);
-								setTrunksPrice(twowayTrunksDiv, 0);
 							}
 						});
 					} else {
-						setTrunksPrice(inboundTrunksDiv, 0);
-						setTrunksPrice(outboundTrunksDiv, 0);
-						setTrunksPrice(twowayTrunksDiv, 0);
 						stepTemplate.find('.serviceplans-details-container').empty();
 					}
 				});
