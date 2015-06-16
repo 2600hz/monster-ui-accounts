@@ -402,6 +402,9 @@ define(function(require){
 			self.renderWizardSteps(newAccountWizard);
 			monster.ui.validate(newAccountWizard.find('#accountsmanager_new_account_form'), {
 				rules: {
+					'user.password': {
+						minlength: 6
+					},
 					'extra.confirmPassword': {
 						equalTo: 'input[name="user.password"]'
 					},
@@ -954,6 +957,9 @@ define(function(require){
 					$.each(contentHtml.find('form'), function() {
 						monster.ui.validate($(this), {
 							rules: {
+								'password': {
+									minlength: 6
+								},
 								'extra.password_confirm': {
 									equalTo: $(this).find('input[name="password"]')
 								}

@@ -494,7 +494,7 @@
 
 #form_accountsmanager_account_admins .admin-element .password-strength-container {
 	position: absolute;
-	top: 0px;
+	top: 5px;
 	left: 125px;
 }
 
@@ -577,8 +577,7 @@
 
 #form_accountsmanager_account_admins .create-user-div .new-admin-password-div label.monster-invalid[for="extra.password_confirm"],
 #form_accountsmanager_account_admins .admin-element-edit .edit-admin-password-div label.monster-invalid[for="extra.password_confirm"] {
-	margin-top: 30px;
-	margin-left: 150px; /* Warning: This will be messed up if the screen is too small due to bootstraps responsive spans; */
+	margin-top: 40px;
 }
 
 #form_accountsmanager_account_admins .admin-empty-msg {
@@ -893,6 +892,10 @@
 #accountsmanager_new_account_form label.monster-invalid {
 	margin-top: -20px;
 	line-height: 20px;
+}
+
+#accountsmanager_new_account_form label.monster-invalid[for="user.password"] {
+	margin-top: 25px;
 }
 
 #accountsmanager_new_account_form .add-credit-container label.monster-invalid {
