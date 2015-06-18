@@ -664,7 +664,7 @@ define(function(require){
 			monster.ui.tooltips(parent);
 
 			monster.sub('accounts.changeServicePlanCreation', function(data) {
-				self.changeUIRestrictionForServicePlan(parent, data.data);
+				self.changeUIRestrictionForServicePlan(parent, data);
 			});
 		},
 
@@ -672,21 +672,24 @@ define(function(require){
 		// so this function checks that and returns a map of limits type with a boolean telling whether it should be shown or not
 		getUIRestrictionForServicePlan: function(servicePlan) {
 			var self = this,
-				hasLimits = servicePlan.hasOwnProperty('plan') && servicePlan.plan.hasOwnProperty('limits'),
+				hasLimits = servicePlan.hasOwnProperty('data') && servicePlan.data.hasOwnProperty('plan') && servicePlan.data.plan.hasOwnProperty('limits'),
+				limits = hasLimits ? servicePlan.data.plan.limits : {},
 				formattedData = {},
 				getUIRestrictionValue = function(key) {
 					var value = false;
 
-					if(hasLimits && servicePlan.plan.limits.hasOwnProperty(key) && servicePlan.plan.limits[key].hasOwnProperty('rate')) {
+					if(hasLimits && limits.hasOwnProperty(key) && limits[key].hasOwnProperty('rate')) {
 						value = true;
 					}
 
 					return value;
 				};
 
-			_.each(servicePlan.plan.limits, function(v, k) {
-				formattedData[k] = getUIRestrictionValue(k);
-			});
+			if(hasLimits) {
+				_.each(limits, function(v, k) {
+					formattedData[k] = getUIRestrictionValue(k);
+				});
+			}
 
 			return formattedData;
 		},
@@ -1468,7 +1471,7 @@ define(function(require){
 
 						var newPlanId = contentHtml.find('#accountsmanager_serviceplan_select').val(),
 							success = function(data) {
-								self.updateUIRestrictionsFromServicePlan(contentHtml, accountData, data.data, function() {
+								self.updateUIRestrictionsFromServicePlan(contentHtml, accountData, data, function() {
 									toastr.success(self.i18n.active().toastrMessages.servicePlanUpdateSuccess, '', {"timeOut": 5000});
 									$btn_save.removeClass('disabled');
 								});
@@ -1483,7 +1486,7 @@ define(function(require){
 								if (newPlanId) {
 										self.servicePlanAdd(accountData.id, newPlanId, success, error);
 								} else {
-									success();
+									success({});
 								}
 							}, error);
 						}
