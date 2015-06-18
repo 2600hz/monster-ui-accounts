@@ -134,6 +134,21 @@ define(function(require){
 			$(window).resize();
 		},
 
+		formatAccountCreationData: function(newAccountWizard, formData) {
+			var self = this;
+
+			formData.account.call_restriction = {}; // Can't use form data for this since unchecked checkboxes are not retrieved by form2object
+
+			$.each(newAccountWizard.find('.call-restrictions-element input[type="checkbox"]'), function() {
+				var $this = $(this);
+				formData.account.call_restriction[$this.data('id')] = {
+					action: $this.is(':checked') ? 'inherit' : 'deny'
+				};
+			});
+
+			return formData;
+		},
+
 		renderNewAccountWizard: function(params) {
 			var self = this,
 				parent = params.parent,
@@ -237,16 +252,9 @@ define(function(require){
 					};
 
 				if(monster.ui.valid(newAccountWizardForm)) {
-
 					var formData = monster.ui.getFormData('accountsmanager_new_account_form');
-					formData.account.call_restriction = {}; // Can't use form data for this since unchecked checkboxes are not retrieved by form2object
 
-					$.each(newAccountWizard.find('.call-restrictions-element input[type="checkbox"]'), function() {
-						var $this = $(this);
-						formData.account.call_restriction[$this.data('id')] = {
-							action: $this.is(':checked') ? 'inherit' : 'deny'
-						};
-					});
+					formData = self.formatAccountCreationData(newAccountWizardForm, formData);
 
 					toggleProcessing(true);
 
@@ -363,20 +371,12 @@ define(function(require){
 								},
 								servicePlans: function(callback) {
 									if(formData.servicePlan) {
-										self.callApi({
-											resource: 'servicePlan.add',
-											data: {
-												accountId: newAccountId,
-												planId: formData.servicePlan,
-												data: {}
-											},
-											success: function(data, status) {
-												callback(null, data.data);
-											},
-											error: function(data, status) {
-												callback(null, {});
-												toastr.error(self.i18n.active().toastrMessages.newAccount.servicePlanError, '', {"timeOut": 10000});
-											}
+										self.servicePlanAdd(newAccountId, formData.servicePlan, function(data) {
+											callback(null, data.data);
+										},
+										function(data, status) {
+											callback(null, {});
+											toastr.error(self.i18n.active().toastrMessages.newAccount.servicePlanError, '', {"timeOut": 10000});
 										});
 									} else {
 										callback();
@@ -558,32 +558,79 @@ define(function(require){
 					isReseller: monster.apps['auth'].isReseller
 				}));
 
-				stepTemplate.find('.service-plan-select').on('change', function(e) {
-					var servicePlanId = $(this).val();
+			stepTemplate.find('.service-plan-select').on('change', function(e) {
+				var servicePlanId = $(this).val();
 
-					if(servicePlanId) {
-						self.callApi({
-							resource: 'servicePlan.get',
-							data: {
-								accountId: self.accountId,
-								planId: servicePlanId
-							},
-							success: function(data, status) {
-								var plan = data.data.plan;
+				if(servicePlanId) {
+					self.servicePlanGet(servicePlanId, function(data) {
+						monster.pub('accounts.changeServicePlanCreation', { data: data });
 
-								monster.pub('common.servicePlanDetails.render', {
-									container: stepTemplate.find('.serviceplans-details-container'),
-									useOwnPlans: true,
-									servicePlan: data.data
-								});
-							}
+						monster.pub('common.servicePlanDetails.render', {
+							container: stepTemplate.find('.serviceplans-details-container'),
+							useOwnPlans: true,
+							servicePlan: data
 						});
-					} else {
-						stepTemplate.find('.serviceplans-details-container').empty();
-					}
-				});
+					});
+				} else {
+					monster.pub('accounts.changeServicePlanCreation', { data: {} });
+					stepTemplate.find('.serviceplans-details-container').empty();
+				}
+			});
 
-				parent.append(stepTemplate);
+			parent.append(stepTemplate);
+		},
+
+		servicePlanGet: function(servicePlanId, callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'servicePlan.get',
+				data: {
+					accountId: self.accountId,
+					planId: servicePlanId
+				},
+				success: function(data, status) {
+					callback && callback(data.data);
+				}
+			});
+		},
+
+		servicePlanAdd: function(accountId, newPlanId, success, error) {
+			var self = this;
+
+			self.callApi({
+				resource: 'servicePlan.add',
+				data: {
+					accountId: accountId,
+					planId: newPlanId,
+					data: {}
+				},
+				success: function(data, status) {
+					success && success(data);
+				},
+				error: function(data, status) {
+					error && error(data);
+				}
+			});
+		},
+
+		servicePlanRemove: function(accountId, planId, success, error) {
+			var self = this;
+
+			self.callApi({
+				resource: 'servicePlan.remove',
+				data: {
+					accountId: accountId,
+					planId: planId,
+					data: {}
+				},
+				success: function(data, status) {
+					success && success(data);
+				},
+				error: function(data, status) {
+					error && error(data);
+				}
+			});
 		},
 
 		renderLimitsStep: function(params) {
@@ -615,6 +662,93 @@ define(function(require){
 			parent.append(stepTemplate);
 
 			monster.ui.tooltips(parent);
+
+			monster.sub('accounts.changeServicePlanCreation', function(data) {
+				self.changeUIRestrictionForServicePlan(parent, data.data);
+			});
+		},
+
+		// If a service plan has a rate for one of the limits, we should display the my account category,
+		// so this function checks that and returns a map of limits type with a boolean telling whether it should be shown or not
+		getUIRestrictionForServicePlan: function(servicePlan) {
+			var self = this,
+				hasLimits = servicePlan.hasOwnProperty('plan') && servicePlan.plan.hasOwnProperty('limits'),
+				formattedData = {},
+				getUIRestrictionValue = function(key) {
+					var value = false;
+
+					if(hasLimits && servicePlan.plan.limits.hasOwnProperty(key) && servicePlan.plan.limits[key].hasOwnProperty('rate')) {
+						value = true;
+					}
+
+					return value;
+				};
+
+			_.each(servicePlan.plan.limits, function(v, k) {
+				formattedData[k] = getUIRestrictionValue(k);
+			});
+
+			return formattedData;
+		},
+
+		// Update checkboxes on account creation
+		changeUIRestrictionForServicePlan: function(template, servicePlan) {
+			var self = this,
+				limits = self.getUIRestrictionForServicePlan(servicePlan),
+				setCheckboxValue = function(key, value) {
+					var keyTrunks = key + '_trunks',
+						value = limits.hasOwnProperty(keyTrunks) ? limits[keyTrunks] : false; 
+
+					template.find('[name="account.ui_restrictions.myaccount.'+ key + '.show_tab"]').prop('checked', value);
+				};
+
+			setCheckboxValue('inbound');
+			setCheckboxValue('outbound');
+			setCheckboxValue('twoway');
+		},
+
+		// Function used when user updates service plan via update of the account page.
+		// If he selects a new service plan we need to automatically turn on/off the limits settings based on the service plan
+		updateUIRestrictionsFromServicePlan: function(template, accountData, servicePlan, callback) {
+			var self = this,
+				servicePlanRestrictions = self.getUIRestrictionForServicePlan(servicePlan),
+				getRestrictionValue = function(key) {
+					return servicePlanRestrictions.hasOwnProperty(key) ? servicePlanRestrictions[key] : false;
+				},
+				newUIRestrictions = {
+					ui_restrictions: {
+						myaccount: {
+							inbound: {
+								show_tab: getRestrictionValue('inbound_trunks'),
+							},
+							outbound: {
+								show_tab: getRestrictionValue('outbound_trunks')
+							},
+							twoway: {
+								show_tab: getRestrictionValue('twoway_trunks')
+							}
+						}
+					}
+				},
+				// We'll run this function once we updated the account since we don't re-render the page
+				setCheckboxValue = function(key, data) {
+					// By default all the checkboxes are checked
+					var value = true;
+					if(data.data.hasOwnProperty('ui_restrictions') && data.data.ui_restrictions.hasOwnProperty('myaccount') && data.data.ui_restrictions.myaccount.hasOwnProperty(key) && data.data.ui_restrictions.myaccount[key].hasOwnProperty('show_tab')) {
+						// we only accept true/false as values, so if value is different than true, we set it to false
+						value = data.data.ui_restrictions.myaccount[key].show_tab === true ? true : false;
+					}
+
+					template.find('[name="account.ui_restrictions.myaccount.'+ key + '.show_tab"]').prop('checked', value);
+				};
+
+			self.updateData(accountData, newUIRestrictions, function(data) {
+				setCheckboxValue('inbound', data);
+				setCheckboxValue('outbound', data);
+				setCheckboxValue('twoway', data);
+
+				callback && callback();
+			});
 		},
 
 		changeStep: function(stepIndex, maxStep, parent) {
@@ -1331,63 +1465,32 @@ define(function(require){
 					e.preventDefault();
 					if(!$btn_save.hasClass('disabled')) {
 						$btn_save.addClass('disabled');
+
 						var newPlanId = contentHtml.find('#accountsmanager_serviceplan_select').val(),
-							success = function() {
-								toastr.success(self.i18n.active().toastrMessages.servicePlanUpdateSuccess, '', {"timeOut": 5000});
-								$btn_save.removeClass('disabled');
+							success = function(data) {
+								self.updateUIRestrictionsFromServicePlan(contentHtml, accountData, data.data, function() {
+									toastr.success(self.i18n.active().toastrMessages.servicePlanUpdateSuccess, '', {"timeOut": 5000});
+									$btn_save.removeClass('disabled');
+								});
 							},
 							error = function() {
 								toastr.error(self.i18n.active().toastrMessages.servicePlanUpdateError, '', {"timeOut": 5000});
 								$btn_save.removeClass('disabled');
 							};
+
 						if(servicePlans.current.id) {
-							self.callApi({
-								resource: 'servicePlan.remove',
-								data: {
-									accountId: accountData.id,
-									planId: servicePlans.current.id,
-									data: {}
-								},
-								success: function(data, status) {
-									if (newPlanId) {
-										self.callApi({
-											resource: 'servicePlan.add',
-											data: {
-												accountId: accountData.id,
-												planId: newPlanId,
-												data: {}
-											},
-											success: function(data, status) {
-												success();
-											},
-											error: function(data, status) {
-												error();
-											}
-										});
-									} else {
-										success();
-									}
-								},
-								error: function(data, status) {
-									error();
-								}
-							});
-						} else if (newPlanId) {
-							self.callApi({
-								resource: 'servicePlan.add',
-								data: {
-									accountId: accountData.id,
-									planId: newPlanId,
-									data: {}
-								},
-								success: function(data, status) {
+							self.servicePlanRemove(accountData.id, servicePlans.current.id, function(data, status) {
+								if (newPlanId) {
+										self.servicePlanAdd(accountData.id, newPlanId, success, error);
+								} else {
 									success();
-								},
-								error: function(data, status) {
-									error();
 								}
-							});
-						} else {
+							}, error);
+						}
+						else if (newPlanId) {
+							self.servicePlanAdd(accountData.id, newPlanId, success, error);
+						}
+						else {
 							$btn_save.removeClass('disabled');
 						}
 					}
