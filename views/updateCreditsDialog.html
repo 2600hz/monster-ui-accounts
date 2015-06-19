@@ -1,0 +1,44 @@
+<div class="update-credits-content-wrapper">
+	<div class="add-credits-header clearfix">
+		<div class="title-box pull-right">
+			<div class="value">{{ i18n.currencyUsed }}{{amount}}</div>
+		</div>
+		<div class="title-block">{{ i18n.updateCreditDialog.creditBalance }}</div>
+	</div>
+
+	<div class="box-content">
+		<form id="add_credit_form">
+			<div class="line-content">
+				<div class="line-label">
+					<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" data-original-title="{{ i18n.updateCreditDialog.helpAddCreditOne }}"></i>
+					{{ i18n.updateCreditDialog.addCreditOne }}
+				</div>
+				<div class="line-value">
+					<div class="input-currency">{{ i18n.currencyUsed }}</div>
+					<input type="text" pattern="\d+(\.\d{2})?" id="amount_add" placeholder="{{ i18n.updateCreditDialog.placeholderAmount }}" name="amount" required/>
+				</div>
+				<div class="line-button">
+					<button class="monster-button-primary add-credit" type="button">{{ i18n.updateCreditDialog.addCredit }}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="box-content">
+		<form id="remove_credit_form">
+			<div class="line-content">
+				<div class="line-label">
+					<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" data-original-title="{{ i18n.updateCreditDialog.helpRemoveCreditOne }}"></i>
+					{{ i18n.updateCreditDialog.removeCreditOne }}
+				</div>
+				<div class="line-value">
+					<div class="input-currency">{{ i18n.currencyUsed }}</div>
+					<input type="text" pattern="\d+(\.\d{2})?" id="amount_remove" placeholder="{{ i18n.updateCreditDialog.placeholderAmount }}" name="amount" required/>
+				</div>
+				<div class="line-button">
+					<button class="monster-button-primary remove-credit" type="button">{{ i18n.updateCreditDialog.removeCredit }}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

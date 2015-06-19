@@ -348,22 +348,12 @@ define(function(require){
 								},
 								credit: function(callback) {
 									if(formData.addCreditBalance) {
-										self.callApi({
-											resource: 'balance.add',
-											data: {
-												accountId: newAccountId,
-												data: {
-													amount: parseFloat(formData.addCreditBalance)
-												},
-												generateError: false
-											},
-											success: function(data, status) {
-												callback(null, data.data);
-											},
-											error: function(data, status) {
-												callback(null, {});
-												toastr.info(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 10000});
-											}
+										self.addCredit(newAccountId, formData.addCreditBalance, function(data, status) {
+											callback(null, data.data);
+										},
+										function(data, status) {
+											callback(null, {});
+											toastr.info(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 10000});
 										});
 									} else {
 										callback();
@@ -1182,17 +1172,11 @@ define(function(require){
 						});
 					},
 					currentBalance: function(callback) {
-						self.callApi({
-							resource: 'balance.get',
-							data: {
-								accountId: accountId
-							},
-							success: function(data, status) {
-								callback(null, data.data);
-							},
-							error: function(data, status) {
-								callback(null, {});
-							}
+						self.getBalance(accountId, function(data, status) {
+							callback(null, data.data);
+						},
+						function(data, status) {
+							callback(null, {});
 						});
 					},
 					noMatch: function(callback) {
@@ -1685,13 +1669,67 @@ define(function(require){
 				balance = params.balance,
 				accountData = params.accountData,
 				tabContentTemplate = self.getLimitsTabContent(params),
-				creditBalanceSpan = tabContentTemplate.find('.manage-credit-div .credit-balance'),
 				addCreditInput = tabContentTemplate.find('.add-credit-input'),
 				twowayTrunksDiv = tabContentTemplate.find('.trunks-div.twoway'),
 				inboundTrunksDiv = tabContentTemplate.find('.trunks-div.inbound'),
 				outboundTrunksDiv = tabContentTemplate.find('.trunks-div.outbound');
 
-			creditBalanceSpan.html(self.i18n.active().currencyUsed+balance);
+			tabContentTemplate.find('.change-credits').on('click', function() {
+				var dataTemplate = {
+						amount: params.balance.toFixed(2)
+					},
+					template = $(monster.template(self, 'updateCreditsDialog', dataTemplate)),
+					popupAmount = template.find('.add-credits-header .value'),
+					accountsAppAmount = tabContentTemplate.find('.credit-balance'),
+					addValueField = template.find('#amount_add'),
+					removeValueField = template.find('#amount_remove'),
+					changeValueDisplayed = function(accountId, field) {
+						self.getBalance(accountId, function(data) {
+							params.balance = data.data.balance;
+							var formattedValue = self.i18n.active().currencyUsed + '' + params.balance.toFixed(2);
+							popupAmount.html(formattedValue);
+							accountsAppAmount.html(formattedValue);
+							field.val('');
+							toastr.success(self.i18n.active().updateCreditDialog.successfulUpdate);
+						});
+					},
+					addForm = template.find('#add_credit_form'),
+					removeForm = template.find('#remove_credit_form'), 
+					rulesValidate = {
+						rules: {
+							'amount': {
+								number: true,
+								min: 5
+							}
+						}
+					};
+
+				monster.ui.validate(addForm, rulesValidate);
+				monster.ui.validate(removeForm, rulesValidate);
+
+				monster.ui.tooltips(template);
+
+				template.find('.add-credit').on('click', function() {
+					if(monster.ui.valid(addForm)) {
+						self.addCredit(accountData.id, addValueField.val(), function(data) {
+							changeValueDisplayed(accountData.id, addValueField);
+						});
+					}
+				});
+
+				template.find('.remove-credit').on('click', function() {
+					if(monster.ui.valid(removeForm)) {
+						self.removeCredit(accountData.id, removeValueField.val(), function(data) {
+							changeValueDisplayed(accountData.id, removeValueField);
+						});
+					}
+				});
+
+				popup = monster.ui.dialog(template, {
+					title: self.i18n.active().updateCreditDialog.title
+				});
+			});
+
 			parent.find('#accountsmanager_limits_save').click(function(e) {
 				e.preventDefault();
 
@@ -1748,29 +1786,6 @@ define(function(require){
 							toastr.error(self.i18n.active().toastrMessages.callRestrictionsUpdateError, '', {"timeOut": 5000});
 						}
 					});
-
-					if(addCredit) {
-						self.callApi({
-							resource: 'balance.add',
-							data: {
-								accountId: accountData.id,
-								data: {
-									amount: parseFloat(addCredit)
-								},
-								generateError: false
-							},
-							success: function(data, status) {
-								balance += parseFloat(addCredit);
-								creditBalanceSpan.html(self.i18n.active().currencyUsed+balance);
-								addCreditInput.val('');
-								toastr.success(self.i18n.active().toastrMessages.creditAddSuccess, '', {"timeOut": 5000});
-							},
-							error: function(data, status) {
-								toastr.error(self.i18n.active().toastrMessages.creditAddError, '', {"timeOut": 5000});
-							}
-						});
-					}
-
 				}
 
 			});
@@ -1787,6 +1802,8 @@ define(function(require){
 				servicePlan = params.servicePlan || {},
 				limits = params.limits || {},
 				template = $(monster.template(self, 'limitsTabContent', {
+					mode: params.hasOwnProperty('accountData') ? 'update' : 'create',
+					balance: params.balance || 0,
 					classifiers: formattedClassifiers,
 					allowPrepay: limits.hasOwnProperty('allow_prepay') ? limits.allow_prepay : true,
 					disableBraintree: monster.config.disableBraintree
@@ -2144,6 +2161,65 @@ define(function(require){
 				},
 				success: function(data, status) {
 					callback(data.data);
+				}
+			});
+		},
+
+		addCredit: function(accountId, value, success, error) {
+			var self = this;
+
+			self.callApi({
+				resource: 'balance.add',
+				data: {
+					accountId: accountId,
+					data: {
+						amount: parseFloat(value)
+					},
+					generateError: false
+				},
+				success: function(data, status) {
+					success && success(data);
+				},
+				error: function(data, status) {
+					error && error(data);
+				}
+			});
+		},
+
+		removeCredit: function(accountId, value, success, error) {
+			var self = this;
+
+			self.callApi({
+				resource: 'balance.remove',
+				data: {
+					accountId: accountId,
+					data: {
+						amount: parseFloat(value)
+					},
+					generateError: false
+				},
+				success: function(data, status) {
+					success && success(data);
+				},
+				error: function(data, status) {
+					error && error(data);
+				}
+			});
+		},
+
+		getBalance: function(accountId, success, error) {
+			var self = this;
+
+			self.callApi({
+				resource: 'balance.get',
+				data: {
+					accountId: accountId
+				},
+				success: function(data, status) {
+					success && success(data);
+				},
+				error: function(data, status) {
+					error && error(data);
 				}
 			});
 		}

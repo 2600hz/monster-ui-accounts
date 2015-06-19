@@ -56,12 +56,17 @@
 			<i class="help-popover fa fa-question-circle fa-lg pull-right" data-original-title="{{i18n.balanceTooltip}}" data-placement="top" data-toggle="tooltip"></i>
 			<div class="title">{{ i18n.balanceTitle }}</div>
 			<div>
-				{{ i18n.balancePerMinute }} <span class="credit-balance">{{ i18n.currencyUsed }}0</span>
+				{{ i18n.balancePerMinute }} <span class="credit-balance">{{ i18n.currencyUsed }}{{balance}}</span>
+				{{#compare mode "===" "update"}}
+					<a class="change-credits monster-link blue" href="javascript:void(0);">{{ i18n.change }}</a>
+				{{/compare}}
 			</div>
-			<div class="add-credit-container">
-				<span class="add-credit-label">{{ i18n.addToBalance }}</span>
-				<input class="add-credit-input" name="addCreditBalance" type="text" {{#if disableBraintree}}readonly data-toggle="tooltip" data-placement="top" data-original-title="{{i18n.disabledAddCreditTooltip}}"{{/if}} />
-			</div>
+			{{#compare mode "===" "create"}}
+				<div class="add-credit-container">
+					<span class="add-credit-label">{{ i18n.addToBalance }}</span>
+					<input class="add-credit-input" name="addCreditBalance" type="text" {{#if disableBraintree}}readonly data-toggle="tooltip" data-placement="top" data-original-title="{{i18n.disabledAddCreditTooltip}}"{{/if}} />
+				</div>
+			{{/compare}}
 			<label class="allow-prepay">
 				{{#monsterCheckbox i18n.allowPrepay}}
 					<input name="limits.allow_prepay" class="allow-prepay-ckb pull-left" type="checkbox" {{#if allowPrepay}}checked{{/if}} />

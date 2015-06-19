@@ -231,5 +231,20 @@
 		"deleteKey": "DELETE",
 		"deleteMessageIntro": "Do you really want to delete this account (\"{{variable}}\")?",
 		"deleteMessageExplanation": "Please type the word \"{{variable}}\" in the following input and then click on the Delete button to proceed"
+	},
+
+	"__comment": "UI-1609: Add a way to Remove Credit",
+	"__version": "3.21",
+	"updateCreditDialog": {
+		"title": "Update Credits Amount",
+		"creditBalance": "Available Credit Balance",
+		"addCredit": "Add",
+		"removeCredit": "Remove",
+		"addCreditOne": "Add Credit One Time",
+		"removeCreditOne": "Remove Credit One Time",
+		"helpAddCreditOne": "By using this, you will add some credits to the balance of this account, which will allow it enable features such as e911 or Caller-ID, but also to place per-minute calls.",
+		"helpRemoveCreditOne": "We let you remove credits from your sub-accounts with this feature. If you added too many credits to an account, you could fix it by removing the extra credits here for example.",
+		"placeholderAmount": "10.00",
+		"successfulUpdate": "Congratulations, you successfuly updated the amount of credits available on that account! :)"
 	}
 }

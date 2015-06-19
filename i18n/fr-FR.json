@@ -228,5 +228,18 @@
 		"deleteKey": "SUPPRIMER",
 		"deleteMessageIntro": "Souhaitez-vous réellement supprimer ce compte (\"{{variable}}\")?",
 		"deleteMessageExplanation": "Veuillez taper le mot \"{{variable}}\" dans la case suivante, et cliquez ensuite sur le bouton Supprimer pour continuer"
+	},
+	"__comment": "UI-1609: Add a way to Remove Credit",
+	"__version": "3.21",
+	"updateCreditDialog": {
+		"title": "Changer le montant de crédits",
+		"creditBalance": "Crédits disponibles",
+		"addCredit": "Ajouter",
+		"removeCredit": "Retirer",
+		"addCreditOne": "Ajout unique de crédits",
+		"removeCreditOne": "Retrait unique de crédits",
+		"helpAddCreditOne": "Les crédits sont utilisés pour activer certaines fonctionnalités telles que l'e911, le Caller ID etc...",
+		"helpRemoveCreditOne": "Retirer des crédits peux être utile afin de corriger une erreur faite lors d'un ajout de crédits par exemple.",
+		"placeholderAmount": "10.00"
 	}
 }
