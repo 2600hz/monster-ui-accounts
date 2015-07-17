@@ -246,5 +246,8 @@
 		"helpRemoveCreditOne": "We let you remove credits from your sub-accounts with this feature. If you added too many credits to an account, you could fix it by removing the extra credits here for example.",
 		"placeholderAmount": "10.00",
 		"successfulUpdate": "Congratulations, you successfuly updated the amount of credits available on that account! :)"
-	}
+	},
+	"__comment": "UI-1660: Add meaningful error when trying to delete account with descendant(s)",
+	"__version": "3.22",
+	"account_has_descendants": "You need to delete subaccounts before deleting this account"
 }

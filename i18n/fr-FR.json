@@ -241,5 +241,6 @@
 		"helpAddCreditOne": "Les crédits sont utilisés pour activer certaines fonctionnalités telles que l'e911, le Caller ID etc...",
 		"helpRemoveCreditOne": "Retirer des crédits peux être utile afin de corriger une erreur faite lors d'un ajout de crédits par exemple.",
 		"placeholderAmount": "10.00"
-	}
+	},
+	"account_has_descendants": "Vous devez supprimer les sous-comptes avant de supprimer ce compte"
 }

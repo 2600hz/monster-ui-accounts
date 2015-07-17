@@ -1395,11 +1395,17 @@ define(function(require){
 						resource: 'account.delete',
 						data: {
 							accountId: accountData.id,
-							data: {}
+							data: {},
+							generateError: false
 						},
 						success: function(data, status) {
 							parent.find('.main-content').empty();
 							parent.find('.account-list-element[data-id="'+accountData.id+'"]').remove();
+						},
+						error: function(data, status) {
+							if (data.message === 'account_has_descendants') {
+								monster.ui.alert('error', self.i18n.active().account_has_descendants);
+							}
 						}
 					});
 				});
