@@ -97,7 +97,11 @@
 		"emailTooltip": "Этот адрес будет служить именем входа для личного кабинета.",
 		"number": "Контактный телефон администратора",
 		"password": "Пароль",
-		"confirm": "Пароль (повторно)"
+		"confirm": "Пароль (повторно)",
+		"__comment": "UI-1169: Sending an email to newly created admins",
+		"__version": "v3.20_s3",
+		"sendCredentialsEmail": "Отправить этому администратору почту с параметрами входа",
+		"sendCredentialsEmailShort": "Отправить письмо-приветствие с параметрами входа"
 	},
 	"adminPlaceholders": {
 		"firstName": "Имя",
@@ -156,7 +160,11 @@
 		"notesUpdateSuccess": "Заметки успешно обновлены!",
 		"notesUpdateError": "Во время обновления заметов произошла ошибка. Пожалуйста, попробуйте ещё раз!",
 		"triggerMasquerading": "Теперь вы работаете под учётной записью клиента \"{{accountName}}\".",
-		"restoreMasquerading": "Вы больше не используете учётную запись клиента."
+		"restoreMasquerading": "Вы больше не используете учётную запись клиента.",
+		"__comment": "UI-1498: Moved call restrictions back from limits to the account document",
+		"__version": "v3.20_s5",
+		"callRestrictionsUpdateSuccess": "Ограничения звонков успешно обновлены!",
+		"callRestrictionsUpdateError": "Во время обновления ограничений звонков произошла ошибка. Пожалуйста, попробуйте ещё раз чуть попозже"
 	},
 	"uiRestrictionsLegend": "Определите что будет видеть ваш клиент",
 	"uiRestrictionsTooltip": "Когда вы нажимаете на своё имя в правом верхнем углу экрана, появляется меню. Вы можете запретить видимость некоторых пунктов этого меню для своих клиентов, просто убрав отметки напротив прав.",
@@ -174,7 +182,11 @@
 		"outbound": "Исходящие",
 		"__comment": "UI-664: New restriction for twoway trunks",
 		"__version": "v3.19_s2",
-		"twoway": "Двунаправленные"
+		"twoway": "Двунаправленные",
+		"__comment": "UI-1074: New restriction for Misc Error Tracker",
+		"__version": "v3.20_s2",
+		"errorTracker": "Журнал ошибок интерфейса",
+		"misc": "Разное"
 	},
 	"uiRestrictionsExtraSettings": {
 		"perMinute": {
@@ -219,5 +231,23 @@
                 "deleteKey": "УДАЛИТЬ",
                 "deleteMessageIntro": "Вы действительно хотите удалить этого клиента (\"{{variable}}\")?",
                 "deleteMessageExplanation": "Пожалуйста, введите слово \"{{variable}}\" ниже и нажмите кнопку УДАЛИТЬ для продолжения"
-        }
+        },
+
+	"__comment": "UI-1609: Add a way to Remove Credit",
+	"__version": "3.21",
+	"updateCreditDialog": {
+		"title": "Обновить количество средств",
+		"creditBalance": "Доступный баланс",
+		"addCredit": "Добавить",
+		"removeCredit": "Удалить",
+		"addCreditOne": "Добавить однократно",
+		"removeCreditOne": "Удалить однократно",
+		"helpAddCreditOne": "Используя эту функцию, вы добавите средства на баланс учётной записи, после чего будет возможно использование как функций, так и тарифицируемых звонков",
+		"helpRemoveCreditOne": "С помощью этой функции мы позволяем удалять средства у дочерних учётных записей. Если вы добавили слишком много средств, здесь вы можете это исправить.",
+		"placeholderAmount": "10.00",
+		"successfulUpdate": "Значение баланса успешно обновлено"
+	},
+	"__comment": "UI-1660: Add meaningful error when trying to delete account with descendant(s)",
+	"__version": "3.22",
+	"account_has_descendants": "Прежде чем удалить эту учётную запись, сначала нужно удалить все дочерние учётные записи"
 }
