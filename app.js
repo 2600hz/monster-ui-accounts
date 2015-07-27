@@ -14,7 +14,8 @@ define(function(require){
 		i18n: { 
 			'en-US': { customCss: false },
 			'fr-FR': { customCss: false },
-			'ru-RU': { customCss: false }
+			'ru-RU': { customCss: false },
+			'es-ES': { customCss: false }
 		},
 
 		requests: {},
