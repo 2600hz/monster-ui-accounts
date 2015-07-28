@@ -1909,6 +1909,7 @@ define(function(require){
 						slide: function(event, ui) {
 							var amount = (trunksDiv.data('price') ? parseFloat(trunksDiv.data('price')) : args.amount) || args.amount,
 								totalAmount = ui.value * amount;
+
 							sliderValue
 								.html(ui.value)
 								.css('left', trunksDiv.find('.ui-slider-handle').css('left'));
@@ -1919,6 +1920,8 @@ define(function(require){
 							sliderValue.css('left', trunksDiv.find('.ui-slider-handle').css('left'));
 						}
 					});
+
+					sliderValue.css('left', trunksDiv.find('.ui-slider-handle').css('left'));
 
 					if(args.amount <= 0) {
 						trunksDiv.find('.slider-total-amount').hide();
