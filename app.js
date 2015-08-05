@@ -2173,7 +2173,10 @@ define(function(require){
 
 		updateApps: function(accountId) {
 			$.each(monster.apps, function(key, val) {
-				if( (val.isMasqueradable && val.apiUrl === monster.apps.accounts.apiUrl) || key === 'auth' ) {
+				// TODO Removed 8/5/2015 to fix cluster manager issue, shouldn't cause any issue, but a little worried to remove it so just leaving it in case issues arise in the near future
+				// we should remove it in 2-3 months if nothing comes up!
+				//if( (val.isMasqueradable && val.apiUrl === monster.apps.accounts.apiUrl) || key === 'auth' ) {
+				if( val.isMasqueradable || key === 'auth') {
 					val.accountId = accountId;
 				}
 			});
