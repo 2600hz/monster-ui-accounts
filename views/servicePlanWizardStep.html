@@ -1,17 +1,7 @@
 <div>
 	<legend>{{ i18n.servicePlanWizardLegend }}</legend>
 	{{#compare isReseller "===" true}}
-	<div class="controls-group">
-		<div class="controls">
-			<select class="service-plan-select" name="servicePlan">
-				<option value="">- {{ i18n.none }} -</option>
-				{{#each servicePlans}}
-				<option value="{{this.id}}">{{this.name}}</option>
-				{{/each}}
-			</select>
-		</div>
-	</div>
-	<div class="serviceplans-details-container"></div>
+	<div class="common-container"></div>
 	{{else}}
 		<div class="error-message">{{ i18n.servicePlanResellerOnly }}</div>
 	{{/compare}}

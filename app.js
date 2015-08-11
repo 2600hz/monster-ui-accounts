@@ -374,17 +374,13 @@ define(function(require){
 									}
 								},
 								servicePlans: function(callback) {
-									if(formData.servicePlan) {
-										self.servicePlanAdd(newAccountId, formData.servicePlan, function(data) {
-											callback(null, data.data);
-										},
-										function(data, status) {
-											callback(null, {});
-											toastr.error(self.i18n.active().toastrMessages.newAccount.servicePlanError, '', {"timeOut": 10000});
-										});
-									} else {
-										callback();
-									}
+									monster.pub('common.servicePlanDetails.customizeSave', {
+										container: newAccountWizardForm.find('.common-container'),
+										accountId: newAccountId,
+										callback: function() {
+											callback();
+										}
+									});
 								}
 							},
 							function(err, results) {
@@ -428,24 +424,6 @@ define(function(require){
 			var self = this;
 
 			monster.parallel({
-					servicePlans: function(callback) {
-						if(monster.apps.auth.isReseller) {
-							self.callApi({
-								resource: 'servicePlan.list',
-								data: {
-									accountId: self.accountId
-								},
-								success: function(data, status) {
-									callback(null, data.data);
-								},
-								error: function(data, status) {
-									callback(null, {});
-								}
-							});
-						} else {
-							callback(null, {});
-						}
-					},
 					classifiers: function(callback) {
 						self.callApi({
 							resource: 'numbers.listClassifiers',
@@ -467,8 +445,7 @@ define(function(require){
 					});
 
 					self.renderServicePlanStep({
-						parent: parent.find('.wizard-content-step[data-step="2"]'),
-						servicePlans: results.servicePlans
+						parent: parent.find('.wizard-content-step[data-step="2"]')
 					});
 
 					self.renderLimitsStep({
@@ -555,30 +532,18 @@ define(function(require){
 			var self = this,
 				parent = params.parent,
 				stepTemplate = $(monster.template(self, 'servicePlanWizardStep', {
-					servicePlans: params.servicePlans,
 					isReseller: monster.apps.auth.isReseller
 				}));
 
-			stepTemplate.find('.service-plan-select').on('change', function(e) {
-				var servicePlanId = $(this).val();
+			monster.pub('common.servicePlanDetails.getServicePlanTemplate', {
+				mode: 'new',
+				afterRender: function(template, data) {
+					stepTemplate.find('.common-container')
+								.append(template);
 
-				if(servicePlanId) {
-					self.servicePlanGet(servicePlanId, function(data) {
-						monster.pub('accounts.changeServicePlanCreation', { data: data });
-
-						monster.pub('common.servicePlanDetails.render', {
-							container: stepTemplate.find('.serviceplans-details-container'),
-							useOwnPlans: true,
-							servicePlan: data
-						});
-					});
-				} else {
-					monster.pub('accounts.changeServicePlanCreation', { data: {} });
-					stepTemplate.find('.serviceplans-details-container').empty();
+					parent.append(stepTemplate);
 				}
 			});
-
-			parent.append(stepTemplate);
 		},
 
 		servicePlanGet: function(servicePlanId, callback) {
@@ -663,10 +628,6 @@ define(function(require){
 			parent.append(stepTemplate);
 
 			monster.ui.tooltips(parent);
-
-			monster.sub('accounts.changeServicePlanCreation', function(data) {
-				self.changeUIRestrictionForServicePlan(parent, data);
-			});
 		},
 
 		// If a service plan has a rate for one of the limits, we should display the my account category,
@@ -693,22 +654,6 @@ define(function(require){
 			}
 
 			return formattedData;
-		},
-
-		// Update checkboxes on account creation
-		changeUIRestrictionForServicePlan: function(template, servicePlan) {
-			var self = this,
-				limits = self.getUIRestrictionForServicePlan(servicePlan),
-				setCheckboxValue = function(key) {
-					var keyTrunks = key + '_trunks',
-						value = limits.hasOwnProperty(keyTrunks) ? limits[keyTrunks] : false; 
-
-					template.find('[name="account.ui_restrictions.myaccount.'+ key + '.show_tab"]').prop('checked', value);
-				};
-
-			setCheckboxValue('inbound');
-			setCheckboxValue('outbound');
-			setCheckboxValue('twoway');
 		},
 
 		// Function used when user updates service plan via update of the account page.
@@ -1427,61 +1372,34 @@ define(function(require){
 					$btn_sync = contentHtml.find('#accountsmanager_serviceplan_synchronization');
 
 				$btn_change.on('click', function() {
-					self.changeServicePlanPopup(accountData.id, function(servicePlan) {
-						monster.pub('common.servicePlanDetails.render', {
-							container: contentHtml.find('.serviceplans-details-container'),
-							accountId: accountData.id,
-							servicePlan: servicePlan
-						});
+					monster.pub('common.servicePlanDetails.getServicePlanTemplate', {
+						accountId: accountData.id,
+						afterRender: function(template, data) {
+							var templatePopup = $(monster.template(self, 'changeServicePlanDialog'));
+
+							templatePopup.find('.common-container')
+										 .append(template);
+
+							templatePopup.find('#save_custom_plans').on('click', function() {
+								monster.pub('common.servicePlanDetails.customizeSave', {
+									previousPlans: data.selectedPlans,
+									container: templatePopup.find('.common-container'),
+									accountId: accountData.id,
+									divResult: contentHtml.find('.serviceplans-details-container'),
+									callback: function() {
+										dialog.dialog('close');
+
+										toastr.success('success!@!!@');
+									}
+								});
+							});
+
+							var dialog = monster.ui.dialog(templatePopup, {
+								title: self.i18n.active().changeServicePlanDialog.title
+							});
+						}
 					});
 				});
-
-				/*$btn_save.click(function(e) {
-					e.preventDefault();
-					if(!$btn_save.hasClass('disabled')) {
-						$btn_save.addClass('disabled');
-
-						var newPlanId = contentHtml.find('#accountsmanager_serviceplan_select').val(),
-							success = function(data) {
-								self.updateUIRestrictionsFromServicePlan(contentHtml, accountData, data, function() {
-									monster.pub('common.accountBrowser.getBreadcrumbsList', {
-										container: parent.find('.top-bar'),
-										callback: function(breadcrumbs) {
-											self.render({
-												parentId: _.last(breadcrumbs).id,
-												selectedId: accountData.id,
-												breadcrumbs: breadcrumbs,
-												selectedTab: 'tab-serviceplans',
-												callback: function() {
-													toastr.success(self.i18n.active().toastrMessages.servicePlanUpdateSuccess, '', {"timeOut": 5000});
-												}
-											});
-										}
-									});
-								});
-							},
-							error = function() {
-								toastr.error(self.i18n.active().toastrMessages.servicePlanUpdateError, '', {"timeOut": 5000});
-								$btn_save.removeClass('disabled');
-							};
-
-						if(servicePlans.current.id) {
-							self.servicePlanRemove(accountData.id, servicePlans.current.id, function(data, status) {
-								if (newPlanId) {
-										self.servicePlanAdd(accountData.id, newPlanId, success, error);
-								} else {
-									success({});
-								}
-							}, error);
-						}
-						else if (newPlanId) {
-							self.servicePlanAdd(accountData.id, newPlanId, success, error);
-						}
-						else {
-							$btn_save.removeClass('disabled');
-						}
-					}
-				});*/
 
 				$btn_rec.click(function(e) {
 					e.preventDefault();
