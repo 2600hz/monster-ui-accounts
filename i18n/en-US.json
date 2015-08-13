@@ -254,6 +254,7 @@
 	"__comment": "UI-1662: Adding a popup to better customize service plan",
 	"__version": "3.22",
 	"changeServicePlanDialog": {
-		"title": "Set service plan"
+		"title": "Set service plan",
+		"successUpdate": "You successfuly updated the service plan of this account!"
 	}
 }

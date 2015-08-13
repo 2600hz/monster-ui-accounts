@@ -1389,7 +1389,7 @@ define(function(require){
 									callback: function() {
 										dialog.dialog('close');
 
-										toastr.success('success!@!!@');
+										toastr.success(self.i18n.active().changeServicePlanDialog.successUpdate);
 									}
 								});
 							});
