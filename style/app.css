@@ -1045,10 +1045,6 @@
 }
 
 /************ Delete Account Confirmation Dialog ***************/
-.delete-account-dialog {
-	padding: 15px;
-}
-
 .delete-account-dialog #delete_input {
 	margin-top: 5px;
 	margin-left: 10px;

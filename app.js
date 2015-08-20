@@ -1559,34 +1559,30 @@ define(function(require){
 
 		confirmDeleteDialog: function(accountName, callbackSuccess) {
 			var self = this,
-				template = $(monster.template(self, 'deleteAccountDialog', {accountName: accountName})),
-				optionsPopup = {
-					position: ['center', 20],
-					title: self.i18n.active().deleteAccountDialog.title,
-					dialogClass: 'monster-confirm'
-				},
 				deleteKey = self.i18n.active().deleteAccountDialog.deleteKey,
-				popup = monster.ui.dialog(template, optionsPopup);
-
-				template.find('#delete_account').on('click', function() {
-					if(!$(this).hasClass('disabled')) {
-						popup.dialog('close').remove();
+				confirmPopup = monster.ui.confirm(
+					monster.template(self, 'deleteAccountDialog', {accountName: accountName}),
+					function() {
 						callbackSuccess && callbackSuccess();
+					},
+					null,
+					{
+						title: self.i18n.active().deleteAccountDialog.title,
+						confirmButtonText: self.i18n.active().deleteAccountDialog.deleteAccount,
+						htmlContent: true
 					}
-				});
+				);
 
-				template.find('#delete_input').on('keyup', function() {
-					if($(this).val() === deleteKey) {
-						template.find('#delete_account').removeClass('disabled');
-					}
-					else {
-						template.find('#delete_account').addClass('disabled');
-					}
-				});
+			confirmPopup.find('#confirm_button').prop('disabled', true);
 
-				template.find('#cancel').on('click', function() {
-					popup.dialog('close').remove();
-				});
+			confirmPopup.find('#delete_input').on('keyup', function() {
+				if($(this).val() === deleteKey) {
+					confirmPopup.find('#confirm_button').prop('disabled', false);
+				}
+				else {
+					confirmPopup.find('#confirm_button').prop('disabled', true);
+				}
+			});
 		},
 
 		/** Expected params:

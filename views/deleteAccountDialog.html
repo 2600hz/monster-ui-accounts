@@ -1,13 +1,5 @@
-<div class="delete-account-dialog alert-dialog">
+<div class="delete-account-dialog">
+	<p>{{replaceVar i18n.deleteAccountDialog.deleteMessageIntro accountName}}</p>
 
-	{{#monsterText 'error'}}
-		<p>{{replaceVar i18n.deleteAccountDialog.deleteMessageIntro accountName}}</p>
-
-		<p>{{replaceVar i18n.deleteAccountDialog.deleteMessageExplanation i18n.deleteAccountDialog.deleteKey}}<input type="text" id="delete_input" class="input-small"></p>
-	{{/monsterText}}
-
-	<div class="alert-buttons-wrapper clearfix">
-		<button id="delete_account" class="monster-button-success disabled">{{ i18n.deleteAccountDialog.deleteAccount }}</button>
-		<button id="cancel" class="monster-button">{{ i18n.deleteAccountDialog.cancel }}</button>
-	</div>
+	<p>{{replaceVar i18n.deleteAccountDialog.deleteMessageExplanation i18n.deleteAccountDialog.deleteKey}}<input type="text" id="delete_input" class="input-small"></p>
 </div>
