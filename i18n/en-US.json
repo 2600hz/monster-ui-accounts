@@ -56,7 +56,10 @@
 		"servicePlans": "Service Plans",
 		"limits": "Limits",
 		"restrictions": "Restrictions",
-		"notes": "Notes"
+		"notes": "Notes",
+		"__comment": "UI-1508: Adding appstore restrictions",
+		"__version": "3.22",
+		"appstore": "App Exchange"
 	},
 	"classifiers": {
 		"unknown": {
@@ -164,7 +167,11 @@
 		"__comment": "UI-1498: Moved call restrictions back from limits to the account document",
 		"__version": "v3.20_s5",
 		"callRestrictionsUpdateSuccess": "Call restrictions updated successfully!",
-		"callRestrictionsUpdateError": "An unexpected error occured when updating the call restrictions, please try again later."
+		"callRestrictionsUpdateError": "An unexpected error occured when updating the call restrictions, please try again later.",
+		"__comment": "UI-1508: Adding appstore restrictions",
+		"__version": "3.22",
+		"appstoreUpdateSuccess": "Allowed apps updated successfully!",
+		"appstoreUpdateError": "An unexpected error occured when updating the list of allowed apps, please try again later."
 	},
 	"uiRestrictionsLegend": "Select what your customer can view",
 	"uiRestrictionsTooltip": "When you click on your name from top right corner of the screen, you will see a dropdown menu. You can restrict the view of these options to your Sub-Account by simply uncheck it from account permissions.",
@@ -256,5 +263,9 @@
 	"changeServicePlanDialog": {
 		"title": "Set service plan",
 		"successUpdate": "You successfuly updated the service plan of this account!"
-	}
+	},
+
+	"__comment": "UI-1508: Adding appstore restrictions",
+	"__version": "3.22",
+	"appstoreLegend": "Choose which apps are enabled on this account"
 }

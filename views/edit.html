@@ -11,6 +11,7 @@
 					<li class="tab-carrier {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_carrier_tab"> {{ i18n.carrierTab }}</a></li>
 				{{/unless}}
 				<li class="tab-notes"><a href="#accountsmanager_notes_tab">{{ i18n.tabTitles.notes }}</a></li>
+				<li class="tab-appstore"><a href="#accountsmanager_appstore_tab">{{ i18n.tabTitles.appstore }}</a></li>
 			</ul>
 		</div>
 		<div class="tab-content">
@@ -413,6 +414,28 @@
 				<div class="clearfix wysiwyg-container"></div>
 				<div class="clearfix buttons-div">
 					<button type="button" id="accountsmanager_notes_save" class="monster-button-success">{{ i18n.update }}</button>
+				</div>
+			</div>
+
+			<div class="tab-pane" id="accountsmanager_appstore_tab">
+				<legend>{{ i18n.appstoreLegend }}</legend>
+				<div class="apps-container">
+					{{#each appsList}}
+					<div class="app-row clearfix{{#if blacklisted}} blacklisted{{/if}}">
+						<div class="app-row-content">
+							<div class="app-icon{{#if icon}}" style="background-image:url({{icon}})"{{else}} monster-default-app-icon"{{/if}}></div>
+							<div class="app-name" data-toggle="tooltip" data-placement="top" data-original-title="{{description}}">{{name}}</div>
+							<div class="app-toggle-container pull-right">
+								{{#monsterSwitch}}
+								<input type="checkbox" data-id={{id}} class="app-toggle"{{#unless blacklisted}} checked{{/unless}}/>
+								{{/monsterSwitch}}
+							</div>
+						</div>
+					</div>
+					{{/each}}
+				</div>
+				<div class="clearfix buttons-div">
+					<button type="button" id="accountsmanager_appstore_save" class="monster-button-success">{{ i18n.update }}</button>
 				</div>
 			</div>
 		</div>

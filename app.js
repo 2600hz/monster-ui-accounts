@@ -1139,10 +1139,65 @@ define(function(require){
 								}
 							}
 						});
+					},
+					appsList: function(callback) {
+						self.callApi({
+							resource: 'appsStore.list',
+							data: {
+								accountId: self.accountId
+							},
+							success: function(data, status) {
+								var parallelRequest = {};
+								_.each(data.data, function(val) {
+									parallelRequest[val.id] = function(parallelCallback) {
+										//This API is only called to check whether the icon can be loaded, but is not used to load the actual icon
+										self.callApi({
+											resource: 'appsStore.getIcon',
+											data: {
+												accountId: self.accountId,
+												appId: val.id,
+												generateError: false
+											},
+											success: function(data, status) {
+												val.icon = self.apiUrl + 'accounts/' + self.accountId +'/apps_store/' + val.id + '/icon?auth_token=' + self.authToken;
+												parallelCallback && parallelCallback(null, val);
+											},
+											error: function(data, status) {
+												val.icon = null;
+												parallelCallback && parallelCallback(null, val);
+											}
+										});
+									}
+								});
+
+								monster.parallel(parallelRequest, function(err, results) {
+									callback(null, results);
+								});
+							},
+							error: function(data, status) {
+								callback(null, null);
+							}
+						});
+					},
+					appsBlacklist: function(callback) {
+						self.callApi({
+							resource: 'appsStore.getBlacklist',
+							data: {
+								accountId: accountId
+							},
+							success: function(data, status) {
+								callback(null, data.data && data.data.blacklist ? data.data.blacklist : null);
+							},
+							error: function(data, status) {
+								callback(null, null);
+							}
+						});
 					}
 				},
 				function(err, results) {
-					var params = {
+					var lang = monster.config.whitelabel.language,
+						isoFormattedLang = lang.substr(0, 3).concat(lang.substr(lang.length -2, 2).toUpperCase()),
+						params = {
 							accountData: results.account,
 							accountUsers: results.users.sort(function(a,b) {
 								return (a.first_name+a.last_name).toLowerCase() > (b.first_name+b.last_name).toLowerCase() ? 1 : -1;
@@ -1153,7 +1208,17 @@ define(function(require){
 							accountBalance: 'balance' in results.currentBalance ? results.currentBalance.balance : 0,
 							parent: parent,
 							noMatch: results.noMatch,
-							selectedTab: selectedTab
+							selectedTab: selectedTab,
+							appsList: _.map(results.appsList, function(app) {
+								var currentLang = app.i18n.hasOwnProperty(isoFormattedLang) ? isoFormattedLang : 'en-US';
+								app.description = app.i18n[currentLang].description;
+								app.name = app.i18n[currentLang].label;
+								if(results.appsBlacklist && results.appsBlacklist.indexOf(app.id) >= 0) {
+									app.blacklisted = true;
+								}
+								return app;
+							}),
+							appsBlacklist: results.appsBlacklist
 						},
 						editCallback = function() {
 							params = self.formatDataEditAccount(params);
@@ -1200,6 +1265,7 @@ define(function(require){
 				accountBalance = params.accountBalance,
 				carrierInfo = params.carrierInfo,
 				selectedTab = params.selectedTab,
+				appsList = params.appsList,
 				parent = params.parent,
 				callback = params.callback,
 				admins = $.map(accountUsers, function(val) {
@@ -1228,7 +1294,8 @@ define(function(require){
 					isReseller: monster.apps.auth.isReseller,
 					carrierInfo: carrierInfo,
 					isSuperDuperAdmin: monster.apps.auth.currentAccount.superduper_admin,
-					accountIsReseller: accountData.is_reseller
+					accountIsReseller: accountData.is_reseller,
+					appsList: monster.util.sort(appsList)
 				};
 
 			if($.isNumeric(templateData.account.created)) {
@@ -1535,6 +1602,44 @@ define(function(require){
 						toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {"timeOut": 5000});
 					}
 				);
+			});
+
+			contentHtml.find('#accountsmanager_appstore_tab .app-toggle').on('change', function() {
+				$(this).parents('.app-row').toggleClass('blacklisted');
+			});
+			contentHtml.find('#accountsmanager_appstore_tab #accountsmanager_appstore_save').on('click', function() {
+				var blacklistData = {
+					blacklist: $.map(contentHtml.find('#accountsmanager_appstore_tab .app-toggle:not(:checked)'), function(toggle) {
+						return $(toggle).data('id');
+					})
+				};
+
+				self.callApi({
+					resource: 'appsStore.updateBlacklist',
+					data: {
+						accountId: accountData.id,
+						data: blacklistData
+					},
+					success: function(data, status) {
+						monster.pub('common.accountBrowser.getBreadcrumbsList', {
+							container: parent.find('.top-bar'),
+							callback: function(breadcrumbs) {
+								self.render({
+									parentId: _.last(breadcrumbs).id,
+									selectedId: accountData.id,
+									breadcrumbs: breadcrumbs,
+									selectedTab: 'tab-appstore',
+									callback: function() {
+										toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {"timeOut": 5000});
+									}
+								});
+							}
+						});
+					},
+					error: function(data, status) {
+						toastr.error(self.i18n.active().toastrMessages.appstoreUpdateError, '', {"timeOut": 5000});
+					}
+				});
 			});
 
 			// self.adjustTabsWidth(contentHtml.find('ul.account-tabs > li'));

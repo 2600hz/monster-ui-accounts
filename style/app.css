@@ -1044,6 +1044,63 @@
 	padding: 20px;
 }
 
+/************ Appstore Tab ************/
+
+#accountsmanager_appstore_tab {
+	padding: 20px;
+	min-width: 280px;
+}
+#accountsmanager_appstore_tab .apps-container {
+	border: solid 1px #c0c0c9;
+	border-radius: 2px;
+	padding: 10px 0px;
+	background-color: #fff;
+	min-width: 280px;
+}
+#accountsmanager_appstore_tab .app-row {
+	display: inline-block;
+	min-width: 280px;
+	width: 100%;
+}
+@media (min-width: 1600px) {
+	#accountsmanager_appstore_tab .app-row {
+		width: 25%;
+	}
+}
+@media (min-width: 1300px) and (max-width: 1599px) {
+	#accountsmanager_appstore_tab .app-row {
+		width: 33.33%;
+	}
+}
+@media (min-width: 1000px) and (max-width: 1299px) {
+	#accountsmanager_appstore_tab .app-row {
+		width: 50%;
+	}
+}
+#accountsmanager_appstore_tab .app-row.blacklisted .app-icon,
+#accountsmanager_appstore_tab .app-row.blacklisted .app-name {
+	opacity: 0.5;
+}
+#accountsmanager_appstore_tab .app-row-content {
+	height: 40px;
+	line-height: 40px;
+	padding: 0px 10px 10px 10px;
+	margin: 0px 10px 10px 10px;
+	border-bottom: solid 1px #c0c0c9;
+}
+#accountsmanager_appstore_tab .app-row-content > div {
+	display: inline-block;
+	vertical-align: middle;
+}
+#accountsmanager_appstore_tab .app-icon {
+	width: 32px;
+	height: 32px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+	margin-right: 10px;
+}
+
 /************ Delete Account Confirmation Dialog ***************/
 .delete-account-dialog #delete_input {
 	margin-top: 5px;
