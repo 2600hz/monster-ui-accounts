@@ -21,9 +21,7 @@ define(function(require){
 		requests: {},
 
 		subscribe: {
-			'accountsManager.activate': '_render',
-			'accountsManager.restoreMasquerading': '_restoreMasquerading',
-			'accountsManager.triggerMasquerading': '_triggerMasquerading'
+			'accountsManager.activate': '_render'
 		},
 
 		load: function(callback) {
@@ -1396,7 +1394,12 @@ define(function(require){
 			contentHtml.find('#accountsmanager_use_account_btn').on('click', function(e) {
 				e.preventDefault();
 
-				self._triggerMasquerading(accountData);
+				monster.pub('core.triggerMasquerading', {
+					account: accountData,
+					callback: function() {
+						self.render();
+					}
+				})
 
 				e.stopPropagation();
 			});
@@ -2104,56 +2107,6 @@ define(function(require){
 
 		autoGeneratePassword: function() {
 			return monster.util.randomString(4,'abcdefghjkmnpqrstuvwxyz')+monster.util.randomString(4,'0123456789');
-		},
-
-		_triggerMasquerading: function(account) {
-			var self = this;
-
-			monster.apps.auth.currentAccount = $.extend(true, {}, account);
-			self.updateApps(account.id);
-
-			self.callApi({
-				resource: 'account.listParents',
-				data: {
-					accountId: account.id
-				},
-				success: function(data, status) {
-					data.data.shift();
-
-					monster.pub('myaccount.renderNavLinks', {
-						name: account.name,
-						isMasquerading: true,
-						parentsList: data.data
-					});
-
-					self.render();
-					toastr.info(monster.template(self, '!' + self.i18n.active().toastrMessages.triggerMasquerading, { accountName: account.name }));
-				}
-			});
-		},
-
-		updateApps: function(accountId) {
-			$.each(monster.apps, function(key, val) {
-				// TODO Removed 8/5/2015 to fix cluster manager issue, shouldn't cause any issue, but a little worried to remove it so just leaving it in case issues arise in the near future
-				// we should remove it in 2-3 months if nothing comes up!
-				//if( (val.isMasqueradable && val.apiUrl === monster.apps.accounts.apiUrl) || key === 'auth' ) {
-				if( val.isMasqueradable || key === 'auth') {
-					val.accountId = accountId;
-				}
-			});
-		},
-
-		_restoreMasquerading: function() {
-			var self = this;
-
-			monster.apps.auth.currentAccount = $.extend(true, {}, monster.apps.auth.originalAccount);
-			self.updateApps(monster.apps.auth.originalAccount.id);
-
-			monster.pub('myaccount.renderNavLinks');
-
-			self.render();
-
-			toastr.info(self.i18n.active().toastrMessages.restoreMasquerading);
 		},
 
 		getDataNoMatchCallflow: function(type, resellerId) {

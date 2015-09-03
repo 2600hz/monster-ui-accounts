@@ -162,8 +162,6 @@
 		"uiRestrictionsUpdateError": "An unexpected error occured when updating the UI restrictions, please try again later.",
 		"notesUpdateSuccess": "Notes updated successfully!",
 		"notesUpdateError": "An unexpected error occured when updating the notes, please try again later.",
-		"triggerMasquerading": "You are now masquerading the account \"{{accountName}}\".",
-		"restoreMasquerading": "You are not masquerading anymore.",
 		"__comment": "UI-1498: Moved call restrictions back from limits to the account document",
 		"__version": "v3.20_s5",
 		"callRestrictionsUpdateSuccess": "Call restrictions updated successfully!",
