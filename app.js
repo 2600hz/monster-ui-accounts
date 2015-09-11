@@ -1121,17 +1121,18 @@ define(function(require){
 							},
 							success: function(data, status) {
 								if(!$.isEmptyObject(data.data.plans)) {
+									var planId = Object.keys(data.data.plans)[0];
 									self.callApi({
 										resource: 'servicePlan.getAvailable',
 										data: {
 											accountId: accountId,
-											planId: Object.keys(data.data.plans)[0]
+											planId: planId
 										},
 										success: function(data, status) {
 											callback(null, data.data);
 										},
 										error: function(data, status) {
-											callback(null, {});
+											callback(null, { id:planId });
 										}
 									});
 								} else {
@@ -1541,7 +1542,7 @@ define(function(require){
 
 			monster.ui.tooltips(contentHtml);
 
-			if(servicePlans.current.id) {
+			if(servicePlans.current.plan) {
 				monster.pub('common.servicePlanDetails.render', {
 					container: contentHtml.find('.serviceplans-details-container'),
 					accountId: accountData.id,
