@@ -2176,24 +2176,30 @@ define(function(require){
 		},
 
 		addCredit: function(accountId, value, success, error) {
-			var self = this;
-
-			self.callApi({
-				resource: 'balance.add',
-				data: {
-					accountId: accountId,
+			var self = this,
+				apiData = {
+					resource: 'balance.add',
 					data: {
-						amount: parseFloat(value)
+						accountId: accountId,
+						data: {
+							amount: parseFloat(value)
+						}
 					},
-					generateError: false
-				},
-				success: function(data, status) {
-					success && success(data);
-				},
-				error: function(data, status) {
+					success: function(data, status) {
+						success && success(data);
+					}
+				};
+
+			// We do that so that we don't bypass the generic error helper if there was no error callback defined.
+			if(error && typeof error === 'function') {
+				apiData.data.generateError = false;
+
+				apiData.error = function(data, status) {
 					error && error(data);
-				}
-			});
+				};
+			}
+
+			self.callApi(apiData);
 		},
 
 		removeCredit: function(accountId, value, success, error) {
