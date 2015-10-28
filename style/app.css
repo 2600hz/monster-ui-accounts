@@ -1101,6 +1101,16 @@
 	margin-right: 10px;
 }
 
+/****************** Numbers Features Tab *****************/
+
+#accountsmanager_numbersfeatures_tab {
+	padding: 20px;
+}
+
+#accountsmanager_numbersfeatures_tab .control-label {
+	text-align: left;
+}
+
 /************ Delete Account Confirmation Dialog ***************/
 .delete-account-dialog #delete_input {
 	margin-top: 5px;

@@ -7,6 +7,9 @@
 				<li class="tab-serviceplans {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_serviceplans_tab">{{ i18n.tabTitles.servicePlans }}</a></li>
 				<li class="tab-limits {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_limits_tab">{{ i18n.tabTitles.limits }}</a></li>
 				<li class="tab-restrictions {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_restrictions_tab">{{ i18n.tabTitles.restrictions }}</a></li>
+				<li class="tab-numbersfeatures">
+					<a href="#accountsmanager_numbersfeatures_tab">{{ i18n.tabTitles.numbersFeatures }}</a>
+				</li>
 				{{#unless carrierInfo.disabled}}
 					<li class="tab-carrier {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_carrier_tab"> {{ i18n.carrierTab }}</a></li>
 				{{/unless}}
@@ -401,6 +404,39 @@
 				</form>
 				<div class="clearfix buttons-div">
 					<button type="button" id="accountsmanager_uirestrictions_save" class="monster-button-success">{{ i18n.update }}</button>
+				</div>
+			</div>
+
+			<div class="tab-pane" id="accountsmanager_numbersfeatures_tab">
+				<form id="accountsmanager_numbersfeatures_form" class="form-horizontal">
+					<legend>{{ i18n.numbersFeatures.legend }}</legend>
+					<div class="control-group">
+						<label for="e911_enabled" class="control-label">{{ i18n.numbersFeatures.features.e911 }}</label>
+						<div class="controls">
+						{{#monsterSwitch}}
+						{{#if account.numbers_features}}
+							<input type="checkbox" name="e911_enabled"{{#if account.numbers_features.e911_enabled}} checked{{/if}}>
+						{{else}}
+							<input type="checkbox" name="e911_enabled" checked>
+						{{/if}}
+						{{/monsterSwitch}}
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="cnam_enabled" class="control-label">{{ i18n.numbersFeatures.features.cnam }}</label>
+						<div class="controls">
+						{{#monsterSwitch}}
+						{{#if account.numbers_features}}
+							<input type="checkbox" name="cnam_enabled"{{#if account.numbers_features.cnam_enabled}} checked{{/if}}>
+						{{else}}
+							<input type="checkbox" name="cnam_enabled" checked>
+						{{/if}}
+						{{/monsterSwitch}}
+						</div>
+					</div>
+				</form>
+				<div class="clearfix buttons-div">
+					<button id="accountsmanager_numbersfeatures_save" class="monster-button-success">{{i18n.update}}</button>
 				</div>
 			</div>
 

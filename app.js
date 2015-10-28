@@ -1645,6 +1645,42 @@ define(function(require){
 				});
 			});
 
+			contentHtml.find('#accountsmanager_numbersfeatures_save').on('click', function() {
+				self.callApi({
+					resource: 'account.get',
+					data: {
+						accountId: accountData.id,
+					},
+					success: function(data, status) {
+						self.callApi({
+							resource: 'account.update',
+							data: {
+								accountId: accountData.id,
+								data: $.extend(true, {}, data.data, {
+									numbers_features: monster.ui.getFormData('accountsmanager_numbersfeatures_form')
+								})
+							},
+							success: function(_data, _status) {
+								monster.pub('common.accountBrowser.getBreadcrumbsList', {
+									container: parent.find('.top-bar'),
+									callback: function(breadcrumbs) {
+										self.render({
+											parentId: _.last(breadcrumbs).id,
+											selectedId: accountData.id,
+											breadcrumbs: breadcrumbs,
+											selectedTab: 'tab-numbersfeatures',
+											callback: function() {
+												toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {"timeOut": 5000});
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			});
+
 			// self.adjustTabsWidth(contentHtml.find('ul.account-tabs > li'));
 
 			$.each(contentHtml.find('form'), function() {

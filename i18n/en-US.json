@@ -59,7 +59,10 @@
 		"notes": "Notes",
 		"__comment": "UI-1508: Adding appstore restrictions",
 		"__version": "3.22",
-		"appstore": "App Exchange"
+		"appstore": "App Exchange",
+		"__comment": "UI-1855: Add new section to manage numbers features (e.g. e911, cnam)",
+		"__version": "3.23",
+		"numbersFeatures": "Numbers Features"
 	},
 	"classifiers": {
 		"unknown": {
@@ -265,5 +268,15 @@
 
 	"__comment": "UI-1508: Adding appstore restrictions",
 	"__version": "3.22",
-	"appstoreLegend": "Choose which apps are enabled on this account"
+	"appstoreLegend": "Choose which apps are enabled on this account",
+
+	"__comment": "UI-1855: Add new section to manage numbers features (e.g. e911, cnam)",
+	"__version": "3.23",
+	"numbersFeatures": {
+		"legend": "Enable/Disable numbers' features",
+		"features": {
+			"e911": "E911",
+			"cnam": "CNAM"
+		}
+	}
 }
