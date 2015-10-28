@@ -56,7 +56,8 @@
 		"servicePlans": "Abonnements",
 		"limits": "Limites",
 		"restrictions": "Restrictions",
-		"notes": "Notes"
+		"notes": "Notes",
+		"numbersFeatures": "Fonctionnalités des numéros"
 	},
 	"classifiers": {
 		"unknown": {
@@ -242,5 +243,12 @@
 		"helpRemoveCreditOne": "Retirer des crédits peux être utile afin de corriger une erreur faite lors d'un ajout de crédits par exemple.",
 		"placeholderAmount": "10.00"
 	},
-	"account_has_descendants": "Vous devez supprimer les sous-comptes avant de supprimer ce compte"
+	"account_has_descendants": "Vous devez supprimer les sous-comptes avant de supprimer ce compte",
+	"numbersFeatures": {
+		"legend": "Activez/Désactivez les fonctionnalités des numéros",
+		"features": {
+			"e911": "E911",
+			"cnam": "CNAM"
+		}
+	}
 }
