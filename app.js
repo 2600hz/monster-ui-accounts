@@ -535,6 +535,7 @@ define(function(require){
 
 			monster.pub('common.servicePlanDetails.getServicePlanTemplate', {
 				mode: 'new',
+				useOwnPlans: monster.apps.auth.isReseller,
 				afterRender: function(template, data) {
 					stepTemplate.find('.common-container')
 								.append(template);
