@@ -227,7 +227,7 @@
 		"cancel": "Annuler",
 		"deleteAccount": "Supprimer Compte",
 		"deleteKey": "SUPPRIMER",
-		"deleteMessageIntro": "Souhaitez-vous réellement supprimer ce compte (\"{{variable}}\")?",
+		"deleteMessageIntro": "Souhaitez-vous réellement supprimer ce compte (\"{{variable}}\")? Cette action ne pourra pas être annulée par la suite.",
 		"deleteMessageExplanation": "Veuillez taper le mot \"{{variable}}\" dans la case suivante, et cliquez ensuite sur le bouton Supprimer pour continuer"
 	},
 	"__comment": "UI-1609: Add a way to Remove Credit",
