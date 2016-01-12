@@ -1534,7 +1534,8 @@ define(function(require){
 				monster.pub('common.servicePlanDetails.render', {
 					container: contentHtml.find('.serviceplans-details-container'),
 					accountId: accountData.id,
-					servicePlan: currentServicePlan
+					servicePlan: currentServicePlan,
+					useOwnPlans: accountData.is_reseller
 				});
 			}
 
