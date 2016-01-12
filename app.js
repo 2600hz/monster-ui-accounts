@@ -372,13 +372,18 @@ define(function(require){
 									}
 								},
 								servicePlans: function(callback) {
-									monster.pub('common.servicePlanDetails.customizeSave', {
-										container: newAccountWizardForm.find('.common-container'),
-										accountId: newAccountId,
-										callback: function() {
-											callback();
-										}
-									});
+									if(monster.util.isSuperDuper()) {
+										monster.pub('common.servicePlanDetails.customizeSave', {
+											container: newAccountWizardForm.find('.common-container'),
+											accountId: newAccountId,
+											callback: function() {
+												callback();
+											}
+										});
+									}
+									else {
+										callback();
+									}
 								}
 							},
 							function(err, results) {
@@ -1292,7 +1297,7 @@ define(function(require){
 					currentServicePlan: currentServicePlan,
 					isReseller: monster.apps.auth.isReseller,
 					carrierInfo: carrierInfo,
-					isSuperDuperAdmin: monster.apps.auth.currentAccount.superduper_admin,
+					isSuperDuperAdmin: monster.util.isSuperDuper(),
 					accountIsReseller: accountData.is_reseller,
 					appsList: monster.util.sort(appsList)
 				};
