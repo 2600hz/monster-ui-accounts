@@ -237,8 +237,8 @@
 		"cancel": "Cancel",
 		"deleteAccount": "Delete Account",
 		"deleteKey": "DELETE",
-		"deleteMessageIntro": "Do you really want to delete this account (\"{{variable}}\")?",
-		"deleteMessageExplanation": "Please type the word \"{{variable}}\" in the following input and then click on the Delete button to proceed"
+		"deleteMessageIntro": "This action CANNOT be undone. This will permanently delete the \"{{variable}}\" account, release all phone numbers, deactivate any mobile devices and remove any provisioning files.",
+		"deleteMessageExplanation": "Please type the word \"{{variable}}\" in the following input and then click on the Delete Account button to proceed."
 	},
 
 	"__comment": "UI-1609: Add a way to Remove Credit",
