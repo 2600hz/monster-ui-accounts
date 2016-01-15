@@ -278,5 +278,10 @@
 			"e911": "E911",
 			"cnam": "CNAM"
 		}
-	}
+	},
+
+	"__comment": "UI-1995: Add an announcement to users",
+	"__version": "3.22",
+	"announcementLegend": "Announcement that will popup everytime someone logs in to this account",
+	"deleteAnnouncement": "Delete Announcement"
 }
