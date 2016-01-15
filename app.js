@@ -1170,8 +1170,8 @@ define(function(require){
 												val.icon = null;
 												parallelCallback && parallelCallback(null, val);
 											}
-										});
-									}*/
+										});*/
+									}
 								});
 
 								monster.parallel(parallelRequest, function(err, results) {
