@@ -448,8 +448,15 @@
 			{{/unless}}
 
 			<div class="tab-pane" id="accountsmanager_notes_tab">
+				<legend>{{ i18n.announcementLegend }}</legend>
+				<div class="clearfix wysiwyg-container announcement"></div>
+				<div class="clearfix buttons-div">
+					<button type="button" id="accountsmanager_announcement_save" class="monster-button-success">{{ i18n.update }}</button>
+					<button type="button" id="accountsmanager_announcement_delete" class="monster-button-danger">{{ i18n.deleteAnnouncement }}</button>
+				</div>
+
 				<legend>{{ i18n.notesLegend }}</legend>
-				<div class="clearfix wysiwyg-container"></div>
+				<div class="clearfix wysiwyg-container notes"></div>
 				<div class="clearfix buttons-div">
 					<button type="button" id="accountsmanager_notes_save" class="monster-button-success">{{ i18n.update }}</button>
 				</div>

@@ -1585,9 +1585,10 @@ define(function(require){
 						$(this).change();
 					}
 			);
-			monster.ui.wysiwyg(notesTab.find('.wysiwyg-container')).html(accountData.custom_notes);
+			monster.ui.wysiwyg(notesTab.find('.wysiwyg-container.notes')).html(accountData.custom_notes);
+
 			notesTab.find('#accountsmanager_notes_save').on('click', function() {
-				var notesContent = notesTab.find('.wysiwyg-editor').html();
+				var notesContent = notesTab.find('.notes .wysiwyg-editor').html();
 				self.updateData(
 					accountData,
 					{ custom_notes: notesContent },
@@ -1612,6 +1613,39 @@ define(function(require){
 						toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {"timeOut": 5000});
 					}
 				);
+			});
+
+			monster.ui.wysiwyg(notesTab.find('.wysiwyg-container.announcement')).html(accountData.announcement);
+
+			var successUpdateAnnouncement = function(data, status) {
+					accountData = data.data;
+					monster.pub('common.accountBrowser.getBreadcrumbsList', {
+						container: parent.find('.top-bar'),
+						callback: function(breadcrumbs) {
+							self.render({
+								parentId: _.last(breadcrumbs).id,
+								selectedId: accountData.id,
+								breadcrumbs: breadcrumbs,
+								selectedTab: 'tab-notes',
+								callback: function() {
+									toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {"timeOut": 5000});
+								}
+							});
+						}
+					});
+				},
+				errorUpdateAnnouncement = function(data, status) {
+					toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {"timeOut": 5000});
+				};
+
+			notesTab.find('#accountsmanager_announcement_delete').on('click', function() {
+				delete accountData.announcement;
+				self.updateAccount(accountData,successUpdateAnnouncement,errorUpdateAnnouncement);
+			});
+
+			notesTab.find('#accountsmanager_announcement_save').on('click', function() {
+				var announcementContent = notesTab.find('.announcement .wysiwyg-editor').html();
+				self.updateData(accountData,{ announcement: announcementContent },successUpdateAnnouncement,errorUpdateAnnouncement);
 			});
 
 			contentHtml.find('#accountsmanager_appstore_tab .app-toggle').on('change', function() {
@@ -2133,11 +2167,17 @@ define(function(require){
 
 			dataToUpdate = self.cleanMergedData(dataToUpdate);
 
+			self.updateAccount(dataToUpdate, success, error);
+		},
+
+		updateAccount: function(data, success, error) {
+			var self = this;
+
 			self.callApi({
 				resource: 'account.update',
 				data: {
 					accountId: data.id,
-					data: dataToUpdate
+					data: data
 				},
 				success: function(_data, status) {
 					success && success(_data, status);
