@@ -1449,6 +1449,7 @@ define(function(require){
 
 				$btn_change.on('click', function() {
 					monster.pub('common.servicePlanDetails.getServicePlanTemplate', {
+						useOwnPlans: accountData.is_reseller,
 						accountId: accountData.id,
 						afterRender: function(template, data) {
 							var templatePopup = $(monster.template(self, 'changeServicePlanDialog'));
