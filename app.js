@@ -1397,6 +1397,39 @@ define(function(require){
 				});
 			});
 
+			contentHtml.find('.resellerAction').on('click', function(event) {
+				event.preventDefault();
+
+				var action = $(this).data('action'),
+					node = action === 'promote' ? 'promoteAccount' : 'demoteAccount';
+
+				monster.ui.confirm(self.i18n.active()[node].confirm, function () {
+					self.callApi({
+						resource: 'account.' + action,
+						data: {
+							accountId: accountData.id
+						},
+						success: function(data, status) {
+							toastr.success(self.i18n.active()[node].success);
+
+							monster.pub('common.accountBrowser.getBreadcrumbsList', {
+								container: parent.find('.top-bar'),
+								callback: function(breadcrumbs) {
+									self.render({
+										parentId: _.last(breadcrumbs).id,
+										selectedId: accountData.id,
+										breadcrumbs: breadcrumbs
+									});
+								}
+							});
+						},
+						error: function(data, status) {
+							toastr.error(self.i18n.active().promoteDemoteError);
+						}
+					});
+				});
+			});
+
 			contentHtml.find('#accountsmanager_use_account_btn').on('click', function(e) {
 				e.preventDefault();
 
