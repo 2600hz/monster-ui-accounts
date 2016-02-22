@@ -297,6 +297,6 @@
 	"demoteAccount": {
 		"button": "Demote",
 		"confirm": "You are about to demote this account",
-		"succes": "This account was demoted successfully"
+		"success": "This account was demoted successfully"
 	}
 }
