@@ -63,6 +63,22 @@
 												</div>
 											</div>
 										</div>
+										<div class="control-group">
+											<label class="control-label">
+												{{i18n.reserllerAction}}
+											</label>
+											<div class="controls">
+											{{#if account.is_reseller}}
+												<button class="monster-button-cancel resellerAction" data-action="demote">
+													{{i18n.demoteAccount.button}}
+												</button>
+											{{else}}
+												<button class="monster-button-primary resellerAction" data-action="promote">
+													{{i18n.promoteAccount.button}}
+												</button>
+											{{/if}}
+											</div>
+										</div>
 									{{/if}}
 										<div class="control-group">
 											<label class="control-label">

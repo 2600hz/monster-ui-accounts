@@ -283,5 +283,20 @@
 	"__comment": "UI-1995: Add an announcement to users",
 	"__version": "3.22",
 	"announcementLegend": "Announcement that will popup everytime someone logs in to this account",
-	"deleteAnnouncement": "Delete Announcement"
+	"deleteAnnouncement": "Delete Announcement",
+
+	"__comment": "UI-2053: Enable super duper admin users to promote/demote accounts",
+	"__version": "3.23",
+	"reserllerAction": "Reseller action",
+	"promoteDemoteError": "An error happened during this operation. Please try again later.",
+	"promoteAccount": {
+		"button": "Promote",
+		"confirm": "You are about to promote this account",
+		"success": "This account was promoted successfully"
+	},
+	"demoteAccount": {
+		"button": "Demote",
+		"confirm": "You are about to demote this account",
+		"succes": "This account was demoted successfully"
+	}
 }

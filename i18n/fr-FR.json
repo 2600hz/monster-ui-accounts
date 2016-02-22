@@ -250,5 +250,17 @@
 			"e911": "E911",
 			"cnam": "CNAM"
 		}
+	},
+	"reserllerAction": "Reseller action",
+	"promoteDemoteError": "Une erreur c'est produite. Veuillez réessayer ultérieurement.",
+	"promoteAccount": {
+		"button": "Promouvoir",
+		"confirm": "Vous allerz promouvoir ce compte au status de revendeur",
+		"success": "Ce compte a été promu avec succès"
+	},
+	"demoteAccount": {
+		"button": "Rétrograder",
+		"confirm": "Vous allez reléguer ce compte au status de standard",
+		"succes": "Ce compte a été relégué avec succès"
 	}
 }
