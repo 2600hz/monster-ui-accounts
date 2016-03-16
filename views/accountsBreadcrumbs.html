@@ -1,0 +1,12 @@
+<ul class="breadcrumb account-browser-breadcrumbs">
+	{{#each accounts}}
+		<li class="account-browser-breadcrumb">
+			{{#if parentId}}
+				<span class="divider"><i class="fa fa-angle-right"></i></span>
+				<a data-id="{{id}}" data-parent="{{parentId}}">{{name}}</a>
+			{{else}}
+				<span>{{name}}</span>
+			{{/if}}
+		</li>
+	{{/each}}
+</ul>
