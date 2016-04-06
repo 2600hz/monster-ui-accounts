@@ -21,7 +21,12 @@ define(function(require){
 		requests: {},
 
 		subscribe: {
-			'accountsManager.activate': '_render'
+			'accountsManager.activate': '_render',
+			'accountsManager.renderNewAccount': 'renderNewAccountWizard'
+		},
+
+		shortcuts: {
+			'a': 'accountsManager.renderNewAccount'
 		},
 
 		load: function(callback) {
@@ -151,8 +156,8 @@ define(function(require){
 
 		renderNewAccountWizard: function(params) {
 			var self = this,
-				parent = params.parent,
-				parentAccountId = params.accountId,
+				parent = params.parent || $('#accounts_manager_view'),
+				parentAccountId = params.accountId || self.accountId,
 				dataTemplate = {};
 
 			if(monster.config.whitelabel.hasOwnProperty('realm_suffix') && monster.config.whitelabel.realm_suffix.length) {
