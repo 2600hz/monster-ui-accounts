@@ -1252,3 +1252,24 @@
 	overflow-y: auto;
 	overflow-x: hidden;
 }
+
+/* Account Manager Breadcrumbs */
+.account-browser-breadcrumbs {
+	margin: 0;
+	padding: 20px;
+	overflow: hidden;
+	height: 30px;
+}
+
+.account-browser-breadcrumbs .account-browser-breadcrumb .divider {
+	margin: 0px 5px;
+	vertical-align: middle;
+}
+
+.account-browser-breadcrumbs .account-browser-breadcrumb a {
+	cursor: pointer;
+}
+
+.account-browser-breadcrumbs .account-browser-breadcrumb:not(:last-child) a {
+	color: #606069;
+}

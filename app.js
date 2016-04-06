@@ -46,7 +46,6 @@ define(function(require){
 		 * `parentId`: ID of the parent account used to display the list
 		 * `selectedId`: ID of the account to show as selected in the list
 		 * `callback`: callback to be executed after the rendering
-		 * `breadcrumbs`: list of breadcrumbs to display
 		 */
 		render: function(args){
 			var self = this;
@@ -71,48 +70,28 @@ define(function(require){
 
 			self.renderAccountsManager({
 				container: accountsManager,
-				parentId: args.parentId,
 				selectedId: args.selectedId,
 				selectedTab: args.selectedTab,
-				callback: args.callback,
-				breadcrumbs: args.breadcrumbs
+				callback: args.callback
 			});
 		},
 
 		renderAccountsManager: function(args) {
 			var self = this,
 				parent = args.container,
-				parentId = args.parentId,
 				selectedId = args.selectedId,
 				selectedTab = args.selectedTab,
-				callback = args.callback,
-				breadcrumbsList = args.breadcrumbs;
+				callback = args.callback;
 
 			monster.pub('common.accountBrowser.render', {
 				container: parent.find('.edition-view .left-menu'),
-				parentId: parentId,
 				selectedId: selectedId,
-				breadcrumbsContainer: parent.find('.edition-view .content .top-bar'),
-				breadcrumbsList: breadcrumbsList,
 				addBackButton: true,
 				onNewAccountClick: function(parentAccountId, breadcrumbs) {
 					self.renderNewAccountWizard({
 						parent: parent,
-						accountId: parentAccountId || self.accountId,
-						breadcrumbs: breadcrumbs
+						accountId: parentAccountId || self.accountId
 					});
-				},
-				onBreadcrumbClick: function(accountId, parentId) {
-					if(accountId === self.accountId) {
-						parent.find('.main-content')
-							  .empty()
-							  .append(monster.template(self, 'accountsManagerLanding'));
-					} else {
-						self.edit({
-							accountId: accountId,
-							parent: parent
-						});
-					}
 				},
 				onAccountClick: function(accountId) {
 					parent.find('.main-content').empty();
@@ -129,6 +108,15 @@ define(function(require){
 					});
 					callback && callback();
 				} : callback
+			});
+
+			// Clicking on link in breadcrumbs should edit that account
+			parent.find('.top-bar').on('click', '.account-browser-breadcrumb a', function() {
+				parent.find('.main-content').empty();
+				self.edit({
+					accountId: $(this).data('id'),
+					parent: parent
+				});
 			});
 
 			// Put the focus on the search input
@@ -388,9 +376,7 @@ define(function(require){
 							},
 							function(err, results) {
 								self.render({
-									parentId: parentAccountId,
-									selectedId: newAccountId,
-									breadcrumbs: params.breadcrumbs
+									selectedId: newAccountId
 								});
 							});
 						},
@@ -1196,6 +1182,17 @@ define(function(require){
 								callback(null, null);
 							}
 						});
+					},
+					listParents: function(callback) {
+						self.callApi({
+							resource: 'account.listParents',
+							data: {
+								accountId: accountId
+							},
+							success: function(data, status) {
+								callback(null, data.data);
+							}
+						});
 					}
 				},
 				function(err, results) {
@@ -1222,7 +1219,8 @@ define(function(require){
 								}
 								return app;
 							}),
-							appsBlacklist: results.appsBlacklist
+							appsBlacklist: results.appsBlacklist,
+							listParents: results.listParents
 						},
 						editCallback = function() {
 							params = self.formatDataEditAccount(params);
@@ -1249,6 +1247,25 @@ define(function(require){
 			var self = this;
 
 			return params;
+		},
+
+		updateBreadCrumbs: function(parents, account, container) {
+			var self = this,
+				tree = parents,
+				previousId;
+
+			tree.push({ id: account.id, name: account.name });
+
+			_.each(tree, function(account) {
+				if(previousId) {
+					account.parentId = previousId;
+				}
+
+				previousId = account.id;
+			});
+
+			container.find('.top-bar').empty()
+									  .append(monster.template(self, 'accountsBreadcrumbs', { accounts: tree }));
 		},
 
 		/** Expected params:
@@ -1306,6 +1323,8 @@ define(function(require){
 				templateData.account.created = monster.util.toFriendlyDate(accountData.created, "short");
 			}
 
+			self.updateBreadCrumbs(params.listParents, accountData, parent);
+
 			var contentHtml = $(monster.template(self, 'edit', templateData)),
 				$liSettings = contentHtml.find('li.settings-item'),
 				$liContent = $liSettings.find('.settings-item-content'),
@@ -1322,16 +1341,9 @@ define(function(require){
 				container: contentHtml.find('#accountsmanager_carrier_tab'),
 				data: params,
 				callbackAfterSave: function() {
-					monster.pub('common.accountBrowser.getBreadcrumbsList', {
-						container: parent.find('.top-bar'),
-						callback: function(breadcrumbs) {
-							self.render({
-								parentId: _.last(breadcrumbs).id,
-								selectedId: accountData.id,
-								breadcrumbs: breadcrumbs,
-								selectedTab: 'tab-carrier'
-							});
-						}
+					self.render({
+						selectedId: accountData.id,
+						selectedTab: 'tab-carrier'
 					});
 				}
 			});
@@ -1411,16 +1423,8 @@ define(function(require){
 						},
 						success: function(data, status) {
 							toastr.success(self.i18n.active()[node].success);
-
-							monster.pub('common.accountBrowser.getBreadcrumbsList', {
-								container: parent.find('.top-bar'),
-								callback: function(breadcrumbs) {
-									self.render({
-										parentId: _.last(breadcrumbs).id,
-										selectedId: accountData.id,
-										breadcrumbs: breadcrumbs
-									});
-								}
+							self.render({
+								selectedId: accountData.id
 							});
 						},
 						error: function(data, status) {
@@ -1454,15 +1458,8 @@ define(function(require){
 				if(monster.ui.valid(contentHtml.find('#form_'+fieldName))) {
 					self.updateData(accountData, newData,
 						function(data) {
-							monster.pub('common.accountBrowser.getBreadcrumbsList', {
-								container: parent.find('.top-bar'),
-								callback: function(breadcrumbs) {
-									self.render({
-										parentId: _.last(breadcrumbs).id,
-										selectedId: accountData.id,
-										breadcrumbs: breadcrumbs
-									});
-								}
+							self.render({
+								selectedId: accountData.id
 							});
 						},
 						function(data) {
@@ -1482,7 +1479,6 @@ define(function(require){
 
 				$btn_change.on('click', function() {
 					monster.pub('common.servicePlanDetails.getServicePlanTemplate', {
-						useOwnPlans: accountData.is_reseller,
 						accountId: accountData.id,
 						afterRender: function(template, data) {
 							var templatePopup = $(monster.template(self, 'changeServicePlanDialog'));
@@ -1628,18 +1624,11 @@ define(function(require){
 					{ custom_notes: notesContent },
 					function(data, status) {
 						accountData = data.data;
-						monster.pub('common.accountBrowser.getBreadcrumbsList', {
-							container: parent.find('.top-bar'),
-							callback: function(breadcrumbs) {
-								self.render({
-									parentId: _.last(breadcrumbs).id,
-									selectedId: accountData.id,
-									breadcrumbs: breadcrumbs,
-									selectedTab: 'tab-notes',
-									callback: function() {
-										toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {"timeOut": 5000});
-									}
-								});
+						self.render({
+							selectedId: accountData.id,
+							selectedTab: 'tab-notes',
+							callback: function() {
+								toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {"timeOut": 5000});
 							}
 						});
 					},
@@ -1653,18 +1642,11 @@ define(function(require){
 
 			var successUpdateAnnouncement = function(data, status) {
 					accountData = data.data;
-					monster.pub('common.accountBrowser.getBreadcrumbsList', {
-						container: parent.find('.top-bar'),
-						callback: function(breadcrumbs) {
-							self.render({
-								parentId: _.last(breadcrumbs).id,
-								selectedId: accountData.id,
-								breadcrumbs: breadcrumbs,
-								selectedTab: 'tab-notes',
-								callback: function() {
-									toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {"timeOut": 5000});
-								}
-							});
+					self.render({
+						selectedId: accountData.id,
+						selectedTab: 'tab-notes',
+						callback: function() {
+							toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {"timeOut": 5000});
 						}
 					});
 				},
@@ -1699,18 +1681,11 @@ define(function(require){
 						data: blacklistData
 					},
 					success: function(data, status) {
-						monster.pub('common.accountBrowser.getBreadcrumbsList', {
-							container: parent.find('.top-bar'),
-							callback: function(breadcrumbs) {
-								self.render({
-									parentId: _.last(breadcrumbs).id,
-									selectedId: accountData.id,
-									breadcrumbs: breadcrumbs,
-									selectedTab: 'tab-appstore',
-									callback: function() {
-										toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {"timeOut": 5000});
-									}
-								});
+						self.render({
+							selectedId: accountData.id,
+							selectedTab: 'tab-appstore',
+							callback: function() {
+								toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {"timeOut": 5000});
 							}
 						});
 					},
@@ -1736,18 +1711,11 @@ define(function(require){
 								})
 							},
 							success: function(_data, _status) {
-								monster.pub('common.accountBrowser.getBreadcrumbsList', {
-									container: parent.find('.top-bar'),
-									callback: function(breadcrumbs) {
-										self.render({
-											parentId: _.last(breadcrumbs).id,
-											selectedId: accountData.id,
-											breadcrumbs: breadcrumbs,
-											selectedTab: 'tab-numbersfeatures',
-											callback: function() {
-												toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {"timeOut": 5000});
-											}
-										});
+								self.render({
+									selectedId: accountData.id,
+									selectedTab: 'tab-numbersfeatures',
+									callback: function() {
+										toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {"timeOut": 5000});
 									}
 								});
 							}
@@ -1945,21 +1913,11 @@ define(function(require){
 						}
 					},
 					function(err, results) {
-						monster.pub('common.accountBrowser.getBreadcrumbsList', {
-							container: $('#accounts_manager_view .content .top-bar'),
-							callback: function(breadcrumbs) {
-								self.render({
-									parentId: _.last(breadcrumbs).id,
-									selectedId: accountData.id,
-									breadcrumbs: breadcrumbs,
-									selectedTab: 'tab-limits'
-								});
-							}
+						self.render({
+							selectedId: accountData.id,
+							selectedTab: 'tab-limits'
 						});
 					});
-					
-
-					
 				}
 
 			});
@@ -2070,18 +2028,11 @@ define(function(require){
 
 				self.updateData(accountData, uiRestrictions,
 					function(data, status) {
-						monster.pub('common.accountBrowser.getBreadcrumbsList', {
-							container: $('#accounts_manager_view .content .top-bar'),
-							callback: function(breadcrumbs) {
-								self.render({
-									parentId: _.last(breadcrumbs).id,
-									selectedId: accountData.id,
-									breadcrumbs: breadcrumbs,
-									selectedTab: 'tab-restrictions',
-									callback: function() {
-										toastr.success(self.i18n.active().toastrMessages.uiRestrictionsUpdateSuccess, '', {"timeOut": 5000});
-									}
-								});
+						self.render({
+							selectedId: accountData.id,
+							selectedTab: 'tab-restrictions',
+							callback: function() {
+								toastr.success(self.i18n.active().toastrMessages.uiRestrictionsUpdateSuccess, '', {"timeOut": 5000});
 							}
 						});
 					},
