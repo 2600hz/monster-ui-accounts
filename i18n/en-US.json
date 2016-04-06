@@ -298,5 +298,11 @@
 		"button": "Demote",
 		"confirm": "You are about to demote this account",
 		"success": "This account was demoted successfully"
+	},
+
+	"__comment": "UI-2118: Add app specific shortcut",
+	"__version": "3.22",
+	"shortcuts": {
+		"a": "Render New Account"
 	}
 }
