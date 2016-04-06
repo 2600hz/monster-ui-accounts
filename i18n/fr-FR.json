@@ -261,6 +261,6 @@
 	"demoteAccount": {
 		"button": "Rétrograder",
 		"confirm": "Vous allez reléguer ce compte au status de standard",
-		"succes": "Ce compte a été relégué avec succès"
+		"success": "Ce compte a été relégué avec succès"
 	}
 }
