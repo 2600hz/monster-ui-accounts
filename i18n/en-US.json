@@ -303,6 +303,6 @@
 	"__comment": "UI-2118: Add app specific shortcut",
 	"__version": "3.22",
 	"shortcuts": {
-		"a": "Render New Account"
+		"a": "Create a New Account"
 	}
 }
