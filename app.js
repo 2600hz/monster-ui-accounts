@@ -411,7 +411,7 @@ define(function(require){
 			monster.ui.showPasswordStrength(newAccountWizard.find('input[name="user.password"]'));
 
 			parent.find('.edition-view').hide();
-			parent.find('.creation-view').append(newAccountWizard);
+			parent.find('.creation-view').empty().append(newAccountWizard);
 		},
 
 		renderWizardSteps: function(parent) {
