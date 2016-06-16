@@ -127,16 +127,18 @@ define(function(require){
 			// Put the focus on the search input
 			setTimeout(function() { parent.find('.search-query').focus(); });
 
-			// Adjusting the layout divs height to always fit the window's size
-			$(window).resize(function(e) {
-				var $accountListContainer = parent.find('.account-list-container'),
-					$mainContent = parent.find('.main-content'),
-					topBarHeight = $('#topbar').outerHeight(),
-					listHeight = this.innerHeight-$accountListContainer.position().top-topBarHeight+'px'; //
-				$accountListContainer.css('height', listHeight);
-				$mainContent.css('height', this.innerHeight-$mainContent.position().top-topBarHeight+'px');
-			});
-			$(window).resize();
+			// give time to the DOM to load all the elements before the resize happens
+			setTimeout(function() {
+				// Adjusting the layout divs height to always fit the window's size
+				$(window).resize(function(e) {
+					var $accountListContainer = parent.find('.account-list-container'),
+						$mainContent = parent.find('.main-content'),
+						listHeight = this.innerHeight-$accountListContainer.position().top+'px'; //
+					$accountListContainer.css('height', listHeight);
+					$mainContent.css('height', this.innerHeight-$mainContent.position().top+'px');
+				});
+				$(window).resize();
+			}, 100);
 		},
 
 		formatAccountCreationData: function(newAccountWizard, formData) {
@@ -411,7 +413,7 @@ define(function(require){
 			monster.ui.showPasswordStrength(newAccountWizard.find('input[name="user.password"]'));
 
 			parent.find('.edition-view').hide();
-			parent.find('.creation-view').append(newAccountWizard);
+			parent.find('.creation-view').empty().append(newAccountWizard);
 		},
 
 		renderWizardSteps: function(parent) {
