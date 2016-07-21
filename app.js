@@ -1224,6 +1224,7 @@ define(function(require){
 								if(results.appsBlacklist && results.appsBlacklist.indexOf(app.id) >= 0) {
 									app.blacklisted = true;
 								}
+								monster.ui.formatIconApp(app);
 								return app;
 							}),
 							appsBlacklist: results.appsBlacklist,

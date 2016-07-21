@@ -484,7 +484,7 @@
 					{{#each appsList}}
 					<div class="app-row clearfix{{#if blacklisted}} blacklisted{{/if}}">
 						<div class="app-row-content">
-							<div class="app-icon{{#if icon}}" style="background-image:url({{icon}})"{{else}} monster-default-app-icon"{{/if}}></div>
+							<div class="app-icon {{extraCssClass}}" style="background-image:url({{icon}})"></div>
 							<div class="app-name" data-toggle="tooltip" data-placement="top" data-original-title="{{description}}">{{name}}</div>
 							<div class="app-toggle-container pull-right">
 								{{#monsterSwitch}}
