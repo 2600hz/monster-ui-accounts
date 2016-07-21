@@ -1220,10 +1220,12 @@ define(function(require){
 							appsList: _.map(results.appsList, function(app) {
 								var currentLang = app.i18n.hasOwnProperty(isoFormattedLang) ? isoFormattedLang : 'en-US';
 								app.description = app.i18n[currentLang].description;
-								app.name = app.i18n[currentLang].label;
+								app.friendlyName = app.i18n[currentLang].label;
+
 								if(results.appsBlacklist && results.appsBlacklist.indexOf(app.id) >= 0) {
 									app.blacklisted = true;
 								}
+
 								monster.ui.formatIconApp(app);
 								return app;
 							}),
