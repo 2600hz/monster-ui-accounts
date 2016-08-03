@@ -92,6 +92,7 @@ define(function(require){
 				container: parent.find('.edition-view .left-menu'),
 				selectedId: selectedId,
 				addBackButton: true,
+				noFocus: true,
 				onNewAccountClick: function(parentAccountId, breadcrumbs) {
 					self.renderNewAccountWizard({
 						parent: parent,
@@ -123,9 +124,6 @@ define(function(require){
 					parent: parent
 				});
 			});
-
-			// Put the focus on the search input
-			setTimeout(function() { parent.find('.search-query').focus(); });
 
 			// give time to the DOM to load all the elements before the resize happens
 			setTimeout(function() {
