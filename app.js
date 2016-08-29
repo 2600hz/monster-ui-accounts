@@ -1154,7 +1154,7 @@ define(function(require){
 												generateError: false
 											},
 											success: function(data, status) {*/
-												val.icon = self.apiUrl + 'accounts/' + self.accountId +'/apps_store/' + val.id + '/icon?auth_token=' + self.authToken;
+												val.icon = monster.util.getAppIconPath(val);
 												parallelCallback && parallelCallback(null, val);
 											/*},
 											error: function(data, status) {
