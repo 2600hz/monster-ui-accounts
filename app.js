@@ -1328,7 +1328,7 @@ define(function(require){
 				};
 
 			if($.isNumeric(templateData.account.created)) {
-				templateData.account.created = monster.util.toFriendlyDate(accountData.created, "short");
+				templateData.account.created = monster.util.toFriendlyDate(accountData.created, 'date');
 			}
 
 			self.updateBreadCrumbs(params.listParents, accountData, parent);
