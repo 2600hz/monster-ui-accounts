@@ -175,7 +175,7 @@
 		"appstoreUpdateError": "An unexpected error occured when updating the list of allowed apps, please try again later."
 	},
 	"uiRestrictionsLegend": "Select what your customer can view",
-	"uiRestrictionsTooltip": "When you click on your name from top right corner of the screen, you will see a dropdown menu. You can restrict the view of these options to your Sub-Account by simply uncheck it from account permissions.",
+	"uiRestrictionsTooltip": "When you click on your name from top right corner of the screen, you will see a dropdown menu. To restrict the view of options for this Account simply uncheck.",
 	"uiRestrictionsMenu": {
 		"settings": "Settings",
 		"user": "User",
