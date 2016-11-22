@@ -774,22 +774,22 @@ define(function(require){
 						regularUsers = $.map(data.data, function(val) {
 							return val.priv_level !== "admin" ? val : null;
 						}),
-						contentHtml = $(monster.template(self, 'accountsAdminForm', {
+						contentTemplate = $(monster.template(self, 'accountsAdminForm', {
 							accountAdmins: admins,
 							accountUsers: regularUsers
 						})),
-						$createUserDiv = contentHtml.find('.create-user-div'),
-						$adminElements = contentHtml.find('.admin-element'),
-						$newAdminBtn = contentHtml.find('#accountsmanager_new_admin_btn'),
-						$newAdminElem = contentHtml.find('.new-admin-element');
+						$createUserDiv = contentTemplate.find('.create-user-div'),
+						$adminElements = contentTemplate.find('.admin-element'),
+						$newAdminBtn = contentTemplate.find('#accountsmanager_new_admin_btn'),
+						$newAdminElem = contentTemplate.find('.new-admin-element');
 
-					contentHtml.find('.close-admin-settings').click(function(e) {
+					contentTemplate.find('.close-admin-settings').click(function(e) {
 						e.preventDefault();
 						closeAdminsSetting();
 						e.stopPropagation();
 					});
 
-					contentHtml.find('.new-admin-tabs a').click(function(e) {
+					contentTemplate.find('.new-admin-tabs a').click(function(e) {
 						e.preventDefault();
 						$(this).tab('show');
 					});
@@ -816,7 +816,7 @@ define(function(require){
 						$(this).val() === "true" ? $createUserDiv.find('.new-admin-password-div').slideUp() : $createUserDiv.find('.new-admin-password-div').slideDown();
 					});
 
-					contentHtml.find('.admin-element-link.delete').click(function(e) {
+					contentTemplate.find('.admin-element-link.delete').click(function(e) {
 						e.preventDefault();
 						var userId = $(this).parent().parent().data('user_id');
 						monster.ui.confirm(self.i18n.active().deleteUserConfirm, function() {
@@ -835,12 +835,12 @@ define(function(require){
 						});
 					});
 
-					contentHtml.find('.admin-element-link.edit').click(function(e) {
+					contentTemplate.find('.admin-element-link.edit').click(function(e) {
 						e.preventDefault();
 						var $adminElement = $(this).parent().parent(),
 							userId = $adminElement.data('user_id');
 
-						contentHtml.find('.admin-element-edit .admin-cancel-btn').click();
+						contentTemplate.find('.admin-element-edit .admin-cancel-btn').click();
 
 						if($newAdminBtn.hasClass('active')) {
 							$newAdminBtn.click();
@@ -938,7 +938,7 @@ define(function(require){
 							var formData = monster.ui.getFormData('accountsmanager_add_admin_form'),
 								autoGen = ($createUserDiv.find('input[name="extra.autogen_password"]:checked').val() === "true");
 
-							if(monster.ui.valid(contentHtml.find('#accountsmanager_add_admin_form'))) {
+							if(monster.ui.valid(contentTemplate.find('#accountsmanager_add_admin_form'))) {
 								formData = self.cleanFormData(formData);
 								formData.priv_level = "admin";
 								formData.username = formData.email;
@@ -965,7 +965,7 @@ define(function(require){
 								$newAdminBtn.click();
 							}
 						} else {
-							var userId = contentHtml.find('#accountsmanager_promote_user_select option:selected').val();
+							var userId = contentTemplate.find('#accountsmanager_promote_user_select option:selected').val();
 							self.callApi({
 								resource: 'user.get',
 								data: {
@@ -992,9 +992,9 @@ define(function(require){
 						}
 					});
 
-					parent.find('#form_accountsmanager_account_admins').empty().append(contentHtml);
+					parent.find('#form_accountsmanager_account_admins').empty().append(contentTemplate);
 
-					$.each(contentHtml.find('form'), function() {
+					$.each(contentTemplate.find('form'), function() {
 						monster.ui.validate($(this), {
 							rules: {
 								'password': {
@@ -1015,7 +1015,7 @@ define(function(require){
 						});
 					});
 
-					monster.ui.tooltips(contentHtml);
+					monster.ui.tooltips(contentTemplate);
 				}
 			});
 		},
@@ -1333,8 +1333,8 @@ define(function(require){
 
 			self.updateBreadCrumbs(params.listParents, accountData, parent);
 
-			var contentHtml = $(monster.template(self, 'edit', templateData)),
-				$liSettings = contentHtml.find('li.settings-item'),
+			var contentTemplate = $(monster.template(self, 'edit', templateData)),
+				$liSettings = contentTemplate.find('li.settings-item'),
 				$liContent = $liSettings.find('.settings-item-content'),
 				$aSettings = $liSettings.find('a.settings-link'),
 				closeTabsContent = function() {
@@ -1343,10 +1343,10 @@ define(function(require){
 					$aSettings.find('.update .text').text(self.i18n.active().editSetting);
 					$aSettings.find('.update i').removeClass('fa-times').addClass('fa-cog');
 				},
-				notesTab = contentHtml.find('#accountsmanager_notes_tab');
+				notesTab = contentTemplate.find('#accountsmanager_notes_tab');
 
 			monster.pub('common.carrierSelector', {
-				container: contentHtml.find('#accountsmanager_carrier_tab'),
+				container: contentTemplate.find('#accountsmanager_carrier_tab'),
 				data: params,
 				callbackAfterSave: function() {
 					self.render({
@@ -1356,7 +1356,7 @@ define(function(require){
 				}
 			});
 
-			contentHtml.find('.account-tabs a').click(function(e) {
+			contentTemplate.find('.account-tabs a').click(function(e) {
 				e.preventDefault();
 				if(!$(this).parent().hasClass('disabled')) {
 					closeTabsContent();
@@ -1364,7 +1364,7 @@ define(function(require){
 				}
 			});
 
-			contentHtml.find('li.settings-item .settings-link').on('click', function(e) {
+			contentTemplate.find('li.settings-item .settings-link').on('click', function(e) {
 				var $this = $(this),
 					settingsItem = $this.parents('.settings-item');
 
@@ -1384,7 +1384,7 @@ define(function(require){
 				}
 			});
 
-			contentHtml.find('.settings-item .cancel').on('click', function(e) {
+			contentTemplate.find('.settings-item .cancel').on('click', function(e) {
 				e.preventDefault();
 				closeTabsContent();
 
@@ -1395,7 +1395,7 @@ define(function(require){
 				e.stopPropagation();
 			});
 
-			contentHtml.find('#accountsmanager_delete_account_btn').on('click', function(e) {
+			contentTemplate.find('#accountsmanager_delete_account_btn').on('click', function(e) {
 				self.confirmDeleteDialog(accountData.name, function() {
 					self.callApi({
 						resource: 'account.delete',
@@ -1417,7 +1417,7 @@ define(function(require){
 				});
 			});
 
-			contentHtml.find('.resellerAction').on('click', function(event) {
+			contentTemplate.find('.resellerAction').on('click', function(event) {
 				event.preventDefault();
 
 				var action = $(this).data('action'),
@@ -1442,7 +1442,7 @@ define(function(require){
 				});
 			});
 
-			contentHtml.find('#accountsmanager_use_account_btn').on('click', function(e) {
+			contentTemplate.find('#accountsmanager_use_account_btn').on('click', function(e) {
 				e.preventDefault();
 
 				monster.pub('core.triggerMasquerading', {
@@ -1455,7 +1455,7 @@ define(function(require){
 				e.stopPropagation();
 			});
 
-			contentHtml.find('.change').on('click', function(e) {
+			contentTemplate.find('.change').on('click', function(e) {
 				e.preventDefault();
 
 				var $this = $(this),
@@ -1463,7 +1463,7 @@ define(function(require){
 					fieldName = $this.data('field'),
 					newData = self.cleanFormData(monster.ui.getFormData('form_'+fieldName));
 
-				if(monster.ui.valid(contentHtml.find('#form_'+fieldName))) {
+				if(monster.ui.valid(contentTemplate.find('#form_'+fieldName))) {
 					self.updateData(accountData, newData,
 						function(data) {
 							self.render({
@@ -1481,9 +1481,9 @@ define(function(require){
 
 			// If reseller
 			if(monster.apps.auth.isReseller) {
-				var $btn_change = contentHtml.find('#accountsmanager_serviceplan_change'),
-					$btn_rec = contentHtml.find('#accountsmanager_serviceplan_reconciliation'),
-					$btn_sync = contentHtml.find('#accountsmanager_serviceplan_synchronization');
+				var $btn_change = contentTemplate.find('#accountsmanager_serviceplan_change'),
+					$btn_rec = contentTemplate.find('#accountsmanager_serviceplan_reconciliation'),
+					$btn_sync = contentTemplate.find('#accountsmanager_serviceplan_synchronization');
 
 				$btn_change.on('click', function() {
 					monster.pub('common.servicePlanDetails.getServicePlanTemplate', {
@@ -1499,7 +1499,7 @@ define(function(require){
 									previousPlans: data.selectedPlans,
 									container: templatePopup.find('.common-container'),
 									accountId: accountData.id,
-									divResult: contentHtml.find('.serviceplans-details-container'),
+									divResult: contentTemplate.find('.serviceplans-details-container'),
 									callback: function() {
 										dialog.dialog('close');
 
@@ -1567,15 +1567,15 @@ define(function(require){
 				});
 			}
 
-			timezone.populateDropdown(contentHtml.find('#accountsmanager_account_timezone'), accountData.timezone);
+			timezone.populateDropdown(contentTemplate.find('#accountsmanager_account_timezone'), accountData.timezone);
 
-			contentHtml.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: "220px"});
+			contentTemplate.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: "220px"});
 
-			monster.ui.tooltips(contentHtml);
+			monster.ui.tooltips(contentTemplate);
 
 			if(currentServicePlan) {
 				monster.pub('common.servicePlanDetails.render', {
-					container: contentHtml.find('.serviceplans-details-container'),
+					container: contentTemplate.find('.serviceplans-details-container'),
 					accountId: accountData.id,
 					servicePlan: currentServicePlan,
 					useOwnPlans: accountData.is_reseller
@@ -1588,15 +1588,15 @@ define(function(require){
 				balance: accountBalance,
 				formattedClassifiers: formattedClassifiers,
 				servicePlan: currentServicePlan,
-				parent: contentHtml.find('#accountsmanager_limits_tab')
+				parent: contentTemplate.find('#accountsmanager_limits_tab')
 			});
 
 			self.renderRestrictionsTab({
 				accountData: accountData,
-				parent: contentHtml.find('#accountsmanager_restrictions_tab')
+				parent: contentTemplate.find('#accountsmanager_restrictions_tab')
 			});
 
-			monster.ui.validate(contentHtml.find('#form_accountsmanager_account_realm'), {
+			monster.ui.validate(contentTemplate.find('#form_accountsmanager_account_realm'), {
 				rules: {
 					'realm': {
 						'realm': true
@@ -1605,10 +1605,10 @@ define(function(require){
 			});
 
 			parent.find('.main-content').empty()
-										.append(contentHtml);
+										.append(contentTemplate);
 
 			if(selectedTab) {
-				contentHtml.find('.'+selectedTab+' > a').tab('show');
+				contentTemplate.find('.'+selectedTab+' > a').tab('show');
 			}
 
 			notesTab.find('div.dropdown-menu input')
@@ -1672,12 +1672,19 @@ define(function(require){
 				self.updateData(accountData,{ announcement: announcementContent },successUpdateAnnouncement,errorUpdateAnnouncement);
 			});
 
-			contentHtml.find('#accountsmanager_appstore_tab .app-toggle').on('change', function() {
+			contentTemplate.find('#accountsmanager_appstore_tab .app-toggle').on('change', function() {
 				$(this).parents('.app-row').toggleClass('blacklisted');
 			});
-			contentHtml.find('#accountsmanager_appstore_tab #accountsmanager_appstore_save').on('click', function() {
+
+			contentTemplate.find('#accountsmanager_appstore_tab .app-global-toggle').on('click', function() {
+				var isChecked = $(this).is(':checked');
+
+				contentTemplate.find('#accountsmanager_appstore_tab .app-toggle').prop('checked', isChecked);
+			});
+
+			contentTemplate.find('#accountsmanager_appstore_tab #accountsmanager_appstore_save').on('click', function() {
 				var blacklistData = {
-					blacklist: $.map(contentHtml.find('#accountsmanager_appstore_tab .app-toggle:not(:checked)'), function(toggle) {
+					blacklist: $.map(contentTemplate.find('#accountsmanager_appstore_tab .app-toggle:not(:checked)'), function(toggle) {
 						return $(toggle).data('id');
 					})
 				};
@@ -1703,7 +1710,7 @@ define(function(require){
 				});
 			});
 
-			contentHtml.find('#accountsmanager_numbersfeatures_save').on('click', function() {
+			contentTemplate.find('#accountsmanager_numbersfeatures_save').on('click', function() {
 				self.callApi({
 					resource: 'account.get',
 					data: {
@@ -1732,9 +1739,9 @@ define(function(require){
 				});
 			});
 
-			// self.adjustTabsWidth(contentHtml.find('ul.account-tabs > li'));
+			// self.adjustTabsWidth(contentTemplate.find('ul.account-tabs > li'));
 
-			$.each(contentHtml.find('form'), function() {
+			$.each(contentTemplate.find('form'), function() {
 				var options = {};
 				if(this.id === 'accountsmanager_callrestrictions_form') {
 					options.rules = {
@@ -1748,7 +1755,7 @@ define(function(require){
 			});
 
 			if(typeof callback === 'function') {
-				callback(contentHtml);
+				callback(contentTemplate);
 			}
 		},
 

@@ -1054,6 +1054,17 @@
 	padding: 20px;
 	min-width: 280px;
 }
+
+#accountsmanager_appstore_tab .toggle-wrapper {
+	float: right;
+	margin-right: 22px;
+}
+
+#accountsmanager_appstore_tab .toggle-wrapper .title {
+	font-size: 14px;
+	margin-right: 15px;
+}
+
 #accountsmanager_appstore_tab .apps-container {
 	border: solid 1px #c0c0c9;
 	border-radius: 2px;
