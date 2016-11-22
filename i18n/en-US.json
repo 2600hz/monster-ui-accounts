@@ -304,5 +304,9 @@
 	"__version": "3.22",
 	"shortcuts": {
 		"a": "Create a New Account"
-	}
+	},
+
+	"__comment": "UI-1916: Add app specific shortcut",
+	"__version": "4.0",
+	"toggleAll": "Toggle All"
 }

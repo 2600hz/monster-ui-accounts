@@ -479,7 +479,17 @@
 			</div>
 
 			<div class="tab-pane" id="accountsmanager_appstore_tab">
-				<legend>{{ i18n.appstoreLegend }}</legend>
+				<legend>
+					{{ i18n.appstoreLegend }}
+
+					<span class="toggle-wrapper pull-right">
+						<span class="title">{{ i18n.toggleAll }}</span>
+
+						{{#monsterSwitch}}
+							<input type="checkbox" class="app-global-toggle" checked/>
+						{{/monsterSwitch}}
+					</span>
+				</legend>
 				<div class="apps-container">
 					{{#each appsList}}
 					<div class="app-row clearfix{{#if blacklisted}} blacklisted{{/if}}">
