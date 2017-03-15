@@ -1324,7 +1324,7 @@ define(function(require){
 					carrierInfo: carrierInfo,
 					isSuperDuperAdmin: monster.util.isSuperDuper(),
 					accountIsReseller: accountData.is_reseller,
-					appsList: monster.util.sort(appsList)
+					appsList: _.sortBy(appsList, 'name')
 				};
 
 			if($.isNumeric(templateData.account.created)) {
