@@ -1,4 +1,4 @@
-define(function(require){
+define(function(require) {
 	var $ = require('jquery'),
 		_ = require('underscore'),
 		chosen = require('chosen'),
@@ -11,7 +11,7 @@ define(function(require){
 
 		css: [ 'app' ],
 
-		i18n: { 
+		i18n: {
 			'en-US': { customCss: false },
 			'fr-FR': { customCss: false },
 			'ru-RU': { customCss: false },
@@ -52,7 +52,7 @@ define(function(require){
 		 * `selectedId`: ID of the account to show as selected in the list
 		 * `callback`: callback to be executed after the rendering
 		 */
-		render: function(args){
+		render: function(args) {
 			var self = this;
 
 			self._render(args);
@@ -67,11 +67,11 @@ define(function(require){
 				accountsManagerLanding = $(monster.template(self, 'accountsManagerLanding')),
 				parent = container || $('#monster-content');
 
-				accountsManager.find('.main-content')
-							   .append(accountsManagerLanding);
+			accountsManager.find('.main-content')
+							.append(accountsManagerLanding);
 
 			parent.empty()
-				  .append(accountsManager);
+					.append(accountsManager);
 
 			self.renderAccountsManager({
 				container: accountsManager,
@@ -131,9 +131,9 @@ define(function(require){
 				$(window).resize(function(e) {
 					var $accountListContainer = parent.find('.account-list-container'),
 						$mainContent = parent.find('.main-content'),
-						listHeight = this.innerHeight-$accountListContainer.position().top+'px'; //
+						listHeight = this.innerHeight - $accountListContainer.position().top + 'px'; //
 					$accountListContainer.css('height', listHeight);
-					$mainContent.css('height', this.innerHeight-$mainContent.position().top+'px');
+					$mainContent.css('height', this.innerHeight - $mainContent.position().top + 'px');
 				});
 				$(window).resize();
 			}, 100);
@@ -160,7 +160,7 @@ define(function(require){
 				parentAccountId = params.accountId || self.accountId,
 				dataTemplate = {};
 
-			if(monster.config.whitelabel.hasOwnProperty('realm_suffix') && monster.config.whitelabel.realm_suffix.length) {
+			if (monster.config.whitelabel.hasOwnProperty('realm_suffix') && monster.config.whitelabel.realm_suffix.length) {
 				dataTemplate.whitelabeledRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
 			}
 
@@ -173,14 +173,13 @@ define(function(require){
 			newAccountWizard.find('.wizard-content-step').hide();
 			newAccountWizard.find('.wizard-content-step[data-step="1"]').show();
 
-			if(!monster.apps.auth.isReseller) {
+			if (!monster.apps.auth.isReseller) {
 				newAccountWizard.find('.wizard-top-bar .step[data-step="2"]').hide();
 			}
 
-			if(maxStep > 1) {
+			if (maxStep > 1) {
 				newAccountWizard.find('.submit-btn').hide();
-			}
-			else {
+			} else {
 				newAccountWizard.find('.next-step').hide();
 			}
 
@@ -189,13 +188,13 @@ define(function(require){
 			newAccountWizard.find('.step').on('click', function() {
 				var currentStep = newAccountWizard.find('.wizard-top-bar').data('active_step'),
 					newStep = $(this).data('step');
-				if($(this).hasClass('completed') && currentStep !== newStep) {
-					if(newStep < currentStep) {
-						if(!monster.ui.valid(newAccountWizardForm)) {
-							newAccountWizard.find('.step:gt('+newStep+')').removeClass('completed');
+				if ($(this).hasClass('completed') && currentStep !== newStep) {
+					if (newStep < currentStep) {
+						if (!monster.ui.valid(newAccountWizardForm)) {
+							newAccountWizard.find('.step:gt(' + newStep + ')').removeClass('completed');
 						}
 						self.changeStep(newStep, maxStep, newAccountWizard);
-					} else if(monster.ui.valid(newAccountWizardForm)) {
+					} else if (monster.ui.valid(newAccountWizardForm)) {
 						self.changeStep(newStep, maxStep, newAccountWizard);
 					}
 				}
@@ -205,11 +204,11 @@ define(function(require){
 				ev.preventDefault();
 
 				var currentStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('active_step')),
-					newStep = currentStep+1;
-				if(newStep === 2 && !monster.apps.auth.isReseller) {
+					newStep = currentStep + 1;
+				if (newStep === 2 && !monster.apps.auth.isReseller) {
 					newStep++;
 				}
-				if(monster.ui.valid(newAccountWizardForm)) {
+				if (monster.ui.valid(newAccountWizardForm)) {
 					self.changeStep(newStep, maxStep, newAccountWizard);
 				}
 			});
@@ -217,12 +216,12 @@ define(function(require){
 			newAccountWizard.find('.prev-step').on('click', function(ev) {
 				ev.preventDefault();
 
-				var newStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('active_step'))-1;
-				if(newStep === 2 && !monster.apps.auth.isReseller) {
+				var newStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('active_step')) - 1;
+				if (newStep === 2 && !monster.apps.auth.isReseller) {
 					newStep--;
 				}
-				if(!monster.ui.valid(newAccountWizardForm)) {
-					newAccountWizard.find('.step:gt('+newStep+')').removeClass('completed');
+				if (!monster.ui.valid(newAccountWizardForm)) {
+					newAccountWizard.find('.step:gt(' + newStep + ')').removeClass('completed');
 				}
 				self.changeStep(newStep, maxStep, newAccountWizard);
 			});
@@ -238,25 +237,24 @@ define(function(require){
 			newAccountWizard.find('.submit-btn').on('click', function(ev) {
 				ev.preventDefault();
 
-				var currentStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('active_step')),
-					toggleProcessing = function(show) {
-						var stepsDiv = newAccountWizard.find('#accountsmanager_new_account_form'),
-							processingDiv = newAccountWizard.find('.processing-div');
+				var toggleProcessing = function(show) {
+					var stepsDiv = newAccountWizard.find('#accountsmanager_new_account_form'),
+						processingDiv = newAccountWizard.find('.processing-div');
 
-						if(show) {
-							stepsDiv.hide();
-							processingDiv.show();
-							processingDiv.find('i.fa-spinner').addClass('fa-spin');
-							newAccountWizard.find('.step').removeClass('completed');
-						} else {
-							stepsDiv.show();
-							processingDiv.hide();
-							processingDiv.find('i.fa-spinner').removeClass('fa-spin');
-							newAccountWizard.find('.step').addClass('completed');
-						}
-					};
+					if (show) {
+						stepsDiv.hide();
+						processingDiv.show();
+						processingDiv.find('i.fa-spinner').addClass('fa-spin');
+						newAccountWizard.find('.step').removeClass('completed');
+					} else {
+						stepsDiv.show();
+						processingDiv.hide();
+						processingDiv.find('i.fa-spinner').removeClass('fa-spin');
+						newAccountWizard.find('.step').addClass('completed');
+					}
+				};
 
-				if(monster.ui.valid(newAccountWizardForm)) {
+				if (monster.ui.valid(newAccountWizardForm)) {
 					var formData = monster.ui.getFormData('accountsmanager_new_account_form');
 
 					formData = self.formatAccountCreationData(newAccountWizardForm, formData);
@@ -273,13 +271,13 @@ define(function(require){
 							var newAccountId = data.data.id;
 							monster.parallel({
 								admin: function(callback) {
-									if(formData.user.email) {
-										if(formData.extra.autogenPassword) {
+									if (formData.user.email) {
+										if (formData.extra.autogenPassword) {
 											formData.user.password = self.autoGeneratePassword();
 											formData.user.send_email_on_creation = true;
 										}
 										formData.user.username = formData.user.email;
-										formData.user.priv_level = "admin";
+										formData.user.priv_level = 'admin';
 										self.callApi({
 											resource: 'user.create',
 											data: {
@@ -288,13 +286,13 @@ define(function(require){
 											},
 											success: function(data, status) {
 												callback(null, data.data);
-												if(formData.user.send_email_on_creation) {
+												if (formData.user.send_email_on_creation) {
 													var popupContent = monster.template(self, '!' + self.i18n.active().sentEmailPopup, { email: data.data.email });
 													monster.ui.alert('info', popupContent);
 												}
 											},
 											error: function(data, status) {
-												toastr.error(self.i18n.active().toastrMessages.newAccount.adminError, '', {"timeOut": 10000});
+												toastr.error(self.i18n.active().toastrMessages.newAccount.adminError, '', {'timeOut': 10000});
 												callback(null, {});
 											}
 										});
@@ -331,13 +329,11 @@ define(function(require){
 													callback(null, data.data);
 												},
 												error: function(data, status) {
-													if(data.error === 403) {
-														toastr.info(self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError, '', {"timeOut": 10000});
+													if (data.error === 403) {
+														toastr.info(self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError, '', {'timeOut': 10000});
 														callback(null, {});
-													}
-													// Only show error if error isn't a 402, because a 402 is handled generically
-													else if(data.error !== 402) {
-														toastr.info(self.i18n.active().toastrMessages.newAccount.limitsError, '', {"timeOut": 10000});
+													} else if (data.error !== 402) { // Only show error if error isn't a 402, because a 402 is handled generically
+														toastr.info(self.i18n.active().toastrMessages.newAccount.limitsError, '', {'timeOut': 10000});
 														callback(null, {});
 													}
 												},
@@ -352,20 +348,20 @@ define(function(require){
 									});
 								},
 								credit: function(callback) {
-									if(formData.addCreditBalance) {
+									if (formData.addCreditBalance) {
 										self.addCredit(newAccountId, formData.addCreditBalance, function(data, status) {
 											callback(null, data.data);
 										},
 										function(data, status) {
 											callback(null, {});
-											toastr.info(self.i18n.active().toastrMessages.newAccount.creditError, '', {"timeOut": 10000});
+											toastr.info(self.i18n.active().toastrMessages.newAccount.creditError, '', {'timeOut': 10000});
 										});
 									} else {
 										callback();
 									}
 								},
 								servicePlans: function(callback) {
-									if(monster.util.isSuperDuper()) {
+									if (monster.util.isSuperDuper()) {
 										monster.pub('common.servicePlanDetails.customizeSave', {
 											container: newAccountWizardForm.find('.common-container'),
 											accountId: newAccountId,
@@ -373,8 +369,7 @@ define(function(require){
 												callback();
 											}
 										});
-									}
-									else {
+									} else {
 										callback();
 									}
 								}
@@ -386,7 +381,7 @@ define(function(require){
 							});
 						},
 						error: function(data, status) {
-							toastr.error(self.i18n.active().toastrMessages.newAccount.accountError, '', {"timeOut": 5000});
+							toastr.error(self.i18n.active().toastrMessages.newAccount.accountError, '', {'timeOut': 5000});
 							toggleProcessing(false);
 						}
 					});
@@ -418,40 +413,38 @@ define(function(require){
 			var self = this;
 
 			monster.parallel({
-					classifiers: function(callback) {
-						self.callApi({
-							resource: 'numbers.listClassifiers',
-							data: {
-								accountId: self.accountId
-							},
-							success: function(data, status) {
-								callback(null, data.data);
-							},
-							error: function(data, status) {
-								callback(null, {});
-							}
-						});
-					}
-				},
-				function(err, results) {
-					self.renderAccountInfoStep({
-						parent: parent.find('.wizard-content-step[data-step="1"]')
-					});
-
-					self.renderServicePlanStep({
-						parent: parent.find('.wizard-content-step[data-step="2"]')
-					});
-
-					self.renderLimitsStep({
-						parent: parent.find('.wizard-content-step[data-step="3"]'),
-						classifiers: results.classifiers
-					});
-
-					self.renderRestrictionsStep({
-						parent: parent.find('.wizard-content-step[data-step="4"]')
+				classifiers: function(callback) {
+					self.callApi({
+						resource: 'numbers.listClassifiers',
+						data: {
+							accountId: self.accountId
+						},
+						success: function(data, status) {
+							callback(null, data.data);
+						},
+						error: function(data, status) {
+							callback(null, {});
+						}
 					});
 				}
-			);
+			}, function(err, results) {
+				self.renderAccountInfoStep({
+					parent: parent.find('.wizard-content-step[data-step="1"]')
+				});
+
+				self.renderServicePlanStep({
+					parent: parent.find('.wizard-content-step[data-step="2"]')
+				});
+
+				self.renderLimitsStep({
+					parent: parent.find('.wizard-content-step[data-step="3"]'),
+					classifiers: results.classifiers
+				});
+
+				self.renderRestrictionsStep({
+					parent: parent.find('.wizard-content-step[data-step="4"]')
+				});
+			});
 		},
 
 		renderAccountInfoStep: function(params) {
@@ -481,7 +474,7 @@ define(function(require){
 			parent.find('.add-admin-toggle > a').on('click', function(e) {
 				e.preventDefault();
 				var $this = $(this);
-				if(newAdminDiv.hasClass('active')) {
+				if (newAdminDiv.hasClass('active')) {
 					newAdminDiv.slideUp();
 					newAdminDiv.removeClass('active');
 					newAdminDiv.find('input[type="text"], input[type="email"]').val('');
@@ -635,14 +628,14 @@ define(function(require){
 				getUIRestrictionValue = function(key) {
 					var value = false;
 
-					if(hasLimits && limits.hasOwnProperty(key) && limits[key].hasOwnProperty('rate')) {
+					if (hasLimits && limits.hasOwnProperty(key) && limits[key].hasOwnProperty('rate')) {
 						value = true;
 					}
 
 					return value;
 				};
 
-			if(hasLimits) {
+			if (hasLimits) {
 				_.each(limits, function(v, k) {
 					formattedData[k] = getUIRestrictionValue(k);
 				});
@@ -663,7 +656,7 @@ define(function(require){
 					ui_restrictions: {
 						myaccount: {
 							inbound: {
-								show_tab: getRestrictionValue('inbound_trunks'),
+								show_tab: getRestrictionValue('inbound_trunks')
 							},
 							outbound: {
 								show_tab: getRestrictionValue('outbound_trunks')
@@ -678,12 +671,12 @@ define(function(require){
 				setCheckboxValue = function(key, data) {
 					// By default all the checkboxes are checked
 					var value = true;
-					if(data.data.hasOwnProperty('ui_restrictions') && data.data.ui_restrictions.hasOwnProperty('myaccount') && data.data.ui_restrictions.myaccount.hasOwnProperty(key) && data.data.ui_restrictions.myaccount[key].hasOwnProperty('show_tab')) {
+					if (data.data.hasOwnProperty('ui_restrictions') && data.data.ui_restrictions.hasOwnProperty('myaccount') && data.data.ui_restrictions.myaccount.hasOwnProperty(key) && data.data.ui_restrictions.myaccount[key].hasOwnProperty('show_tab')) {
 						// we only accept true/false as values, so if value is different than true, we set it to false
 						value = data.data.ui_restrictions.myaccount[key].show_tab === true ? true : false;
 					}
 
-					template.find('[name="account.ui_restrictions.myaccount.'+ key + '.show_tab"]').prop('checked', value);
+					template.find('[name="account.ui_restrictions.myaccount.' + key + '.show_tab"]').prop('checked', value);
 				};
 
 			self.updateData(accountData, newUIRestrictions, function(data) {
@@ -699,26 +692,26 @@ define(function(require){
 			var self = this;
 
 			parent.find('.step').removeClass('active');
-			parent.find('.step[data-step="'+stepIndex+'"]').addClass('active');
+			parent.find('.step[data-step="' + stepIndex + '"]').addClass('active');
 
-			for(var i = stepIndex; i >= 1; --i) {
-				parent.find('.step[data-step="'+i+'"]').addClass('completed');
+			for (var i = stepIndex; i >= 1; --i) {
+				parent.find('.step[data-step="' + i + '"]').addClass('completed');
 			}
 
 			parent.find('.wizard-content-step').hide();
-			parent.find('.wizard-content-step[data-step="'+ stepIndex +'"]').show();
+			parent.find('.wizard-content-step[data-step="' + stepIndex + '"]').show();
 
 			parent.find('.cancel').hide();
 			parent.find('.prev-step').show();
 			parent.find('.next-step').show();
 			parent.find('.submit-btn').hide();
 
-			if(stepIndex === maxStep) {
+			if (stepIndex === maxStep) {
 				parent.find('.next-step').hide();
 				parent.find('.submit-btn').show();
 			}
 
-			if(stepIndex === 1) {
+			if (stepIndex === 1) {
 				parent.find('.prev-step').hide();
 				parent.find('.cancel').show();
 			}
@@ -745,14 +738,14 @@ define(function(require){
 						},
 						success: function(data, status) {
 							$settingsItem.find('.total-admins').text(data.data.length);
-							if(data.data.length > 0) {
-								data.data = data.data.sort(function(a,b) {
-									return (a.first_name+a.last_name).toLowerCase() > (b.first_name+b.last_name).toLowerCase() ? 1 : -1;
+							if (data.data.length > 0) {
+								data.data = data.data.sort(function(a, b) {
+									return (a.first_name + a.last_name).toLowerCase() > (b.first_name + b.last_name).toLowerCase() ? 1 : -1;
 								});
-								$settingsItem.find('.first-admin-name').text(data.data[0].first_name + " " + data.data[0].last_name);
+								$settingsItem.find('.first-admin-name').text(data.data[0].first_name + ' ' + data.data[0].last_name);
 								$settingsItem.find('.first-admin-email').text(data.data[0].email);
 							} else {
-								$settingsItem.find('.first-admin-name').text("-");
+								$settingsItem.find('.first-admin-name').text('-');
 								$settingsItem.find('.first-admin-email').empty();
 							}
 						}
@@ -762,17 +755,17 @@ define(function(require){
 			self.callApi({
 				resource: 'user.list',
 				data: {
-					accountId: editAccountId,
+					accountId: editAccountId
 				},
 				success: function(data, status) {
-					data.data = data.data.sort(function(a,b) {
-						return (a.first_name+a.last_name).toLowerCase() > (b.first_name+b.last_name).toLowerCase() ? 1 : -1;
+					data.data = data.data.sort(function(a, b) {
+						return (a.first_name + a.last_name).toLowerCase() > (b.first_name + b.last_name).toLowerCase() ? 1 : -1;
 					});
 					var admins = $.map(data.data, function(val) {
-							return val.priv_level === "admin" ? val : null;
+							return val.priv_level === 'admin' ? val : null;
 						}),
 						regularUsers = $.map(data.data, function(val) {
-							return val.priv_level !== "admin" ? val : null;
+							return val.priv_level !== 'admin' ? val : null;
 						}),
 						contentTemplate = $(monster.template(self, 'accountsAdminForm', {
 							accountAdmins: admins,
@@ -797,15 +790,15 @@ define(function(require){
 					$newAdminBtn.click(function(e) {
 						e.preventDefault();
 						var $this = $(this);
-						if(!$this.hasClass('disabled')) {
-							if($this.hasClass('active')) {
+						if (!$this.hasClass('disabled')) {
+							if ($this.hasClass('active')) {
 								$this.find('i').removeClass('fa-caret-up').addClass('fa-caret-down');
 								$newAdminElem.slideUp();
-								$this.removeClass('active')
+								$this.removeClass('active');
 							} else {
 								$this.find('i').removeClass('fa-caret-down').addClass('fa-caret-up');
 								$newAdminElem.slideDown();
-								$this.addClass('active')
+								$this.addClass('active');
 							}
 						} else {
 							e.stopPropagation();
@@ -813,7 +806,7 @@ define(function(require){
 					});
 
 					$createUserDiv.find('input[name="extra.autogen_password"]').change(function(e) {
-						$(this).val() === "true" ? $createUserDiv.find('.new-admin-password-div').slideUp() : $createUserDiv.find('.new-admin-password-div').slideDown();
+						$(this).val() === 'true' ? $createUserDiv.find('.new-admin-password-div').slideUp() : $createUserDiv.find('.new-admin-password-div').slideDown();
 					});
 
 					contentTemplate.find('.admin-element-link.delete').click(function(e) {
@@ -837,19 +830,17 @@ define(function(require){
 
 					contentTemplate.find('.admin-element-link.edit').click(function(e) {
 						e.preventDefault();
-						var $adminElement = $(this).parent().parent(),
-							userId = $adminElement.data('user_id');
+						var $adminElement = $(this).parent().parent();
 
 						contentTemplate.find('.admin-element-edit .admin-cancel-btn').click();
 
-						if($newAdminBtn.hasClass('active')) {
+						if ($newAdminBtn.hasClass('active')) {
 							$newAdminBtn.click();
 						}
 						$newAdminBtn.addClass('disabled');
 
 						$adminElement.find('.admin-element-display').hide();
 						$adminElement.find('.admin-element-edit').show();
-
 					});
 
 					$adminElements.each(function() {
@@ -877,23 +868,23 @@ define(function(require){
 						$adminElement.find('input[name="email"]').change(function() { $(this).keyup(); });
 						$adminElement.find('input[name="email"]').keyup(function(e) {
 							var $this = $(this);
-							if($this.val() !== $this.data('original_value')) {
+							if ($this.val() !== $this.data('original_value')) {
 								$adminPasswordDiv.slideDown();
 							} else {
 								$adminPasswordDiv.slideUp(function() {
-									$adminPasswordDiv.find('input[type="password"]').val("");
+									$adminPasswordDiv.find('input[type="password"]').val('');
 								});
 							}
-						})
+						});
 
 						$adminElement.find('.admin-save-btn').click(function(e) {
 							e.preventDefault();
 							var form = $adminElement.find('form'),
 								formData = monster.ui.getFormData(form[0]);
 
-							if(monster.ui.valid(form)) {
+							if (monster.ui.valid(form)) {
 								formData = self.cleanFormData(formData);
-								if(!$adminPasswordDiv.is(":visible")) {
+								if (!$adminPasswordDiv.is(':visible')) {
 									delete formData.password;
 								}
 								self.callApi({
@@ -903,7 +894,7 @@ define(function(require){
 										userId: userId
 									},
 									success: function(data, status) {
-										if(data.data.email !== formData.email) {
+										if (data.data.email !== formData.email) {
 											formData.username = formData.email;
 										}
 										var newData = $.extend(true, {}, data.data, formData);
@@ -924,7 +915,6 @@ define(function(require){
 								});
 							}
 						});
-
 					});
 
 					$newAdminElem.find('.admin-cancel-btn').click(function(e) {
@@ -934,15 +924,15 @@ define(function(require){
 
 					$newAdminElem.find('.admin-add-btn').click(function(e) {
 						e.preventDefault();
-						if($newAdminElem.find('.tab-pane.active').hasClass('create-user-div')) {
+						if ($newAdminElem.find('.tab-pane.active').hasClass('create-user-div')) {
 							var formData = monster.ui.getFormData('accountsmanager_add_admin_form'),
-								autoGen = ($createUserDiv.find('input[name="extra.autogen_password"]:checked').val() === "true");
+								autoGen = ($createUserDiv.find('input[name="extra.autogen_password"]:checked').val() === 'true');
 
-							if(monster.ui.valid(contentTemplate.find('#accountsmanager_add_admin_form'))) {
+							if (monster.ui.valid(contentTemplate.find('#accountsmanager_add_admin_form'))) {
 								formData = self.cleanFormData(formData);
-								formData.priv_level = "admin";
+								formData.priv_level = 'admin';
 								formData.username = formData.email;
-								if(autoGen) {
+								if (autoGen) {
 									formData.password = self.autoGeneratePassword();
 									formData.send_email_on_creation = true;
 								}
@@ -956,7 +946,7 @@ define(function(require){
 									success: function(data, status) {
 										self.renderEditAdminsForm(parent, editAccountId);
 										refreshAdminsHeader();
-										if(formData.send_email_on_creation) {
+										if (formData.send_email_on_creation) {
 											var popupContent = monster.template(self, '!' + self.i18n.active().sentEmailPopup, { email: data.data.email });
 											monster.ui.alert('info', popupContent);
 										}
@@ -973,7 +963,7 @@ define(function(require){
 									userId: userId
 								},
 								success: function(data, status) {
-									data.data.priv_level = "admin";
+									data.data.priv_level = 'admin';
 									self.callApi({
 										resource: 'user.update',
 										data: {
@@ -1027,228 +1017,208 @@ define(function(require){
 				parent = args.parent;
 
 			monster.parallel({
-					account: function(callback) {
-						self.callApi({
-							resource: 'account.get',
-							data: {
-								accountId: accountId
-							},
-							success: function(data, status) {
-								callback(null, data.data);
-							}
-						});
-					},
-					users: function(callback) {
-						self.callApi({
-							resource: 'user.list',
-							data: {
-								accountId: accountId
-							},
-							success: function(data, status) {
-								callback(null, data.data);
-							},
-							error: function(data, status) {
-								callback(null, {});
-							}
-						});
-					},
-					currentServicePlan: function(callback) {
-						self.callApi({
-							resource: 'servicePlan.listCurrent',
-							data: {
-								accountId: accountId
-							},
-							success: function(data, status) {
-								if(data && data.data) {
-									callback(null, data.data);
-								}
-								else {
-									callback(null, {});
-								}
-							},
-							error: function(data, status) {
-								callback(null, {});
-							}
-						});
-					},
-					limits: function(callback) {
-						self.callApi({
-							resource: 'limits.get',
-							data: {
-								accountId: accountId
-							},
-							success: function(data, status) {
-								callback(null, data.data);
-							},
-							error: function(data, status) {
-								callback(null, {});
-							}
-						});
-					},
-					classifiers: function(callback) {
-						self.callApi({
-							resource: 'numbers.listClassifiers',
-							data: {
-								accountId: accountId
-							},
-							success: function(data, status) {
-								callback(null, data.data);
-							},
-							error: function(data, status) {
-								callback(null, {});
-							}
-						});
-					},
-					currentBalance: function(callback) {
-						self.getBalance(accountId, function(data, status) {
+				account: function(callback) {
+					self.callApi({
+						resource: 'account.get',
+						data: {
+							accountId: accountId
+						},
+						success: function(data, status) {
+							callback(null, data.data);
+						}
+					});
+				},
+				users: function(callback) {
+					self.callApi({
+						resource: 'user.list',
+						data: {
+							accountId: accountId
+						},
+						success: function(data, status) {
 							callback(null, data.data);
 						},
-						function(data, status) {
+						error: function(data, status) {
 							callback(null, {});
-						});
-					},
-					noMatch: function(callback) {
-						self.callApi({
-							resource: 'callflow.list',
-							data: {
-								accountId: accountId,
-								filters: {
-									filter_numbers: 'no_match'
-								}
-							},
-							success: function(listCallflows) {
-								if(listCallflows.data.length === 1) {
-									self.callApi({
-										resource: 'callflow.get',
-										data: {
-											callflowId: listCallflows.data[0].id,
-											accountId: accountId
-										},
-										success: function(callflow) {
-											callback(null, callflow.data);
-										}
-									});
-								}
-								else {
-									callback(null, null);
-								}
+						}
+					});
+				},
+				currentServicePlan: function(callback) {
+					self.callApi({
+						resource: 'servicePlan.listCurrent',
+						data: {
+							accountId: accountId
+						},
+						success: function(data, status) {
+							if (data && data.data) {
+								callback(null, data.data);
+							} else {
+								callback(null, {});
 							}
-						});
+						},
+						error: function(data, status) {
+							callback(null, {});
+						}
+					});
+				},
+				limits: function(callback) {
+					self.callApi({
+						resource: 'limits.get',
+						data: {
+							accountId: accountId
+						},
+						success: function(data, status) {
+							callback(null, data.data);
+						},
+						error: function(data, status) {
+							callback(null, {});
+						}
+					});
+				},
+				classifiers: function(callback) {
+					self.callApi({
+						resource: 'numbers.listClassifiers',
+						data: {
+							accountId: accountId
+						},
+						success: function(data, status) {
+							callback(null, data.data);
+						},
+						error: function(data, status) {
+							callback(null, {});
+						}
+					});
+				},
+				currentBalance: function(callback) {
+					self.getBalance(accountId, function(data, status) {
+						callback(null, data.data);
 					},
-					appsList: function(callback) {
-						self.callApi({
-							resource: 'appsStore.list',
-							data: {
-								accountId: self.accountId
-							},
-							success: function(data, status) {
-								var parallelRequest = {};
-								_.each(data.data, function(val) {
-									parallelRequest[val.id] = function(parallelCallback) {
-										//This API is only called to check whether the icon can be loaded, but is not used to load the actual icon
-										/*self.callApi({
-											resource: 'appsStore.getIcon',
-											data: {
-												accountId: self.accountId,
-												appId: val.id,
-												generateError: false
-											},
-											success: function(data, status) {*/
-												val.icon = monster.util.getAppIconPath(val);
-												parallelCallback && parallelCallback(null, val);
-											/*},
-											error: function(data, status) {
-												val.icon = null;
-												parallelCallback && parallelCallback(null, val);
-											}
-										});*/
+					function(data, status) {
+						callback(null, {});
+					});
+				},
+				noMatch: function(callback) {
+					self.callApi({
+						resource: 'callflow.list',
+						data: {
+							accountId: accountId,
+							filters: {
+								filter_numbers: 'no_match'
+							}
+						},
+						success: function(listCallflows) {
+							if (listCallflows.data.length === 1) {
+								self.callApi({
+									resource: 'callflow.get',
+									data: {
+										callflowId: listCallflows.data[0].id,
+										accountId: accountId
+									},
+									success: function(callflow) {
+										callback(null, callflow.data);
 									}
 								});
-
-								monster.parallel(parallelRequest, function(err, results) {
-									callback(null, results);
-								});
-							},
-							error: function(data, status) {
+							} else {
 								callback(null, null);
 							}
-						});
-					},
-					appsBlacklist: function(callback) {
-						self.callApi({
-							resource: 'appsStore.getBlacklist',
-							data: {
-								accountId: accountId
-							},
-							success: function(data, status) {
-								callback(null, data.data && data.data.blacklist ? data.data.blacklist : null);
-							},
-							error: function(data, status) {
-								callback(null, null);
-							}
-						});
-					},
-					listParents: function(callback) {
-						self.callApi({
-							resource: 'account.listParents',
-							data: {
-								accountId: accountId
-							},
-							success: function(data, status) {
-								callback(null, data.data);
-							}
-						});
-					}
+						}
+					});
 				},
-				function(err, results) {
-					var lang = monster.config.whitelabel.language,
-						isoFormattedLang = lang.substr(0, 3).concat(lang.substr(lang.length -2, 2).toUpperCase()),
-						params = {
-							accountData: results.account,
-							accountUsers: results.users.sort(function(a,b) {
-								return (a.first_name+a.last_name).toLowerCase() > (b.first_name+b.last_name).toLowerCase() ? 1 : -1;
-							}),
-							currentServicePlan: results.currentServicePlan,
-							accountLimits: results.limits,
-							classifiers: results.classifiers,
-							accountBalance: 'balance' in results.currentBalance ? results.currentBalance.balance : 0,
-							parent: parent,
-							noMatch: results.noMatch,
-							selectedTab: selectedTab,
-							appsList: _.map(results.appsList, function(app) {
-								var currentLang = app.i18n.hasOwnProperty(isoFormattedLang) ? isoFormattedLang : 'en-US';
-								app.description = app.i18n[currentLang].description;
-								app.friendlyName = app.i18n[currentLang].label;
-
-								if(results.appsBlacklist && results.appsBlacklist.indexOf(app.id) >= 0) {
-									app.blacklisted = true;
-								}
-
-								monster.ui.formatIconApp(app);
-								return app;
-							}),
-							appsBlacklist: results.appsBlacklist,
-							listParents: results.listParents
+				appsList: function(callback) {
+					self.callApi({
+						resource: 'appsStore.list',
+						data: {
+							accountId: self.accountId
 						},
-						editCallback = function() {
-							params = self.formatDataEditAccount(params);
-							self.editAccount(params);
-						};
+						success: function(data, status) {
+							var parallelRequest = {};
+							_.each(data.data, function(val) {
+								parallelRequest[val.id] = function(parallelCallback) {
+									val.icon = monster.util.getAppIconPath(val);
+									parallelCallback && parallelCallback(null, val);
+								};
+							});
 
-					if(!_.isObject(params.noMatch)) {
-						self.createNoMatchCallflow({
-								accountId: params.accountData.id,
-								resellerId: params.accountData.reseller_id
-							}, function(data) {
-								params.noMatch = data;
-								editCallback();
-							}
-						);
-					} else {
-						editCallback();
-					}
+							monster.parallel(parallelRequest, function(err, results) {
+								callback(null, results);
+							});
+						},
+						error: function(data, status) {
+							callback(null, null);
+						}
+					});
+				},
+				appsBlacklist: function(callback) {
+					self.callApi({
+						resource: 'appsStore.getBlacklist',
+						data: {
+							accountId: accountId
+						},
+						success: function(data, status) {
+							callback(null, data.data && data.data.blacklist ? data.data.blacklist : null);
+						},
+						error: function(data, status) {
+							callback(null, null);
+						}
+					});
+				},
+				listParents: function(callback) {
+					self.callApi({
+						resource: 'account.listParents',
+						data: {
+							accountId: accountId
+						},
+						success: function(data, status) {
+							callback(null, data.data);
+						}
+					});
 				}
-			);
+			}, function(err, results) {
+				var lang = monster.config.whitelabel.language,
+					isoFormattedLang = lang.substr(0, 3).concat(lang.substr(lang.length - 2, 2).toUpperCase()),
+					params = {
+						accountData: results.account,
+						accountUsers: results.users.sort(function(a, b) {
+							return (a.first_name + a.last_name).toLowerCase() > (b.first_name + b.last_name).toLowerCase() ? 1 : -1;
+						}),
+						currentServicePlan: results.currentServicePlan,
+						accountLimits: results.limits,
+						classifiers: results.classifiers,
+						accountBalance: 'balance' in results.currentBalance ? results.currentBalance.balance : 0,
+						parent: parent,
+						noMatch: results.noMatch,
+						selectedTab: selectedTab,
+						appsList: _.map(results.appsList, function(app) {
+							var currentLang = app.i18n.hasOwnProperty(isoFormattedLang) ? isoFormattedLang : 'en-US';
+							app.description = app.i18n[currentLang].description;
+							app.friendlyName = app.i18n[currentLang].label;
+
+							if (results.appsBlacklist && results.appsBlacklist.indexOf(app.id) >= 0) {
+								app.blacklisted = true;
+							}
+
+							monster.ui.formatIconApp(app);
+							return app;
+						}),
+						appsBlacklist: results.appsBlacklist,
+						listParents: results.listParents
+					},
+					editCallback = function() {
+						params = self.formatDataEditAccount(params);
+						self.editAccount(params);
+					};
+
+				if (!_.isObject(params.noMatch)) {
+					self.createNoMatchCallflow({
+						accountId: params.accountData.id,
+						resellerId: params.accountData.reseller_id
+					}, function(data) {
+						params.noMatch = data;
+						editCallback();
+					});
+				} else {
+					editCallback();
+				}
+			});
 		},
 
 		formatDataEditAccount: function(params) {
@@ -1265,7 +1235,7 @@ define(function(require){
 			tree.push({ id: account.id, name: account.name });
 
 			_.each(tree, function(account) {
-				if(previousId) {
+				if (previousId) {
 					account.parentId = previousId;
 				}
 
@@ -1273,7 +1243,7 @@ define(function(require){
 			});
 
 			container.find('.top-bar').empty()
-									  .append(monster.template(self, 'accountsBreadcrumbs', { accounts: tree }));
+										.append(monster.template(self, 'accountsBreadcrumbs', { accounts: tree }));
 		},
 
 		/** Expected params:
@@ -1298,10 +1268,10 @@ define(function(require){
 				parent = params.parent,
 				callback = params.callback,
 				admins = $.map(accountUsers, function(val) {
-					return val.priv_level === "admin" ? val : null;
+					return val.priv_level === 'admin' ? val : null;
 				}),
 				regularUsers = $.map(accountUsers, function(val) {
-					return val.priv_level !== "admin" ? val : null;
+					return val.priv_level !== 'admin' ? val : null;
 				}),
 				formattedClassifiers = $.map(params.classifiers, function(val, key) {
 					var ret = {
@@ -1310,7 +1280,7 @@ define(function(require){
 						help: (self.i18n.active().classifiers[key] || {}).help,
 						checked: true
 					};
-					if(accountData.call_restriction && key in accountData.call_restriction && accountData.call_restriction[key].action === "deny") {
+					if (accountData.call_restriction && key in accountData.call_restriction && accountData.call_restriction[key].action === 'deny') {
 						ret.checked = false;
 					}
 					return ret;
@@ -1327,7 +1297,7 @@ define(function(require){
 					appsList: monster.util.sort(appsList)
 				};
 
-			if($.isNumeric(templateData.account.created)) {
+			if ($.isNumeric(templateData.account.created)) {
 				templateData.account.created = monster.util.toFriendlyDate(accountData.created, 'date');
 			}
 
@@ -1358,7 +1328,7 @@ define(function(require){
 
 			contentTemplate.find('.account-tabs a').click(function(e) {
 				e.preventDefault();
-				if(!$(this).parent().hasClass('disabled')) {
+				if (!$(this).parent().hasClass('disabled')) {
 					closeTabsContent();
 					$(this).tab('show');
 				}
@@ -1368,16 +1338,16 @@ define(function(require){
 				var $this = $(this),
 					settingsItem = $this.parents('.settings-item');
 
-				if(!settingsItem.hasClass('disabled')) {
+				if (!settingsItem.hasClass('disabled')) {
 					var isOpen = settingsItem.hasClass('open');
 					closeTabsContent();
-					if(!isOpen){
+					if (!isOpen) {
 						settingsItem.addClass('open');
 						$this.find('.update .text').text(self.i18n.active().closeSetting);
 						$this.find('.update i').removeClass('fa-cog').addClass('fa-times');
 						settingsItem.find('.settings-item-content').slideDown('fast');
 
-						if(settingsItem.data('name') === 'accountsmanager_account_admins') {
+						if (settingsItem.data('name') === 'accountsmanager_account_admins') {
 							self.renderEditAdminsForm(parent, accountData.id);
 						}
 					}
@@ -1406,7 +1376,7 @@ define(function(require){
 						},
 						success: function(data, status) {
 							parent.find('.main-content').empty();
-							parent.find('.account-list-element[data-id="'+accountData.id+'"]').remove();
+							parent.find('.account-list-element[data-id="' + accountData.id + '"]').remove();
 						},
 						error: function(data, status) {
 							if (data.message === 'account_has_descendants') {
@@ -1423,7 +1393,7 @@ define(function(require){
 				var action = $(this).data('action'),
 					node = action === 'promote' ? 'promoteAccount' : 'demoteAccount';
 
-				monster.ui.confirm(self.i18n.active()[node].confirm, function () {
+				monster.ui.confirm(self.i18n.active()[node].confirm, function() {
 					self.callApi({
 						resource: 'account.' + action,
 						data: {
@@ -1450,7 +1420,7 @@ define(function(require){
 					callback: function() {
 						self.render();
 					}
-				})
+				});
 
 				e.stopPropagation();
 			});
@@ -1459,11 +1429,10 @@ define(function(require){
 				e.preventDefault();
 
 				var $this = $(this),
-					module = $this.data('module'),
 					fieldName = $this.data('field'),
-					newData = self.cleanFormData(monster.ui.getFormData('form_'+fieldName));
+					newData = self.cleanFormData(monster.ui.getFormData('form_' + fieldName));
 
-				if(monster.ui.valid(contentTemplate.find('#form_'+fieldName))) {
+				if (monster.ui.valid(contentTemplate.find('#form_' + fieldName))) {
 					self.updateData(accountData, newData,
 						function(data) {
 							self.render({
@@ -1471,7 +1440,7 @@ define(function(require){
 							});
 						},
 						function(data) {
-							if(data && data.data && 'api_error' in data.data && 'message' in data.data.api_error) {
+							if (data && data.data && 'api_error' in data.data && 'message' in data.data.api_error) {
 								monster.ui.alert(data.data.api_error.message);
 							}
 						}
@@ -1480,7 +1449,7 @@ define(function(require){
 			});
 
 			// If reseller
-			if(monster.apps.auth.isReseller) {
+			if (monster.apps.auth.isReseller) {
 				var $btn_change = contentTemplate.find('#accountsmanager_serviceplan_change'),
 					$btn_rec = contentTemplate.find('#accountsmanager_serviceplan_reconciliation'),
 					$btn_sync = contentTemplate.find('#accountsmanager_serviceplan_synchronization');
@@ -1492,7 +1461,7 @@ define(function(require){
 							var templatePopup = $(monster.template(self, 'changeServicePlanDialog'));
 
 							templatePopup.find('.common-container')
-										 .append(template);
+											.append(template);
 
 							templatePopup.find('#save_custom_plans').on('click', function() {
 								monster.pub('common.servicePlanDetails.customizeSave', {
@@ -1517,7 +1486,7 @@ define(function(require){
 
 				$btn_rec.click(function(e) {
 					e.preventDefault();
-					if(!$btn_rec.hasClass('disabled') && !$btn_sync.hasClass('disabled')) {
+					if (!$btn_rec.hasClass('disabled') && !$btn_sync.hasClass('disabled')) {
 						$btn_rec.addClass('disabled');
 						$btn_sync.addClass('disabled');
 						self.callApi({
@@ -1527,23 +1496,22 @@ define(function(require){
 								data: {}
 							},
 							success: function(data, status) {
-								toastr.success(self.i18n.active().toastrMessages.servicePlanReconciliationSuccess, '', {"timeOut": 5000});
+								toastr.success(self.i18n.active().toastrMessages.servicePlanReconciliationSuccess, '', {'timeOut': 5000});
 								$btn_rec.removeClass('disabled');
 								$btn_sync.removeClass('disabled');
 							},
 							error: function(data, status) {
-								toastr.error(self.i18n.active().toastrMessages.servicePlanReconciliationError, '', {"timeOut": 5000});
+								toastr.error(self.i18n.active().toastrMessages.servicePlanReconciliationError, '', {'timeOut': 5000});
 								$btn_rec.removeClass('disabled');
 								$btn_sync.removeClass('disabled');
 							}
 						});
 					}
-
 				});
 
 				$btn_sync.click(function(e) {
 					e.preventDefault();
-					if(!$btn_rec.hasClass('disabled') && !$btn_sync.hasClass('disabled')) {
+					if (!$btn_rec.hasClass('disabled') && !$btn_sync.hasClass('disabled')) {
 						$btn_rec.addClass('disabled');
 						$btn_sync.addClass('disabled');
 						self.callApi({
@@ -1553,12 +1521,12 @@ define(function(require){
 								data: {}
 							},
 							success: function(data, status) {
-								toastr.success(self.i18n.active().toastrMessages.servicePlanSynchronizationSuccess, '', {"timeOut": 5000});
+								toastr.success(self.i18n.active().toastrMessages.servicePlanSynchronizationSuccess, '', {'timeOut': 5000});
 								$btn_rec.removeClass('disabled');
 								$btn_sync.removeClass('disabled');
 							},
 							error: function(data, status) {
-								toastr.error(self.i18n.active().toastrMessages.servicePlanSynchronizationError, '', {"timeOut": 5000});
+								toastr.error(self.i18n.active().toastrMessages.servicePlanSynchronizationError, '', {'timeOut': 5000});
 								$btn_rec.removeClass('disabled');
 								$btn_sync.removeClass('disabled');
 							}
@@ -1569,11 +1537,11 @@ define(function(require){
 
 			timezone.populateDropdown(contentTemplate.find('#accountsmanager_account_timezone'), accountData.timezone);
 
-			contentTemplate.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: "220px"});
+			contentTemplate.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: '220px'});
 
 			monster.ui.tooltips(contentTemplate);
 
-			if(currentServicePlan) {
+			if (currentServicePlan) {
 				monster.pub('common.servicePlanDetails.render', {
 					container: contentTemplate.find('.serviceplans-details-container'),
 					accountId: accountData.id,
@@ -1607,19 +1575,19 @@ define(function(require){
 			parent.find('.main-content').empty()
 										.append(contentTemplate);
 
-			if(selectedTab) {
-				contentTemplate.find('.'+selectedTab+' > a').tab('show');
+			if (selectedTab) {
+				contentTemplate.find('.' + selectedTab + ' > a').tab('show');
 			}
 
 			notesTab.find('div.dropdown-menu input')
-					.on('click', function () {
+					.on('click', function() {
 						return false;
 					})
-					.change(function () {
+					.change(function() {
 						$(this).parents('div.dropdown-menu').siblings('a.dropdown-toggle').dropdown('toggle');
 					})
-					.keydown('esc', function () {
-						this.value='';
+					.keydown('esc', function() {
+						this.value = '';
 						$(this).change();
 					}
 			);
@@ -1636,12 +1604,12 @@ define(function(require){
 							selectedId: accountData.id,
 							selectedTab: 'tab-notes',
 							callback: function() {
-								toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {"timeOut": 5000});
+								toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {'timeOut': 5000});
 							}
 						});
 					},
 					function(data, status) {
-						toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {"timeOut": 5000});
+						toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {'timeOut': 5000});
 					}
 				);
 			});
@@ -1654,22 +1622,22 @@ define(function(require){
 						selectedId: accountData.id,
 						selectedTab: 'tab-notes',
 						callback: function() {
-							toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {"timeOut": 5000});
+							toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {'timeOut': 5000});
 						}
 					});
 				},
 				errorUpdateAnnouncement = function(data, status) {
-					toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {"timeOut": 5000});
+					toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {'timeOut': 5000});
 				};
 
 			notesTab.find('#accountsmanager_announcement_delete').on('click', function() {
 				delete accountData.announcement;
-				self.updateAccount(accountData,successUpdateAnnouncement,errorUpdateAnnouncement);
+				self.updateAccount(accountData, successUpdateAnnouncement, errorUpdateAnnouncement);
 			});
 
 			notesTab.find('#accountsmanager_announcement_save').on('click', function() {
 				var announcementContent = notesTab.find('.announcement .wysiwyg-editor').html();
-				self.updateData(accountData,{ announcement: announcementContent },successUpdateAnnouncement,errorUpdateAnnouncement);
+				self.updateData(accountData, { announcement: announcementContent }, successUpdateAnnouncement, errorUpdateAnnouncement);
 			});
 
 			contentTemplate.find('#accountsmanager_appstore_tab .app-toggle').on('change', function() {
@@ -1700,12 +1668,12 @@ define(function(require){
 							selectedId: accountData.id,
 							selectedTab: 'tab-appstore',
 							callback: function() {
-								toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {"timeOut": 5000});
+								toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {'timeOut': 5000});
 							}
 						});
 					},
 					error: function(data, status) {
-						toastr.error(self.i18n.active().toastrMessages.appstoreUpdateError, '', {"timeOut": 5000});
+						toastr.error(self.i18n.active().toastrMessages.appstoreUpdateError, '', {'timeOut': 5000});
 					}
 				});
 			});
@@ -1714,7 +1682,7 @@ define(function(require){
 				self.callApi({
 					resource: 'account.get',
 					data: {
-						accountId: accountData.id,
+						accountId: accountData.id
 					},
 					success: function(data, status) {
 						self.callApi({
@@ -1730,7 +1698,7 @@ define(function(require){
 									selectedId: accountData.id,
 									selectedTab: 'tab-numbersfeatures',
 									callback: function() {
-										toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {"timeOut": 5000});
+										toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {'timeOut': 5000});
 									}
 								});
 							}
@@ -1743,7 +1711,7 @@ define(function(require){
 
 			$.each(contentTemplate.find('form'), function() {
 				var options = {};
-				if(this.id === 'accountsmanager_callrestrictions_form') {
+				if (this.id === 'accountsmanager_callrestrictions_form') {
 					options.rules = {
 						'addCreditBalance': {
 							number: true,
@@ -1754,7 +1722,7 @@ define(function(require){
 				monster.ui.validate($(this), options);
 			});
 
-			if(typeof callback === 'function') {
+			if (typeof callback === 'function') {
 				callback(contentTemplate);
 			}
 		},
@@ -1778,10 +1746,9 @@ define(function(require){
 			confirmPopup.find('#confirm_button').prop('disabled', true);
 
 			confirmPopup.find('#delete_input').on('keyup', function() {
-				if($(this).val() === deleteKey) {
+				if ($(this).val() === deleteKey) {
 					confirmPopup.find('#confirm_button').prop('disabled', false);
-				}
-				else {
+				} else {
 					confirmPopup.find('#confirm_button').prop('disabled', true);
 				}
 			});
@@ -1798,10 +1765,8 @@ define(function(require){
 			var self = this,
 				parent = params.parent,
 				limits = params.limits,
-				balance = params.balance,
 				accountData = params.accountData,
 				tabContentTemplate = self.getLimitsTabContent(params),
-				addCreditInput = tabContentTemplate.find('.add-credit-input'),
 				twowayTrunksDiv = tabContentTemplate.find('.trunks-div.twoway'),
 				inboundTrunksDiv = tabContentTemplate.find('.trunks-div.inbound'),
 				outboundTrunksDiv = tabContentTemplate.find('.trunks-div.outbound');
@@ -1826,7 +1791,7 @@ define(function(require){
 						});
 					},
 					addForm = template.find('#add_credit_form'),
-					removeForm = template.find('#remove_credit_form'), 
+					removeForm = template.find('#remove_credit_form'),
 					rulesValidate = {
 						rules: {
 							'amount': {
@@ -1842,7 +1807,7 @@ define(function(require){
 				monster.ui.tooltips(template);
 
 				template.find('.add-credit').on('click', function() {
-					if(monster.ui.valid(addForm)) {
+					if (monster.ui.valid(addForm)) {
 						self.addCredit(accountData.id, addValueField.val(), function(data) {
 							changeValueDisplayed(accountData.id, addValueField);
 						});
@@ -1850,14 +1815,14 @@ define(function(require){
 				});
 
 				template.find('.remove-credit').on('click', function() {
-					if(monster.ui.valid(removeForm)) {
+					if (monster.ui.valid(removeForm)) {
 						self.removeCredit(accountData.id, removeValueField.val(), function(data) {
 							changeValueDisplayed(accountData.id, removeValueField);
 						});
 					}
 				});
 
-				var popup = monster.ui.dialog(template, {
+				monster.ui.dialog(template, {
 					title: self.i18n.active().updateCreditDialog.title
 				});
 			});
@@ -1869,15 +1834,13 @@ define(function(require){
 					newInboundValue = inboundTrunksDiv.find('.slider-div').slider('value'),
 					newOutboundValue = outboundTrunksDiv.find('.slider-div').slider('value'),
 					callRestrictions = monster.ui.getFormData('accountsmanager_callrestrictions_form').limits.call_restriction,
-					addCredit = addCreditInput.val(),
 					allowPrepay = tabContentTemplate.find('.allow-prepay-ckb').is(':checked');
 
-				if(monster.ui.valid(parent.find('#accountsmanager_callrestrictions_form'))) {
-
+				if (monster.ui.valid(parent.find('#accountsmanager_callrestrictions_form'))) {
 					$.each(params.formattedClassifiers, function(k, v) {
-						if(!(v.id in callRestrictions) || callRestrictions[v.id].action !== "inherit") {
+						if (!(v.id in callRestrictions) || callRestrictions[v.id].action !== 'inherit') {
 							callRestrictions[v.id] = {
-								action: "deny"
+								action: 'deny'
 							};
 						}
 					});
@@ -1898,12 +1861,12 @@ define(function(require){
 									})
 								},
 								success: function(data, status) {
-									toastr.success(self.i18n.active().toastrMessages.limitsUpdateSuccess, '', {"timeOut": 5000});
+									toastr.success(self.i18n.active().toastrMessages.limitsUpdateSuccess, '', {'timeOut': 5000});
 									parallelCallback && parallelCallback(null, data.data);
 								},
 								error: function(data, status) {
-									if(data.error !== 402) {
-										toastr.error(self.i18n.active().toastrMessages.limitsUpdateError, '', {"timeOut": 5000});
+									if (data.error !== 402) {
+										toastr.error(self.i18n.active().toastrMessages.limitsUpdateError, '', {'timeOut': 5000});
 									}
 									parallelCallback && parallelCallback(null, null);
 								}
@@ -1917,11 +1880,11 @@ define(function(require){
 									data: accountData
 								},
 								success: function(data, status) {
-									toastr.success(self.i18n.active().toastrMessages.callRestrictionsUpdateSuccess, '', {"timeOut": 5000});
+									toastr.success(self.i18n.active().toastrMessages.callRestrictionsUpdateSuccess, '', {'timeOut': 5000});
 									parallelCallback && parallelCallback(null, data.data);
 								},
 								error: function(data, status) {
-									toastr.error(self.i18n.active().toastrMessages.callRestrictionsUpdateError, '', {"timeOut": 5000});
+									toastr.error(self.i18n.active().toastrMessages.callRestrictionsUpdateError, '', {'timeOut': 5000});
 									parallelCallback && parallelCallback(null, null);
 								}
 							});
@@ -1934,7 +1897,6 @@ define(function(require){
 						});
 					});
 				}
-
 			});
 
 			parent.find('#accountsmanager_callrestrictions_form').append(tabContentTemplate);
@@ -1975,7 +1937,7 @@ define(function(require){
 								.css('left', trunksDiv.find('.ui-slider-handle').css('left'));
 							trunksValue.val(ui.value);
 						},
-						change: function(event, ui) {
+						change: function(event) {
 							sliderValue.css('left', trunksDiv.find('.ui-slider-handle').css('left'));
 						}
 					});
@@ -1987,7 +1949,7 @@ define(function(require){
 				trunksDiv: twowayTrunksDiv,
 				minValue: 0,
 				maxValue: 100,
-				currentValue: twoway,
+				currentValue: twoway
 			});
 
 			createSlider({
@@ -1996,7 +1958,7 @@ define(function(require){
 				maxValue: 100,
 				currentValue: inbound
 			});
-			
+
 			createSlider({
 				trunksDiv: outboundTrunksDiv,
 				minValue: 0,
@@ -2033,9 +1995,9 @@ define(function(require){
 				var uiRestrictions = monster.ui.getFormData('accountsmanager_uirestrictions_form').account,
 					restrictionsList = ['account', 'balance', 'billing', 'inbound', 'outbound', 'service_plan', 'transactions', 'user'];
 
-				if ( accountData.hasOwnProperty('ui_restrictions') ) {
+				if (accountData.hasOwnProperty('ui_restrictions')) {
 					restrictionsList.forEach(function(element) {
-						if ( accountData.ui_restrictions.hasOwnProperty('myaccount') ) {
+						if (accountData.ui_restrictions.hasOwnProperty('myaccount')) {
 							delete accountData.ui_restrictions[element];
 						}
 					});
@@ -2047,12 +2009,12 @@ define(function(require){
 							selectedId: accountData.id,
 							selectedTab: 'tab-restrictions',
 							callback: function() {
-								toastr.success(self.i18n.active().toastrMessages.uiRestrictionsUpdateSuccess, '', {"timeOut": 5000});
+								toastr.success(self.i18n.active().toastrMessages.uiRestrictionsUpdateSuccess, '', {'timeOut': 5000});
 							}
 						});
 					},
 					function(data, status) {
-						toastr.error(self.i18n.active().toastrMessages.uiRestrictionsUpdateError, '', {"timeOut": 5000});
+						toastr.error(self.i18n.active().toastrMessages.uiRestrictionsUpdateError, '', {'timeOut': 5000});
 					}
 				);
 			});
@@ -2111,7 +2073,7 @@ define(function(require){
 				var restrictionsContainer = $(this).parents().eq(2),
 					isChecked = false;
 
-				if ( restrictionsContainer.data('content') !== 'restrictions-balance' ) {
+				if (restrictionsContainer.data('content') !== 'restrictions-balance') {
 					restrictionsContainer.find('input').each(function() {
 						if ($(this).is(':checked')) {
 							isChecked = true;
@@ -2130,20 +2092,20 @@ define(function(require){
 		adjustTabsWidth: function($tabs) {
 			var maxWidth = 0;
 			$.each($tabs, function() {
-				if($(this).width() > maxWidth) { maxWidth = $(this).width(); }
+				if ($(this).width() > maxWidth) { maxWidth = $(this).width(); }
 			});
-			$tabs.css('min-width',maxWidth+'px');
+			$tabs.css('min-width', maxWidth + 'px');
 		},
 
 		cleanMergedData: function(data) {
 			var self = this;
 
-			if('reseller' in data) {
+			if ('reseller' in data) {
 				delete data.reseller;
 			}
 
-			if('language' in data) {
-				if(data.language === 'auto') {
+			if ('language' in data) {
+				if (data.language === 'auto') {
 					delete data.language;
 				}
 			}
@@ -2152,7 +2114,7 @@ define(function(require){
 		},
 
 		cleanFormData: function(formData) {
-			if('enabled' in formData) {
+			if ('enabled' in formData) {
 				formData.enabled = formData.enabled === 'false' ? false : true;
 			}
 
@@ -2189,7 +2151,7 @@ define(function(require){
 		},
 
 		autoGeneratePassword: function() {
-			return monster.util.randomString(4,'abcdefghjkmnpqrstuvwxyz')+monster.util.randomString(4,'0123456789');
+			return monster.util.randomString(4, 'abcdefghjkmnpqrstuvwxyz') + monster.util.randomString(4, '0123456789');
 		},
 
 		getDataNoMatchCallflow: function(type, resellerId) {
@@ -2203,10 +2165,10 @@ define(function(require){
 					}
 				};
 
-			if(type !== 'useBlended') {
+			if (type !== 'useBlended') {
 				noMatchCallflow.flow.module = 'resources';
 
-				if(type === 'useReseller') {
+				if (type === 'useReseller') {
 					noMatchCallflow.flow.data.hunt_account_id = resellerId;
 				}
 			}
@@ -2274,7 +2236,7 @@ define(function(require){
 				};
 
 			// We do that so that we don't bypass the generic error helper if there was no error callback defined.
-			if(error && typeof error === 'function') {
+			if (error && typeof error === 'function') {
 				apiData.data.generateError = false;
 
 				apiData.error = function(data, status) {
