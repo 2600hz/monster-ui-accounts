@@ -463,7 +463,7 @@ define(function(require){
 				autogenCheckbox = newAdminDiv.find('.autogen-ckb'),
 				pwdToggleDiv = newAdminDiv.find('.password-toggle-div');
 
-			timezone.populateDropdown(parent.find('#accountsmanager_new_account_timezone'));
+			timezone.populateDropdown(parent.find('#accountsmanager_new_account_timezone'), monster.apps.auth.currentAccount.timezone);
 
 			parent.find('.change-realm').on('click', function(e) {
 				parent.find('.generated-realm').hide();
