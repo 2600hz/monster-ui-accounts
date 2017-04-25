@@ -47,7 +47,7 @@ define(function(require) {
 		},
 
 		/* Available args *
-		 * `container`: Container of the App, defaults to $('#monster-content')
+		 * `container`: Container of the App, defaults to $('#monster_content')
 		 * `parentId`: ID of the parent account used to display the list
 		 * `selectedId`: ID of the account to show as selected in the list
 		 * `callback`: callback to be executed after the rendering
@@ -65,7 +65,7 @@ define(function(require) {
 				container = args.container,
 				accountsManager = $(monster.template(self, 'accountsManager')),
 				accountsManagerLanding = $(monster.template(self, 'accountsManagerLanding')),
-				parent = container || $('#monster-content');
+				parent = container || $('#monster_content');
 
 			accountsManager.find('.main-content')
 							.append(accountsManagerLanding);
