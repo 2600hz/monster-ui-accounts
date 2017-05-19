@@ -73,7 +73,7 @@
 	"activeServicePlan": "Active service plan",
 	"servicePlanMaintenance": "Service plan maintenance",
 	"servicePlanReconciliation": {
-		"button": "Reconciliate",
+		"button": "Reconcile",
 		"tooltip": "Insure that the quantities of billable objects are correct."
 	},
 	"servicePlanSynchronization": {
