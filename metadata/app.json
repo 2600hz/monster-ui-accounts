@@ -4,12 +4,13 @@
 		"en-US": {
 			"label": "Accounts Manager",
 			"description": "The Accounts app allows you to create, customize, and manage of all your client accounts.",
-			"extended_description": "This application allows resellers and service providers to handle anything related to all their customer accounts, giving you all the granular control you need to ensure your customers have an enjoyable experience with your service. In the Accounts app you can create a white labeled portal, choose which apps are available to each account, and manage each client's billing in our native billing software. Via this tool you can easily see and manage all the sub-accounts you have under your main account. Easily edit and configure all the accounts while saving time and money, allowing you to stay on top of all your sub accounts with ease.",
+			"extended_description": "Accounts Manager is the ideal tool for managing multiple customer accounts. Save time and reduce stress with our streamlined interface. Add as many accounts as necessary with our true multi-tenant account structure. Give each sub-account the same functions as the parent account, reset devices, accounts, enforce specific limitations or restrict what the end user sees based on what your customer desires.",
 			"features": [
-				"Customizable sub accounts",
-				"White-labeled portal",
-				"Easy monitoring when sub account deregisters",
-				"Native Billing software"
+				"Multi-tenant sub accounts",
+				"Usage controls",
+				"Account creation wizard",
+				"Account limits and carrier restrictions",
+				"Easily navigate between your accounts"
 			]
 		}
 	},
@@ -24,9 +25,9 @@
 	"license": "-",
 	"price": 0,
 	"screenshots": [
-		"accounts_1.png",
-		"accounts_2.png",
-		"accounts_3.png"
+		"Account-AvailableApps.png",
+		"Account-Limits.png",
+		"AccountOverview.png"
 	],
 	"urls": {
 		"documentation": "{documentation_url}",
