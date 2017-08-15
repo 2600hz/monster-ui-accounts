@@ -1292,7 +1292,6 @@ define(function(require) {
 					currentServicePlan: currentServicePlan,
 					isReseller: monster.apps.auth.isReseller,
 					carrierInfo: carrierInfo,
-					isSuperDuperAdmin: monster.util.isSuperDuper(),
 					accountIsReseller: accountData.is_reseller,
 					appsList: _.sortBy(appsList, 'name')
 				};

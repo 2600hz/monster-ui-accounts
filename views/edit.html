@@ -4,9 +4,9 @@
 			<button type="button" id="accountsmanager_use_account_btn" class="monster-button-success pull-right">{{ i18n.useAccount }}</button>
 			<ul class="nav nav-tabs account-tabs">
 				<li class="tab-overview active"><a href="#accountsmanager_overview_tab">{{ i18n.tabTitles.overview }}</a></li>
-				{{#if isSuperDuperAdmin}}
+				{{#isSuperDuper}}
 					<li class="tab-serviceplans {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_serviceplans_tab">{{ i18n.tabTitles.servicePlans }}</a></li>
-				{{/if}}
+				{{/isSuperDuper}}
 				<li class="tab-limits {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_limits_tab">{{ i18n.tabTitles.limits }}</a></li>
 				<li class="tab-restrictions {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_restrictions_tab">{{ i18n.tabTitles.restrictions }}</a></li>
 				<li class="tab-numbersfeatures">
@@ -54,7 +54,7 @@
 												<div class="plain-text">{{account.id}}</div>
 											</div>
 										</div>
-									{{#if isSuperDuperAdmin}}
+									{{#isSuperDuper}}
 										<div class="control-group">
 											<label class="control-label">{{i18n.accountType}}</label>
 											<div class="controls">
@@ -79,7 +79,7 @@
 											{{/if}}
 											</div>
 										</div>
-									{{/if}}
+									{{/isSuperDuper}}
 										<div class="control-group">
 											<label class="control-label">
 												{{#if account.enabled}}
