@@ -1536,7 +1536,7 @@ define(function(require) {
 
 			timezone.populateDropdown(contentTemplate.find('#accountsmanager_account_timezone'), accountData.timezone);
 
-			contentTemplate.find('#accountsmanager_account_timezone').chosen({search_contains: true, width: '220px'});
+			monster.ui.chosen(contentTemplate.find('#accountsmanager_account_timezone'));
 
 			monster.ui.tooltips(contentTemplate);
 
