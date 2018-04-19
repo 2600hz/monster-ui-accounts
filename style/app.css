@@ -600,25 +600,6 @@
 	position: relative;
 }
 
-
-/***** Edit: Service Plans *****/
-
-#accountsmanager_serviceplans_tab .serviceplans-container {
-	padding: 20px;
-}
-
-#accountsmanager_serviceplans_tab .serviceplans-container select {
-	width: 100%;
-}
-
-#accountsmanager_serviceplans_tab .serviceplans-container .serviceplans-details-container {
-	margin: 10px 0px;
-}
-
-#accountsmanager_serviceplans_tab .serviceplans-container .serviceplans-maintenance .controls button:not(:first-of-type) {
-	margin-left: 10px;
-}
-
 /***** Edit: Limits *****/
 
 
@@ -1244,24 +1225,6 @@
 
 .update-credits-content-wrapper form {
 	margin-bottom: 0;
-}
-
-
-/* Change service plan dialog */
-.change-service-plan-dialog {
-	padding: 15px;
-	width: 700px;
-}
-
-.change-service-plan-dialog .action-bar {
-	margin-top: 15px;
-	text-align: right;
-}
-
-.change-service-plan-dialog .common-container {
-	max-height: 400px;
-	overflow-y: auto;
-	overflow-x: hidden;
 }
 
 /* Account Manager Breadcrumbs */

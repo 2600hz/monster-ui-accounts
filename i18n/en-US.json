@@ -53,7 +53,6 @@
 	},
 	"tabTitles": {
 		"overview": "Overview",
-		"servicePlans": "Service Plans",
 		"limits": "Limits",
 		"restrictions": "Restrictions",
 		"notes": "Notes",
@@ -70,18 +69,6 @@
 			"help": "Please select this option when you want this account to place calls to ANY NUMBER other than mentioned on the list. (When the format of the number is unknown to the system.)"
 		}
 	},
-	"activeServicePlan": "Active service plan",
-	"servicePlanMaintenance": "Service plan maintenance",
-	"servicePlanReconciliation": {
-		"button": "Reconcile",
-		"tooltip": "Insure that the quantities of billable objects are correct."
-	},
-	"servicePlanSynchronization": {
-		"button": "Synchronize",
-		"tooltip": "Update the billing information on the credit card processor."
-	},
-	"servicePlanWizardLegend": "Choose a service plan for this account:",
-	"servicePlanResellerOnly": "Only resellers are allowed to manage service plans.",
 	"trunksLegend": "Set limits for included simultaneous inbound and outbound calls",
 	"twowayTrunks": "Twoway trunks",
 	"inboundTrunks": "Inbound trunks",
@@ -120,7 +107,6 @@
 	},
 	"wizardStepTitles": {
 		"setupAccount": "Set up an account",
-		"servicePlan": "Choose Service Plan",
 		"limits": "Call Restrictions",
 		"restrictions": "Permissions"
 	},
@@ -142,12 +128,6 @@
 	},
 	"deleteUserConfirm": "This user will be permanently deleted. Continue?",
 	"toastrMessages": {
-		"servicePlanUpdateSuccess": "Active service plan updated successfully!",
-		"servicePlanUpdateError": "An unexpected error occurred! Please try again.",
-		"servicePlanReconciliationSuccess": "Reconciliation completed successfully!",
-		"servicePlanReconciliationError": "An error occurred during reconciliation process! Please try again later.",
-		"servicePlanSynchronizationSuccess": "Synchronization completed successfully!",
-		"servicePlanSynchronizationError": "An error occurred during synchronization process! Please try again later.",
 		"limitsUpdateSuccess": "Limits updated successfully!",
 		"limitsUpdateError": "An unexpected error occured when updating the limits, please try again later.",
 		"creditAddSuccess": "Credit successfully added to the current balance!",
@@ -158,8 +138,7 @@
 			"adminError": "The account administrator could not be created.",
 			"limitsError": "An error occured while setting up the limits.",
 			"forbiddenLimitsError": "You are not allowed to set those limits. Please contact your sales representative.",
-			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid.",
-			"servicePlanError": "An error occured while assigning the service plan to the account."
+			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid."
 		},
 		"uiRestrictionsUpdateSuccess": "UI restrictions updated successfully!",
 		"uiRestrictionsUpdateError": "An unexpected error occured when updating the UI restrictions, please try again later.",
