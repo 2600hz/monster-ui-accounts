@@ -358,19 +358,6 @@ define(function(require) {
 									} else {
 										callback();
 									}
-								},
-								servicePlans: function(callback) {
-									if (monster.util.isSuperDuper()) {
-										monster.pub('common.servicePlanDetails.customizeSave', {
-											container: newAccountWizardForm.find('.common-container'),
-											accountId: newAccountId,
-											callback: function() {
-												callback();
-											}
-										});
-									} else {
-										callback();
-									}
 								}
 							},
 							function(err, results) {
@@ -431,17 +418,13 @@ define(function(require) {
 					parent: parent.find('.wizard-content-step[data-step="1"]')
 				});
 
-				self.renderServicePlanStep({
-					parent: parent.find('.wizard-content-step[data-step="2"]')
-				});
-
 				self.renderLimitsStep({
-					parent: parent.find('.wizard-content-step[data-step="3"]'),
+					parent: parent.find('.wizard-content-step[data-step="2"]'),
 					classifiers: results.classifiers
 				});
 
 				self.renderRestrictionsStep({
-					parent: parent.find('.wizard-content-step[data-step="4"]')
+					parent: parent.find('.wizard-content-step[data-step="3"]')
 				});
 			});
 		},
@@ -514,78 +497,6 @@ define(function(require) {
 			monster.ui.tooltips(parent);
 		},
 
-		renderServicePlanStep: function(params) {
-			var self = this,
-				parent = params.parent,
-				stepTemplate = $(monster.template(self, 'servicePlanWizardStep', {
-					isReseller: monster.apps.auth.isReseller
-				}));
-
-			monster.pub('common.servicePlanDetails.getServicePlanTemplate', {
-				mode: 'new',
-				useOwnPlans: monster.apps.auth.isReseller,
-				afterRender: function(template, data) {
-					stepTemplate.find('.common-container')
-								.append(template);
-
-					parent.append(stepTemplate);
-				}
-			});
-		},
-
-		servicePlanGet: function(servicePlanId, callback) {
-			var self = this;
-
-			self.callApi({
-				resource: 'servicePlan.get',
-				data: {
-					accountId: self.accountId,
-					planId: servicePlanId
-				},
-				success: function(data, status) {
-					callback && callback(data.data);
-				}
-			});
-		},
-
-		servicePlanAdd: function(accountId, newPlanId, success, error) {
-			var self = this;
-
-			self.callApi({
-				resource: 'servicePlan.add',
-				data: {
-					accountId: accountId,
-					planId: newPlanId,
-					data: {}
-				},
-				success: function(data, status) {
-					success && success(data);
-				},
-				error: function(data, status) {
-					error && error(data);
-				}
-			});
-		},
-
-		servicePlanRemove: function(accountId, planId, success, error) {
-			var self = this;
-
-			self.callApi({
-				resource: 'servicePlan.remove',
-				data: {
-					accountId: accountId,
-					planId: planId,
-					data: {}
-				},
-				success: function(data, status) {
-					success && success(data);
-				},
-				error: function(data, status) {
-					error && error(data);
-				}
-			});
-		},
-
 		renderLimitsStep: function(params) {
 			var self = this,
 				parent = params.parent,
@@ -615,76 +526,6 @@ define(function(require) {
 			parent.append(stepTemplate);
 
 			monster.ui.tooltips(parent);
-		},
-
-		// If a service plan has a rate for one of the limits, we should display the my account category,
-		// so this function checks that and returns a map of limits type with a boolean telling whether it should be shown or not
-		getUIRestrictionForServicePlan: function(servicePlan) {
-			var self = this,
-				hasLimits = servicePlan.hasOwnProperty('data') && servicePlan.data.hasOwnProperty('plan') && servicePlan.data.plan.hasOwnProperty('limits'),
-				limits = hasLimits ? servicePlan.data.plan.limits : {},
-				formattedData = {},
-				getUIRestrictionValue = function(key) {
-					var value = false;
-
-					if (hasLimits && limits.hasOwnProperty(key) && limits[key].hasOwnProperty('rate')) {
-						value = true;
-					}
-
-					return value;
-				};
-
-			if (hasLimits) {
-				_.each(limits, function(v, k) {
-					formattedData[k] = getUIRestrictionValue(k);
-				});
-			}
-
-			return formattedData;
-		},
-
-		// Function used when user updates service plan via update of the account page.
-		// If he selects a new service plan we need to automatically turn on/off the limits settings based on the service plan
-		updateUIRestrictionsFromServicePlan: function(template, accountData, servicePlan, callback) {
-			var self = this,
-				servicePlanRestrictions = self.getUIRestrictionForServicePlan(servicePlan),
-				getRestrictionValue = function(key) {
-					return servicePlanRestrictions.hasOwnProperty(key) ? servicePlanRestrictions[key] : false;
-				},
-				newUIRestrictions = {
-					ui_restrictions: {
-						myaccount: {
-							inbound: {
-								show_tab: getRestrictionValue('inbound_trunks')
-							},
-							outbound: {
-								show_tab: getRestrictionValue('outbound_trunks')
-							},
-							twoway: {
-								show_tab: getRestrictionValue('twoway_trunks')
-							}
-						}
-					}
-				},
-				// We'll run this function once we updated the account since we don't re-render the page
-				setCheckboxValue = function(key, data) {
-					// By default all the checkboxes are checked
-					var value = true;
-					if (data.data.hasOwnProperty('ui_restrictions') && data.data.ui_restrictions.hasOwnProperty('myaccount') && data.data.ui_restrictions.myaccount.hasOwnProperty(key) && data.data.ui_restrictions.myaccount[key].hasOwnProperty('show_tab')) {
-						// we only accept true/false as values, so if value is different than true, we set it to false
-						value = data.data.ui_restrictions.myaccount[key].show_tab === true ? true : false;
-					}
-
-					template.find('[name="account.ui_restrictions.myaccount.' + key + '.show_tab"]').prop('checked', value);
-				};
-
-			self.updateData(accountData, newUIRestrictions, function(data) {
-				setCheckboxValue('inbound', data);
-				setCheckboxValue('outbound', data);
-				setCheckboxValue('twoway', data);
-
-				callback && callback();
-			});
 		},
 
 		changeStep: function(stepIndex, maxStep, parent) {
@@ -1041,24 +882,6 @@ define(function(require) {
 						}
 					});
 				},
-				currentServicePlan: function(callback) {
-					self.callApi({
-						resource: 'servicePlan.listCurrent',
-						data: {
-							accountId: accountId
-						},
-						success: function(data, status) {
-							if (data && data.data) {
-								callback(null, data.data);
-							} else {
-								callback(null, {});
-							}
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
-					});
-				},
 				limits: function(callback) {
 					self.callApi({
 						resource: 'limits.get',
@@ -1179,7 +1002,6 @@ define(function(require) {
 						accountUsers: results.users.sort(function(a, b) {
 							return (a.first_name + a.last_name).toLowerCase() > (b.first_name + b.last_name).toLowerCase() ? 1 : -1;
 						}),
-						currentServicePlan: results.currentServicePlan,
 						accountLimits: results.limits,
 						classifiers: results.classifiers,
 						accountBalance: 'balance' in results.currentBalance ? results.currentBalance.balance : 0,
@@ -1248,7 +1070,6 @@ define(function(require) {
 		/** Expected params:
 			- accountData
 			- accountUsers
-			- currentServicePLan
 			- accountLimits
 			- classifiers (call restriction)
 			- parent
@@ -1258,7 +1079,6 @@ define(function(require) {
 			var self = this,
 				accountData = params.accountData,
 				accountUsers = params.accountUsers,
-				currentServicePlan = params.currentServicePlan,
 				accountLimits = params.accountLimits,
 				accountBalance = params.accountBalance,
 				carrierInfo = params.carrierInfo,
@@ -1288,7 +1108,6 @@ define(function(require) {
 					account: $.extend(true, {}, accountData),
 					accountAdmins: admins,
 					accountUsers: regularUsers,
-					currentServicePlan: currentServicePlan,
 					isReseller: monster.apps.auth.isReseller,
 					carrierInfo: carrierInfo,
 					accountIsReseller: accountData.is_reseller,
@@ -1446,114 +1265,17 @@ define(function(require) {
 				}
 			});
 
-			// If reseller
-			if (monster.apps.auth.isReseller) {
-				var $btn_change = contentTemplate.find('#accountsmanager_serviceplan_change'),
-					$btn_rec = contentTemplate.find('#accountsmanager_serviceplan_reconciliation'),
-					$btn_sync = contentTemplate.find('#accountsmanager_serviceplan_synchronization');
-
-				$btn_change.on('click', function() {
-					monster.pub('common.servicePlanDetails.getServicePlanTemplate', {
-						accountId: accountData.id,
-						afterRender: function(template, data) {
-							var templatePopup = $(monster.template(self, 'changeServicePlanDialog'));
-
-							templatePopup.find('.common-container')
-											.append(template);
-
-							templatePopup.find('#save_custom_plans').on('click', function() {
-								monster.pub('common.servicePlanDetails.customizeSave', {
-									previousPlans: data.selectedPlans,
-									container: templatePopup.find('.common-container'),
-									accountId: accountData.id,
-									divResult: contentTemplate.find('.serviceplans-details-container'),
-									callback: function() {
-										dialog.dialog('close');
-
-										toastr.success(self.i18n.active().changeServicePlanDialog.successUpdate);
-									}
-								});
-							});
-
-							var dialog = monster.ui.dialog(templatePopup, {
-								title: self.i18n.active().changeServicePlanDialog.title
-							});
-						}
-					});
-				});
-
-				$btn_rec.click(function(e) {
-					e.preventDefault();
-					if (!$btn_rec.hasClass('disabled') && !$btn_sync.hasClass('disabled')) {
-						$btn_rec.addClass('disabled');
-						$btn_sync.addClass('disabled');
-						self.callApi({
-							resource: 'servicePlan.reconciliate',
-							data: {
-								accountId: accountData.id,
-								data: {}
-							},
-							success: function(data, status) {
-								toastr.success(self.i18n.active().toastrMessages.servicePlanReconciliationSuccess, '', {'timeOut': 5000});
-								$btn_rec.removeClass('disabled');
-								$btn_sync.removeClass('disabled');
-							},
-							error: function(data, status) {
-								toastr.error(self.i18n.active().toastrMessages.servicePlanReconciliationError, '', {'timeOut': 5000});
-								$btn_rec.removeClass('disabled');
-								$btn_sync.removeClass('disabled');
-							}
-						});
-					}
-				});
-
-				$btn_sync.click(function(e) {
-					e.preventDefault();
-					if (!$btn_rec.hasClass('disabled') && !$btn_sync.hasClass('disabled')) {
-						$btn_rec.addClass('disabled');
-						$btn_sync.addClass('disabled');
-						self.callApi({
-							resource: 'servicePlan.synchronize',
-							data: {
-								accountId: accountData.id,
-								data: {}
-							},
-							success: function(data, status) {
-								toastr.success(self.i18n.active().toastrMessages.servicePlanSynchronizationSuccess, '', {'timeOut': 5000});
-								$btn_rec.removeClass('disabled');
-								$btn_sync.removeClass('disabled');
-							},
-							error: function(data, status) {
-								toastr.error(self.i18n.active().toastrMessages.servicePlanSynchronizationError, '', {'timeOut': 5000});
-								$btn_rec.removeClass('disabled');
-								$btn_sync.removeClass('disabled');
-							}
-						});
-					}
-				});
-			}
-
 			timezone.populateDropdown(contentTemplate.find('#accountsmanager_account_timezone'), accountData.timezone);
 
 			monster.ui.chosen(contentTemplate.find('#accountsmanager_account_timezone'));
 
 			monster.ui.tooltips(contentTemplate);
 
-			if (currentServicePlan) {
-				monster.pub('common.servicePlanDetails.render', {
-					container: contentTemplate.find('.serviceplans-details-container'),
-					accountId: accountData.id,
-					servicePlan: currentServicePlan,
-					useOwnPlans: accountData.is_reseller
-				});
-			}
-
 			self.renderLimitsTab({
 				accountData: accountData,
 				limits: accountLimits,
 				balance: accountBalance,
 				formattedClassifiers: formattedClassifiers,
-				servicePlan: currentServicePlan,
 				parent: contentTemplate.find('#accountsmanager_limits_tab')
 			});
 

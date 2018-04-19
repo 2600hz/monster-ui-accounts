@@ -1,8 +1,0 @@
-<div>
-	<legend>{{ i18n.servicePlanWizardLegend }}</legend>
-	{{#compare isReseller "===" true}}
-	<div class="common-container"></div>
-	{{else}}
-		<div class="error-message">{{ i18n.servicePlanResellerOnly }}</div>
-	{{/compare}}
-</div>

@@ -4,9 +4,6 @@
 			<button type="button" id="accountsmanager_use_account_btn" class="monster-button-success pull-right">{{ i18n.useAccount }}</button>
 			<ul class="nav nav-tabs account-tabs">
 				<li class="tab-overview active"><a href="#accountsmanager_overview_tab">{{ i18n.tabTitles.overview }}</a></li>
-				{{#isSuperDuper}}
-					<li class="tab-serviceplans {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_serviceplans_tab">{{ i18n.tabTitles.servicePlans }}</a></li>
-				{{/isSuperDuper}}
 				<li class="tab-limits {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_limits_tab">{{ i18n.tabTitles.limits }}</a></li>
 				<li class="tab-restrictions {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_restrictions_tab">{{ i18n.tabTitles.restrictions }}</a></li>
 				<li class="tab-numbersfeatures">
@@ -373,40 +370,6 @@
 						</div>
 					</li>
 				</ul>
-			</div>
-
-			<div class="tab-pane" id="accountsmanager_serviceplans_tab">
-				<div class="serviceplans-container">
-					<div class="serviceplans-update clearfix">
-						<legend>{{ i18n.activeServicePlan }}</legend>
-
-						{{#compare isReseller "===" true}}
-						<form>
-							<div class="serviceplans-details-container"></div>
-							<div class="controls-group">
-								<div class="controls">
-									<button type="button" id="accountsmanager_serviceplan_change" class="monster-button-primary pull-right">{{ i18n.change }}</button>
-								</div>
-							</div>
-						</form>
-						{{else}}
-							<div class="serviceplans-details-container"></div>
-						{{/compare}}
-					</div>
-					{{#compare isReseller "===" true}}
-					<div class="serviceplans-maintenance clearfix">
-						<form>
-							<legend>{{ i18n.servicePlanMaintenance }}</legend>
-							<div class="controls-group">
-								<div class="controls">
-									<button type="button" id="accountsmanager_serviceplan_reconciliation" class="monster-button-secondary" data-toggle="tooltip" data-placement="top" data-original-title="{{ i18n.servicePlanReconciliation.tooltip }}">{{ i18n.servicePlanReconciliation.button }}</button>
-									<button type="button" id="accountsmanager_serviceplan_synchronization" class="monster-button-secondary" data-toggle="tooltip" data-placement="top" data-original-title="{{ i18n.servicePlanSynchronization.tooltip }}">{{ i18n.servicePlanSynchronization.button }}</button>
-								</div>
-							</div>
-						</form>
-					</div>
-					{{/compare}}
-				</div>
 			</div>
 
 			<div class="tab-pane" id="accountsmanager_limits_tab">
