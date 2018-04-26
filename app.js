@@ -17,7 +17,19 @@ define(function(require) {
 			'es-ES': { customCss: false }
 		},
 
-		requests: {},
+		requests: {
+			'google.geocode.address': {
+				apiRoot: '//maps.googleapis.com/',
+				url: 'maps/api/geocode/json?address={zipCode}',
+				verb: 'GET',
+				generateError: false,
+				removeHeaders: [
+					'X-Kazoo-Cluster-ID',
+					'X-Auth-Token',
+					'Content-Type'
+				]
+			}
+		},
 
 		subscribe: {
 			'accountsManager.activate': '_render',
@@ -1425,6 +1437,34 @@ define(function(require) {
 						});
 					}
 				});
+			});
+
+			contentTemplate.find('#accountsmanager_billing_contact_postalCode').on('change', function(event) {
+				var $this = $(this),
+					zipCode = $this.val();
+
+				if (zipCode) {
+					monster.request({
+						resource: 'google.geocode.address',
+						data: {
+							zipCode: zipCode
+						},
+						success: function(data, status) {
+							if (!_.isEmpty(data.results)) {
+								var length = data.results[0].address_components.length;
+
+								contentTemplate.find('#accountsmanager_billing_contact_locality').val(data.results[0].address_components[1].long_name);
+								// Last component is country, before last is state, before can be county if exists or city if no county, so we had to change from 3 to length-2.
+								contentTemplate.find('#accountsmanager_billing_contact_region').val(data.results[0].address_components[length - 2].short_name);
+
+								contentTemplate.find('#accountsmanager_billing_contact_country').val(_.last(data.results[0].address_components).short_name);
+							}
+						},
+						error: function(errorPayload, data, globalHandler) {
+							globalHandler(data, { generateError: true });
+						}
+					});
+				}
 			});
 
 			// self.adjustTabsWidth(contentTemplate.find('ul.account-tabs > li'));
