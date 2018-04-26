@@ -39,7 +39,12 @@
 		"label": "Billing Contact",
 		"name": "Billing Contact Name",
 		"email": "Billing Contact Email",
-		"number": "Phone Number"
+		"number": "Phone Number",
+		"country": "Country",
+		"locality": "City",
+		"region": "State",
+		"postalCode": "Postal Code",
+		"streetAddress": "Street Address"
 	},
 	"technicalContact": {
 		"label": "Technical Contact",
