@@ -2,9 +2,9 @@
 	"name": "accounts",
 	"i18n": {
 		"en-US": {
-			"label": "Accounts Manager",
+			"label": "Accounts",
 			"description": "The Accounts app allows you to create, customize, and manage of all your client accounts.",
-			"extended_description": "Accounts Manager is the ideal tool for managing multiple customer accounts. Save time and reduce stress with our streamlined interface. Add as many accounts as necessary with our true multi-tenant account structure. Give each sub-account the same functions as the parent account, reset devices, accounts, enforce specific limitations or restrict what the end user sees based on what your customer desires.",
+			"extended_description": "The Accounts app is the ideal tool for managing multiple customer accounts. Save time and reduce stress with our streamlined interface. Add as many accounts as necessary with our true multi-tenant account structure. Give each sub-account the same functions as the parent account, reset devices, accounts, enforce specific limitations or restrict what the end user sees based on what your customer desires.",
 			"features": [
 				"Multi-tenant sub accounts",
 				"Usage controls",
@@ -15,8 +15,7 @@
 		}
 	},
 	"tags": [
-		"reseller",
-		"developer"
+		"reseller"
 	],
 	"icon": "Accounts_app.png",
 	"api_url": "http://10.26.0.41:8000/v2",
