@@ -74,8 +74,12 @@ define(function(require) {
 			var self = this,
 				args = pArgs || {},
 				container = args.container,
-				accountsManager = $(monster.template(self, 'accountsManager')),
-				accountsManagerLanding = $(monster.template(self, 'accountsManagerLanding')),
+				accountsManager = $(self.getTemplate({
+					name: 'accountsManager'
+				})),
+				accountsManagerLanding = $(self.getTemplate({
+					name: 'accountsManagerLanding'
+				})),
 				parent = container || $('#monster_content');
 
 			accountsManager.find('.main-content')
@@ -175,7 +179,10 @@ define(function(require) {
 				dataTemplate.whitelabeledRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
 			}
 
-			var newAccountWizard = $(monster.template(self, 'newAccountWizard', dataTemplate)),
+			var newAccountWizard = $(self.getTemplate({
+					name: 'newAccountWizard',
+					data: dataTemplate
+				})),
 				maxStep = parseInt(newAccountWizard.find('.wizard-top-bar').data('max_step')),
 				newAccountWizardForm = newAccountWizard.find('#accountsmanager_new_account_form');
 
@@ -298,7 +305,12 @@ define(function(require) {
 											success: function(data, status) {
 												callback(null, data.data);
 												if (formData.user.send_email_on_creation) {
-													var popupContent = monster.template(self, '!' + self.i18n.active().sentEmailPopup, { email: data.data.email });
+													var popupContent = self.getTemplate({
+														name: '!' + self.i18n.active().sentEmailPopup,
+														data: {
+															email: data.data.email
+														}
+													});
 													monster.ui.alert('info', popupContent);
 												}
 											},
@@ -619,9 +631,12 @@ define(function(require) {
 						regularUsers = $.map(data.data, function(val) {
 							return val.priv_level !== 'admin' ? val : null;
 						}),
-						contentTemplate = $(monster.template(self, 'accountsAdminForm', {
-							accountAdmins: admins,
-							accountUsers: regularUsers
+						contentTemplate = $(self.getTemplate({
+							name: 'accountsAdminForm',
+							data: {
+								accountAdmins: admins,
+								accountUsers: regularUsers
+							}
 						})),
 						$createUserDiv = contentTemplate.find('.create-user-div'),
 						$adminElements = contentTemplate.find('.admin-element'),
@@ -799,7 +814,12 @@ define(function(require) {
 										self.renderEditAdminsForm(parent, editAccountId);
 										refreshAdminsHeader();
 										if (formData.send_email_on_creation) {
-											var popupContent = monster.template(self, '!' + self.i18n.active().sentEmailPopup, { email: data.data.email });
+											var popupContent = self.getTemplate({
+												name: '!' + self.i18n.active().sentEmailPopup,
+												data: {
+													email: data.data.email
+												}
+											});
 											monster.ui.alert('info', popupContent);
 										}
 									}
@@ -1075,8 +1095,15 @@ define(function(require) {
 				previousId = account.id;
 			});
 
-			container.find('.top-bar').empty()
-										.append(monster.template(self, 'accountsBreadcrumbs', { accounts: tree }));
+			container
+				.find('.top-bar')
+					.empty()
+					.append($(self.getTemplate({
+						name: 'accountsBreadcrumbs',
+						data: {
+							accounts: tree
+						}
+					})));
 		},
 
 		/** Expected params:
@@ -1132,7 +1159,10 @@ define(function(require) {
 
 			self.updateBreadCrumbs(params.listParents, accountData, parent);
 
-			var contentTemplate = $(monster.template(self, 'edit', templateData)),
+			var contentTemplate = $(self.getTemplate({
+					name: 'edit',
+					data: templateData
+				})),
 				$liSettings = contentTemplate.find('li.settings-item'),
 				$liContent = $liSettings.find('.settings-item-content'),
 				$aSettings = $liSettings.find('a.settings-link'),
@@ -1491,7 +1521,12 @@ define(function(require) {
 			var self = this,
 				deleteKey = self.i18n.active().deleteAccountDialog.deleteKey,
 				confirmPopup = monster.ui.confirm(
-					monster.template(self, 'deleteAccountDialog', {accountName: accountName}),
+					$(self.getTemplate({
+						name: 'deleteAccountDialog',
+						data: {
+							accountName: accountName
+						}
+					})),
 					function() {
 						callbackSuccess && callbackSuccess();
 					},
@@ -1535,7 +1570,10 @@ define(function(require) {
 				var dataTemplate = {
 						amount: params.balance.toFixed(2)
 					},
-					template = $(monster.template(self, 'updateCreditsDialog', dataTemplate)),
+					template = $(self.getTemplate({
+						name: 'updateCreditsDialog',
+						data: dataTemplate
+					})),
 					popupAmount = template.find('.add-credits-header .value'),
 					accountsAppAmount = tabContentTemplate.find('.credit-balance'),
 					addValueField = template.find('#amount_add'),
@@ -1669,12 +1707,15 @@ define(function(require) {
 			var self = this,
 				formattedClassifiers = params.formattedClassifiers,
 				limits = params.limits || {},
-				template = $(monster.template(self, 'limitsTabContent', {
-					mode: params.hasOwnProperty('accountData') ? 'update' : 'create',
-					balance: params.balance || 0,
-					classifiers: formattedClassifiers,
-					allowPrepay: limits.hasOwnProperty('allow_prepay') ? limits.allow_prepay : true,
-					disableBraintree: monster.config.disableBraintree
+				template = $(self.getTemplate({
+					name: 'limitsTabContent',
+					data: {
+						mode: params.hasOwnProperty('accountData') ? 'update' : 'create',
+						balance: params.balance || 0,
+						classifiers: formattedClassifiers,
+						allowPrepay: limits.hasOwnProperty('allow_prepay') ? limits.allow_prepay : true,
+						disableBraintree: monster.config.disableBraintree
+					}
 				})),
 				twoway = limits.twoway_trunks || 0,
 				twowayTrunksDiv = template.find('.trunks-div.twoway'),
@@ -1783,8 +1824,11 @@ define(function(require) {
 		getRestrictionsTabContent: function(params) {
 			var self = this,
 				uiRestrictions = params.hasOwnProperty('accountData') && params.accountData.hasOwnProperty('ui_restrictions') ? params.accountData.ui_restrictions.myaccount || params.accountData.ui_restrictions : {},
-				template = $(monster.template(self, 'restrictionsTabContent', {
-					ui_restrictions: uiRestrictions
+				template = $(self.getTemplate({
+					name: 'restrictionsTabContent',
+					data: {
+						ui_restrictions: uiRestrictions
+					}
 				}));
 
 			template.find('.restrictions-element input').each(function() {
