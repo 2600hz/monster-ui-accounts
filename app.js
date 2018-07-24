@@ -2,7 +2,6 @@ define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
 		monster = require('monster'),
-		toastr = require('toastr'),
 		timezone = require('monster-timezone');
 
 	var app = {
@@ -315,7 +314,13 @@ define(function(require) {
 												}
 											},
 											error: function(data, status) {
-												toastr.error(self.i18n.active().toastrMessages.newAccount.adminError, '', {'timeOut': 10000});
+												monster.ui.toast({
+													type: 'error',
+													message: self.i18n.active().toastrMessages.newAccount.adminError,
+													options: {
+														timeOut: 10000
+													}
+												});
 												callback(null, {});
 											}
 										});
@@ -353,10 +358,22 @@ define(function(require) {
 												},
 												error: function(data, status) {
 													if (data.error === 403) {
-														toastr.info(self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError, '', {'timeOut': 10000});
+														monster.ui.toast({
+															type: 'info',
+															message: self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError,
+															options: {
+																timeOut: 10000
+															}
+														});
 														callback(null, {});
 													} else if (data.error !== 402) { // Only show error if error isn't a 402, because a 402 is handled generically
-														toastr.info(self.i18n.active().toastrMessages.newAccount.limitsError, '', {'timeOut': 10000});
+														monster.ui.toast({
+															type: 'info',
+															message: self.i18n.active().toastrMessages.newAccount.limitsError,
+															options: {
+																timeOut: 10000
+															}
+														});
 														callback(null, {});
 													}
 												},
@@ -376,8 +393,14 @@ define(function(require) {
 											callback(null, data.data);
 										},
 										function(data, status) {
+											monster.ui.toast({
+												type: 'info',
+												message: self.i18n.active().toastrMessages.newAccount.creditError,
+												options: {
+													timeOut: 10000
+												}
+											});
 											callback(null, {});
-											toastr.info(self.i18n.active().toastrMessages.newAccount.creditError, '', {'timeOut': 10000});
 										});
 									} else {
 										callback();
@@ -391,7 +414,13 @@ define(function(require) {
 							});
 						},
 						error: function(data, status) {
-							toastr.error(self.i18n.active().toastrMessages.newAccount.accountError, '', {'timeOut': 5000});
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().toastrMessages.newAccount.accountError,
+								options: {
+									timeOut: 5000
+								}
+							});
 							toggleProcessing(false);
 						}
 					});
@@ -1259,13 +1288,19 @@ define(function(require) {
 							accountId: accountData.id
 						},
 						success: function(data, status) {
-							toastr.success(self.i18n.active()[node].success);
+							monster.ui.toast({
+								type: 'success',
+								message: self.i18n.active()[node].success
+							});
 							self.render({
 								selectedId: accountData.id
 							});
 						},
 						error: function(data, status) {
-							toastr.error(self.i18n.active().promoteDemoteError);
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().promoteDemoteError
+							});
 						}
 					});
 				});
@@ -1366,12 +1401,24 @@ define(function(require) {
 							selectedId: accountData.id,
 							selectedTab: 'tab-notes',
 							callback: function() {
-								toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {'timeOut': 5000});
+								monster.ui.toast({
+									type: 'success',
+									message: self.i18n.active().toastrMessages.notesUpdateSuccess,
+									options: {
+										timeOut: 5000
+									}
+								});
 							}
 						});
 					},
 					function(data, status) {
-						toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {'timeOut': 5000});
+						monster.ui.toast({
+							type: 'error',
+							message: self.i18n.active().toastrMessages.notesUpdateError,
+							options: {
+								timeOut: 5000
+							}
+						});
 					}
 				);
 			});
@@ -1384,12 +1431,24 @@ define(function(require) {
 						selectedId: accountData.id,
 						selectedTab: 'tab-notes',
 						callback: function() {
-							toastr.success(self.i18n.active().toastrMessages.notesUpdateSuccess, '', {'timeOut': 5000});
+							monster.ui.toast({
+								type: 'success',
+								message: self.i18n.active().toastrMessages.notesUpdateSuccess,
+								options: {
+									timeOut: 5000
+								}
+							});
 						}
 					});
 				},
 				errorUpdateAnnouncement = function(data, status) {
-					toastr.error(self.i18n.active().toastrMessages.notesUpdateError, '', {'timeOut': 5000});
+					monster.ui.toast({
+						type: 'error',
+						message: self.i18n.active().toastrMessages.notesUpdateError,
+						options: {
+							timeOut: 5000
+						}
+					});
 				};
 
 			notesTab.find('#accountsmanager_announcement_delete').on('click', function() {
@@ -1430,12 +1489,24 @@ define(function(require) {
 							selectedId: accountData.id,
 							selectedTab: 'tab-appstore',
 							callback: function() {
-								toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {'timeOut': 5000});
+								monster.ui.toast({
+									type: 'success',
+									message: self.i18n.active().toastrMessages.appstoreUpdateSuccess,
+									options: {
+										timeOut: 5000
+									}
+								});
 							}
 						});
 					},
 					error: function(data, status) {
-						toastr.error(self.i18n.active().toastrMessages.appstoreUpdateError, '', {'timeOut': 5000});
+						monster.ui.toast({
+							type: 'error',
+							message: self.i18n.active().toastrMessages.appstoreUpdateError,
+							options: {
+								timeOut: 5000
+							}
+						});
 					}
 				});
 			});
@@ -1460,7 +1531,13 @@ define(function(require) {
 									selectedId: accountData.id,
 									selectedTab: 'tab-numbersfeatures',
 									callback: function() {
-										toastr.success(self.i18n.active().toastrMessages.appstoreUpdateSuccess, '', {'timeOut': 5000});
+										monster.ui.toast({
+											type: 'success',
+											message: self.i18n.active().toastrMessages.appstoreUpdateSuccess,
+											options: {
+												timeOut: 5000
+											}
+										});
 									}
 								});
 							}
@@ -1585,7 +1662,10 @@ define(function(require) {
 							popupAmount.html(formattedValue);
 							accountsAppAmount.html(formattedValue);
 							field.val('');
-							toastr.success(self.i18n.active().updateCreditDialog.successfulUpdate);
+							monster.ui.toast({
+								type: 'success',
+								message: self.i18n.active().updateCreditDialog.successfulUpdate
+							});
 						});
 					},
 					addForm = template.find('#add_credit_form'),
@@ -1659,12 +1739,24 @@ define(function(require) {
 									})
 								},
 								success: function(data, status) {
-									toastr.success(self.i18n.active().toastrMessages.limitsUpdateSuccess, '', {'timeOut': 5000});
+									monster.ui.toast({
+										type: 'success',
+										message: self.i18n.active().toastrMessages.limitsUpdateSuccess,
+										options: {
+											timeOut: 5000
+										}
+									});
 									parallelCallback && parallelCallback(null, data.data);
 								},
 								error: function(data, status) {
 									if (data.error !== 402) {
-										toastr.error(self.i18n.active().toastrMessages.limitsUpdateError, '', {'timeOut': 5000});
+										monster.ui.toast({
+											type: 'error',
+											message: self.i18n.active().toastrMessages.limitsUpdateError,
+											options: {
+												timeOut: 5000
+											}
+										});
 									}
 									parallelCallback && parallelCallback(null, null);
 								}
@@ -1678,11 +1770,23 @@ define(function(require) {
 									data: accountData
 								},
 								success: function(data, status) {
-									toastr.success(self.i18n.active().toastrMessages.callRestrictionsUpdateSuccess, '', {'timeOut': 5000});
+									monster.ui.toast({
+										type: 'success',
+										message: self.i18n.active().toastrMessages.callRestrictionsUpdateSuccess,
+										options: {
+											timeOut: 5000
+										}
+									});
 									parallelCallback && parallelCallback(null, data.data);
 								},
 								error: function(data, status) {
-									toastr.error(self.i18n.active().toastrMessages.callRestrictionsUpdateError, '', {'timeOut': 5000});
+									monster.ui.toast({
+										type: 'error',
+										message: self.i18n.active().toastrMessages.callRestrictionsUpdateError,
+										options: {
+											timeOut: 5000
+										}
+									});
 									parallelCallback && parallelCallback(null, null);
 								}
 							});
@@ -1810,12 +1914,24 @@ define(function(require) {
 							selectedId: accountData.id,
 							selectedTab: 'tab-restrictions',
 							callback: function() {
-								toastr.success(self.i18n.active().toastrMessages.uiRestrictionsUpdateSuccess, '', {'timeOut': 5000});
+								monster.ui.toast({
+									type: 'success',
+									message: self.i18n.active().toastrMessages.uiRestrictionsUpdateSuccess,
+									options: {
+										timeOut: 5000
+									}
+								});
 							}
 						});
 					},
 					function(data, status) {
-						toastr.error(self.i18n.active().toastrMessages.uiRestrictionsUpdateError, '', {'timeOut': 5000});
+						monster.ui.toast({
+							type: 'error',
+							message: self.i18n.active().toastrMessages.uiRestrictionsUpdateError,
+							options: {
+								timeOut: 5000
+							}
+						});
 					}
 				);
 			});
