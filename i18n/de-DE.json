@@ -1,0 +1,296 @@
+﻿{
+	"addAccount": "Neuen Account hinzufügen",
+	"editSetting": "Bearbeiten",
+	"saveChanges": "Änderungen speichern",
+	"closeSetting": "Schließen",
+	"disable": "Deaktivieren",
+	"disabled": "Deaktiviert",
+	"active": "Aktiv",
+	"delete": "Löschen",
+	"enable": "Aktivieren",
+	"add": "Hinzufügen",
+	"save": "Speichern",
+	"update": "Aktualisieren",
+	"none": "Keine",
+	"month": "Monat",
+	"missingAccount": "Fehlender Account",
+	"disableAccount": "Diesen Account deaktivieren",
+	"enableAccount": "Diesen Account aktivieren",
+	"deleteAccount": "Diesen Account löschen",
+	"useAccount": "Account verwenden",
+	"changesSaved": "Änderungen wurden gespeichert!",
+	"createdOn": "Erstellt am",
+	"accountStatus": "Account-Status",
+	"accountId": "Account-ID",
+	"accountName": "Account-Name",
+	"accountRealm": "Account-Bereich",
+	"accountTimezone": "Zeitzone",
+	"accountLanguage": "Sprache",
+	"accountTimezoneTitle": "Zeitzone und Sprache",
+	"accountAdmins": "Account-Administratoren",
+	"noAdminMessage": "Dieser Account verfügt über keinen Admin",
+	"noUserMessage": "Dieser Account verfügt über keinen gewöhnlichen Benutzer",
+	"newAdmin": "Neuen Administrator hinzufügen",
+	"newUser": "Neuer Benutzer",
+	"existingUser": "Bestehender Benutzer",
+	"autogenPassword": "Kennwort automatisch generieren",
+	"manuallyTypePassword": "Kennwort manuell eingeben",
+	"billingContact": {
+		"label": "Rechnungskontakt",
+		"name": "Rechnungskontakt – Name",
+		"email": "Rechnungskontakt – E-Mail-Adresse",
+		"number": "Telefonnummer",
+		"country": "Land",
+		"locality": "Ort",
+		"region": "Bundesland/Kanton",
+		"postalCode": "Postleitzahl",
+		"streetAddress": "Straße"
+	},
+	"technicalContact": {
+		"label": "Technischer Kontakt",
+		"name": "Technischer Kontakt – Name",
+		"email": "Technischer Kontakt – E-Mail-Adresse",
+		"number": "Telefonnummer"
+	},
+	"chargeReminder" : {
+		"line1": "Bei Änderungen wird Ihre hinterlegte Kreditkarte sofort belastet. Wenn Sie laufende Services ändern, werden neu anfallende Gebühren anteilig gemäß Ihrem Rechnungszyklus abgerechnet.",
+		"line2": "Möchten Sie wirklich fortfahren?"
+	},
+	"tabTitles": {
+		"overview": "Übersicht",
+		"limits": "Grenzwerte",
+		"restrictions": "Einschränkungen",
+		"notes": "Hinweise",
+		"__comment": "UI-1508: App-Store-Einschränkungen werden hinzugefügt",
+		"__version": "3.22",
+		"appstore": "App Exchange",
+		"__comment": "UI-1855: Neuer Abschnitt zum Verwalten von Nummernfunktionen (z. B. e911, CNAM) hinzugefügt",
+		"__version": "3.23",
+		"numbersFeatures": "Nummernfunktionen"
+	},
+	"classifiers": {
+		"unknown": {
+			"name": "Sonstiges",
+			"help": "Wählen Sie diese Option aus, wenn dieser Account Anrufe an ALLE ANDEREN NUMMERN außer an solche, die in dieser Liste aufgeführt sind, tätigen soll. (Wenn das Format der Nummer dem System unbekannt ist.)"
+		}
+	},
+	"trunksLegend": "Grenzwerte für inkludierte gleichzeitige Anrufe in Ein- und Ausgangsrichtung",
+	"twowayTrunks": "2-Wege-Trunks",
+	"inboundTrunks": "Eingehende Trunks",
+	"outboundTrunks": "Ausgehende Trunks",
+	"callRestrictionsLegend": "Anrufseinschränkungen",
+	"callRestrictionsTitle": "Dieser Account kann Anrufe tätigen an...",
+	"balanceTitle": "Guthabensaldo verwalten",
+	"balancePerMinute": "Guthabensaldo in Minuten:",
+	"balanceTooltip": "Dieses Guthaben wird verwendet, um Auslandsanrufe oder nach Minuten (-Tarif) abgerechnete Anrufe zu tätigen oder um gebührenfreie Anrufe zu empfangen.",
+	"addToBalance": "Zum aktuellen Saldo hinzufügen:",
+	"allowPrepay": "Ermöglicht es Benutzern, Gespräche zu tätigen, die den oben genannten Grenzwert überschreiten, und diesen die Telefonate minutenweise zu berechnen",
+	"addAdminLink": {
+		"toggleOn": "Dem Account einen Administrator hinzufügen",
+		"toggleOff": "Ich habe es mir anders überlegt, wer braucht einen Admin?"
+	},
+	"adminLabels": {
+		"firstName": "Vorname des Admins",
+		"lastName": "Nachname des Admins",
+		"email": "E-Mail-Adresse des Admins",
+		"emailTooltip": "Die E-Mail-Adresse wird als Benutzername für die Anmeldung in der Monster-UI dienen.",
+		"number": "Kontaktnummer des Admins",
+		"password": "Administratorkennwort",
+		"confirm": "Kennwort bestätigen",
+		"__comment": "UI-1169: Versendung einer E-Mail an neu erstellte Admins",
+		"__version": "v3.20_s3",
+		"sendCredentialsEmail": "Eine E-Mail mit diesen Anmeldeinformationen zur Erinnerung an diesen Admin senden",
+		"sendCredentialsEmailShort": "Eine Zusammenfassungs-E-Mail mit Anmeldeinformationen senden"
+	},
+	"adminPlaceholders": {
+		"firstName": "Vorname",
+		"lastName": "Nachname",
+		"email": "E-Mail-Adresse",
+		"number": "Telefonnummer",
+		"password": "Kennwort",
+		"confirm": "Bestätigen"
+	},
+	"wizardStepTitles": {
+		"setupAccount": "Einen Account einrichten",
+		"limits": "Anrufseinschränkungen",
+		"restrictions": "Berechtigungen"
+	},
+	"wizardErrorMessages": {
+		"pleaseCorrect": "Bitte beheben Sie die folgenden Fehler:",
+		"accountMandatoryFields": "Die Felder für den Account-Namen und den Account-Bereich sind Pflichtfelder.",
+		"adminMandatoryFields": "Beim Hinzufügen eines neuen Administrators ist die Angabe des Vornamens, Nachnamens und der E-Mail-Adresse des Admins obligatorisch.",
+		"adminPasswordError": "Dass Kennwort muss mindestens 6 Zeichen lang sein und mindestens einen Buchstaben und eine Ziffer enthalten.",
+		"adminPasswordConfirmError": "Das eingegebene Kennwort und das zur Bestätigung eingegebene Kennwort stimmen nicht überein.",
+		"incorrectBalanceFormat": "Falsches Format für eine Saldogutschrift, Sie dürfen nur eine Zahl mit zwei Stellen hinter dem Komma eingeben.",
+		"balanceMinimumAmount": "Der Mindestbetrag für eine Saldogutschrift beträgt 5,00 USD."
+	},
+	"wizardProcessingMessage1": "Anforderung wird verarbeitet...",
+	"wizardProcessingMessage2": "Der Account wird erstellt, bitte warten.",
+	"autogenPasswordPopup": {
+		"message": "Ein Kennwort für den Administrator {{adminName}} wird automatisch generiert. Das ist das einzige Mal, dass dieses Kennwort angezeigt wird – Sie sollten es sich gut merken oder notieren.",
+		"login": "Anmeldung:",
+		"password": "Kennwort:"
+	},
+	"deleteUserConfirm": "Dieser Benutzer wird dauerhaft gelöscht. Vorgang fortsetzen?",
+	"toastrMessages": {
+		"limitsUpdateSuccess": "Grenzwerte wurden erfolgreich aktualisiert!",
+		"limitsUpdateError": "Beim Aktualisieren der Grenzwerte ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
+		"creditAddSuccess": "Die Gutschrift wurde dem aktuellen Saldo erfolgreich hinzugefügt!",
+		"creditAddError": "Beim Hinzufügen der Gutschrift ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
+		"deleteAccountError": "Beim Löschen des Accounts ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es noch einmal.",
+		"newAccount": {
+			"accountError": "Beim Erstellen des Accounts ist ein unerwarteter Fehler aufgetreten.",
+			"adminError": "Der Account-Administrator konnte nicht erstellt werden.",
+			"limitsError": "Beim Festlegen der Grenzwerte ist ein unerwarteter Fehler aufgetreten.",
+			"forbiddenLimitsError": "Es ist Ihnen nicht erlaubt, solche Grenzwerte festzulegen. Bitte wenden Sie sich an Ihren Vertriebsmitarbeiter.",
+			"creditError": "Beim Hinzufügen einer Gutschrift zu diesem neuen Account ist ein Fehler aufgetreten. Vergewissern Sie sich, dass Ihre Kreditkartendaten gültig sind."
+		},
+		"uiRestrictionsUpdateSuccess": "Benutzeroberflächen-Einschränkungen wurden erfolgreich aktualisiert!",
+		"uiRestrictionsUpdateError": "Beim Aktualisieren der Einschränkungen für die Benutzeroberfläche ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
+		"notesUpdateSuccess": "Anmerkungen wurden erfolgreich aktualisiert!",
+		"notesUpdateError": "Beim Aktualisieren der Anmerkungen ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
+		"__comment": "UI-1498: Anrufeinschränkungen wurden aus den Grenzwerten wieder zurück in das Account-Dokument verlegt",
+		"__version": "v3.20_s5",
+		"callRestrictionsUpdateSuccess": "Anrufeinschränkungen wurden erfolgreich aktualisiert!",
+		"callRestrictionsUpdateError": "Beim Aktualisieren der Anrufeinschränkungen ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
+		"__comment": "UI-1508: App-Store-Einschränkungen werden hinzugefügt",
+		"__version": "3.22",
+		"appstoreUpdateSuccess": "Zulässige Apps wurden erfolgreich aktualisiert!",
+		"appstoreUpdateError": "Beim Aktualisieren der Liste der zulässigen Apps ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es zu einem späteren Zeitpunkt noch einmal."
+	},
+	"uiRestrictionsLegend": "Wählen Sie aus, was Ihr Kunde anzeigen darf",
+	"uiRestrictionsTooltip": "Wenn Sie auf in der Ecke rechts oben Ihren Namen klicken, wird ein Dropdown-Menü eingeblendet. Um die Anzeige von Optionen für diesen Account einzuschränken, entfernen Sie einfach das Häkchen.",
+	"uiRestrictionsMenu": {
+		"settings": "Einstellungen",
+		"user": "Benutzer",
+		"account": "Account",
+		"billing": "Rechnungsstellung",
+		"creditCard": "Kreditkarte",
+		"transactions": "Transaktionen",
+		"servicePlan": "Servicetarif",
+		"perMinute": "Pro Minute",
+		"trunking": "Trunking",
+		"inbound": "Eingehend",
+		"outbound": "Ausgehend",
+		"__comment": "UI-664: Neue Einschränkung für 2-Wege-Trunks",
+		"__version": "v3.19_s2",
+		"twoway": "2-Wege",
+		"__comment": "UI-1074: Neue Einschränkung für Nachverfolgung sonstiger Fehler",
+		"__version": "v3.20_s2",
+		"errorTracker": "Protokoll für UI-Fehler",
+		"misc": "Sonstiges"
+	},
+	"uiRestrictionsExtraSettings": {
+		"perMinute": {
+			"legend":"Weitere Saldoeinstellungen",
+			"showCreditInfo":"Informationen zum Guthaben anzeigen",
+			"showMinutesInfo": "Informationen zu Gesprächsminuten anzeigen"
+		}
+	},
+	"validationMessages": {
+		"invalidPasswordConfirm": "Kennwörter stimmen nicht überein."
+	},
+	"notesLegend": "Anmerkungen zu diesem Account notieren",
+	"landingContent": [
+		"Sie können einen Sub-Account bearbeiten, indem Sie ihn in der links angezeigten Liste auswählen",
+		"Oder",
+		"Erstellen Sie einen neuen Sub-Account, indem Sie auf die Schaltfläche „Neuen Account hinzufügen“ klicken."
+	],
+	"__comment": "UI-966: allgemeines Steuerelement für Anbieterauswahl erstellt",
+	"__version": "v3.20_s0",
+	"carrierTab": "Anbieter",
+	"__comment": "UI-1171: Ein Feld hinzugefügt, das den Typ eines Accounts anzeigt",
+	"__version": "v3.20_s2",
+	"accountType": "Account-Typ",
+	"reseller": "Reseller",
+	"standard": "Standard",
+	"__comment": "UI-1169: Versendung einer E-Mail an neu erstellte Admins",
+	"__version": "v3.20_s3",
+	"sentEmailPopup": "Eine E-Mail wurde an {{email}} gesendet, die die Anmeldeinformationen enthält.",
+	"__comment": "UI-1324: Es wurde die Möglichkeit hinzugefügt, Braintree über ein Config-Flag zu deaktivieren",
+	"__version": "v3.20_s4",
+	"disabledAddCreditTooltip": "Braintree ist erforderlich, um Guthaben hinzufügen zu können. Für weitere Informationen wenden Sie sich bitte an Ihren Administrator.",
+	"__comment": "UI-1448: Zur besseren Verständlichkeit wird in Bestätigungs-E-Mails nun der Name des Accounts angegeben, der gelöscht werden soll",
+	"__version": "v3.20_s5",
+	"deleteAccountConfirmVar": "Dieser Account (\"{{accountName}}\") wird dauerhaft gelöscht. Möchten Sie den Vorgang fortsetzen?",
+
+	"__comment": "UI-1460: Bevor ein Account gelöscht wird, muss der Benutzer nun eine Zeichenfolge eingeben",
+	"__version": "v3.20_s5",
+	"deleteAccountDialog": {
+		"title": "Bestätigung der Löschung eines Accounts",
+		"cancel": "Abbrechen",
+		"deleteAccount": "Account löschen",
+		"deleteKey": "LÖSCHEN",
+		"deleteMessageIntro": "Diese Aktion kann NICHT wieder rückgängig gemacht werden. Bei diesem Vorgang wird der Account \"{{variable}}\" dauerhaft gelöscht, alle Telefonnummern werden freigegeben, etwaige Mobilgeräte deaktiviert und Provisioning-Dateien entfernt.",
+		"deleteMessageExplanation": "Bitte geben Sie das Wort „{{variable}}“ in die folgende Eingabe ein, und klicken Sie dann auf die Schaltfläche „Account löschen“, um den Vorgang fortzusetzen."
+	},
+
+	"__comment": "UI-1609: Eine Möglichkeit zum Entfernen eines Guthabens hinzugefügt",
+	"__version": "3.21",
+	"updateCreditDialog": {
+		"title": "Guthabenbeträge aktualisieren",
+		"creditBalance": "Verfügbares Guthaben",
+		"addCredit": "Hinzufügen",
+		"removeCredit": "Entfernen",
+		"addCreditOne": "Gutschrift einmalig hinzufügen",
+		"removeCreditOne": "Gutschrift einmalig entfernen",
+		"helpAddCreditOne": "Hiermit können Sie dem Saldo dieses Accounts Gutschriften hinzufügen, die es dann ermöglichen, dass bestimmte Funktionen (wie e911 oder Anrufer-ID) aktiviert oder minutenweise abgerechnete Telefonate durchgeführt werden können.",
+		"helpRemoveCreditOne": "Mit dieser Funktion können Sie Gutschriften aus Ihren Sub-Accounts entfernen. Wenn Sie zum Beispiel einem Account zu viele Gutschriften hinzugefügt haben, können Sie das rückgängig machen, indem Sie überschüssige Guthaben hier entfernen.",
+		"placeholderAmount": "10.00",
+		"successfulUpdate": "Herzlichen Glückwunsch, Sie haben das für diesen Account verfügbare Guthaben erfolgreich aktualisiert! :)"
+	},
+	"__comment": "UI-1660: Aussagekräftige Fehlermeldung für den Fall hinzugefügt, dass jemand versucht, einen Account zu löschen, der über untergeordnete Account(s) verfügt",
+	"__version": "3.22",
+	"account_has_descendants": "Bevor Sie diesen Account löschen können, müssen Sie Sub-Accounts löschen",
+
+	"__comment": "UI-1662: Eine Pop-Up-Meldung zwecks besserer Anpassung des Servicetarifs hinzugefügt",
+	"__version": "3.22",
+	"changeServicePlanDialog": {
+		"title": "Servicetarif festlegen",
+		"successUpdate": "Sie haben den Servicetarif dieses Accounts erfolgreich aktualisiert!"
+	},
+
+	"__comment": "UI-1508: App-Store-Einschränkungen werden hinzugefügt",
+	"__version": "3.22",
+	"appstoreLegend": "Wählen Sie aus, welche Apps für diesen Account aktiviert werden sollen",
+
+	"__comment": "UI-1855: Neuer Abschnitt zum Verwalten von Nummernfunktionen (z. B. e911, CNAM) hinzugefügt",
+	"__version": "3.23",
+	"numbersFeatures": {
+		"legend": "Nummernfunktionen aktivieren/deaktivieren",
+		"features": {
+			"e911": "E911",
+			"cnam": "CNAM"
+		}
+	},
+
+	"__comment": "UI-1995: Eine Meldung für Benutzer hinzugefügt",
+	"__version": "3.22",
+	"announcementLegend": "Meldung, die jedes Mal eingeblendet werden soll, wenn sich jemand in diesem Account anmeldet",
+	"deleteAnnouncement": "Meldung löschen",
+
+	"__comment": "UI-2053: Experimentierfreudige Admin-Benutzer können Accounts nun herauf- und herabstufen",
+	"__version": "3.23",
+	"reserllerAction": "Reseller-Aktion",
+	"promoteDemoteError": "Während dieses Vorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
+	"promoteAccount": {
+		"button": "Heraufstufen",
+		"confirm": "Sie versuchen gerade, diesen Account heraufzustufen",
+		"success": "Dieser Account wurde erfolgreich heraufgestuft"
+	},
+	"demoteAccount": {
+		"button": "Herabstufen",
+		"confirm": "Sie versuchen gerade, diesen Account herabzustufen",
+		"success": "Dieser Account wurde erfolgreich herabgestuft"
+	},
+
+	"__comment": "UI-2118: App-spezifische Tastenkombination hinzugefügt",
+	"__version": "3.22",
+	"shortcuts": {
+		"a": "Neuen Account erstellen"
+	},
+
+	"__comment": "UI-1916: App-spezifische Tastenkombination hinzugefügt",
+	"__version": "4.0",
+	"toggleAll": "Alle umschalten"
+}
