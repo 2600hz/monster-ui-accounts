@@ -119,15 +119,6 @@
 		"limits": "Définir les limites",
 		"restrictions": "Définir les restrictions"
 	},
-	"wizardErrorMessages": {
-		"pleaseCorrect": "Veuillez corriger les erreurs suivantes:",
-		"accountMandatoryFields": "Les champs Nom et Royaume du compte doivent être remplis.",
-		"adminMandatoryFields": "Les champs Prénom, Nom, et Adresse e-mail de l'administrateur sont requis pour ajouter un administrateur.",
-		"adminPasswordError": "Le mot-de-passe doit contenir au moins 6 caractères, dont au moins une lettre et un chiffre.",
-		"adminPasswordConfirmError": "Le mot-de-passe et sa confirmation doivent être identiques.",
-		"incorrectBalanceFormat": "Format incorrect pour l'ajout de solde, vous ne pouvez entrer qu'un nombre contenant jusqu'a deux décimales, séparées par un point (.).",
-		"balanceMinimumAmount": "Le montant minimum pour l'ajout de solde est de $5.00."
-	},
 	"wizardProcessingMessage1": "Traitement en cours...",
 	"wizardProcessingMessage2": "Veuillez patientez durant la création du compte.",
 	"autogenPasswordPopup": {

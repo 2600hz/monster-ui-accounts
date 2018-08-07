@@ -1,4 +1,4 @@
-﻿{
+{
 	"addAccount": "Neuen Account hinzufügen",
 	"editSetting": "Bearbeiten",
 	"saveChanges": "Änderungen speichern",
@@ -114,15 +114,6 @@
 		"setupAccount": "Einen Account einrichten",
 		"limits": "Anrufseinschränkungen",
 		"restrictions": "Berechtigungen"
-	},
-	"wizardErrorMessages": {
-		"pleaseCorrect": "Bitte beheben Sie die folgenden Fehler:",
-		"accountMandatoryFields": "Die Felder für den Account-Namen und den Account-Bereich sind Pflichtfelder.",
-		"adminMandatoryFields": "Beim Hinzufügen eines neuen Administrators ist die Angabe des Vornamens, Nachnamens und der E-Mail-Adresse des Admins obligatorisch.",
-		"adminPasswordError": "Dass Kennwort muss mindestens 6 Zeichen lang sein und mindestens einen Buchstaben und eine Ziffer enthalten.",
-		"adminPasswordConfirmError": "Das eingegebene Kennwort und das zur Bestätigung eingegebene Kennwort stimmen nicht überein.",
-		"incorrectBalanceFormat": "Falsches Format für eine Saldogutschrift, Sie dürfen nur eine Zahl mit zwei Stellen hinter dem Komma eingeben.",
-		"balanceMinimumAmount": "Der Mindestbetrag für eine Saldogutschrift beträgt 5,00 USD."
 	},
 	"wizardProcessingMessage1": "Anforderung wird verarbeitet...",
 	"wizardProcessingMessage2": "Der Account wird erstellt, bitte warten.",
