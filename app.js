@@ -1662,7 +1662,7 @@ define(function(require) {
 							params.balance = data.data.balance;
 							var formattedValue = monster.util.formatPrice({
 								price: params.balance,
-								decimals: 2
+								digits: 2
 							});
 							popupAmount.html(formattedValue);
 							accountsAppAmount.html(formattedValue);
