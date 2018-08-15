@@ -117,15 +117,6 @@
 		"limits": "Ограничения",
 		"restrictions": "Запреты"
 	},
-	"wizardErrorMessages": {
-		"pleaseCorrect": "Пожалуйста, исправьте следующие ошибки:",
-		"accountMandatoryFields": "Название клиента и SIP-домен являются обязательными полями.",
-		"adminMandatoryFields": "Имя, фамилия и адрес email администратора являются обязательными полями.",
-		"adminPasswordError": "Пароль должен быть не менее 6 символов в длинеу и включать символы и цифры.",
-		"adminPasswordConfirmError": "Введённые пароли не совпадают.",
-		"incorrectBalanceFormat": "Некорректный формат для суммы пополнения, допустимы только два знака после запятой.",
-		"balanceMinimumAmount": "Минимальная сумма пополнения баланса - 5.00"
-	},
 	"wizardProcessingMessage1": "Обработка запроса...",
 	"wizardProcessingMessage2": "Пожалуйста, ожидайте завершения процедуры создания учётной записи клиента.",
 	"autogenPasswordPopup": {
