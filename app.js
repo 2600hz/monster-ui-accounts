@@ -1646,7 +1646,8 @@ define(function(require) {
 
 			tabContentTemplate.find('.change-credits').on('click', function() {
 				var dataTemplate = {
-						amount: params.balance.toFixed(2)
+						currencySymbol: monster.util.getCurrencySymbol(),
+						amount: params.balance
 					},
 					template = $(self.getTemplate({
 						name: 'updateCreditsDialog',
@@ -1659,7 +1660,10 @@ define(function(require) {
 					changeValueDisplayed = function(accountId, field) {
 						self.getBalance(accountId, function(data) {
 							params.balance = data.data.balance;
-							var formattedValue = self.i18n.active().currencyUsed + '' + params.balance.toFixed(2);
+							var formattedValue = monster.util.formatPrice({
+								price: params.balance,
+								digits: 2
+							});
 							popupAmount.html(formattedValue);
 							accountsAppAmount.html(formattedValue);
 							field.val('');

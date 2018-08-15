@@ -22,7 +22,7 @@
 			</div>
 			<input type="hidden" name="limits.inbound_trunks" class="trunks-value" value="0" />
 		</div>
-		
+
 		<div class="trunks-div outbound clearfix">
 			<div class="section-slider clearfix">
 				<div class="slider-title">{{ i18n.outboundTrunks }}</div>
@@ -56,7 +56,7 @@
 			<i class="help-popover fa fa-question-circle fa-lg pull-right" data-original-title="{{i18n.balanceTooltip}}" data-placement="top" data-toggle="tooltip"></i>
 			<div class="title">{{ i18n.balanceTitle }}</div>
 			<div>
-				{{ i18n.balancePerMinute }} <span class="credit-balance">{{ i18n.currencyUsed }}{{balance}}</span>
+				{{ i18n.balancePerMinute }} <span class="credit-balance">{{formatPrice balance}}</span>
 				{{#compare mode "===" "update"}}
 					<a class="change-credits monster-link blue" href="javascript:void(0);">{{ i18n.change }}</a>
 				{{/compare}}

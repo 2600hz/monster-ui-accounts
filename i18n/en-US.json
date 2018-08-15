@@ -115,15 +115,6 @@
 		"limits": "Call Restrictions",
 		"restrictions": "Permissions"
 	},
-	"wizardErrorMessages": {
-		"pleaseCorrect": "Please correct the following errors:",
-		"accountMandatoryFields": "The account name and realm fields are mandatory.",
-		"adminMandatoryFields": "The admin first name, last name and email address are mandatory when adding a new admin.",
-		"adminPasswordError": "The password must be at least 6 characters long and include a letter and a number.",
-		"adminPasswordConfirmError": "The password and its confirmation do not match.",
-		"incorrectBalanceFormat": "Incorrect format for balance credit, you can only enter a number with up to 2 decimals.",
-		"balanceMinimumAmount": "The minimum amount for balance credit is $5.00."
-	},
 	"wizardProcessingMessage1": "Processing request...",
 	"wizardProcessingMessage2": "Please wait while the account is being created.",
 	"autogenPasswordPopup": {
