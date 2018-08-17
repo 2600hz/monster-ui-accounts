@@ -2,7 +2,7 @@
 	"name": "accounts",
 	"i18n": {
 		"de-DE": {
-			"label": "Accounts (Konten)",
+			"label": "Konten",
 			"description": "Die Accounts-App ermöglicht Ihnen das Erstellen, Anpassen und Verwalten Ihrer Kunden-Accounts.",
 			"extended_description": "Die Accounts-App ist das ideale Tool zum Verwalten vieler Kunden-Accounts. Unsere optimierte Benutzeroberfläche erspart Ihnen Zeit und Aufwand. Fügen Sie so viele Accounts wie erforderlich hinzu, was dank unserer echt mehrinstanzenfähigen Account-Struktur möglich ist. Weisen Sie jedem Sub-Account die gleichen Funktionen zu, wie der übergeordnete Account hat, setzen Sie Geräte und Accounts zurück, erzwingen Sie spezifische Beschränkungen oder schränken Sie ein, was für den Endbenutzer sichtbar sein soll – ganz wie Ihr Kunde es wünscht.",
 			"features": [
