@@ -6,9 +6,11 @@
 				<li class="tab-overview active"><a href="#accountsmanager_overview_tab">{{ i18n.tabTitles.overview }}</a></li>
 				<li class="tab-limits {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_limits_tab">{{ i18n.tabTitles.limits }}</a></li>
 				<li class="tab-restrictions {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_restrictions_tab">{{ i18n.tabTitles.restrictions }}</a></li>
+			{{#unless disableNumbersFeatures}}
 				<li class="tab-numbersfeatures">
 					<a href="#accountsmanager_numbersfeatures_tab">{{ i18n.tabTitles.numbersFeatures }}</a>
 				</li>
+			{{/unless}}
 				{{#unless carrierInfo.disabled}}
 					<li class="tab-carrier {{#unless account.enabled}}disabled{{/unless}}"><a href="#accountsmanager_carrier_tab"> {{ i18n.carrierTab }}</a></li>
 				{{/unless}}
@@ -444,6 +446,7 @@
 				</div>
 			</div>
 
+		{{#unless disableNumbersFeatures}}
 			<div class="tab-pane" id="accountsmanager_numbersfeatures_tab">
 				<form id="accountsmanager_numbersfeatures_form" class="form-horizontal">
 					<legend>{{ i18n.numbersFeatures.legend }}</legend>
@@ -476,6 +479,7 @@
 					<button id="accountsmanager_numbersfeatures_save" class="monster-button-success">{{i18n.update}}</button>
 				</div>
 			</div>
+		{{/unless}}
 
 			{{#unless carrierInfo.disabled}}
 				<div class="tab-pane" id="accountsmanager_carrier_tab">

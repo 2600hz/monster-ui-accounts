@@ -1174,6 +1174,7 @@ define(function(require) {
 					return ret;
 				}),
 				templateData = {
+					disableNumbersFeatures: monster.config.whitelabel.disableNumbersFeatures,
 					account: $.extend(true, {}, accountData),
 					accountAdmins: admins,
 					accountUsers: regularUsers,
