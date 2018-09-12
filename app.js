@@ -2149,11 +2149,24 @@ define(function(require) {
 		addCredit: function(accountId, value, success, error) {
 			var self = this,
 				apiData = {
-					resource: 'balance.add',
+					resource: 'ledgers.credit',
 					data: {
 						accountId: accountId,
 						data: {
-							amount: parseFloat(value)
+							amount: parseFloat(value),
+							source: {
+								service: 'kazoo-services',
+								id: monster.util.guid()
+							},
+							usage: {
+								type: 'credit',
+								quantity: 0,
+								unit: monster.config.currendyCode
+							},
+							description: '',
+							metadata: {
+								ui_request: true
+							}
 						}
 					},
 					success: function(data, status) {
@@ -2177,11 +2190,24 @@ define(function(require) {
 			var self = this;
 
 			self.callApi({
-				resource: 'balance.remove',
+				resource: 'ledgers.debit',
 				data: {
 					accountId: accountId,
 					data: {
-						amount: parseFloat(value)
+						amount: parseFloat(value),
+						source: {
+							service: 'kazoo-services',
+							id: monster.util.guid()
+						},
+						usage: {
+							type: 'debit',
+							quantity: 0,
+							unit: monster.config.currendyCode
+						},
+						description: '',
+						metadata: {
+							ui_request: true
+						}
 					},
 					generateError: false
 				},
