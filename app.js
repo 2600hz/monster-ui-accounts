@@ -2198,12 +2198,15 @@ define(function(require) {
 			var self = this;
 
 			self.callApi({
-				resource: 'balance.get',
+				resource: 'ledgers.list',
 				data: {
 					accountId: accountId
 				},
 				success: function(data, status) {
-					success && success(data);
+					success && success(_.reduce(data.data, function(acc, ledger) {
+						acc += ledger.amount;
+						return acc;
+					}, 0));
 				},
 				error: function(data, status) {
 					error && error(data);
