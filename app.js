@@ -973,11 +973,16 @@ define(function(require) {
 					});
 				},
 				currentBalance: function(callback) {
-					self.getBalance(accountId, function(balance) {
-						callback(null, balance);
-					},
-					function(data, status) {
-						callback(null, 0);
+					self.requestGetPerMinuteBalance({
+						data: {
+							accountId: accountId
+						},
+						success: function(balance) {
+							callback(null, balance);
+						},
+						error: function() {
+							callback(null, 0);
+						}
 					});
 				},
 				noMatch: function(callback) {
@@ -1661,19 +1666,24 @@ define(function(require) {
 					addValueField = template.find('#amount_add'),
 					removeValueField = template.find('#amount_remove'),
 					changeValueDisplayed = function(accountId, field) {
-						self.getBalance(accountId, function(data) {
-							params.balance = data.data.balance;
-							var formattedValue = monster.util.formatPrice({
-								price: params.balance,
-								digits: 2
-							});
-							popupAmount.html(formattedValue);
-							accountsAppAmount.html(formattedValue);
-							field.val('');
-							monster.ui.toast({
-								type: 'success',
-								message: self.i18n.active().updateCreditDialog.successfulUpdate
-							});
+						self.requestGetPerMinuteBalance({
+							data: {
+								accountId: accountId
+							},
+							success: function(balance) {
+								params.balance = balance;
+								var formattedValue = monster.util.formatPrice({
+									price: params.balance,
+									digits: 2
+								});
+								popupAmount.html(formattedValue);
+								accountsAppAmount.html(formattedValue);
+								field.val('');
+								monster.ui.toast({
+									type: 'success',
+									message: self.i18n.active().updateCreditDialog.successfulUpdate
+								});
+							}
 						});
 					},
 					addForm = template.find('#add_credit_form'),
@@ -2222,22 +2232,20 @@ define(function(require) {
 			});
 		},
 
-		getBalance: function(accountId, success, error) {
+		requestGetPerMinuteBalance: function(args) {
 			var self = this;
 
 			self.callApi({
 				resource: 'ledgers.list',
-				data: {
-					accountId: accountId
-				},
+				data: _.merge({
+					accountId: self.accountId
+				}, args.accountId),
 				success: function(data, status) {
-					success && success(_.reduce(data.data, function(acc, ledger) {
-						acc += ledger.amount;
-						return acc;
-					}, 0));
+					var balance = _.get(data.data, 'per-minute-voip', { amount: 0 }).amount;
+					args.hasOwnProperty('success') && args.success(balance);
 				},
-				error: function(data, status) {
-					error && error(data);
+				error: function(parsedError) {
+					args.hasOwnProperty('error') && args.error(parsedError);
 				}
 			});
 		}
