@@ -2163,7 +2163,7 @@ define(function(require) {
 							usage: {
 								type: 'credit',
 								quantity: 0,
-								unit: monster.config.currendyCode
+								unit: monster.config.currencyCode
 							},
 							description: '',
 							metadata: {
@@ -2204,7 +2204,7 @@ define(function(require) {
 						usage: {
 							type: 'debit',
 							quantity: 0,
-							unit: monster.config.currendyCode
+							unit: monster.config.currencyCode
 						},
 						description: '',
 						metadata: {
