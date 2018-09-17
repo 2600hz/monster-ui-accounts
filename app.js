@@ -973,11 +973,11 @@ define(function(require) {
 					});
 				},
 				currentBalance: function(callback) {
-					self.getBalance(accountId, function(data, status) {
-						callback(null, data.data);
+					self.getBalance(accountId, function(balance) {
+						callback(null, balance);
 					},
 					function(data, status) {
-						callback(null, {});
+						callback(null, 0);
 					});
 				},
 				noMatch: function(callback) {
@@ -1066,7 +1066,9 @@ define(function(require) {
 						}),
 						accountLimits: results.limits,
 						classifiers: results.classifiers,
-						accountBalance: 'balance' in results.currentBalance ? results.currentBalance.balance : 0,
+						accountBalance: _.isNumber(results.currentBalance)
+							? results.currentBalance
+							: 0,
 						parent: parent,
 						noMatch: results.noMatch,
 						selectedTab: selectedTab,
@@ -1085,7 +1087,7 @@ define(function(require) {
 						appsBlacklist: results.appsBlacklist,
 						listParents: results.listParents
 					},
-					editCallback = function() {
+					editCallback = function(params) {
 						params = self.formatDataEditAccount(params);
 						self.editAccount(params);
 					};
@@ -1096,10 +1098,10 @@ define(function(require) {
 						resellerId: params.accountData.reseller_id
 					}, function(data) {
 						params.noMatch = data;
-						editCallback();
+						editCallback(params);
 					});
 				} else {
-					editCallback();
+					editCallback(params);
 				}
 			});
 		},
