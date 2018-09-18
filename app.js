@@ -973,15 +973,16 @@ define(function(require) {
 					});
 				},
 				currentBalance: function(callback) {
-					self.requestGetPerMinuteBalance({
+					self.callApi({
+						resource: 'ledgers.total',
 						data: {
 							accountId: accountId
 						},
-						success: function(balance) {
-							callback(null, balance);
+						success: function(data, status) {
+							callback(null, data.data.amount);
 						},
-						error: function() {
-							callback(null, 0);
+						error: function(data, status) {
+							callback(null, {});
 						}
 					});
 				},
@@ -2228,24 +2229,6 @@ define(function(require) {
 				},
 				error: function(data, status) {
 					error && error(data);
-				}
-			});
-		},
-
-		requestGetPerMinuteBalance: function(args) {
-			var self = this;
-
-			self.callApi({
-				resource: 'ledgers.list',
-				data: _.merge({
-					accountId: self.accountId
-				}, args.accountId),
-				success: function(data, status) {
-					var balance = _.get(data.data, 'per-minute-voip', { amount: 0 }).amount;
-					args.hasOwnProperty('success') && args.success(balance);
-				},
-				error: function(parsedError) {
-					args.hasOwnProperty('error') && args.error(parsedError);
 				}
 			});
 		}
