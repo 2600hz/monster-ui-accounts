@@ -1667,25 +1667,26 @@ define(function(require) {
 					addValueField = template.find('#amount_add'),
 					removeValueField = template.find('#amount_remove'),
 					changeValueDisplayed = function(accountId, field) {
-						self.requestGetPerMinuteBalance({
-							data: {
-								accountId: accountId
-							},
-							success: function(balance) {
-								params.balance = balance;
-								var formattedValue = monster.util.formatPrice({
-									price: params.balance,
-									digits: 2
-								});
-								popupAmount.html(formattedValue);
-								accountsAppAmount.html(formattedValue);
-								field.val('');
-								monster.ui.toast({
-									type: 'success',
-									message: self.i18n.active().updateCreditDialog.successfulUpdate
-								});
-							}
-						});
+					    self.callApi({
+						resource: 'ledgers.total',
+						data: {
+						    accountId: accountId
+						},
+						success: function(data, status) {
+                                                    params.balance = data.data.amount;
+						    var formattedValue = monster.util.formatPrice({
+							price: params.balance,
+							digits: 2
+						    });
+						    popupAmount.html(formattedValue);
+						    accountsAppAmount.html(formattedValue);
+						    field.val('');
+						    monster.ui.toast({
+							type: 'success',
+							message: self.i18n.active().updateCreditDialog.successfulUpdate
+						    });
+						}
+					    });
 					},
 					addForm = template.find('#add_credit_form'),
 					removeForm = template.find('#remove_credit_form'),
@@ -2160,6 +2161,12 @@ define(function(require) {
 		},
 
 		addCredit: function(accountId, value, success, error) {
+                        if (monster.apps.auth.currentUser) {
+                                  var description = 'Credit added by ' + monster.apps.auth.currentUser.first_name + ' ' + monster.apps.auth.currentUser.last_name;
+                        } else {
+                                  var description = 'Credit added by administrator';
+                        }
+
 			var self = this,
 				apiData = {
 					resource: 'ledgers.credit',
@@ -2168,7 +2175,7 @@ define(function(require) {
 						data: {
 							amount: parseFloat(value),
 							source: {
-								service: 'kazoo-services',
+								service: 'administrative-discretion',
 								id: monster.util.guid()
 							},
 							usage: {
@@ -2176,7 +2183,7 @@ define(function(require) {
 								quantity: 0,
 								unit: monster.config.currencyCode
 							},
-							description: '',
+							description: description,
 							metadata: {
 								ui_request: true
 							}
@@ -2200,37 +2207,49 @@ define(function(require) {
 		},
 
 		removeCredit: function(accountId, value, success, error) {
-			var self = this;
+                        if (monster.apps.auth.currentUser) {
+                                  var description = 'Credit removed by ' + monster.apps.auth.currentUser.first_name + ' ' + monster.apps.auth.currentUser.last_name;
+                        } else {
+                                  var description = 'Credit removed by adminstrator';
+                        }
 
-			self.callApi({
-				resource: 'ledgers.debit',
-				data: {
-					accountId: accountId,
+			var self = this,
+				apiData = {
+					resource: 'ledgers.debit',
 					data: {
-						amount: parseFloat(value),
-						source: {
-							service: 'kazoo-services',
-							id: monster.util.guid()
-						},
-						usage: {
-							type: 'debit',
-							quantity: 0,
-							unit: monster.config.currencyCode
-						},
-						description: '',
-						metadata: {
-							ui_request: true
+						accountId: accountId,
+						data: {
+							amount: parseFloat(value),
+							source: {
+								service: 'administrative-discretion',
+								id: monster.util.guid()
+							},
+							usage: {
+								type: 'debit',
+								quantity: 0,
+								unit: monster.config.currencyCode
+							},
+							description: description,
+							metadata: {
+								ui_request: true
+							}
 						}
 					},
-					generateError: false
-				},
-				success: function(data, status) {
-					success && success(data);
-				},
-				error: function(data, status) {
+					success: function(data, status) {
+						success && success(data);
+					}
+				};
+
+			// We do that so that we don't bypass the generic error helper if there was no error callback defined.
+			if (error && typeof error === 'function') {
+				apiData.data.generateError = false;
+
+				apiData.error = function(data, status) {
 					error && error(data);
-				}
-			});
+				};
+			}
+
+			self.callApi(apiData);
 		}
 	};
 
