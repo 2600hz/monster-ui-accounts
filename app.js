@@ -2161,12 +2161,7 @@ define(function(require) {
 		},
 
 		addCredit: function(accountId, value, success, error) {
-                        if (monster.apps.auth.currentUser) {
-                                  var description = 'Credit added by ' + monster.apps.auth.currentUser.first_name + ' ' + monster.apps.auth.currentUser.last_name;
-                        } else {
-                                  var description = 'Credit added by administrator';
-                        }
-
+                        var description = 'Credit added by administrator';
 			var self = this,
 				apiData = {
 					resource: 'ledgers.credit',
@@ -2175,7 +2170,7 @@ define(function(require) {
 						data: {
 							amount: parseFloat(value),
 							source: {
-								service: 'administrative-discretion',
+								service: 'adjustments',
 								id: monster.util.guid()
 							},
 							usage: {
@@ -2185,7 +2180,8 @@ define(function(require) {
 							},
 							description: description,
 							metadata: {
-								ui_request: true
+								ui_request: true,
+								automatic_description: true
 							}
 						}
 					},
@@ -2207,12 +2203,7 @@ define(function(require) {
 		},
 
 		removeCredit: function(accountId, value, success, error) {
-                        if (monster.apps.auth.currentUser) {
-                                  var description = 'Credit removed by ' + monster.apps.auth.currentUser.first_name + ' ' + monster.apps.auth.currentUser.last_name;
-                        } else {
-                                  var description = 'Credit removed by adminstrator';
-                        }
-
+                        var description = 'Credit removed by adminstrator';
 			var self = this,
 				apiData = {
 					resource: 'ledgers.debit',
@@ -2221,7 +2212,7 @@ define(function(require) {
 						data: {
 							amount: parseFloat(value),
 							source: {
-								service: 'administrative-discretion',
+								service: 'adjustments',
 								id: monster.util.guid()
 							},
 							usage: {
@@ -2231,7 +2222,8 @@ define(function(require) {
 							},
 							description: description,
 							metadata: {
-								ui_request: true
+								ui_request: true,
+								automatic_description: true
 							}
 						}
 					},
