@@ -1265,19 +1265,18 @@ define(function(require) {
 
 			contentTemplate.find('#accountsmanager_delete_account_btn').on('click', function(e) {
 				self.confirmDeleteDialog(accountData.name, function() {
-					self.callApi({
-						resource: 'account.delete',
+					self.deleteAccount({
 						data: {
 							accountId: accountData.id,
-							data: {},
 							generateError: false
 						},
 						success: function(data, status) {
 							parent.find('.main-content').empty();
 							parent.find('.account-list-element[data-id="' + accountData.id + '"]').remove();
+							parent.find('.account-browser-breadcrumbs .account-browser-breadcrumb').last().remove();
 						},
-						error: function(data, status) {
-							if (data.message === 'account_has_descendants') {
+						error: function(parsedError) {
+							if (parsedError.message === 'account_has_descendants') {
 								monster.ui.alert('error', self.i18n.active().account_has_descendants);
 							}
 						}
@@ -2203,8 +2202,8 @@ define(function(require) {
 		},
 
 		removeCredit: function(accountId, value, success, error) {
-                        var description = 'Credit removed by adminstrator';
 			var self = this,
+				description = 'Credit removed by adminstrator',
 				apiData = {
 					resource: 'ledgers.debit',
 					data: {
@@ -2242,6 +2241,21 @@ define(function(require) {
 			}
 
 			self.callApi(apiData);
+		},
+
+		deleteAccount: function(args) {
+			var self = this;
+
+			self.callApi({
+				resource: 'account.delete',
+				data: args.data,
+				success: function(data, status) {
+					args.hasOwnProperty('success') && args.success(data.data);
+				},
+				error: function(parsedError) {
+					args.hasOwnProperty('error') && args.error(parsedError);
+				}
+			});
 		}
 	};
 
