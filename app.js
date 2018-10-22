@@ -1268,7 +1268,6 @@ define(function(require) {
 					self.deleteAccount({
 						data: {
 							accountId: accountData.id,
-							data: {},
 							generateError: false
 						},
 						success: function(data, status) {
