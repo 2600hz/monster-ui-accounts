@@ -714,12 +714,10 @@ define(function(require) {
 								name: $adminElement.find('.admin-element-name').text(),
 								priv_level: 'admin'
 							};
-						monster.pub('voip.users.delete', {
+						monster.pub('common.deleteSmartUser.showDeleteDialog', {
+							accountId: editAccountId,
 							user: user,
-							data: {
-								accountId: editAccountId
-							},
-							callback: function(data, status) {
+							callback: function() {
 								self.renderEditAdminsForm(parent, editAccountId);
 								refreshAdminsHeader();
 							}
