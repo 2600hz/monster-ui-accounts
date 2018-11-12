@@ -717,7 +717,16 @@ define(function(require) {
 						monster.pub('common.deleteSmartUser.showDeleteDialog', {
 							accountId: editAccountId,
 							user: user,
-							callback: function() {
+							callback: function(data) {
+								monster.ui.toast({
+									type: 'success',
+									message: self.getTemplate({
+										name: '!' + self.i18n.active().toastrMessages.adminUserDeleted,
+										data: {
+											name: data.first_name + ' ' + data.last_name
+										}
+									})
+								});
 								self.renderEditAdminsForm(parent, editAccountId);
 								refreshAdminsHeader();
 							}
