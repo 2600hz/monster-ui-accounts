@@ -126,7 +126,6 @@
 		"login": "Identifiant:",
 		"password": "Mot-de-passe:"
 	},
-	"deleteUserConfirm": "Cet utilisateur sera supprimé de manière permanente. Continuer?",
 	"toastrMessages": {
 		"servicePlanUpdateSuccess": "Abonnement actif mis à jour avec succès!",
 		"servicePlanUpdateError": "Une erreur inattendue s'est produite! Veuillez réessayer.",
