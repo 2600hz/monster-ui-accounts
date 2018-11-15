@@ -714,7 +714,7 @@ define(function(require) {
 								name: $adminElement.find('.admin-element-name').text(),
 								priv_level: 'admin'
 							};
-						monster.pub('common.deleteSmartUser.showDeleteDialog', {
+						monster.pub('common.deleteSmartUser.renderPopup', {
 							accountId: editAccountId,
 							user: user,
 							callback: function(data) {
