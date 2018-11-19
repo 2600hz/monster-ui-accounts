@@ -122,7 +122,6 @@
 		"login": "Anmeldung:",
 		"password": "Kennwort:"
 	},
-	"deleteUserConfirm": "Dieser Benutzer wird dauerhaft gelöscht. Vorgang fortsetzen?",
 	"toastrMessages": {
 		"limitsUpdateSuccess": "Grenzwerte wurden erfolgreich aktualisiert!",
 		"limitsUpdateError": "Beim Aktualisieren der Grenzwerte ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",

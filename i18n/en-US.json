@@ -122,7 +122,6 @@
 		"login": "Login:",
 		"password": "Password:"
 	},
-	"deleteUserConfirm": "This user will be permanently deleted. Continue?",
 	"toastrMessages": {
 		"limitsUpdateSuccess": "Limits updated successfully!",
 		"limitsUpdateError": "An unexpected error occured when updating the limits, please try again later.",
@@ -147,7 +146,8 @@
 		"__comment": "UI-1508: Adding appstore restrictions",
 		"__version": "3.22",
 		"appstoreUpdateSuccess": "Allowed apps updated successfully!",
-		"appstoreUpdateError": "An unexpected error occured when updating the list of allowed apps, please try again later."
+		"appstoreUpdateError": "An unexpected error occured when updating the list of allowed apps, please try again later.",
+		"adminUserDeleted": "You successfully deleted administrator {{ name }}!"
 	},
 	"uiRestrictionsLegend": "Select what your customer can view",
 	"uiRestrictionsTooltip": "When you click on your name from top right corner of the screen, you will see a dropdown menu. To restrict the view of options for this Account simply uncheck.",

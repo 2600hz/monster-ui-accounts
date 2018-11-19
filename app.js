@@ -708,20 +708,28 @@ define(function(require) {
 
 					contentTemplate.find('.admin-element-link.delete').click(function(e) {
 						e.preventDefault();
-						var userId = $(this).parent().parent().data('user_id');
-						monster.ui.confirm(self.i18n.active().deleteUserConfirm, function() {
-							self.callApi({
-								resource: 'user.delete',
-								data: {
-									accountId: editAccountId,
-									userId: userId,
-									data: {}
-								},
-								success: function(data, status) {
-									self.renderEditAdminsForm(parent, editAccountId);
-									refreshAdminsHeader();
-								}
-							});
+						var $adminElement = $(this).closest('.admin-element'),
+							user = {
+								id: $adminElement.data('user_id'),
+								name: $adminElement.find('.admin-element-name').text(),
+								priv_level: 'admin'
+							};
+						monster.pub('common.deleteSmartUser.renderPopup', {
+							accountId: editAccountId,
+							user: user,
+							callback: function(data) {
+								monster.ui.toast({
+									type: 'success',
+									message: self.getTemplate({
+										name: '!' + self.i18n.active().toastrMessages.adminUserDeleted,
+										data: {
+											name: data.first_name + ' ' + data.last_name
+										}
+									})
+								});
+								self.renderEditAdminsForm(parent, editAccountId);
+								refreshAdminsHeader();
+							}
 						});
 					});
 
