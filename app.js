@@ -4,8 +4,18 @@ define(function(require) {
 		monster = require('monster'),
 		timezone = require('monster-timezone');
 
+	var appSubmodules = [
+		'newAccountWizard'
+	];
+
+	require(_.map(appSubmodules, function(name) {
+		return './submodules/' + name + '/' + name;
+	}));
+
 	var app = {
 		name: 'accounts',
+
+		subModules: appSubmodules,
 
 		css: [ 'app' ],
 
@@ -109,9 +119,8 @@ define(function(require) {
 				addBackButton: true,
 				noFocus: true,
 				onNewAccountClick: function(parentAccountId, breadcrumbs) {
-					self.renderNewAccountWizard({
-						parent: parent,
-						accountId: parentAccountId || self.accountId
+					monster.pub('accounts.newAccountWizard.render', {
+						container: parent.find('.creation-view')
 					});
 				},
 				onAccountClick: function(accountId) {

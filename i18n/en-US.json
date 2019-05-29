@@ -283,5 +283,40 @@
 
 	"__comment": "UI-1916: Add app specific shortcut",
 	"__version": "4.0",
-	"toggleAll": "Toggle All"
+	"toggleAll": "Toggle All",
+
+	"newAccountWizardRender": {
+		"doneButton": "Create Account",
+		"steps": {
+			"generalSettings": {
+				"label": "General Settings",
+				"description": "Base account settings and administration information."
+			},
+			"accountContacts": {
+				"label": "Account Contacts",
+				"description": "Note important contacts for this new account."
+			},
+			"servicePlan": {
+				"label": "Service Plan",
+				"description": "Select applicable Service Plan(s) to assign to the account."
+			},
+			"usageAndCallRestrictions": {
+				"label": "Usage + Call Restrictions",
+				"description": "Assign trunk limits and call restrictions to this new account."
+			},
+			"creditBalanceAndFeatures": {
+				"label": "Credit Balance + Features",
+				"description": "Add credit, and select which functionality this new account has access to in control center."
+			},
+			"appRestrictions": {
+				"label": "Application Restrictions",
+				"description": "Decide which applications, if any, should be restricted on this new account."
+			},
+			"review": {
+				"label": "Review + Confirm",
+				"description": "Review account configurations before finalizing the creation of your new account."
+			}
+		},
+		"title": "Creating a New Account"
+	}
 }
