@@ -285,7 +285,7 @@
 	"__version": "4.0",
 	"toggleAll": "Toggle All",
 
-	"newAccountWizardRender": {
+	"newAccountWizard": {
 		"doneButton": "Create Account",
 		"steps": {
 			"generalSettings": {

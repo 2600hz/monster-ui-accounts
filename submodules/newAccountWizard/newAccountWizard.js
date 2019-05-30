@@ -12,11 +12,6 @@ define(function(require) {
 			'accounts.newAccountWizard.render': 'newAccountWizardRender'
 		},
 
-		appFlags: {
-			newAccountWizard: {
-			}
-		},
-
 		/**
 		 * Renders the trunking limits view
 		 * @param  {Object} args
@@ -27,7 +22,7 @@ define(function(require) {
 			var self = this,
 				$container = args.container,
 				parentAccountId = args.parentAccountId,
-				i18n = self.i18n.active().newAccountWizardRender,
+				i18n = self.i18n.active().newAccountWizard,
 				i18nSteps = i18n.steps;
 
 			monster.pub('common.navigationWizard.render', {
