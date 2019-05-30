@@ -290,7 +290,7 @@
 		"steps": {
 			"generalSettings": {
 				"label": "General Settings",
-				"description": "Base account settings and administration information."
+				"description": "Base account settings and administrator information."
 			},
 			"accountContacts": {
 				"label": "Account Contacts",
@@ -298,7 +298,7 @@
 			},
 			"servicePlan": {
 				"label": "Service Plan",
-				"description": "Select applicable Service Plan(s) to assign to the account."
+				"description": "Select applicable Service Plan(s) to assign to this new account."
 			},
 			"usageAndCallRestrictions": {
 				"label": "Usage + Call Restrictions",
@@ -306,7 +306,7 @@
 			},
 			"creditBalanceAndFeatures": {
 				"label": "Credit Balance + Features",
-				"description": "Add credit, and select which functionality this new account has access to in control center."
+				"description": "Add credit, and select which functionality this new account has access to in Control Center."
 			},
 			"appRestrictions": {
 				"label": "Application Restrictions",
