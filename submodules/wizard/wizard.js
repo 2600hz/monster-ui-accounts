@@ -1,7 +1,8 @@
 define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
-		monster = require('monster');
+		monster = require('monster'),
+		timezone = require('monster-timezone');
 
 	var wizard = {
 
@@ -88,9 +89,27 @@ define(function(require) {
 
 		wizardGeneralSettingsRender: function(args) {
 			var self = this,
-				$container = args.container;
+				$container = args.container,
+				initTemplate = function() {
+					var $template = $(self.getTemplate({
+						name: 'step-generalSettings',
+						data: {},
+						submodule: 'wizard'
+					}));
 
-			// TODO: Not implemented
+					// Init input fields
+					timezone.populateDropdown($template.find('#accountInfo\\.timezone'), monster.apps.auth.currentAccount.timezone);
+					monster.ui.chosen($template.find('#accountInfo\\.timezone'));
+
+					// Init tooltips
+					monster.ui.tooltips($template);
+
+					return $template;
+				};
+
+			monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
+				insertTemplateCallback(initTemplate(), self.wizardScrollToTop);
+			});
 		},
 
 		wizardGeneralSettingsUtil: function($template) {
@@ -221,6 +240,11 @@ define(function(require) {
 				container: $container,
 				parentId: parentAccountId
 			});
+		},
+
+		/* Utility functions */
+		wizardScrollToTop: function() {
+			window.scrollTo(0, 0);
 		}
 	};
 

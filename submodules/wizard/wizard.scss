@@ -1,1 +1,64 @@
 @import "../../../../css/partials/base";
+
+.wizard-step {
+	padding: 2rem 1.5rem;
+
+	/*.row-fluid::after {
+		clear: none;	// To prevent first row to expand to fill containers height
+	}*/
+
+	.step-title {
+		padding-bottom: 2.5rem;
+		font-size: 23px;
+		color: $woodsmoke;
+	}
+
+	.section-title {
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: solid 1px $french-gray2;
+		line-height: 1rem;
+		font-size: 1rem;
+		font-weight: 600;
+		color: $woodsmoke;
+	}
+
+	.row-fluid {
+		height: 84px;	// To prevent rows to expand to fill containers height
+
+		// Make chosen dropdown to fill container width
+		.chosen-container {
+			width: 100% !important;
+
+			.chosen-single {
+				height: 38px;
+
+				span {
+					line-height: 38px;
+				}
+			}
+
+			.chosen-drop {
+				min-width: 100%;
+			}
+		}
+
+		label{
+			margin-bottom: 8px;
+			line-height: 14px;
+
+			.iconography-help {
+				margin-left: 0.5rem;
+				width: 14px;
+				height: 14px;
+				font-size: 14px;
+				vertical-align: top;
+				color: $shark2;
+			}
+		}
+
+		input, select {
+			height: 38px;
+		}
+	}
+}

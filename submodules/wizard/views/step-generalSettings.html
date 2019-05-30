@@ -1,0 +1,51 @@
+{{#*inline "textFieldPartial"}}
+	<div class="span6">
+	{{#with (lookupPath @root.i18n.accountsApp.wizard.steps.generalSettings name @root.i18n) as |fieldI18n|}}
+		<label for="{{../name}}">{{coalesce fieldI18n.label ../name}}{{#if fieldI18n.help}}<span data-title="{{fieldI18n.help}}" data-toggle="tooltip">{{telicon "question--circle" class="iconography-help"}}</span>{{/if}}</label>
+		<input class="input-block-level" type="text" name="{{../name}}" id={{../name}}{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}} value="{{lookupPath @root ../name}}">
+	{{/with}}
+	</div>
+{{/inline}}
+
+<div id="step_general_settings" class="wizard-step container-fluid">
+	<div class="step-title">
+		{{i18n.accountsApp.wizard.steps.generalSettings.stepTitle}}
+	</div>
+	<div class="step-body">
+		<form class="" id="form_general_settings">
+			<div class="step-section">
+			{{#with i18n.accountsApp.wizard.steps.generalSettings.accountInfo as |accountInfoI18n|}}
+				<div class="section-title">
+					{{accountInfoI18n.sectionTitle}}
+				</div>
+				<div class="row-fluid">
+					{{> textFieldPartial name="accountInfo.accountName"}}
+					{{> textFieldPartial name="accountInfo.accountRealm"}}
+				</div>
+				<div class="row-fluid">
+					{{> textFieldPartial name="accountInfo.addressLine1"}}
+					{{> textFieldPartial name="accountInfo.addressLine2"}}
+				</div>
+				<div class="row-fluid">
+					{{> textFieldPartial name="accountInfo.city"}}
+					{{> textFieldPartial name="accountInfo.state"}}
+				</div>
+				<div class="row-fluid">
+					{{> textFieldPartial name="accountInfo.zip"}}
+					{{> textFieldPartial name="accountInfo.country"}}
+				</div>
+				<div class="row-fluid">
+					<div class="span6">
+						<label for="accountInfo.timezone">{{accountInfoI18n.timezone.label}}</label>
+						<select id="accountInfo.timezone" name="accountInfo.timezone"></select>
+					</div>
+					<div class="span6">
+						<label for="accountInfo.language">{{accountInfoI18n.language.label}}</label>
+						{{languageSelector id="accountInfo.language" name="accountInfo.language" class="input-block-level"}}
+					</div>
+				</div>
+			{{/with}}
+			</div>
+		</form>
+	</div>
+</div>
