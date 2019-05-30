@@ -21,21 +21,21 @@ define(function(require) {
 		 * Renders the trunking limits view
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Element that will contain the new account wizard
+		 * @param  {String} args.parentAccountId  Parent Account ID
 		 */
 		newAccountWizardRender: function(args) {
 			var self = this,
 				$container = args.container,
-				currentStep = args.currentStep,
-				stepsCompleted = args.stepsCompleted,
+				parentAccountId = args.parentAccountId,
 				i18n = self.i18n.active().newAccountWizardRender,
 				i18nSteps = i18n.steps;
 
 			monster.pub('common.navigationWizard.render', {
-				thisArg: this,
-				data: {},
+				thisArg: self,
+				data: {
+					parentAccountId: parentAccountId
+				},
 				container: $container,
-				currentStep: currentStep,
-				stepsCompleted: stepsCompleted,
 				steps: [
 					{
 						label: i18nSteps.generalSettings.label,
@@ -81,8 +81,8 @@ define(function(require) {
 					}
 				],
 				title: i18n.title,
-				cancel: 'renderListing',
-				done: 'renderListing',
+				cancel: 'newAccountWizardClose',
+				done: 'newAccountWizardClose',
 				doneButton: i18n.doneButton
 			});
 		},
@@ -211,6 +211,17 @@ define(function(require) {
 				valid: true,
 				data: {}
 			};
+		},
+
+		newAccountWizardClose: function(args) {
+			var self = this,
+				$container = args.container,
+				parentAccountId = args.parentAccountId;
+
+			monster.pub('accountsManager.activate', {
+				container: $container,
+				parentId: parentAccountId
+			});
 		}
 	};
 

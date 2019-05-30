@@ -120,7 +120,8 @@ define(function(require) {
 				noFocus: true,
 				onNewAccountClick: function(parentAccountId, breadcrumbs) {
 					monster.pub('accounts.newAccountWizard.render', {
-						container: parent.find('.creation-view')
+						container: parent,
+						parentAccountId: parentAccountId || self.accountId
 					});
 				},
 				onAccountClick: function(accountId) {
