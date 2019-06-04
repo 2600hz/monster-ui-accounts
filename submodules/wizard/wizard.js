@@ -24,7 +24,7 @@ define(function(require) {
 		 */
 		wizardRender: function(args) {
 			var self = this,
-				$container = args.container,
+				$container = _.get(args, 'container', $('#monster_content')),
 				parentAccountId = args.parentAccountId,
 				i18n = self.i18n.active().accountsApp.wizard,
 				i18nSteps = i18n.steps;
