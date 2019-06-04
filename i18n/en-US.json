@@ -292,9 +292,9 @@
 				"generalSettings": {
 					"label": "General Settings",
 					"description": "Base account settings and administrator information.",
-					"stepTitle": "General Account & Administrator Information",
+					"title": "General Account & Administrator Information",
 					"accountInfo": {
-						"sectionTitle": "Account Information",
+						"title": "Account Information",
 						"accountName": {
 							"label": "Account Name",
 							"help": "The name of the account should be unique system-wide."
@@ -329,6 +329,26 @@
 						},
 						"language": {
 							"label": "Language"
+						}
+					},
+					"accountAdmins": {
+						"title": "Account Administrators",
+						"description": "You have the option to create administrators under this new account during this step. For each administrator added below,  a corresponding user will be created in SmartPBX. You can add as many administrators as your sitation requires.",
+						"adminLabel": "Administrator",
+						"firstName": {
+							"label": "First Name"
+						},
+						"lastName": {
+							"label": "Last Name"
+						},
+						"email": {
+							"label": "Email"
+						},
+						"password": {
+							"label": "Password"
+						},
+						"sendMail": {
+							"label": "Send notifcation and welcome emails to this user upon account creation?"
 						}
 					}
 				},

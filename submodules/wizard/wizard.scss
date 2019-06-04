@@ -3,17 +3,21 @@
 .wizard-step {
 	padding: 2rem 1.5rem;
 
-	/*.row-fluid::after {
-		clear: none;	// To prevent first row to expand to fill containers height
-	}*/
+	.iconography {
+		margin-top: -3px;	// To not to alter container's height
+		font-size: 14px;
+		width: 14px;
+		height: 14px;
+	}
 
 	.step-title {
-		padding-bottom: 2.5rem;
+		padding-bottom: 1.5rem;
 		font-size: 23px;
 		color: $woodsmoke;
 	}
 
 	.section-title {
+		margin-top: 1rem;
 		margin-bottom: 1.5rem;
 		padding-bottom: 0.75rem;
 		border-bottom: solid 1px $french-gray2;
@@ -25,6 +29,11 @@
 
 	.row-fluid {
 		height: 84px;	// To prevent rows to expand to fill containers height
+
+		&.row-text {
+			height: auto;
+			padding-bottom: 1.5rem;
+		}
 
 		// Make chosen dropdown to fill container width
 		.chosen-container {
@@ -49,10 +58,6 @@
 
 			.iconography-help {
 				margin-left: 0.5rem;
-				width: 14px;
-				height: 14px;
-				font-size: 14px;
-				vertical-align: top;
 				color: $shark2;
 			}
 		}

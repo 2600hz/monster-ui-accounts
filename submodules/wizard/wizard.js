@@ -97,18 +97,64 @@ define(function(require) {
 						submodule: 'wizard'
 					}));
 
-					// Init input fields
 					timezone.populateDropdown($template.find('#accountInfo\\.timezone'), monster.apps.auth.currentAccount.timezone);
 					monster.ui.chosen($template.find('#accountInfo\\.timezone'));
 
-					// Init tooltips
 					monster.ui.tooltips($template);
+
+					self.wizardGeneralSettingsBindEvents({
+						template: $template
+					});
 
 					return $template;
 				};
 
 			monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
 				insertTemplateCallback(initTemplate(), self.wizardScrollToTop);
+			});
+		},
+
+		wizardGeneralSettingsBindEvents: function(args) {
+			var self = this,
+				$template = args.template,
+				$adminUserList = $template.find('.admin-user-list'),
+				adminUserIndex = 0,
+				adminUserCorrelatives = 0,
+				updateUserCorrelatives = function() {
+					$adminUserList
+						.find('.admin-user-correlative')
+							.each(function(idx, el) {
+								$(el).text(idx + 1);
+							});
+				};
+
+			$template.find('.admin-user-add').on('click', function(e) {
+				e.preventDefault();
+
+				adminUserCorrelatives += 1;
+
+				var $adminFormTemplate = $(self.getTemplate({
+					name: 'adminForm',
+					data: {
+						index: adminUserIndex,
+						correlative: adminUserCorrelatives
+					},
+					submodule: 'wizard'
+				}));
+
+				adminUserIndex += 1;
+
+				$adminFormTemplate.find('.admin-user-remove').on('click', function(e) {
+					e.preventDefault();
+
+					$(this).closest('.admin-user-item').remove();
+
+					adminUserCorrelatives -= 1;
+
+					updateUserCorrelatives();
+				});
+
+				$adminUserList.append($adminFormTemplate);
 			});
 		},
 
