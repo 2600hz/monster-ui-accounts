@@ -3,13 +3,17 @@ define(function(require) {
 		_ = require('lodash'),
 		monster = require('monster');
 
-	var newAccountWizard = {
+	var wizard = {
 
 		requests: {
 		},
 
 		subscribe: {
-			'accounts.newAccountWizard.render': 'newAccountWizardRender'
+			'accounts.wizard.render': 'wizardRender'
+		},
+
+		shortcuts: {
+			'a': 'accounts.wizard.render'
 		},
 
 		/**
@@ -18,11 +22,11 @@ define(function(require) {
 		 * @param  {jQuery} args.container  Element that will contain the new account wizard
 		 * @param  {String} args.parentAccountId  Parent Account ID
 		 */
-		newAccountWizardRender: function(args) {
+		wizardRender: function(args) {
 			var self = this,
 				$container = args.container,
 				parentAccountId = args.parentAccountId,
-				i18n = self.i18n.active().newAccountWizard,
+				i18n = self.i18n.active().accountsApp.wizard,
 				i18nSteps = i18n.steps;
 
 			monster.pub('common.navigationWizard.render', {
@@ -35,61 +39,61 @@ define(function(require) {
 					{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
-						template: 'newAccountWizardGeneralSettingsRender',
-						util: 'newAccountWizardGeneralSettingsUtil'
+						template: 'wizardGeneralSettingsRender',
+						util: 'wizardGeneralSettingsUtil'
 					},
 					{
 						label: i18nSteps.accountContacts.label,
 						description: i18nSteps.accountContacts.description,
-						template: 'newAccountWizardAccountContactsRender',
-						util: 'newAccountWizardAccountContactsUtil'
+						template: 'wizardAccountContactsRender',
+						util: 'wizardAccountContactsUtil'
 					},
 					{
 						label: i18nSteps.servicePlan.label,
 						description: i18nSteps.servicePlan.description,
-						template: 'newAccountWizardServicePlanRender',
-						util: 'newAccountWizardServicePlanUtil'
+						template: 'wizardServicePlanRender',
+						util: 'wizardServicePlanUtil'
 					},
 					{
 						label: i18nSteps.usageAndCallRestrictions.label,
 						description: i18nSteps.usageAndCallRestrictions.description,
-						template: 'newAccountWizardUsageAndCallRestrictionsRender',
-						util: 'newAccountWizardUsageAndCallRestrictionsUtil'
+						template: 'wizardUsageAndCallRestrictionsRender',
+						util: 'wizardUsageAndCallRestrictionsUtil'
 					},
 					{
 						label: i18nSteps.creditBalanceAndFeatures.label,
 						description: i18nSteps.creditBalanceAndFeatures.description,
-						template: 'newAccountWizardCreditBalanceAndFeaturesRender',
-						util: 'newAccountWizardCreditBalanceAndFeaturesUtil'
+						template: 'wizardCreditBalanceAndFeaturesRender',
+						util: 'wizardCreditBalanceAndFeaturesUtil'
 					},
 					{
 						label: i18nSteps.appRestrictions.label,
 						description: i18nSteps.appRestrictions.description,
-						template: 'newAccountWizardAppRestrictionsRender',
-						util: 'newAccountWizardAppRestrictionsUtil'
+						template: 'wizardAppRestrictionsRender',
+						util: 'wizardAppRestrictionsUtil'
 					},
 					{
 						label: i18nSteps.review.label,
 						description: i18nSteps.review.description,
-						template: 'newAccountWizardReviewRender',
-						util: 'newAccountWizardReviewUtil'
+						template: 'wizardReviewRender',
+						util: 'wizardReviewUtil'
 					}
 				],
 				title: i18n.title,
-				cancel: 'newAccountWizardClose',
-				done: 'newAccountWizardClose',
+				cancel: 'wizardClose',
+				done: 'wizardClose',
 				doneButton: i18n.doneButton
 			});
 		},
 
-		newAccountWizardGeneralSettingsRender: function(args) {
+		wizardGeneralSettingsRender: function(args) {
 			var self = this,
 				$container = args.container;
 
 			// TODO: Not implemented
 		},
 
-		newAccountWizardGeneralSettingsUtil: function($template) {
+		wizardGeneralSettingsUtil: function($template) {
 			var self = this;
 
 			// TODO: Not implemented
@@ -100,14 +104,14 @@ define(function(require) {
 			};
 		},
 
-		newAccountWizardAccountContactsRender: function(args) {
+		wizardAccountContactsRender: function(args) {
 			var self = this,
 				$container = args.container;
 
 			// TODO: Not implemented
 		},
 
-		newAccountWizardAccountContactsUtil: function($template) {
+		wizardAccountContactsUtil: function($template) {
 			var self = this;
 
 			// TODO: Not implemented
@@ -118,14 +122,14 @@ define(function(require) {
 			};
 		},
 
-		newAccountWizardServicePlanRender: function(args) {
+		wizardServicePlanRender: function(args) {
 			var self = this,
 				$container = args.container;
 
 			// TODO: Not implemented
 		},
 
-		newAccountWizardServicePlanUtil: function($template) {
+		wizardServicePlanUtil: function($template) {
 			var self = this;
 
 			// TODO: Not implemented
@@ -136,14 +140,14 @@ define(function(require) {
 			};
 		},
 
-		newAccountWizardUsageAndCallRestrictionsRender: function(args) {
+		wizardUsageAndCallRestrictionsRender: function(args) {
 			var self = this,
 				$container = args.container;
 
 			// TODO: Not implemented
 		},
 
-		newAccountWizardUsageAndCallRestrictionsUtil: function($template) {
+		wizardUsageAndCallRestrictionsUtil: function($template) {
 			var self = this;
 
 			// TODO: Not implemented
@@ -154,14 +158,14 @@ define(function(require) {
 			};
 		},
 
-		newAccountWizardCreditBalanceAndFeaturesRender: function(args) {
+		wizardCreditBalanceAndFeaturesRender: function(args) {
 			var self = this,
 				$container = args.container;
 
 			// TODO: Not implemented
 		},
 
-		newAccountWizardCreditBalanceAndFeaturesUtil: function($template) {
+		wizardCreditBalanceAndFeaturesUtil: function($template) {
 			var self = this;
 
 			// TODO: Not implemented
@@ -172,14 +176,14 @@ define(function(require) {
 			};
 		},
 
-		newAccountWizardAppRestrictionsRender: function(args) {
+		wizardAppRestrictionsRender: function(args) {
 			var self = this,
 				$container = args.container;
 
 			// TODO: Not implemented
 		},
 
-		newAccountWizardAppRestrictionsUtil: function($template) {
+		wizardAppRestrictionsUtil: function($template) {
 			var self = this;
 
 			// TODO: Not implemented
@@ -190,14 +194,14 @@ define(function(require) {
 			};
 		},
 
-		newAccountWizardReviewRender: function(args) {
+		wizardReviewRender: function(args) {
 			var self = this,
 				$container = args.container;
 
 			// TODO: Not implemented
 		},
 
-		newAccountWizardReviewUtil: function($template) {
+		wizardReviewUtil: function($template) {
 			var self = this;
 
 			// TODO: Not implemented
@@ -208,7 +212,7 @@ define(function(require) {
 			};
 		},
 
-		newAccountWizardClose: function(args) {
+		wizardClose: function(args) {
 			var self = this,
 				$container = args.container,
 				parentAccountId = args.parentAccountId;
@@ -220,5 +224,5 @@ define(function(require) {
 		}
 	};
 
-	return newAccountWizard;
+	return wizard;
 });
