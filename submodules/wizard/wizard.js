@@ -119,7 +119,7 @@ define(function(require) {
 				$template = args.template,
 				$adminUserList = $template.find('.admin-user-list'),
 				adminUserIndex = 0,
-				adminUserCorrelatives = 0,
+				adminUserCorrelatives = 1,
 				updateUserCorrelatives = function() {
 					$adminUserList
 						.find('.admin-user-correlative')
@@ -131,9 +131,7 @@ define(function(require) {
 			$template.find('.admin-user-add').on('click', function(e) {
 				e.preventDefault();
 
-				adminUserCorrelatives += 1;
-
-				var $adminFormTemplate = $(self.getTemplate({
+				var $adminItemTemplate = $(self.getTemplate({
 					name: 'adminForm',
 					data: {
 						index: adminUserIndex,
@@ -142,19 +140,30 @@ define(function(require) {
 					submodule: 'wizard'
 				}));
 
+				adminUserCorrelatives += 1;
 				adminUserIndex += 1;
 
-				$adminFormTemplate.find('.admin-user-remove').on('click', function(e) {
+				$adminItemTemplate.find('.admin-user-remove').on('click', function(e) {
 					e.preventDefault();
 
-					$(this).closest('.admin-user-item').remove();
+					$adminItemTemplate
+						.addClass('remove')
+						.slideUp(500, function() {
+							$adminItemTemplate.remove();
+							updateUserCorrelatives();
+						});
 
+					// Notice that the index is not decremented, because its sole purpose is to
+					// guarantee a unique and ordered index of the rows, to allow the admin users
+					// to be sorted in the same way as they are displayed in the editor when the
+					// values are retrieved as an array via monster.ui.getFormData()
 					adminUserCorrelatives -= 1;
-
-					updateUserCorrelatives();
 				});
 
-				$adminUserList.append($adminFormTemplate);
+				$adminItemTemplate
+					.css({ display: 'none' })
+					.appendTo($adminUserList)
+					.slideDown(500);
 			});
 		},
 

@@ -10,6 +10,9 @@
 <div class="admin-user-item">
 	<div class="admin-user-title">
 		<span>{{i18n.accountsApp.wizard.steps.generalSettings.accountAdmins.adminLabel}}</span> <span class="admin-user-correlative">{{correlative}}</span>
+		<a class="admin-user-remove pull-right" href="javascript:void(0);">
+			{{telicon "trash-x" class="iconography-large"}}
+		</a>
 	</div>
 	<div class="row-fluid">
 		{{> textFieldPartial name="firstName" index=index}}
@@ -19,16 +22,11 @@
 		{{> textFieldPartial name="email" index=index}}
 		{{> textFieldPartial name="password" index=index type="password"}}
 	</div>
-	<div class="row-fluid">
-		<div class="span6">
+	<div class="row-fluid row-text">
+		<div class="span12">
 			{{#monsterCheckbox "large-checkbox" "prepend-label" i18n.accountsApp.wizard.steps.generalSettings.accountAdmins.sendMail.label}}
 				<input type="checkbox" />
 			{{/monsterCheckbox}}
-		</div>
-		<div class="span6">
-			<a class="admin-user-remove" href="javascript:void(0);">
-				{{telicon "trash-x"}}
-			</a>
 		</div>
 	</div>
 </div>

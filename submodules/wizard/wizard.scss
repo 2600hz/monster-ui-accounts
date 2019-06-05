@@ -10,6 +10,12 @@
 		height: 14px;
 	}
 
+	.iconography-large {
+		font-size: 1.25rem;
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
 	.step-title {
 		padding-bottom: 1.5rem;
 		font-size: 23px;
@@ -35,6 +41,10 @@
 			padding-bottom: 1.5rem;
 		}
 
+		> [class*="span"] {
+			min-height: 14px;
+		}
+
 		// Make chosen dropdown to fill container width
 		.chosen-container {
 			width: 100% !important;
@@ -53,17 +63,67 @@
 		}
 
 		label{
-			margin-bottom: 8px;
-			line-height: 14px;
+			&:not(.monster-checkbox-large){
+				margin-bottom: 8px;
+				line-height: 14px;
 
-			.iconography-help {
-				margin-left: 0.5rem;
-				color: $shark2;
+				.iconography-help {
+					margin-left: 0.5rem;
+					color: $shark2;
+				}
+			}
+
+			&.monster-checkbox-large.prepend-label > span{
+				padding-right: 1rem;
+				margin-right: 1.25rem;
 			}
 		}
 
 		input, select {
 			height: 38px;
+		}
+	}
+
+	.admin-user-item {
+		padding-top: 1.5rem;
+		border-top: 1px solid $french-gray2;
+		opacity: 1;
+		transition: opacity 400ms ease-in-out;
+
+		&:first-child {
+			padding-top: 0;
+			border-top: none;
+		}
+
+		&:hover {
+			.admin-user-remove {
+				opacity: 1;
+			}
+		}
+
+		&.remove {
+			opacity: 0;
+		}
+
+		.admin-user-remove {
+			color: $font-primary-color;
+			cursor: pointer;
+			opacity: 0;
+			transition: opacity 0.125s ease-in-out;
+
+			&:hover {
+				color: $danger-color;
+			}
+		}
+
+		.admin-user-title {
+			padding-bottom: 1rem;
+			line-height: 14px;
+			font-weight: bold;
+			color: $woodsmoke;
+		}
+
+		.admin-user-remove {
 		}
 	}
 }
