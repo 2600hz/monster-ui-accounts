@@ -89,11 +89,18 @@ define(function(require) {
 
 		wizardGeneralSettingsRender: function(args) {
 			var self = this,
+				data = args.data,
 				$container = args.container,
+				adminUserCounters = {
+					index: 0,
+					correlative: 1
+				},
 				initTemplate = function() {
 					var $template = $(self.getTemplate({
 						name: 'step-generalSettings',
-						data: {},
+						data: {
+							data: _.get(data, 'generalSettings', {})
+						},
 						submodule: 'wizard'
 					}));
 
@@ -102,24 +109,55 @@ define(function(require) {
 
 					monster.ui.tooltips($template);
 
+					// Append admin users
+					_.chain(data)
+						.get('generalSettings.accountAdmins', [])
+						.each(function(admin) {
+							self.wizardGeneralSettingsAddAdminUser({
+								adminUserList: $template.find('.admin-user-list'),
+								counters: adminUserCounters,
+								data: admin
+							});
+						})
+						.value();
+
 					self.wizardGeneralSettingsBindEvents({
+						admiUserCounters: adminUserCounters,
 						template: $template
+					});
+
+					// Set static validations
+					monster.ui.validate($template.find('form'), {
+						rules: {
+							'accountInfo.accountRealm': {
+								realm: true
+							}
+						}
 					});
 
 					return $template;
 				};
+
+			console.log(args.data);
 
 			monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
 				insertTemplateCallback(initTemplate(), self.wizardScrollToTop);
 			});
 		},
 
-		wizardGeneralSettingsBindEvents: function(args) {
+		wizardGeneralSettingsAddAdminUser: function(args) {
 			var self = this,
-				$template = args.template,
-				$adminUserList = $template.find('.admin-user-list'),
-				adminUserIndex = 0,
-				adminUserCorrelatives = 1,
+				animate = _.get(args, 'animate', false),
+				counters = args.counters,
+				data = args.data,
+				$adminUserList = args.adminUserList,
+				$adminItemTemplate = $(self.getTemplate({
+					name: 'adminForm',
+					data: _.merge({
+						data: data
+					}, counters),
+					submodule: 'wizard'
+				})),
 				updateUserCorrelatives = function() {
 					$adminUserList
 						.find('.admin-user-correlative')
@@ -128,53 +166,73 @@ define(function(require) {
 							});
 				};
 
-			$template.find('.admin-user-add').on('click', function(e) {
+			console.log(counters);
+
+			counters.correlative += 1;
+			counters.index += 1;
+
+			$adminItemTemplate.find('.admin-user-remove').on('click', function(e) {
 				e.preventDefault();
 
-				var $adminItemTemplate = $(self.getTemplate({
-					name: 'adminForm',
-					data: {
-						index: adminUserIndex,
-						correlative: adminUserCorrelatives
-					},
-					submodule: 'wizard'
-				}));
+				$adminItemTemplate
+					.addClass('remove')
+					.slideUp(500, function() {
+						$adminItemTemplate.remove();
+						updateUserCorrelatives();
+					});
 
-				adminUserCorrelatives += 1;
-				adminUserIndex += 1;
+				// Notice that the index is not decremented, because its sole purpose is to
+				// guarantee a unique and ordered index of the rows, to allow the admin users
+				// to be sorted in the same way as they are displayed in the editor when the
+				// values are retrieved as an array via monster.ui.getFormData()
+				counters.correlative -= 1;
+			});
 
-				$adminItemTemplate.find('.admin-user-remove').on('click', function(e) {
-					e.preventDefault();
-
-					$adminItemTemplate
-						.addClass('remove')
-						.slideUp(500, function() {
-							$adminItemTemplate.remove();
-							updateUserCorrelatives();
-						});
-
-					// Notice that the index is not decremented, because its sole purpose is to
-					// guarantee a unique and ordered index of the rows, to allow the admin users
-					// to be sorted in the same way as they are displayed in the editor when the
-					// values are retrieved as an array via monster.ui.getFormData()
-					adminUserCorrelatives -= 1;
-				});
-
+			if (animate) {
 				$adminItemTemplate
 					.css({ display: 'none' })
 					.appendTo($adminUserList)
 					.slideDown(500);
+			} else {
+				$adminItemTemplate.appendTo($adminUserList);
+			}
+		},
+
+		wizardGeneralSettingsBindEvents: function(args) {
+			var self = this,
+				$template = args.template,
+				counters = args.admiUserCounters;
+
+			$template.find('.admin-user-add').on('click', function(e) {
+				e.preventDefault();
+
+				self.wizardGeneralSettingsAddAdminUser({
+					adminUserList: $template.find('.admin-user-list'),
+					animate: true,
+					counters: counters,
+					data: {
+						password: monster.util.randomString(8, 'safe')
+					}
+				});
 			});
 		},
 
 		wizardGeneralSettingsUtil: function($template) {
-			var self = this;
+			var self = this,
+				$form = $template.find('form');
 
-			// TODO: Not implemented
+			// Set dynamic validations
+			$form.find('.admin-user-item input[type="password"]').each(function() {
+				$(this).rules('add', {
+					minlength: 6
+				});
+			});
 
 			return {
-				valid: true,
-				data: {}
+				valid: monster.ui.valid($form),
+				data: {
+					generalSettings: monster.ui.getFormData($form.get(0))
+				}
 			};
 		},
 

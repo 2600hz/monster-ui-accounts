@@ -2,7 +2,7 @@
 	<div class="span6">
 	{{#with (lookupPath @root.i18n.accountsApp.wizard.steps.generalSettings name @root.i18n) as |fieldI18n|}}
 		<label for="{{../name}}">{{coalesce fieldI18n.label ../name}}{{#if fieldI18n.help}}<span data-title="{{fieldI18n.help}}" data-toggle="tooltip">{{telicon "question--circle" class="iconography iconography-help"}}</span>{{/if}}</label>
-		<input class="input-block-level" type="text" name="{{../name}}" id="{{../name}}"{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}} value="{{lookupPath @root ../name}}">
+		<input class="input-block-level" type="text" name="{{../name}}" id="{{../name}}"{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}}{{#if ../required}} required{{/if}} value="{{lookupPath @root.data ../name}}">
 	{{/with}}
 	</div>
 {{/inline}}
@@ -12,36 +12,36 @@
 		{{i18n.accountsApp.wizard.steps.generalSettings.title}}
 	</div>
 	<div class="step-body">
-		<form class="" id="form_general_settings">
+		<form id="form_general_settings" name="form_general_settings">
 			<div class="step-section">
 			{{#with i18n.accountsApp.wizard.steps.generalSettings.accountInfo as |accountInfoI18n|}}
 				<div class="section-title">
 					{{accountInfoI18n.title}}
 				</div>
 				<div class="row-fluid">
-					{{> textFieldPartial name="accountInfo.accountName"}}
+					{{> textFieldPartial name="accountInfo.accountName" required=true}}
 					{{> textFieldPartial name="accountInfo.accountRealm"}}
 				</div>
 				<div class="row-fluid">
-					{{> textFieldPartial name="accountInfo.addressLine1"}}
-					{{> textFieldPartial name="accountInfo.addressLine2"}}
+					{{> textFieldPartial name="accountInfo.addressLine1" required=true}}
+					{{> textFieldPartial name="accountInfo.addressLine2" required=true}}
 				</div>
 				<div class="row-fluid">
-					{{> textFieldPartial name="accountInfo.city"}}
-					{{> textFieldPartial name="accountInfo.state"}}
+					{{> textFieldPartial name="accountInfo.city" required=true}}
+					{{> textFieldPartial name="accountInfo.state" required=true}}
 				</div>
 				<div class="row-fluid">
-					{{> textFieldPartial name="accountInfo.zip"}}
-					{{> textFieldPartial name="accountInfo.country"}}
+					{{> textFieldPartial name="accountInfo.zip" required=true}}
+					{{> textFieldPartial name="accountInfo.country" required=true}}
 				</div>
 				<div class="row-fluid">
 					<div class="span6">
 						<label for="accountInfo.timezone">{{accountInfoI18n.timezone.label}}</label>
-						<select id="accountInfo.timezone" name="accountInfo.timezone"></select>
+						<select id="accountInfo.timezone" name="accountInfo.timezone" required></select>
 					</div>
 					<div class="span6">
 						<label for="accountInfo.language">{{accountInfoI18n.language.label}}</label>
-						{{languageSelector id="accountInfo.language" name="accountInfo.language" class="input-block-level"}}
+						{{languageSelector id="accountInfo.language" name="accountInfo.language" class="input-block-level" required="true"}}
 					</div>
 				</div>
 			{{/with}}
