@@ -28,12 +28,21 @@ define(function(require) {
 				$container = _.get(args, 'container', $('#monster_content')),
 				parentAccountId = args.parentAccountId,
 				i18n = self.i18n.active().accountsApp.wizard,
-				i18nSteps = i18n.steps;
+				i18nSteps = i18n.steps,
+				defaultLanguage = _.get(monster, 'config.whitelabel.language', monster.defaultLanguage),
+				isoFormattedDefaultLanguage = defaultLanguage.substr(0, 3).concat(defaultLanguage.substr(defaultLanguage.length - 2, 2).toUpperCase());
 
 			monster.pub('common.navigationWizard.render', {
 				thisArg: self,
 				data: {
-					parentAccountId: parentAccountId
+					parentAccountId: parentAccountId,
+					// General Settings defaults
+					generalSettings: {
+						accountInfo: {
+							language: isoFormattedDefaultLanguage,
+							timezone: monster.apps.auth.currentAccount.timezone
+						}
+					}
 				},
 				container: $container,
 				steps: [
@@ -103,14 +112,7 @@ define(function(require) {
 					index: 0,
 					correlative: 1
 				},
-				defaultLanguage = _.get(monster, 'config.whitelabel.language', monster.defaultLanguage),
-				isoFormattedDefaultLanguage = defaultLanguage.substr(0, 3).concat(defaultLanguage.substr(defaultLanguage.length - 2, 2).toUpperCase()),
-				generalSettingsData = _.get(data, 'generalSettings', {
-					accountInfo: {
-						language: isoFormattedDefaultLanguage
-					}
-				}),
-				accountInfoTimezone = _.get(generalSettingsData, 'accountInfo.timezone', monster.apps.auth.currentAccount.timezone),
+				generalSettingsData = data.generalSettings,
 				initTemplate = function() {
 					var $template = $(self.getTemplate({
 						name: 'step-generalSettings',
@@ -120,7 +122,7 @@ define(function(require) {
 						submodule: 'wizard'
 					}));
 
-					timezone.populateDropdown($template.find('#accountInfo\\.timezone'), accountInfoTimezone);
+					timezone.populateDropdown($template.find('#accountInfo\\.timezone'), generalSettingsData.accountInfo.timezone);
 					monster.ui.chosen($template.find('#accountInfo\\.timezone'));
 
 					monster.ui.tooltips($template);
