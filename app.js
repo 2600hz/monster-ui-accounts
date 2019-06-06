@@ -4,8 +4,18 @@ define(function(require) {
 		monster = require('monster'),
 		timezone = require('monster-timezone');
 
+	var appSubmodules = [
+		'wizard'
+	];
+
+	require(_.map(appSubmodules, function(name) {
+		return './submodules/' + name + '/' + name;
+	}));
+
 	var app = {
 		name: 'accounts',
+
+		subModules: appSubmodules,
 
 		css: [ 'app' ],
 
@@ -32,12 +42,7 @@ define(function(require) {
 		},
 
 		subscribe: {
-			'accountsManager.activate': '_render',
-			'accountsManager.renderNewAccount': 'renderNewAccountWizard'
-		},
-
-		shortcuts: {
-			'a': 'accountsManager.renderNewAccount'
+			'accountsManager.activate': '_render'
 		},
 
 		load: function(callback) {
@@ -109,9 +114,9 @@ define(function(require) {
 				addBackButton: true,
 				noFocus: true,
 				onNewAccountClick: function(parentAccountId, breadcrumbs) {
-					self.renderNewAccountWizard({
-						parent: parent,
-						accountId: parentAccountId || self.accountId
+					monster.pub('accounts.wizard.render', {
+						container: parent,
+						parentAccountId: parentAccountId || self.accountId
 					});
 				},
 				onAccountClick: function(accountId) {
