@@ -183,7 +183,10 @@ define(function(require) {
 			isValid = monster.ui.valid($form);
 
 			if (isValid) {
-				// Clean generalSettings previous data
+				// Clean generalSettings previous data, to avoid merging the array of admin
+				// users, due to the way that `lodash#merge` handles array merging, which consists
+				// in combining the contents of the object and source arrays. This causes to keep
+				// deleted admin users, because they are present in the old data.
 				delete args.data.generalSettings;
 			}
 
