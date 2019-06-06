@@ -138,8 +138,6 @@ define(function(require) {
 					return $template;
 				};
 
-			console.log(args.data);
-
 			monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
 				insertTemplateCallback(initTemplate(), self.wizardScrollToTop);
 			});
@@ -165,8 +163,6 @@ define(function(require) {
 								$(el).text(idx + 1);
 							});
 				};
-
-			console.log(counters);
 
 			counters.correlative += 1;
 			counters.index += 1;
@@ -217,9 +213,10 @@ define(function(require) {
 			});
 		},
 
-		wizardGeneralSettingsUtil: function($template) {
+		wizardGeneralSettingsUtil: function($template, args) {
 			var self = this,
-				$form = $template.find('form');
+				$form = $template.find('form'),
+				isValid = false;
 
 			// Set dynamic validations
 			$form.find('.admin-user-item input[type="password"]').each(function() {
@@ -228,8 +225,15 @@ define(function(require) {
 				});
 			});
 
+			isValid = monster.ui.valid($form);
+
+			if (isValid) {
+				// Clean generalSettings previous data
+				delete args.data.generalSettings;
+			}
+
 			return {
-				valid: monster.ui.valid($form),
+				valid: isValid,
 				data: {
 					generalSettings: monster.ui.getFormData($form.get(0))
 				}
