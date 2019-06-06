@@ -41,7 +41,7 @@
 					</div>
 					<div class="span6">
 						<label for="accountInfo.language">{{accountInfoI18n.language.label}}</label>
-						{{languageSelector id="accountInfo.language" name="accountInfo.language" class="input-block-level" required="true"}}
+						{{languageSelector id="accountInfo.language" name="accountInfo.language" class="input-block-level" required="true" selectedLanguage=@root.data.accountInfo.language}}
 					</div>
 				</div>
 			{{/with}}

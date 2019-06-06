@@ -25,7 +25,7 @@
 	<div class="row-fluid row-text">
 		<div class="span12">
 			{{#monsterCheckbox "large-checkbox" "prepend-label" i18n.accountsApp.wizard.steps.generalSettings.accountAdmins.sendMail.label}}
-				<input type="checkbox" />
+				<input type="checkbox" id="accountAdmins[{{index}}].sendMail" name="accountAdmins[{{index}}].sendMail"{{#if (lookup data "sendMail")}} checked{{/if}} />
 			{{/monsterCheckbox}}
 		</div>
 	</div>
