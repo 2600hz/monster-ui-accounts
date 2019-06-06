@@ -87,6 +87,14 @@ define(function(require) {
 			});
 		},
 
+		/* GENERAL SETTINGS STEP */
+
+		/**
+		 * Render General Settings step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardGeneralSettingsRender: function(args) {
 			var self = this,
 				data = args.data,
@@ -95,16 +103,24 @@ define(function(require) {
 					index: 0,
 					correlative: 1
 				},
+				defaultLanguage = _.get(monster, 'config.whitelabel.language', monster.defaultLanguage),
+				isoFormattedDefaultLanguage = defaultLanguage.substr(0, 3).concat(defaultLanguage.substr(defaultLanguage.length - 2, 2).toUpperCase()),
+				generalSettingsData = _.get(data, 'generalSettings', {
+					accountInfo: {
+						language: isoFormattedDefaultLanguage
+					}
+				}),
+				accountInfoTimezone = _.get(generalSettingsData, 'accountInfo.timezone', monster.apps.auth.currentAccount.timezone),
 				initTemplate = function() {
 					var $template = $(self.getTemplate({
 						name: 'step-generalSettings',
 						data: {
-							data: _.get(data, 'generalSettings', {})
+							data: generalSettingsData
 						},
 						submodule: 'wizard'
 					}));
 
-					timezone.populateDropdown($template.find('#accountInfo\\.timezone'), monster.apps.auth.currentAccount.timezone);
+					timezone.populateDropdown($template.find('#accountInfo\\.timezone'), accountInfoTimezone);
 					monster.ui.chosen($template.find('#accountInfo\\.timezone'));
 
 					monster.ui.tooltips($template);
@@ -114,7 +130,7 @@ define(function(require) {
 						.get('generalSettings.accountAdmins', [])
 						.each(function(admin) {
 							self.wizardGeneralSettingsAddAdminUser({
-								adminUserList: $template.find('.admin-user-list'),
+								listContainer: $template.find('.admin-user-list'),
 								counters: adminUserCounters,
 								data: admin
 							});
@@ -143,76 +159,13 @@ define(function(require) {
 			});
 		},
 
-		wizardGeneralSettingsAddAdminUser: function(args) {
-			var self = this,
-				animate = _.get(args, 'animate', false),
-				counters = args.counters,
-				data = args.data,
-				$adminUserList = args.adminUserList,
-				$adminItemTemplate = $(self.getTemplate({
-					name: 'adminForm',
-					data: _.merge({
-						data: data
-					}, counters),
-					submodule: 'wizard'
-				})),
-				updateUserCorrelatives = function() {
-					$adminUserList
-						.find('.admin-user-correlative')
-							.each(function(idx, el) {
-								$(el).text(idx + 1);
-							});
-				};
-
-			counters.correlative += 1;
-			counters.index += 1;
-
-			$adminItemTemplate.find('.admin-user-remove').on('click', function(e) {
-				e.preventDefault();
-
-				$adminItemTemplate
-					.addClass('remove')
-					.slideUp(500, function() {
-						$adminItemTemplate.remove();
-						updateUserCorrelatives();
-					});
-
-				// Notice that the index is not decremented, because its sole purpose is to
-				// guarantee a unique and ordered index of the rows, to allow the admin users
-				// to be sorted in the same way as they are displayed in the editor when the
-				// values are retrieved as an array via monster.ui.getFormData()
-				counters.correlative -= 1;
-			});
-
-			if (animate) {
-				$adminItemTemplate
-					.css({ display: 'none' })
-					.appendTo($adminUserList)
-					.slideDown(500);
-			} else {
-				$adminItemTemplate.appendTo($adminUserList);
-			}
-		},
-
-		wizardGeneralSettingsBindEvents: function(args) {
-			var self = this,
-				$template = args.template,
-				counters = args.admiUserCounters;
-
-			$template.find('.admin-user-add').on('click', function(e) {
-				e.preventDefault();
-
-				self.wizardGeneralSettingsAddAdminUser({
-					adminUserList: $template.find('.admin-user-list'),
-					animate: true,
-					counters: counters,
-					data: {
-						password: monster.util.randomString(8, 'safe')
-					}
-				});
-			});
-		},
-
+		/**
+		 * Utility funcion to validate step's form and extract data
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
 		wizardGeneralSettingsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
@@ -239,6 +192,95 @@ define(function(require) {
 				}
 			};
 		},
+
+		/**
+		 * Bind General Settings step events
+		 * @param  {Object} args
+		 * @param  {jQuery} args.template  Step template
+		 * @param  {Object} args.adminUserCounters  Counter values to track admin users
+		 * @param  {Number} args.adminUserCounters.correlative  Next admin user correlative
+		 * @param  {Number} args.adminUserCounters.index  Next admin user index
+		 */
+		wizardGeneralSettingsBindEvents: function(args) {
+			var self = this,
+				$template = args.template,
+				counters = args.admiUserCounters;
+
+			$template.find('.admin-user-add').on('click', function(e) {
+				e.preventDefault();
+
+				self.wizardGeneralSettingsAddAdminUser({
+					listContainer: $template.find('.admin-user-list'),
+					animate: true,
+					counters: counters,
+					data: {
+						password: monster.util.randomString(8, 'safe')
+					}
+				});
+			});
+		},
+
+		/**
+		 * Add an user to the list of admin users
+		 * @param  {Object} args
+		 * @param  {Boolean} args.animate  Display the new admin user with a slideDown effect
+		 * @param  {Object} args.counters  Counter values to track admin users
+		 * @param  {Number} args.counters.correlative  Next admin user correlative
+		 * @param  {Number} args.counters.index  Next admin user index
+		 * @param  {Object} args.data  Admin user data
+		 * @param  {jQuery} args.listContainer  Admin user list container
+		 */
+		wizardGeneralSettingsAddAdminUser: function(args) {
+			var self = this,
+				animate = _.get(args, 'animate', false),
+				counters = args.counters,
+				data = args.data,
+				listContainer = args.listContainer,
+				$adminItemTemplate = $(self.getTemplate({
+					name: 'adminForm',
+					data: _.merge({
+						data: data
+					}, counters),
+					submodule: 'wizard'
+				}));
+
+			counters.correlative += 1;
+			counters.index += 1;
+
+			$adminItemTemplate.find('.admin-user-remove').on('click', function(e) {
+				e.preventDefault();
+
+				$adminItemTemplate
+					.addClass('remove')
+					.slideUp(500, function() {
+						$adminItemTemplate.remove();
+
+						// Update view correlatives
+						listContainer
+							.find('.admin-user-correlative')
+								.each(function(idx, el) {
+									$(el).text(idx + 1);
+								});
+					});
+
+				// Notice that the index is not decremented, because its sole purpose is to
+				// guarantee a unique and ordered index of the rows, to allow the admin users
+				// to be sorted in the same way as they are displayed in the editor when the
+				// values are retrieved as an array via monster.ui.getFormData()
+				counters.correlative -= 1;
+			});
+
+			if (animate) {
+				$adminItemTemplate
+					.css({ display: 'none' })
+					.appendTo(listContainer)
+					.slideDown(500);
+			} else {
+				$adminItemTemplate.appendTo(listContainer);
+			}
+		},
+
+		/* ACCOUNT CONTACTS STEP */
 
 		wizardAccountContactsRender: function(args) {
 			var self = this,
