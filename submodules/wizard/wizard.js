@@ -163,7 +163,7 @@ define(function(require) {
 		},
 
 		/**
-		 * Utility funcion to validate step's form and extract data
+		 * Utility funcion to validate General Settings form and extract data
 		 * @param  {jQuery} $template  Step template
 		 * @param  {Object} args  Wizard's arguments
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
@@ -288,6 +288,12 @@ define(function(require) {
 
 		/* ACCOUNT CONTACTS STEP */
 
+		/**
+		 * Render Account Contacts step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardAccountContactsRender: function(args) {
 			var self = this,
 				data = args.data,
@@ -354,6 +360,13 @@ define(function(require) {
 			});
 		},
 
+		/**
+		 * Utility funcion to validate Account Contacts form and extract data
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
 		wizardAccountContactsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
@@ -362,14 +375,14 @@ define(function(require) {
 				data = {},
 				errors = {};
 
-			// Get any date
+			// Extract and store date(s)
 			$form.find('input.hasDatePicker').each(function() {
 				var $this = $(this);
 
 				_.set(data, $this.attr('name'), $this.datepicker('getDate'));
 			});
 
-			// Validate phone numbers
+			// Validate and extract phone numbers
 			$form.find('input.phone-number').each(function() {
 				var $this = $(this),
 					fieldName = $this.attr('name'),
@@ -402,6 +415,8 @@ define(function(require) {
 				}
 			};
 		},
+
+		/* SERVICE PLAN STEP */
 
 		wizardServicePlanRender: function(args) {
 			var self = this,
@@ -534,6 +549,9 @@ define(function(require) {
 
 		/* UTILITY FUNCTIONS */
 
+		/**
+		 * Scroll window to top
+		 */
 		wizardScrollToTop: function() {
 			window.scrollTo(0, 0);
 		}
