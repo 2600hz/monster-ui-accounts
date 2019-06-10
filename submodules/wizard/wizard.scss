@@ -1,1 +1,131 @@
 @import "../../../../css/partials/base";
+
+.wizard-step {
+	padding: 2rem 1.5rem;
+
+	.iconography {
+		margin-top: -3px;	// To not to alter container's height
+		font-size: 14px;
+		width: 14px;
+		height: 14px;
+	}
+
+	.iconography-large {
+		font-size: 1.25rem;
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.step-title {
+		padding-bottom: 1.5rem;
+		font-size: 23px;
+		color: $woodsmoke;
+	}
+
+	.section-title {
+		margin-top: 1rem;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: solid 1px $french-gray2;
+		line-height: 1rem;
+		font-size: 1rem;
+		font-weight: 600;
+		color: $woodsmoke;
+	}
+
+	.row-fluid {
+		height: 84px;	// To prevent rows to expand to fill containers height
+
+		&.row-text {
+			height: auto;
+			padding-bottom: 1.5rem;
+		}
+
+		> [class*="span"] {
+			min-height: 14px;
+		}
+
+		// Make chosen dropdown to fill container width
+		.chosen-container {
+			width: 100% !important;
+
+			.chosen-single {
+				height: 38px;
+
+				span {
+					line-height: 38px;
+				}
+			}
+
+			.chosen-drop {
+				min-width: 100%;
+			}
+		}
+
+		label{
+			&:not(.monster-checkbox-large){
+				margin-bottom: 8px;
+				line-height: 14px;
+
+				.iconography-help {
+					margin-left: 0.5rem;
+					color: $shark2;
+				}
+			}
+
+			&.monster-checkbox-large.prepend-label > span{
+				padding-right: 1rem;
+				margin-right: 1.25rem;
+			}
+		}
+
+		input, select {
+			margin-bottom: 0;
+			height: 38px;
+
+			&.monster-invalid {
+				border: 1px solid $danger-color;
+			}
+		}
+	}
+
+	.admin-user-item {
+		padding-top: 1.5rem;
+		border-top: 1px solid $french-gray2;
+		opacity: 1;
+		transition: opacity 400ms ease-in-out;
+
+		&:first-child {
+			padding-top: 0;
+			border-top: none;
+		}
+
+		&:hover {
+			.admin-user-remove {
+				opacity: 1;
+			}
+		}
+
+		&.remove {
+			opacity: 0;
+		}
+
+		.admin-user-remove {
+			color: $font-primary-color;
+			cursor: pointer;
+			opacity: 0;
+			transition: opacity 0.125s ease-in-out;
+
+			&:hover {
+				color: $danger-color;
+			}
+		}
+
+		.admin-user-title {
+			padding-bottom: 1rem;
+			line-height: 14px;
+			font-weight: bold;
+			color: $woodsmoke;
+		}
+	}
+}
