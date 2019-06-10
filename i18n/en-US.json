@@ -360,7 +360,8 @@
 					"salesRep": {
 						"title": "Account Sales Representative",
 						"representative": {
-							"label": "Representative"
+							"label": "Representative",
+							"placeholder": "Select a representative..."
 						},
 						"contractEndDate": {
 							"label": "Contract End Date",

@@ -20,10 +20,13 @@
 				<div class="row-fluid">
 					<div class="span4">
 						<label for="salesRep.representative">{{accountContactsI18n.salesRep.representative.label}}</label>
-						<select class="input-level-block" id="salesRep.representative" name="salesRep.representative" required>
-						{{#each @root.users}}
-							<option value="{{id}}"{{#compare id "===" @root.data.salesRep.representative}} selected{{/compare}}>{{getUserFullName this}}</option>
-						{{/each}}
+						<select class="input-level-block" id="salesRep.representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.representative.placeholder}}" required>
+						{{#select @root.data.salesRep.representative}}
+							<option value=""></option>
+							{{#each @root.users}}
+								<option value="{{id}}">{{getUserFullName this}}</option>
+							{{/each}}
+						{{/select}}
 						</select>
 					</div>
 					<div class="span4">
