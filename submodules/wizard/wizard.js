@@ -293,14 +293,11 @@ define(function(require) {
 				data = args.data,
 				$container = args.container,
 				getFormattedData = function() {
-					var accountContactsData = data.accountContacts;
-					if (_.has(accountContactsData, 'technicalContact.phoneNumber')) {
-						accountContactsData.technicalContact.phoneNumber = accountContactsData.technicalContact.phoneNumber.originalNumber;
-					}
-					if (_.has(accountContactsData, 'billingContact.phoneNumber')) {
-						accountContactsData.billingContact.phoneNumber = accountContactsData.billingContact.phoneNumber.originalNumber;
-					}
-					return accountContactsData;
+					return _.cloneDeepWith(data.accountContacts, function(value, key) {
+						if (key === 'phoneNumber' && _.isPlainObject(value)) {
+							return value.originalNumber;
+						}
+					});
 				},
 				initTemplate = function(userList) {
 					var formattedData = getFormattedData(),
@@ -357,7 +354,7 @@ define(function(require) {
 			});
 		},
 
-		wizardAccountContactsUtil: function($template) {
+		wizardAccountContactsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
 				validateForm = monster.ui.validate($template.find('form')),
@@ -392,6 +389,11 @@ define(function(require) {
 			}
 
 			data = _.merge(monster.ui.getFormData($form.get(0)), data);
+
+			if (isValid) {
+				// Clean accountContacts previous data
+				delete args.data.accountContacts;
+			}
 
 			return {
 				valid: isValid,
