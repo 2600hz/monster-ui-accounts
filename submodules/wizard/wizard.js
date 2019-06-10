@@ -18,7 +18,7 @@ define(function(require) {
 		},
 
 		/**
-		 * Renders the trunking limits view
+		 * Renders the new account wizard
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Element that will contain the new account wizard
 		 * @param  {String} args.parentAccountId  Parent Account ID
@@ -289,9 +289,26 @@ define(function(require) {
 
 		wizardAccountContactsRender: function(args) {
 			var self = this,
-				$container = args.container;
+				data = args.data,
+				$container = args.container,
+				accountContactsData = data.accountContacts,
+				initTemplate = function() {
+					var $template = $(self.getTemplate({
+						name: 'step-accountContacts',
+						data: {
+							data: accountContactsData
+						},
+						submodule: 'wizard'
+					}));
 
-			// TODO: Not implemented
+					monster.ui.tooltips($template);
+
+					return $template;
+				};
+
+			monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
+				insertTemplateCallback(initTemplate(), self.wizardScrollToTop);
+			});
 		},
 
 		wizardAccountContactsUtil: function($template) {

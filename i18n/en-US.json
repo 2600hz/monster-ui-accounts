@@ -376,6 +376,17 @@
 				"review": {
 					"label": "Review + Confirm",
 					"description": "Review account configurations before finalizing the creation of your new account."
+				},
+				"general": {
+					"email": {
+						"label": "Email"
+					},
+					"fullName": {
+						"label": "Full Name"
+					},
+					"phoneNumber": {
+						"label": "Phone Number"
+					}
 				}
 			},
 			"title": "Creating a New Account"
