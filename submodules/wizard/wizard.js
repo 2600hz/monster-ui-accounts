@@ -1,6 +1,7 @@
 define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
+		moment = require('moment'),
 		monster = require('monster'),
 		timezone = require('monster-timezone');
 
@@ -291,34 +292,112 @@ define(function(require) {
 			var self = this,
 				data = args.data,
 				$container = args.container,
-				accountContactsData = data.accountContacts,
-				initTemplate = function() {
-					var $template = $(self.getTemplate({
-						name: 'step-accountContacts',
-						data: {
-							data: accountContactsData
-						},
-						submodule: 'wizard'
-					}));
+				getFormattedData = function() {
+					var accountContactsData = data.accountContacts;
+					if (_.has(accountContactsData, 'technicalContact.phoneNumber')) {
+						accountContactsData.technicalContact.phoneNumber = accountContactsData.technicalContact.phoneNumber.originalNumber;
+					}
+					if (_.has(accountContactsData, 'billingContact.phoneNumber')) {
+						accountContactsData.billingContact.phoneNumber = accountContactsData.billingContact.phoneNumber.originalNumber;
+					}
+					return accountContactsData;
+				},
+				initTemplate = function(userList) {
+					var formattedData = getFormattedData(),
+						$template = $(self.getTemplate({
+							name: 'step-accountContacts',
+							data: {
+								data: formattedData,
+								users: userList
+							},
+							submodule: 'wizard'
+						})),
+						$contractEndDatepicker = monster.ui.datepicker($template.find('#salesRep\\.contractEndDate'), {
+							minDate: moment().toDate()
+						});
+
+					if (_.has(formattedData, 'salesRep.contractEndDate')) {
+						$contractEndDatepicker.datepicker('setDate', formattedData.salesRep.contractEndDate);
+					}
+
+					monster.ui.chosen($template.find('#salesRep\\.representative'));
+
+					$template.find('input[data-mask]').each(function() {
+						var $this = $(this);
+						monster.ui.mask($this, $this.data('mask'));
+					});
 
 					monster.ui.tooltips($template);
 
 					return $template;
 				};
 
-			monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
-				insertTemplateCallback(initTemplate(), self.wizardScrollToTop);
+			monster.parallel({
+				userList: function(parallelCallback) {
+					self.wizardRequestUserList({
+						success: function(userList) {
+							parallelCallback(null, userList);
+						},
+						error: function() {
+							parallelCallback(null, []);
+						}
+					});
+				},
+				insertTemplateCallback: function(parallelCallback) {
+					monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
+						parallelCallback(null, insertTemplateCallback);
+					});
+				}
+			}, function(err, results) {
+				if (err) {
+					return;
+				}
+
+				results.insertTemplateCallback(initTemplate(results.userList), self.wizardScrollToTop);
 			});
 		},
 
 		wizardAccountContactsUtil: function($template) {
-			var self = this;
+			var self = this,
+				$form = $template.find('form'),
+				validateForm = monster.ui.validate($template.find('form')),
+				isValid = monster.ui.valid($form),
+				data = {},
+				errors = {};
 
-			// TODO: Not implemented
+			// Get any date
+			$form.find('input.hasDatePicker').each(function() {
+				var $this = $(this);
+
+				_.set(data, $this.attr('name'), $this.datepicker('getDate'));
+			});
+
+			// Validate phone numbers
+			$form.find('input.phone-number').each(function() {
+				var $this = $(this),
+					fieldName = $this.attr('name'),
+					number = $this.val(),
+					formattedNumber = monster.util.getFormatPhoneNumber(number);
+
+				if (_.has(formattedNumber, 'e164Number')) {
+					_.set(data, fieldName, formattedNumber);
+				} else {
+					errors[fieldName] = self.i18n.active().accountsApp.wizard.steps.general.phoneNumber.invalid;
+				}
+			});
+
+			if (!_.isEmpty(errors)) {
+				isValid = false;
+				validateForm.showErrors(errors);
+			}
+
+			data = _.merge(monster.ui.getFormData($form.get(0)), data);
 
 			return {
-				valid: true,
-				data: {}
+				valid: isValid,
+				data: {
+					accountContacts: data
+				}
 			};
 		},
 
@@ -423,7 +502,36 @@ define(function(require) {
 			});
 		},
 
-		/* Utility functions */
+		/* API REQUESTS */
+
+		/**
+		 * Request the list of users for the current account
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardRequestUserList: function(args) {
+			var self = this;
+
+			self.callApi({
+				resource: 'user.list',
+				data: {
+					accountId: self.accountId,
+					filters: {
+						paginate: 'false'
+					}
+				},
+				success: function(data) {
+					args.success(data.data);
+				},
+				error: function(parsedError) {
+					_.has(args, 'error') && args.error(parsedError);
+				}
+			});
+		},
+
+		/* UTILITY FUNCTIONS */
+
 		wizardScrollToTop: function() {
 			window.scrollTo(0, 0);
 		}

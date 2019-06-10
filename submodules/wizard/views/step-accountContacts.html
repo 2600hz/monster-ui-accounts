@@ -1,7 +1,7 @@
 {{#*inline "inputPartial"}}
 	<div class="span4">
-		<label for="{{../name}}">{{coalesce i18n.label name}}{{#if i18n.help}}<span data-title="{{i18n.help}}" data-toggle="tooltip">{{telicon "question--circle" class="iconography iconography-help"}}</span>{{/if}}</label>
-		<input class="input-block-level" type="{{#if ../type}}{{../type}}{{else}}text{{/if}}" name="{{name}}" id="{{name}}"{{#if (coalesce i18n.placeholder i18n.label)}} placeholder="{{coalesce i18n.placeholder i18n.label}}"{{/if}}{{#if required}} required{{/if}} value="{{lookupPath @root.data name}}">
+		<label for="{{name}}">{{coalesce i18n.label name}}</label>
+		<input class="input-block-level{{#compare mask "===" "phoneNumber"}} phone-number{{/compare}}" type="{{#if type}}{{type}}{{else}}text{{/if}}" name="{{name}}" id="{{name}}"{{#if (coalesce i18n.placeholder i18n.label)}} placeholder="{{coalesce i18n.placeholder i18n.label}}"{{/if}}{{#if required}} required{{/if}}{{#if mask}} data-mask="{{mask}}"{{/if}} value="{{lookupPath @root.data name}}">
 	</div>
 {{/inline}}
 
@@ -13,28 +13,39 @@
 		<form id="form_account_contacts" name="form_account_contacts">
 			<div class="step-section">
 			{{#with i18n.accountsApp.wizard.steps.accountContacts as |accountContactsI18n|}}
-				{{#with generalI18n as |generalI18n|}}
+				{{#with @root.i18n.accountsApp.wizard.steps.general as |generalI18n|}}
 				<div class="section-title">
-					{{../accountContactsI18n.salesRep.title}}
+					{{accountContactsI18n.salesRep.title}}
 				</div>
 				<div class="row-fluid">
-					{{> inputPartial name="salesRep.fullName" required=true i18n=generalI18n.fullName}}
+					<div class="span4">
+						<label for="salesRep.representative">{{accountContactsI18n.salesRep.representative.label}}</label>
+						<select class="input-level-block" id="salesRep.representative" name="salesRep.representative" required>
+						{{#each @root.users}}
+							<option value="{{id}}"{{#compare id "===" @root.data.salesRep.representative}} selected{{/compare}}>{{getUserFullName this}}</option>
+						{{/each}}
+						</select>
+					</div>
+					<div class="span4">
+						<label for="salesRep.contractEndDate">{{accountContactsI18n.salesRep.contractEndDate.label}}</label>
+						<input class="input-block-level" type="text" name="salesRep.contractEndDate" id="salesRep.contractEndDate" placeholder="{{accountContactsI18n.salesRep.contractEndDate.placeholder}}" readonly="true" required />
+					</div>
 				</div>
 				<div class="section-title">
-					{{../accountContactsI18n.technicalContact.title}}
+					{{accountContactsI18n.technicalContact.title}}
 				</div>
 				<div class="row-fluid">
 					{{> inputPartial name="technicalContact.fullName" required=true i18n=generalI18n.fullName}}
 					{{> inputPartial name="technicalContact.email" type="email" required=true i18n=generalI18n.email}}
-					{{> inputPartial name="technicalContact.phoneNumber" required=true i18n=generalI18n.phoneNumber}}
+					{{> inputPartial name="technicalContact.phoneNumber" required=true i18n=generalI18n.phoneNumber mask="phoneNumber"}}
 				</div>
 				<div class="section-title">
-					{{../accountContactsI18n.billingContact.title}}
+					{{accountContactsI18n.billingContact.title}}
 				</div>
 				<div class="row-fluid">
 					{{> inputPartial name="billingContact.fullName" required=true i18n=generalI18n.fullName}}
 					{{> inputPartial name="billingContact.email" type="email" required=true i18n=generalI18n.email}}
-					{{> inputPartial name="billingContact.phoneNumber" required=true i18n=generalI18n.phoneNumber}}
+					{{> inputPartial name="billingContact.phoneNumber" required=true i18n=generalI18n.phoneNumber mask="phoneNumber"}}
 				</div>
 				{{/with}}
 			{{/with}}

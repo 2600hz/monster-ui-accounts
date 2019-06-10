@@ -355,7 +355,24 @@
 				},
 				"accountContacts": {
 					"label": "Account Contacts",
-					"description": "Note important contacts for this new account."
+					"description": "Note important contacts for this new account.",
+					"title": "Add important contact information pertaining to this account",
+					"salesRep": {
+						"title": "Account Sales Representative",
+						"representative": {
+							"label": "Representative"
+						},
+						"contractEndDate": {
+							"label": "Contract End Date",
+							"placeholder": "mm/dd/yyyy"
+						}
+					},
+					"technicalContact": {
+						"title": "Technical Contact"
+					},
+					"billingContact": {
+						"title": "Billing Contact"
+					}
 				},
 				"servicePlan": {
 					"label": "Service Plan",
@@ -385,7 +402,8 @@
 						"label": "Full Name"
 					},
 					"phoneNumber": {
-						"label": "Phone Number"
+						"label": "Phone Number",
+						"invalid": "Invalid phone number"
 					}
 				}
 			},
