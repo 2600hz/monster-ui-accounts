@@ -377,7 +377,10 @@
 				},
 				"servicePlan": {
 					"label": "Service Plan",
-					"description": "Select applicable Service Plan(s) to assign to this new account."
+					"description": "Select applicable Service Plan(s) to assign to this new account.",
+					"title": "Select one or more Service Plans to apply to this new account",
+					"selectPlaceholder": "Apply a Service Plan",
+					"add": "Add another plan"
 				},
 				"usageAndCallRestrictions": {
 					"label": "Usage + Call Restrictions",

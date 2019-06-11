@@ -3,11 +3,17 @@
 .wizard-step {
 	padding: 2rem 1.5rem;
 
-	.iconography {
+	.iconography-small {
 		margin-top: -3px;	// To not to alter container's height
 		font-size: 14px;
 		width: 14px;
 		height: 14px;
+	}
+
+	.iconography-medium {
+		font-size: 1rem;
+		width: 1rem;
+		height: 1rem;
 	}
 
 	.iconography-large {

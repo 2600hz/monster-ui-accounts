@@ -47,7 +47,7 @@ define(function(require) {
 				},
 				container: $container,
 				steps: [
-					{
+					/*{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
 						template: 'wizardGeneralSettingsRender',
@@ -58,7 +58,7 @@ define(function(require) {
 						description: i18nSteps.accountContacts.description,
 						template: 'wizardAccountContactsRender',
 						util: 'wizardAccountContactsUtil'
-					},
+					},*/
 					{
 						label: i18nSteps.servicePlan.label,
 						description: i18nSteps.servicePlan.description,
@@ -103,6 +103,7 @@ define(function(require) {
 		 * Render General Settings step
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} [args.data.generalSettings]  Data specific for the current step
 		 * @param  {jQuery} args.container  Step container element
 		 */
 		wizardGeneralSettingsRender: function(args) {
@@ -142,7 +143,7 @@ define(function(require) {
 						.value();
 
 					self.wizardGeneralSettingsBindEvents({
-						admiUserCounters: adminUserCounters,
+						adminUserCounters: adminUserCounters,
 						template: $template
 					});
 
@@ -211,14 +212,15 @@ define(function(require) {
 		 */
 		wizardGeneralSettingsBindEvents: function(args) {
 			var self = this,
+				counters = args.adminUserCounters,
 				$template = args.template,
-				counters = args.admiUserCounters;
+				$adminUserListContainer = $template.find('.admin-user-list');
 
 			$template.find('.admin-user-add').on('click', function(e) {
 				e.preventDefault();
 
 				self.wizardGeneralSettingsAddAdminUser({
-					listContainer: $template.find('.admin-user-list'),
+					listContainer: $adminUserListContainer,
 					animate: true,
 					counters: counters,
 					data: {
@@ -226,45 +228,17 @@ define(function(require) {
 					}
 				});
 			});
-		},
 
-		/**
-		 * Add an user to the list of admin users
-		 * @param  {Object} args
-		 * @param  {Boolean} args.animate  Display the new admin user with a slideDown effect
-		 * @param  {Object} args.counters  Counter values to track admin users
-		 * @param  {Number} args.counters.correlative  Next admin user correlative
-		 * @param  {Number} args.counters.index  Next admin user index
-		 * @param  {Object} args.data  Admin user data
-		 * @param  {jQuery} args.listContainer  Admin user list container
-		 */
-		wizardGeneralSettingsAddAdminUser: function(args) {
-			var self = this,
-				animate = _.get(args, 'animate', false),
-				counters = args.counters,
-				data = args.data,
-				listContainer = args.listContainer,
-				$adminItemTemplate = $(self.getTemplate({
-					name: 'adminForm',
-					data: _.merge({
-						data: data
-					}, counters),
-					submodule: 'wizard'
-				}));
+			$adminUserListContainer.on('click', '.admin-user-remove', function(e) {
+				var $adminUserItem = $(this).closest('.admin-user-item');
 
-			counters.correlative += 1;
-			counters.index += 1;
-
-			$adminItemTemplate.find('.admin-user-remove').on('click', function(e) {
-				e.preventDefault();
-
-				$adminItemTemplate
+				$adminUserItem
 					.addClass('remove')
 					.slideUp(500, function() {
-						$adminItemTemplate.remove();
+						$adminUserItem.remove();
 
 						// Update view correlatives
-						listContainer
+						$adminUserListContainer
 							.find('.admin-user-correlative')
 								.each(function(idx, el) {
 									$(el).text(idx + 1);
@@ -277,15 +251,40 @@ define(function(require) {
 				// values are retrieved as an array via monster.ui.getFormData()
 				counters.correlative -= 1;
 			});
+		},
 
-			if (animate) {
-				$adminItemTemplate
-					.css({ display: 'none' })
-					.appendTo(listContainer)
-					.slideDown(500);
-			} else {
-				$adminItemTemplate.appendTo(listContainer);
-			}
+		/**
+		 * Add an user to the list of admin users
+		 * @param  {Object} args
+		 * @param  {Object} args.counters  Counter values to track admin users
+		 * @param  {Number} args.counters.correlative  Next admin user correlative
+		 * @param  {Number} args.counters.index  Next admin user index
+		 * @param  {Object} args.data  Admin user data
+		 * @param  {jQuery} args.listContainer  Admin user list container
+		 * @param  {Boolean} [args.animate=false]  Display the new admin user with a slide-down effect
+		 */
+		wizardGeneralSettingsAddAdminUser: function(args) {
+			var self = this,
+				animate = args.animate,
+				counters = args.counters,
+				data = args.data,
+				$listContainer = args.listContainer,
+				$adminItemTemplate = $(self.getTemplate({
+					name: 'adminForm',
+					data: _.merge({
+						data: data
+					}, counters),
+					submodule: 'wizard'
+				}));
+
+			counters.correlative += 1;
+			counters.index += 1;
+
+			self.wizardAppendListItem({
+				item: $adminItemTemplate,
+				listContainer: $listContainer,
+				animate: animate
+			});
 		},
 
 		/* ACCOUNT CONTACTS STEP */
@@ -294,6 +293,7 @@ define(function(require) {
 		 * Render Account Contacts step
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} [args.data.accountContacts]  Data specific for the current step
 		 * @param  {jQuery} args.container  Step container element
 		 */
 		wizardAccountContactsRender: function(args) {
@@ -411,11 +411,78 @@ define(function(require) {
 
 		/* SERVICE PLAN STEP */
 
+		/**
+		 * Render Account Contacts step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} [args.data.servicePlan]  Data specific for the current step
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardServicePlanRender: function(args) {
 			var self = this,
-				$container = args.container;
+				$container = args.container,
+				formatPlansData = function(planList) {
+					return _
+						.chain(planList)
+						.groupBy('category')
+						.map(function(plans, category) {
+							return {
+								name: category,
+								plans: _.sortBy(plans, 'name')
+							};
+						})
+						.sortBy('name')
+						.value();
+				},
+				initTemplate = function(planList) {
+					var planCategories = formatPlansData(planList),
+						selectedPlanIds = _.get(args.data, 'servicePlan.selectedPlanIds', []),
+						$template = $(self.getTemplate({
+							name: 'step-servicePlan',
+							submodule: 'wizard',
+							data: {
+								showAddLink: selectedPlanIds.length > 0
+							}
+						})),
+						$planListContainer = $template.find('#form_service_plan');
 
-			// TODO: Not implemented
+					if (_.isEmpty(selectedPlanIds)) {
+						selectedPlanIds.push('');
+					}
+
+					_.each(selectedPlanIds, function(planId, index) {
+						self.wizardServicePlanAddPlan({
+							index: index,
+							planCategories: planCategories,
+							planListContainer: $planListContainer,
+							selectedPlanId: planId
+						});
+					});
+
+					self.wizardServicePlanBindEvents({
+						planCategories: planCategories,
+						planListContainer: $planListContainer,
+						planListLastIndex: selectedPlanIds.length - 1,
+						template: $template
+					});
+
+					return $template;
+				};
+
+			self.wizardRenderStep({
+				container: $container,
+				load: function(loadCallback) {
+					self.wizardRequestServicePlanList({
+						success: function(servicePlanList) {
+							loadCallback(null, servicePlanList);
+						},
+						error: function(parsedError) {
+							loadCallback(null, []);
+						}
+					});
+				},
+				initialize: initTemplate
+			});
 		},
 
 		wizardServicePlanUtil: function($template) {
@@ -428,6 +495,125 @@ define(function(require) {
 				data: {}
 			};
 		},
+
+		/**
+		 * Bind Service Plan step events
+		 * @param  {Object} args
+		 * @param  {Array} args.planCategories  Service plans, grouped by categories
+		 * @param  {jQuery} args.planListContainer  Plan list container element
+		 * @param  {Object} args.planListLastIndex  Initial index for service plans
+		 * @param  {jQuery} args.template  Step template
+		 */
+		wizardServicePlanBindEvents: function(args) {
+			var self = this,
+				lastIndex = args.planListLastIndex,
+				planCategories = args.planCategories,
+				$template = args.template,
+				$planListContainer = args.planListContainer,
+				$planAddLink = $template.find('.service-plan-add'),
+				$planRemoveFirst = $planListContainer.find('.service-plan-item:first-child .service-plan-remove'),
+				toggleElementVisibility = function(elements, visible) {
+					// The `visibility` property is used instead of `display` so that the element
+					// still occupies a place in the container's space
+					_.each(elements, function($element) {
+						$element.css({
+							visibility: visible ? 'visible' : 'hidden'
+						});
+					});
+				};
+
+			$planAddLink.on('click', function(e) {
+				e.preventDefault();
+
+				toggleElementVisibility([$planRemoveFirst, $planAddLink], false);
+
+				lastIndex += 1;
+
+				self.wizardServicePlanAddPlan({
+					index: lastIndex,
+					planCategories: planCategories,
+					planListContainer: $planListContainer,
+					animate: true
+				});
+			});
+
+			$planListContainer.on('click', '.service-plan-remove', function(e) {
+				e.preventDefault();
+
+				var $servicePlanItem = $(this).closest('.service-plan-item'),
+					$selectInput = $servicePlanItem.find('select');
+
+				if ($servicePlanItem.is(':first-child')) {
+					$selectInput
+						.val('')
+						.data('value', '')
+						.trigger('chosen:updated');
+
+					toggleElementVisibility([$planRemoveFirst, $planAddLink], false);
+				} else {
+					$servicePlanItem
+						.addClass('remove')
+						.slideUp(500, function() {
+							$servicePlanItem.remove();
+
+							if ($planListContainer.find('.service-plan-item').length === 1) {
+								toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
+							} else if ($selectInput.val() === '') {
+								toggleElementVisibility([$planAddLink], true);
+							}
+						});
+				}
+			});
+
+			$planListContainer.on('change', 'select', function() {
+				var $this = $(this),
+					$servicePlanItem = $this.closest('.service-plan-item'),
+					oldValue = $this.data('value'),
+					newValue = $this.val();
+
+				if ($servicePlanItem.is(':first-child')) {
+					if (oldValue === '' && newValue !== '') {
+						toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
+					}
+				} else if (newValue !== '') {
+					toggleElementVisibility([$planAddLink], true);
+				}
+
+				$this.data('value', newValue);
+			});
+		},
+
+		/**
+		 * Add a service plan field
+		 * @param  {Object} args
+		 * @param  {Number} args.index  Item plan index
+		 * @param  {Array} args.planCategories  Service plans, grouped by categories
+		 * @param  {jQuery} args.planListContainer  Plan list container element
+		 * @param  {Boolean} [args.animate=false]  Display the new plan field with a slide-down effect
+		 * @param  {String} [args.selectedPlanId]  Selected plan ID
+		 */
+		wizardServicePlanAddPlan: function(args) {
+			var self = this,
+				$planSelectorTemplate = $(self.getTemplate({
+					name: 'servicePlanSelector',
+					submodule: 'wizard',
+					data: {
+						index: args.index,
+						planCategories: args.planCategories,
+						selectedPlanId: args.selectedPlanId
+					}
+				}));
+
+			monster.ui.chosen($planSelectorTemplate.find('select'));
+
+			self.wizardAppendListItem({
+				item: $planSelectorTemplate,
+				listContainer: args.planListContainer,
+				animate: args.animate
+			});
+		},
+
+		/* USAGE AND CALL RESTRICTIONS */
 
 		wizardUsageAndCallRestrictionsRender: function(args) {
 			var self = this,
@@ -515,6 +701,32 @@ define(function(require) {
 		/* API REQUESTS */
 
 		/**
+		 * Request the list of service plans for the current account
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardRequestServicePlanList: function(args) {
+			var self = this;
+
+			self.callApi({
+				resource: 'servicePlan.list',
+				data: {
+					accountId: self.accountId,
+					filters: {
+						paginate: false
+					}
+				},
+				success: function(data) {
+					args.success(data.data);
+				},
+				error: function(parsedError) {
+					_.has(args, 'error') && args.error(parsedError);
+				}
+			});
+		},
+
+		/**
 		 * Request the list of users for the current account
 		 * @param  {Object} args
 		 * @param  {Function} args.success  Success callback
@@ -541,6 +753,29 @@ define(function(require) {
 		},
 
 		/* UTILITY FUNCTIONS */
+
+		/**
+		 * Append a list item element to a list container, optionally with a slide-down effect
+		 * @param  {Object} args
+		 * @param  {jQuery} args.item  Item element to append
+		 * @param  {jQuery} args.listContainer  Element that contains the item list
+		 * @param  {Boolean} [args.animate=false]  Append the new item with a slide-down effect
+		 */
+		wizardAppendListItem: function(args) {
+			var self = this,
+				$item = args.item,
+				$listContainer = args.listContainer,
+				animate = _.get(args, 'animate', false);
+
+			if (animate) {
+				$item
+					.css({ display: 'none' })
+					.appendTo($listContainer)
+					.slideDown(500);
+			} else {
+				$item.appendTo($listContainer);
+			}
+		},
 
 		/**
 		 * Gets the cached list of users for the current account. If the list is not cached, then
