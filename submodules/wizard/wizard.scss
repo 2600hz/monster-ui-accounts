@@ -53,7 +53,8 @@
 
 		// Make chosen dropdown to fill container width
 		.chosen-container {
-			width: 100% !important;
+			width: auto !important;
+			display: block;
 
 			.chosen-single {
 				height: 38px;
@@ -132,6 +133,39 @@
 			line-height: 14px;
 			font-weight: bold;
 			color: $woodsmoke;
+		}
+	}
+
+	&#step_service_plan #form_service_plan{
+		margin-bottom: 0.5rem;
+
+		.service-plan-item {
+			height: 54px;
+
+			.input-field-container {
+				display: flex;
+
+				.chosen-container {
+					flex: 1;
+				}
+
+				.service-plan-remove {
+					flex: initial;
+					width: 38px;
+					height: 38px;
+					padding: 0;
+					margin-left: 0.5rem;
+
+					.iconography-medium {
+						margin-left: -2px;
+						margin-top: -3px;
+					}
+
+					&:hover {
+						color: $danger-color;
+					}
+				}
+			}
 		}
 	}
 }
