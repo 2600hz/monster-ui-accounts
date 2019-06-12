@@ -422,21 +422,28 @@ define(function(require) {
 			var self = this,
 				$container = args.container,
 				formatPlansData = function(planList) {
-					return _
-						.chain(planList)
-						.groupBy('category')
-						.map(function(plans, category) {
-							return {
-								name: category,
-								plans: _.sortBy(plans, 'name')
-							};
-						})
-						.sortBy('name')
-						.value();
+					var listByCategory = _
+							.chain(planList)
+							.groupBy('category')
+							.map(function(plans, category) {
+								return {
+									name: category,
+									plans: _.sortBy(plans, 'name')
+								};
+							})
+							.sortBy('name')
+							.value(),
+						mapById = _.keyBy(planList, 'id');
+
+					return {
+						listByCategory: listByCategory,
+						mapById: mapById
+					};
 				},
 				initTemplate = function(planList) {
-					var planCategories = formatPlansData(planList),
+					var formattedPlans = formatPlansData(planList),
 						selectedPlanIds = _.get(args.data, 'servicePlan.selectedPlanIds', []),
+						selectedPlansCount = selectedPlanIds.length,
 						$template = $(self.getTemplate({
 							name: 'step-servicePlan',
 							submodule: 'wizard',
@@ -451,18 +458,27 @@ define(function(require) {
 					}
 
 					_.each(selectedPlanIds, function(planId, index) {
+						var plan = _.get(formatPlansData.mapById, planId);
+
 						self.wizardServicePlanAddPlan({
 							index: index,
-							planCategories: planCategories,
+							planCategories: formattedPlans.listByCategory,
 							planListContainer: $planListContainer,
 							selectedPlanId: planId
 						});
+
+						if (plan) {
+							plan.disabled = true;
+						}
 					});
 
 					self.wizardServicePlanBindEvents({
-						planCategories: planCategories,
-						planListContainer: $planListContainer,
-						planListLastIndex: selectedPlanIds.length - 1,
+						planData: formattedPlans,
+						planListArgs: {
+							container: $planListContainer,
+							lastIndex: selectedPlanIds.length - 1,
+							selectedCount: selectedPlansCount
+						},
 						template: $template
 					});
 
@@ -471,17 +487,17 @@ define(function(require) {
 
 			self.wizardRenderStep({
 				container: $container,
-				load: function(loadCallback) {
+				loadData: function(asyncCallback) {
 					self.wizardRequestServicePlanList({
 						success: function(servicePlanList) {
-							loadCallback(null, servicePlanList);
+							asyncCallback(null, servicePlanList);
 						},
 						error: function(parsedError) {
-							loadCallback(null, []);
+							asyncCallback(null, []);
 						}
 					});
 				},
-				initialize: initTemplate
+				initTemplate: initTemplate
 			});
 		},
 
@@ -499,17 +515,25 @@ define(function(require) {
 		/**
 		 * Bind Service Plan step events
 		 * @param  {Object} args
-		 * @param  {Array} args.planCategories  Service plans, grouped by categories
-		 * @param  {jQuery} args.planListContainer  Plan list container element
-		 * @param  {Object} args.planListLastIndex  Initial index for service plans
+		 * @param  {Object} args.planData  Service plans
+		 * @param  {Array} args.planData.listByCategory  Service plans grouped by categories
+		 * @param  {Array} args.planData.mapById  Service plans with it's ID as property key
+		 * @param  {Object} args.planListArgs  Args specific to the plan list
+		 * @param  {jQuery} args.planListArgs.container  Plan list container element
+		 * @param  {Number} args.planListArgs.lastIndex  Initial index for service plans
+		 * @param  {Number} args.planListArgs.selectedCount  Count of already selected plans
 		 * @param  {jQuery} args.template  Step template
 		 */
 		wizardServicePlanBindEvents: function(args) {
 			var self = this,
-				lastIndex = args.planListLastIndex,
-				planCategories = args.planCategories,
+				lastIndex = args.planListArgs.lastIndex,
+				selectedCount = args.planListArgs.selectedCount,
+				planData = args.planData,
+				planCategories = planData.listByCategory,
+				plansById = planData.mapById,
+				plansCount = _.size(plansById),
 				$template = args.template,
-				$planListContainer = args.planListContainer,
+				$planListContainer = args.planListArgs.container,
 				$planAddLink = $template.find('.service-plan-add'),
 				$planRemoveFirst = $planListContainer.find('.service-plan-item:first-child .service-plan-remove'),
 				toggleElementVisibility = function(elements, visible) {
@@ -520,6 +544,26 @@ define(function(require) {
 							visibility: visible ? 'visible' : 'hidden'
 						});
 					});
+				},
+				toggleSelectedPlan = function($servicePlanItem, planId, selected) {
+					if (planId === '') {
+						return;
+					}
+
+					var $otherInputs = $servicePlanItem.siblings('.service-plan-item').find('select'),
+						$otherInputChoices = $otherInputs.find('option[value="' + planId + '"]');
+
+					_.set(plansById, [planId, 'selected'], selected);
+
+					if (selected) {
+						$otherInputChoices.attr('disabled', '');
+						selectedCount += 1;
+					} else {
+						$otherInputChoices.removeAttr('disabled');
+						selectedCount -= 1;
+					}
+
+					$otherInputs.trigger('chosen:updated');
 				};
 
 			$planAddLink.on('click', function(e) {
@@ -543,6 +587,8 @@ define(function(require) {
 				var $servicePlanItem = $(this).closest('.service-plan-item'),
 					$selectInput = $servicePlanItem.find('select');
 
+				toggleSelectedPlan($servicePlanItem, $selectInput.val(), false);
+
 				if ($servicePlanItem.is(':first-child')) {
 					$selectInput
 						.val('')
@@ -554,11 +600,13 @@ define(function(require) {
 					$servicePlanItem
 						.addClass('remove')
 						.slideUp(500, function() {
+							var selectorCount = $planListContainer.find('.service-plan-item').length - 1;
+
 							$servicePlanItem.remove();
 
-							if ($planListContainer.find('.service-plan-item').length === 1) {
+							if (selectorCount === 1) {
 								toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
-							} else if ($selectInput.val() === '') {
+							} else if (selectorCount === selectedCount) {
 								toggleElementVisibility([$planAddLink], true);
 							}
 						});
@@ -571,11 +619,18 @@ define(function(require) {
 					oldValue = $this.data('value'),
 					newValue = $this.val();
 
+				toggleSelectedPlan($servicePlanItem, oldValue, false);
+				toggleSelectedPlan($servicePlanItem, newValue, true);
+
 				if ($servicePlanItem.is(':first-child')) {
 					if (oldValue === '' && newValue !== '') {
-						toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
+						if (selectedCount < plansCount) {
+							toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
+						} else {
+							toggleElementVisibility([$planRemoveFirst], true);
+						}
 					}
-				} else if (newValue !== '') {
+				} else if (newValue !== '' && selectedCount < plansCount) {
 					toggleElementVisibility([$planAddLink], true);
 				}
 
