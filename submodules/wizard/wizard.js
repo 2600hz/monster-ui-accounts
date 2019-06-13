@@ -157,8 +157,9 @@ define(function(require) {
 					return $template;
 				};
 
-			monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
-				insertTemplateCallback(initTemplate(), self.wizardScrollToTop);
+			self.wizardRenderStep({
+				container: $container,
+				initTemplate: initTemplate
 			});
 		},
 
@@ -335,28 +336,19 @@ define(function(require) {
 					return $template;
 				};
 
-			monster.parallel({
-				userList: function(parallelCallback) {
+			self.wizardRenderStep({
+				container: $container,
+				loadData: function(asyncCallback) {
 					self.wizardRequestUserList({
 						success: function(userList) {
-							parallelCallback(null, userList);
+							asyncCallback(null, userList);
 						},
 						error: function() {
-							parallelCallback(null, []);
+							asyncCallback(null, []);
 						}
 					});
 				},
-				insertTemplateCallback: function(parallelCallback) {
-					monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
-						parallelCallback(null, insertTemplateCallback);
-					});
-				}
-			}, function(err, results) {
-				if (err) {
-					return;
-				}
-
-				results.insertTemplateCallback(initTemplate(results.userList), self.wizardScrollToTop);
+				initTemplate: initTemplate
 			});
 		},
 
@@ -548,6 +540,43 @@ define(function(require) {
 		},
 
 		/* UTILITY FUNCTIONS */
+
+		/**
+		 * Render a step view
+		 * @param  {Object} args
+		 * @param  {jQuery} args.container  Wizard container element
+		 * @param  {Function}  [args.loadData]  Optional load callback, which can be used to load
+		 *                                      data for the template before its initialization
+		 * @param  {Function}  args.initTemplate  Template initialization callback
+		 */
+		wizardRenderStep: function(args) {
+			var self = this,
+				loadData = args.loadData,
+				initTemplate = args.initTemplate,
+				$container = args.container,
+				seriesFunctions = [
+					function(seriesCallback) {
+						monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
+							seriesCallback(null, insertTemplateCallback);
+						});
+					}
+				];
+
+			if (_.isFunction(loadData)) {
+				seriesFunctions.push(loadData);
+			}
+
+			monster.series(seriesFunctions, function(err, results) {
+				if (err) {
+					return;
+				}
+
+				var insertTemplateCallback = results[0],
+					data = _.get(results, 1);
+
+				insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
+			});
+		},
 
 		/**
 		 * Scroll window to top
