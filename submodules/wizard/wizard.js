@@ -339,7 +339,7 @@ define(function(require) {
 			self.wizardRenderStep({
 				container: $container,
 				loadData: function(asyncCallback) {
-					self.wizardRequestUserList({
+					self.wizardGetUserList({
 						success: function(userList) {
 							asyncCallback(null, userList);
 						},
@@ -542,6 +542,30 @@ define(function(require) {
 		/* UTILITY FUNCTIONS */
 
 		/**
+		 * Gets the cached list of users for the current account. If the list is not cached, then
+		 * it is requested to the API.
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardGetUserList: function(args) {
+			var self = this,
+				userList = self.wizardGetStore('accountUsers');
+
+			if (_.isUndefined(userList)) {
+				self.wizardRequestUserList({
+					success: function(userList) {
+						self.wizardSetStore('accountUsers', userList);
+						args.success(userList);
+					},
+					error: args.error
+				});
+			} else {
+				args.success(userList);
+			}
+		},
+
+		/**
 		 * Render a step view
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Wizard container element
@@ -583,6 +607,44 @@ define(function(require) {
 		 */
 		wizardScrollToTop: function() {
 			window.scrollTo(0, 0);
+		},
+
+		/* STORE FUNCTIONS */
+
+		/**
+		 * Store getter
+		 * @param  {Array|String} [path]
+		 * @param  {*} [defaultValue]
+		 * @return {*}
+		 */
+		wizardGetStore: function(path, defaultValue) {
+			var self = this,
+				store = ['_store', 'wizard'];
+			return _.get(
+				self,
+				_.isUndefined(path)
+					? store
+					: _.flatten([store, _.isString(path) ? path.split('.') : path]),
+				defaultValue
+			);
+		},
+
+		/**
+		 * Store setter
+		 * @param  {Array|String|*} path|value
+		 * @param  {*} [value]
+		 */
+		wizardSetStore: function(path, value) {
+			var self = this,
+				hasValue = _.toArray(arguments).length === 2,
+				store = ['_store', 'wizard'];
+			_.set(
+				self,
+				hasValue
+					? _.flatten([store, _.isString(path) ? path.split('.') : path])
+					: store,
+				hasValue ? value : path
+			);
 		}
 	};
 
