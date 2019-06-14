@@ -1,8 +1,8 @@
 {{#*inline "accountInfoInputPartial"}}
 	<div class="span6">
 	{{#with (lookupPath @root.i18n.accountsApp.wizard.steps.generalSettings.accountInfo name @root.i18n) as |fieldI18n|}}
-		<label for="{{../name}}">{{coalesce fieldI18n.label ../name}}{{#if fieldI18n.help}}<span data-title="{{fieldI18n.help}}" data-toggle="tooltip">{{telicon "question--circle" class="iconography iconography-help"}}</span>{{/if}}</label>
-		<input class="input-block-level" type="text" name="accountInfo.{{../name}}" id="accountInfo.{{../name}}"{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}}{{#if ../required}} required{{/if}} value="{{lookupPath @root.data.accountInfo ../name}}">
+		<label for="account_info_{{coalesce ../id ../name}}">{{coalesce fieldI18n.label ../name}}{{#if fieldI18n.help}}<span data-title="{{fieldI18n.help}}" data-toggle="tooltip">{{telicon "question--circle" class="iconography iconography-help"}}</span>{{/if}}</label>
+		<input class="input-block-level" type="text" name="accountInfo.{{../name}}" id="account_info_{{coalesce ../id ../name}}"{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}}{{#if ../required}} required{{/if}} value="{{lookupPath @root.data.accountInfo ../name}}">
 	{{/with}}
 	</div>
 {{/inline}}
@@ -19,12 +19,12 @@
 					{{accountInfoI18n.title}}
 				</div>
 				<div class="row-fluid">
-					{{> accountInfoInputPartial name="accountName" required=true}}
-					{{> accountInfoInputPartial name="accountRealm"}}
+					{{> accountInfoInputPartial id="account_name" name="accountName" required=true}}
+					{{> accountInfoInputPartial id="account_realm" name="accountRealm"}}
 				</div>
 				<div class="row-fluid">
-					{{> accountInfoInputPartial name="addressLine1" required=true}}
-					{{> accountInfoInputPartial name="addressLine2" required=true}}
+					{{> accountInfoInputPartial id="address_line_1" name="addressLine1" required=true}}
+					{{> accountInfoInputPartial id="address_line_2" name="addressLine2" required=true}}
 				</div>
 				<div class="row-fluid">
 					{{> accountInfoInputPartial name="city" required=true}}
@@ -36,12 +36,12 @@
 				</div>
 				<div class="row-fluid">
 					<div class="span6">
-						<label for="accountInfo.timezone">{{accountInfoI18n.timezone.label}}</label>
-						<select id="accountInfo.timezone" name="accountInfo.timezone" required></select>
+						<label for="account_info_timezone">{{accountInfoI18n.timezone.label}}</label>
+						<select id="account_info_timezone" name="accountInfo.timezone" required></select>
 					</div>
 					<div class="span6">
-						<label for="accountInfo.language">{{accountInfoI18n.language.label}}</label>
-						{{languageSelector id="accountInfo.language" name="accountInfo.language" class="input-block-level" required="true" selectedLanguage=@root.data.accountInfo.language}}
+						<label for="account_info_language">{{accountInfoI18n.language.label}}</label>
+						{{languageSelector id="account_info_language" name="accountInfo.language" class="input-block-level" required="true" selectedLanguage=@root.data.accountInfo.language}}
 					</div>
 				</div>
 			{{/with}}

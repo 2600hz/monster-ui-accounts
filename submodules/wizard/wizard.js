@@ -116,15 +116,16 @@ define(function(require) {
 				generalSettingsData = data.generalSettings,
 				initTemplate = function() {
 					var $template = $(self.getTemplate({
-						name: 'step-generalSettings',
-						data: {
-							data: generalSettingsData
-						},
-						submodule: 'wizard'
-					}));
+							name: 'step-generalSettings',
+							data: {
+								data: generalSettingsData
+							},
+							submodule: 'wizard'
+						})),
+						$timezoneDropDown = $template.find('#account_info_timezone');
 
-					timezone.populateDropdown($template.find('#accountInfo\\.timezone'), generalSettingsData.accountInfo.timezone);
-					monster.ui.chosen($template.find('#accountInfo\\.timezone'));
+					timezone.populateDropdown($timezoneDropDown, generalSettingsData.accountInfo.timezone);
+					monster.ui.chosen($timezoneDropDown);
 
 					monster.ui.tooltips($template);
 
@@ -316,7 +317,7 @@ define(function(require) {
 							},
 							submodule: 'wizard'
 						})),
-						$contractEndDatepicker = monster.ui.datepicker($template.find('#salesRep\\.contractEndDate'), {
+						$contractEndDatepicker = monster.ui.datepicker($template.find('#sales_rep_contract_end_date'), {
 							minDate: moment().toDate()
 						});
 
@@ -324,7 +325,7 @@ define(function(require) {
 						$contractEndDatepicker.datepicker('setDate', formattedData.salesRep.contractEndDate);
 					}
 
-					monster.ui.chosen($template.find('#salesRep\\.representative'));
+					monster.ui.chosen($template.find('#sales_rep_representative'));
 
 					$template.find('input[data-mask]').each(function() {
 						var $this = $(this);
@@ -362,7 +363,7 @@ define(function(require) {
 		wizardAccountContactsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
-				validateForm = monster.ui.validate($template.find('form')),
+				validateForm = monster.ui.validate($form),
 				isValid = monster.ui.valid($form),
 				data = {},
 				errors = {};
