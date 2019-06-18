@@ -14,42 +14,44 @@
 			<div class="step-section">
 			{{#with i18n.accountsApp.wizard.steps.accountContacts as |accountContactsI18n|}}
 				{{#with @root.i18n.accountsApp.wizard.steps.general as |generalI18n|}}
-				<div class="section-title">
-					{{accountContactsI18n.salesRep.title}}
-				</div>
-				<div class="row-fluid">
-					<div class="span4">
-						<label for="sales_rep_representative">{{accountContactsI18n.salesRep.representative.label}}</label>
-						<select class="input-level-block" id="sales_rep_representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.representative.placeholder}}" required>
-						{{#select @root.data.salesRep.representative}}
-							<option value=""></option>
-							{{#each @root.users}}
-								<option value="{{id}}">{{getUserFullName this}}</option>
-							{{/each}}
-						{{/select}}
-						</select>
-					</div>
-					<div class="span4">
-						<label for="sales_rep_contract_end_date">{{accountContactsI18n.salesRep.contractEndDate.label}}</label>
-						<input class="input-block-level" type="text" name="salesRep.contractEndDate" id="sales_rep_contract_end_date" placeholder="{{accountContactsI18n.salesRep.contractEndDate.placeholder}}" readonly="true" required />
-					</div>
-				</div>
-				<div class="section-title">
-					{{accountContactsI18n.technicalContact.title}}
-				</div>
-				<div class="row-fluid">
-					{{> inputPartial id="technical_contact_full_name" name="technicalContact.fullName" required=true i18n=generalI18n.fullName}}
-					{{> inputPartial id="technical_contact_email" name="technicalContact.email" type="email" required=true i18n=generalI18n.email}}
-					{{> inputPartial id="technical_contact_phone_number" name="technicalContact.phoneNumber" required=true i18n=generalI18n.phoneNumber mask="phoneNumber"}}
-				</div>
-				<div class="section-title">
-					{{accountContactsI18n.billingContact.title}}
-				</div>
-				<div class="row-fluid">
-					{{> inputPartial id="billing_contact_full_name" name="billingContact.fullName" required=true i18n=generalI18n.fullName}}
-					{{> inputPartial id="billing_contact_email" name="billingContact.email" type="email" required=true i18n=generalI18n.email}}
-					{{> inputPartial id="billing_contact_phone_number" name="billingContact.phoneNumber" required=true i18n=generalI18n.phoneNumber mask="phoneNumber"}}
-				</div>
+					{{#if showSalesRepSection}}
+						<div class="section-title">
+							{{accountContactsI18n.salesRep.title}}
+						</div>
+						<div class="row-fluid">
+							<div class="span4">
+								<label for="sales_rep_representative">{{accountContactsI18n.salesRep.representative.label}}</label>
+								<select class="input-level-block" id="sales_rep_representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.representative.placeholder}}" required>
+								{{#select @root.data.salesRep.representative}}
+									<option value=""></option>
+									{{#each @root.users}}
+										<option value="{{id}}">{{getUserFullName this}}</option>
+									{{/each}}
+								{{/select}}
+								</select>
+							</div>
+							<div class="span4">
+								<label for="sales_rep_contract_end_date">{{accountContactsI18n.salesRep.contractEndDate.label}}</label>
+								<input class="input-block-level" type="text" name="salesRep.contractEndDate" id="sales_rep_contract_end_date" placeholder="{{accountContactsI18n.salesRep.contractEndDate.placeholder}}" readonly="true" required />
+							</div>
+						</div>
+					{{/if}}
+						<div class="section-title">
+							{{accountContactsI18n.technicalContact.title}}
+						</div>
+						<div class="row-fluid">
+							{{> inputPartial id="technical_contact_full_name" name="technicalContact.fullName" required=true i18n=generalI18n.fullName}}
+							{{> inputPartial id="technical_contact_email" name="technicalContact.email" type="email" required=true i18n=generalI18n.email}}
+							{{> inputPartial id="technical_contact_phone_number" name="technicalContact.phoneNumber" required=true i18n=generalI18n.phoneNumber mask="phoneNumber"}}
+						</div>
+						<div class="section-title">
+							{{accountContactsI18n.billingContact.title}}
+						</div>
+						<div class="row-fluid">
+							{{> inputPartial id="billing_contact_full_name" name="billingContact.fullName" required=true i18n=generalI18n.fullName}}
+							{{> inputPartial id="billing_contact_email" name="billingContact.email" type="email" required=true i18n=generalI18n.email}}
+							{{> inputPartial id="billing_contact_phone_number" name="billingContact.phoneNumber" required=true i18n=generalI18n.phoneNumber mask="phoneNumber"}}
+						</div>
 				{{/with}}
 			{{/with}}
 			</div>
