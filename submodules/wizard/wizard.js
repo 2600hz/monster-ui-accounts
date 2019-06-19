@@ -283,7 +283,7 @@ define(function(require) {
 			self.wizardAppendListItem({
 				item: $adminItemTemplate,
 				listContainer: $listContainer,
-				animate: animate
+				animationDuration: animate ? 500 : 0
 			});
 		},
 
@@ -532,6 +532,7 @@ define(function(require) {
 				planCategories = planData.listByCategory,
 				plansById = planData.mapById,
 				plansCount = _.size(plansById),
+				selectedPlanIds = [],
 				$template = args.template,
 				$planListContainer = args.planListArgs.container,
 				$planAddLink = $template.find('.service-plan-add'),
@@ -545,29 +546,28 @@ define(function(require) {
 						});
 					});
 				},
-				toggleSelectedPlan = function($servicePlanItem, planId, selected) {
-					if (planId === '') {
-						return;
-					}
+				toggleSelectedPlan = function($servicePlanItem, oldPlanId, newPlanId) {
+					var $otherInputs = $servicePlanItem.siblings('.service-plan-item').find('select');
 
-					var $otherInputs = $servicePlanItem.siblings('.service-plan-item').find('select'),
-						$otherInputChoices = $otherInputs.find('option[value="' + planId + '"]');
-
-					_.set(plansById, [planId, 'selected'], selected);
-
-					if (selected) {
-						$otherInputChoices.attr('disabled', '');
-						selectedCount += 1;
-					} else {
-						$otherInputChoices.removeAttr('disabled');
+					if (!_.isEmpty(oldPlanId)) {
+						_.pull(selectedPlanIds, oldPlanId);
 						selectedCount -= 1;
+						$otherInputs.find('option[value="' + oldPlanId + '"]').removeAttr('disabled');
 					}
 
-					$otherInputs.trigger('chosen:updated');
+					if (!_.isEmpty(newPlanId)) {
+						selectedPlanIds.push(newPlanId);
+						selectedCount += 1;
+						$otherInputs.find('option[value="' + newPlanId + '"]').attr('disabled', '');
+					}
 				};
 
 			$planAddLink.on('click', function(e) {
 				e.preventDefault();
+
+				if ($(this).hasClass('disabled')) {
+					return;
+				}
 
 				toggleElementVisibility([$planRemoveFirst, $planAddLink], false);
 
@@ -577,6 +577,7 @@ define(function(require) {
 					index: lastIndex,
 					planCategories: planCategories,
 					planListContainer: $planListContainer,
+					disabledPlanIds: selectedPlanIds,
 					animate: true
 				});
 			});
@@ -585,32 +586,51 @@ define(function(require) {
 				e.preventDefault();
 
 				var $servicePlanItem = $(this).closest('.service-plan-item'),
-					$selectInput = $servicePlanItem.find('select');
+					$selectInput = $servicePlanItem.find('select'),
+					value = $selectInput.val();
 
-				toggleSelectedPlan($servicePlanItem, $selectInput.val(), false);
+				toggleSelectedPlan($servicePlanItem, value, null);
 
-				if ($servicePlanItem.is(':first-child')) {
-					$selectInput
-						.val('')
-						.data('value', '')
-						.trigger('chosen:updated');
+				monster.series([
+					function(seriesCallback) {
+						if (value === '') {
+							seriesCallback(null);
+							return;
+						}
 
-					toggleElementVisibility([$planRemoveFirst, $planAddLink], false);
-				} else {
-					$servicePlanItem
-						.addClass('remove')
-						.slideUp(500, function() {
-							var selectorCount = $planListContainer.find('.service-plan-item').length - 1;
-
-							$servicePlanItem.remove();
-
-							if (selectorCount === 1) {
-								toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
-							} else if (selectorCount === selectedCount) {
-								toggleElementVisibility([$planAddLink], true);
+						self.wizardServicePlanGenerateListing({
+							planIds: selectedPlanIds,
+							template: $template,
+							planAddLink: $planAddLink,
+							planListContainer: $planListContainer,
+							callback: function() {
+								seriesCallback(null);
 							}
 						});
-				}
+					}
+				], function() {
+					if ($servicePlanItem.is(':first-child')) {
+						$selectInput
+							.val('')
+							.data('value', '');
+
+						toggleElementVisibility([$planRemoveFirst, $planAddLink], false);
+					} else {
+						$servicePlanItem
+							.addClass('remove')
+							.slideUp(500, function() {
+								var selectorCount = $planListContainer.find('.service-plan-item').length - 1;
+
+								$servicePlanItem.remove();
+
+								if (selectorCount === 1) {
+									toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
+								} else if (selectorCount === selectedCount) {
+									toggleElementVisibility([$planAddLink], true);
+								}
+							});
+					}
+				});
 			});
 
 			$planListContainer.on('change', 'select', function() {
@@ -619,22 +639,29 @@ define(function(require) {
 					oldValue = $this.data('value'),
 					newValue = $this.val();
 
-				toggleSelectedPlan($servicePlanItem, oldValue, false);
-				toggleSelectedPlan($servicePlanItem, newValue, true);
+				toggleSelectedPlan($servicePlanItem, oldValue, newValue);
 
-				if ($servicePlanItem.is(':first-child')) {
-					if (oldValue === '' && newValue !== '') {
-						if (selectedCount < plansCount) {
-							toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
-						} else {
-							toggleElementVisibility([$planRemoveFirst], true);
+				self.wizardServicePlanGenerateListing({
+					planIds: selectedPlanIds,
+					template: $template,
+					planAddLink: $planAddLink,
+					planListContainer: $planListContainer,
+					callback: function() {
+						if ($servicePlanItem.is(':first-child')) {
+							if (oldValue === '' && newValue !== '') {
+								if (selectedCount < plansCount) {
+									toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
+								} else {
+									toggleElementVisibility([$planRemoveFirst], true);
+								}
+							}
+						} else if (newValue !== '' && selectedCount < plansCount) {
+							toggleElementVisibility([$planAddLink], true);
 						}
-					}
-				} else if (newValue !== '' && selectedCount < plansCount) {
-					toggleElementVisibility([$planAddLink], true);
-				}
 
-				$this.data('value', newValue);
+						$this.data('value', newValue);
+					}
+				});
 			});
 		},
 
@@ -655,6 +682,7 @@ define(function(require) {
 					data: {
 						index: args.index,
 						planCategories: args.planCategories,
+						disabledPlanIds: args.disabledPlanIds,
 						selectedPlanId: args.selectedPlanId
 					}
 				}));
@@ -664,7 +692,55 @@ define(function(require) {
 			self.wizardAppendListItem({
 				item: $planSelectorTemplate,
 				listContainer: args.planListContainer,
-				animate: args.animate
+				animationDuration: _.get(args, 'animate', false) ? 150 : 0
+			});
+		},
+
+		/**
+		 * Generate and render the plan listing
+		 * @param  {Object} args
+		 * @param  {String[]} args.planIds  List of selected plan IDs
+		 * @param  {jQuery} args.template  Step template
+		 * @param  {jQuery} args.planListContainer  Plan list container element
+		 * @param  {jQuery} args.planAddLink  Plan add link
+		 * @param  {Function} args.callback  Callback function
+		 */
+		wizardServicePlanGenerateListing: function(args) {
+			var self = this,
+				planIds = args.planIds,
+				callback = args.callback,
+				$template = args.template,
+				$planAddLink = args.planAddLink,
+				$planListContainer = args.planListContainer,
+				$selectors = $planListContainer.find('select'),
+				$removeButtons = $planListContainer.find('button.service-plan-remove'),
+				enablePlanSelectorControls = function(enable) {
+					$selectors.prop('disabled', !enable).trigger('chosen:updated');
+					$removeButtons.prop('disabled', !enable);
+					$planAddLink.toggleClass('disabled');
+				};
+
+			enablePlanSelectorControls(false);
+
+			monster.parallel([
+				function(parallelCallback) {
+					callback();
+					parallelCallback(null);
+				},
+				function(parallelCallback) {
+					self.serviceItemsListingRender({
+						planIds: planIds,
+						container: $template.find('#service_plan_aggregate'),
+						success: function() {
+							parallelCallback(null);
+						},
+						error: function() {
+							parallelCallback(true);
+						}
+					});
+				}
+			], function() {
+				enablePlanSelectorControls(true);
 			});
 		},
 
@@ -814,21 +890,23 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {jQuery} args.item  Item element to append
 		 * @param  {jQuery} args.listContainer  Element that contains the item list
-		 * @param  {Boolean} [args.animate=false]  Append the new item with a slide-down effect
+		 * @param  {Boolean} [args.animationDuration=0]  Duration of the slide-down animation
+		 *                                               effect, in milliseconds. If set to zero,
+		 *                                               the item is appended without animation.
 		 */
 		wizardAppendListItem: function(args) {
 			var self = this,
 				$item = args.item,
 				$listContainer = args.listContainer,
-				animate = _.get(args, 'animate', false);
+				animationDuration = _.get(args, 'animationDuration', 0);
 
-			if (animate) {
+			if (animationDuration === 0) {
+				$item.appendTo($listContainer);
+			} else {
 				$item
 					.css({ display: 'none' })
 					.appendTo($listContainer)
-					.slideDown(500);
-			} else {
-				$item.appendTo($listContainer);
+					.slideDown(animationDuration);
 			}
 		},
 

@@ -136,35 +136,49 @@
 		}
 	}
 
-	&#step_service_plan #form_service_plan{
-		margin-bottom: 0.5rem;
+	&#step_service_plan {
 
-		.service-plan-item {
-			height: 54px;
+		#form_service_plan{
+			margin-bottom: 0.5rem;
 
-			.input-field-container {
-				display: flex;
+			.service-plan-item {
+				height: 54px;
 
-				.chosen-container {
-					flex: 1;
-				}
+				.input-field-container {
+					display: flex;
 
-				.service-plan-remove {
-					flex: initial;
-					width: 38px;
-					height: 38px;
-					padding: 0;
-					margin-left: 0.5rem;
-
-					.iconography-medium {
-						margin-left: -2px;
-						margin-top: -3px;
+					.chosen-container {
+						flex: 1;
 					}
 
-					&:hover {
-						color: $danger-color;
+					.service-plan-remove {
+						flex: initial;
+						width: 38px;
+						height: 38px;
+						padding: 0;
+						margin-left: 0.5rem;
+
+						.iconography-medium {
+							margin-left: -2px;
+							margin-top: -3px;
+						}
+
+						&:hover:not([disabled]) {
+							color: $danger-color;
+						}
 					}
 				}
+			}
+		}
+
+		.row-service-plan-add {
+			line-height: 14px;
+			height: 1rem;
+			margin-bottom: 1.75rem;
+
+			.iconography-medium {
+				margin-right: 4px;
+				margin-top: -3px;
 			}
 		}
 	}

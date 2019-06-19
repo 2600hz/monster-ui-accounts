@@ -6,7 +6,7 @@
 			{{#each planCategories}}
 				<optgroup label="{{name}}">
 				{{#each plans}}
-					<option value="{{id}}"{{#if selected}}{{#compare selectedPlanId "!==" id}} disabled{{/compare}}{{/if}}>{{name}}</option>
+					<option value="{{id}}"{{#compare selectedPlanId "!==" id}}{{#ifInArray id @root.disabledPlanIds}} disabled{{/ifInArray}}{{/compare}}>{{name}}</option>
 				{{/each}}
 				</optgroup>
 			{{/each}}

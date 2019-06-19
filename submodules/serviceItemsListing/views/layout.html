@@ -1,0 +1,42 @@
+{{#if categories.length}}
+	<table class="service-items-listing monster-table">
+		<thead>
+			<tr>
+				<th class="item-cell">{{i18n.accountsApp.serviceItemsListing.columns.item}}</th>
+				<th class="quantity-cell">{{i18n.accountsApp.serviceItemsListing.columns.quantity}}</th>
+				<th class="rate-cell">{{i18n.accountsApp.serviceItemsListing.columns.rate}}</th>
+				<th class="discount-cell">{{i18n.accountsApp.serviceItemsListing.columns.discount}}</th>
+			</tr>
+		</thead>
+		<tbody>
+		{{#each categories}}
+			<tr>
+				<td class="category-cell" colspan="4">{{title}}</td>
+			</tr>
+			{{#each items}}
+				<tr>
+					<td class="item-cell">{{name}}</td>
+					<td class="quantity-cell">{{coalesce quantity @root.i18n.accountsApp.serviceItemsListing.labels.all}}</td>
+					<td class="rate-cell">
+						{{#compare rate.value "!==" null}}
+							{{formatPrice rate.value 2}}
+						{{else}}
+							<span>--</span>
+						{{/compare}}
+					{{#if rate.isCascade}}
+						<span class="cascade-rate-icon" data-title="{{@root.i18n.accountsApp.serviceItemsListing.labels.cascadeTooltip}}" data-toggle="tooltip">
+							{{telicon "account-tree"}}
+						</span>
+					{{/if}}
+					</td>
+					<td class="discount-cell">
+					{{#if discount}}
+						{{formatPrice discount 2}}
+					{{/if}}
+					</td>
+				</tr>
+			{{/each}}
+		{{/each}}
+		</tbody>
+	</table>
+{{/if}}
