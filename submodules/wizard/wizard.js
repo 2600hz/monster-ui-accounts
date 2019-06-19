@@ -1,6 +1,7 @@
 define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
+		moment = require('moment'),
 		monster = require('monster'),
 		timezone = require('monster-timezone');
 
@@ -18,7 +19,7 @@ define(function(require) {
 		},
 
 		/**
-		 * Renders the trunking limits view
+		 * Renders the new account wizard
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Element that will contain the new account wizard
 		 * @param  {String} args.parentAccountId  Parent Account ID
@@ -115,15 +116,16 @@ define(function(require) {
 				generalSettingsData = data.generalSettings,
 				initTemplate = function() {
 					var $template = $(self.getTemplate({
-						name: 'step-generalSettings',
-						data: {
-							data: generalSettingsData
-						},
-						submodule: 'wizard'
-					}));
+							name: 'step-generalSettings',
+							data: {
+								data: generalSettingsData
+							},
+							submodule: 'wizard'
+						})),
+						$timezoneDropDown = $template.find('#account_info_timezone');
 
-					timezone.populateDropdown($template.find('#accountInfo\\.timezone'), generalSettingsData.accountInfo.timezone);
-					monster.ui.chosen($template.find('#accountInfo\\.timezone'));
+					timezone.populateDropdown($timezoneDropDown, generalSettingsData.accountInfo.timezone);
+					monster.ui.chosen($timezoneDropDown);
 
 					monster.ui.tooltips($template);
 
@@ -156,13 +158,14 @@ define(function(require) {
 					return $template;
 				};
 
-			monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
-				insertTemplateCallback(initTemplate(), self.wizardScrollToTop);
+			self.wizardRenderStep({
+				container: $container,
+				initTemplate: initTemplate
 			});
 		},
 
 		/**
-		 * Utility funcion to validate step's form and extract data
+		 * Utility funcion to validate General Settings form and extract data
 		 * @param  {jQuery} $template  Step template
 		 * @param  {Object} args  Wizard's arguments
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
@@ -287,23 +290,126 @@ define(function(require) {
 
 		/* ACCOUNT CONTACTS STEP */
 
+		/**
+		 * Render Account Contacts step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardAccountContactsRender: function(args) {
 			var self = this,
-				$container = args.container;
+				data = args.data,
+				$container = args.container,
+				getFormattedData = function() {
+					return _.cloneDeepWith(data.accountContacts, function(value, key) {
+						if (key === 'phoneNumber' && _.isPlainObject(value)) {
+							return value.originalNumber;
+						}
+					});
+				},
+				initTemplate = function(userList) {
+					var formattedData = getFormattedData(),
+						$template = $(self.getTemplate({
+							name: 'step-accountContacts',
+							data: {
+								data: formattedData,
+								users: userList
+							},
+							submodule: 'wizard'
+						})),
+						$contractEndDatepicker = monster.ui.datepicker($template.find('#sales_rep_contract_end_date'), {
+							minDate: moment().toDate()
+						});
 
-			// TODO: Not implemented
+					if (_.has(formattedData, 'salesRep.contractEndDate')) {
+						$contractEndDatepicker.datepicker('setDate', formattedData.salesRep.contractEndDate);
+					}
+
+					monster.ui.chosen($template.find('#sales_rep_representative'));
+
+					$template.find('input[data-mask]').each(function() {
+						var $this = $(this);
+						monster.ui.mask($this, $this.data('mask'));
+					});
+
+					monster.ui.tooltips($template);
+
+					return $template;
+				};
+
+			self.wizardRenderStep({
+				container: $container,
+				loadData: function(asyncCallback) {
+					self.wizardGetUserList({
+						success: function(userList) {
+							asyncCallback(null, userList);
+						},
+						error: function() {
+							asyncCallback(null, []);
+						}
+					});
+				},
+				initTemplate: initTemplate
+			});
 		},
 
-		wizardAccountContactsUtil: function($template) {
-			var self = this;
+		/**
+		 * Utility funcion to validate Account Contacts form and extract data
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
+		wizardAccountContactsUtil: function($template, args) {
+			var self = this,
+				$form = $template.find('form'),
+				validateForm = monster.ui.validate($form),
+				isValid = monster.ui.valid($form),
+				data = {},
+				errors = {};
 
-			// TODO: Not implemented
+			// Extract and store date(s)
+			$form.find('input.hasDatePicker').each(function() {
+				var $this = $(this);
+
+				_.set(data, $this.attr('name'), $this.datepicker('getDate'));
+			});
+
+			// Validate and extract phone numbers
+			$form.find('input.phone-number').each(function() {
+				var $this = $(this),
+					fieldName = $this.attr('name'),
+					number = $this.val(),
+					formattedNumber = monster.util.getFormatPhoneNumber(number);
+
+				if (_.has(formattedNumber, 'e164Number')) {
+					_.set(data, fieldName, formattedNumber);
+				} else {
+					errors[fieldName] = self.i18n.active().accountsApp.wizard.steps.general.phoneNumber.invalid;
+				}
+			});
+
+			if (!_.isEmpty(errors)) {
+				isValid = false;
+				validateForm.showErrors(errors);
+			}
+
+			data = _.merge(monster.ui.getFormData($form.get(0)), data);
+
+			if (isValid) {
+				// Clean accountContacts previous data
+				delete args.data.accountContacts;
+			}
 
 			return {
-				valid: true,
-				data: {}
+				valid: isValid,
+				data: {
+					accountContacts: data
+				}
 			};
 		},
+
+		/* SERVICE PLAN STEP */
 
 		wizardServicePlanRender: function(args) {
 			var self = this,
@@ -406,9 +512,140 @@ define(function(require) {
 			});
 		},
 
-		/* Utility functions */
+		/* API REQUESTS */
+
+		/**
+		 * Request the list of users for the current account
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardRequestUserList: function(args) {
+			var self = this;
+
+			self.callApi({
+				resource: 'user.list',
+				data: {
+					accountId: self.accountId,
+					filters: {
+						paginate: 'false'
+					}
+				},
+				success: function(data) {
+					args.success(data.data);
+				},
+				error: function(parsedError) {
+					_.has(args, 'error') && args.error(parsedError);
+				}
+			});
+		},
+
+		/* UTILITY FUNCTIONS */
+
+		/**
+		 * Gets the cached list of users for the current account. If the list is not cached, then
+		 * it is requested to the API.
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardGetUserList: function(args) {
+			var self = this,
+				userList = self.wizardGetStore('accountUsers');
+
+			if (_.isUndefined(userList)) {
+				self.wizardRequestUserList({
+					success: function(userList) {
+						self.wizardSetStore('accountUsers', userList);
+						args.success(userList);
+					},
+					error: args.error
+				});
+			} else {
+				args.success(userList);
+			}
+		},
+
+		/**
+		 * Render a step view
+		 * @param  {Object} args
+		 * @param  {jQuery} args.container  Wizard container element
+		 * @param  {Function}  [args.loadData]  Optional load callback, which can be used to load
+		 *                                      data for the template before its initialization
+		 * @param  {Function}  args.initTemplate  Template initialization callback
+		 */
+		wizardRenderStep: function(args) {
+			var self = this,
+				loadData = args.loadData,
+				initTemplate = args.initTemplate,
+				$container = args.container,
+				seriesFunctions = [
+					function(seriesCallback) {
+						monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
+							seriesCallback(null, insertTemplateCallback);
+						});
+					}
+				];
+
+			if (_.isFunction(loadData)) {
+				seriesFunctions.push(loadData);
+			}
+
+			monster.series(seriesFunctions, function(err, results) {
+				if (err) {
+					return;
+				}
+
+				var insertTemplateCallback = results[0],
+					data = _.get(results, 1);
+
+				insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
+			});
+		},
+
+		/**
+		 * Scroll window to top
+		 */
 		wizardScrollToTop: function() {
 			window.scrollTo(0, 0);
+		},
+
+		/* STORE FUNCTIONS */
+
+		/**
+		 * Store getter
+		 * @param  {Array|String} [path]
+		 * @param  {*} [defaultValue]
+		 * @return {*}
+		 */
+		wizardGetStore: function(path, defaultValue) {
+			var self = this,
+				store = ['_store', 'wizard'];
+			return _.get(
+				self,
+				_.isUndefined(path)
+					? store
+					: _.flatten([store, _.isString(path) ? path.split('.') : path]),
+				defaultValue
+			);
+		},
+
+		/**
+		 * Store setter
+		 * @param  {Array|String|*} path|value
+		 * @param  {*} [value]
+		 */
+		wizardSetStore: function(path, value) {
+			var self = this,
+				hasValue = _.toArray(arguments).length === 2,
+				store = ['_store', 'wizard'];
+			_.set(
+				self,
+				hasValue
+					? _.flatten([store, _.isString(path) ? path.split('.') : path])
+					: store,
+				hasValue ? value : path
+			);
 		}
 	};
 
