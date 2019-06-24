@@ -351,16 +351,13 @@
 			},
 			"labels": {
 				"all": "All",
-				"activationCharge": "{{itemName}} - Your Activation Charge",
+				"activationCharge": "{{itemName}} - Activation Charge",
 				"cascadeTooltip": "Pricing and Discount Tiers are based on the total number of items across all sub-accounts"
 			},
 			"discountTypes": {
-				"single": {
-					"rate": "{{variable}} (Single rate)"
-				},
-				"cumulative": {
-					"maximum": "{{variable}} (Cumulative max)"
-				}
+				"single": "Single discount",
+				"cumulative": "Cumulative discount",
+				"cumulativeWithMax": "Cumulative discount (up to {{variable}} items)"
 			}
 		},
 		"wizard": {

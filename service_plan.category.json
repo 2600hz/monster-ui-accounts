@@ -1,0 +1,37 @@
+{
+    "data": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "description": "Describes a service plan category",
+        "patternProperties": {
+            ".+": {
+                "$ref": "service_plan.item",
+                "description": "Item name",
+                "type": "object"
+            }
+        },
+        "properties": {
+            "_all": {
+                "$ref": "service_plan.item",
+                "description": "Applies item rules to any item in this category",
+                "properties": {
+                    "exceptions": {
+                        "description": "Items that are not included in this item plan",
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "id": "service_plan.category"
+    },
+    "revision": "24-00042d9067883d38d7875bc5f9061c74",
+    "timestamp": "2019-06-25T21:05:52Z",
+    "version": "4.3.36",
+    "node": "Z6uHtSyauZI4vrhVGVthrA",
+    "request_id": "05112663049be194fbd689177670d788",
+    "status": "success",
+    "auth_token": "ZjU5MmY3NjAxOWYxNTIzZjI3M2UxZTMzYzEzYmVlYjQ6N2RlOTI1MWE2M2Q4NDQ1ZmMzZDlkNGVlZjk4NTVmYTE="
+}

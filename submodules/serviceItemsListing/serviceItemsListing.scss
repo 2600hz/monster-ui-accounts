@@ -13,8 +13,8 @@
 	}
 
 	th, tbody td, tbody td:first-child {
-		padding: 0.75rem 1rem;
-		line-height: 14px;
+		padding: 11px 1rem;
+		line-height: 16px;
 	}
 
 	th {
@@ -55,5 +55,10 @@
 				color: $woodsmoke;
 			}
 		}
+	}
+
+	.iconography {
+		color: $midgray2;
+		margin-left: 0.75rem;
 	}
 }
