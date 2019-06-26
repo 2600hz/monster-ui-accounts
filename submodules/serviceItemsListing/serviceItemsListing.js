@@ -83,15 +83,15 @@ define(function(require) {
 				},
 				discounts: {
 					single: {
-						rate: 1.00,
+						//rate: 1.00,
 						rates: {
 							'2': 1.10,
 							'6': 1.95
 						}
 					},
 					cumulative: {
-						rate: 0.25,
-						maximum: 10,
+						//rate: 0.25,
+						//maximum: 4,
 						rates: {
 							'3': 0.35,
 							'10': 0.75
@@ -132,16 +132,64 @@ define(function(require) {
 					subCategory: subCategoryName,
 					quantity: null,
 					rate: {
-						value: null,
 						isCascade: _.get(item, 'cascade', false)
 					},
 					isActivationCharges: false,
 					discounts: {}
 				},
 				itemHasRate = _.has(item, 'rate'),
-				itemHasMultipleRates = _.has(item, 'rates'),
-				itemHasMultipleSingleDiscounts = _.has(item, 'discounts.single.rates'),
-				itemHasMultipleCumulativeDiscounts = _.has(item, 'discounts.cumulative.rates'),
+				mapQuantityRatePair = function(rate, qty) {
+					return {
+						qty: _.toInteger(qty),
+						rate: rate
+					};
+				},
+				getRatesAsLinkedList = function(ratePath, ratesPath) {
+					var sortedRates = _
+						.chain(item)
+						.get(ratesPath, {})
+						.map(mapQuantityRatePair)
+						.sortBy('qty')
+						.value();
+
+					if (_.has(item, ratePath)) {
+						sortedRates.push({
+							qty: Number.POSITIVE_INFINITY,
+							rate: _.get(item, ratePath)
+						});
+					}
+
+					console.log('sortedRates', sortedRates);
+
+					return	_
+						.reduceRight(sortedRates, function(accum, value) {
+							if (_.has(accum, 'head')) {
+								_.merge(value, {
+									next: accum.head
+								});
+							}
+
+							accum.head = value;
+							accum.list.unshift(value);
+
+							return accum;
+						},
+						{
+							list: []
+						});
+				},
+				priceRates = getRatesAsLinkedList('rate', 'rates'),
+				singleDiscountRates = getRatesAsLinkedList('discounts.single.rate', 'discounts.single.rates'),
+				cumulativeDiscountRates = getRatesAsLinkedList('discounts.cumulative.rate', 'discounts.cumulative.rates'),
+				itemRatesQtys = _.map(priceRates.list, 'qty'),
+				singleDiscountsQtys = _.map(singleDiscountRates.list, 'qty'),
+				cumulativeDiscountsQtys = _.map(cumulativeDiscountRates.list, 'qty'),
+				allRateQtys = _
+					.chain(itemRatesQtys)
+					.union(singleDiscountsQtys, cumulativeDiscountsQtys)
+					.sortBy()
+					.value(),
+				lastQty = 0,
 				formattedItemList = [],
 				addRow = function(item) {
 					// If we add multiple lines for the same item, then we don't want to repeat the name every time.
@@ -152,111 +200,72 @@ define(function(require) {
 					}
 
 					formattedItemList.push(item);
-				};
+				},
+				price = priceRates.head,
+				singleDiscount = singleDiscountRates.head,
+				cumulativeDiscount = cumulativeDiscountRates.head,
+				cumulativeDiscountExtra = _.has(item, 'discounts.cumulative.maximum') ? { maximum: item.discounts.cumulative.maximum } : {};
+
+			console.log('priceRates', priceRates);
+			console.log('singleDiscountRates', singleDiscountRates);
+			console.log('cumulativeDiscountRates', cumulativeDiscountRates);
+			console.log('allRateQtys', allRateQtys);
 
 			if (_.isEmpty(item)) {
 				console.log('Item empty for:', categoryName, subCategoryName);
 			}
 
-			if (_.has(item, 'discounts.single.rate')) {
-				console.log(item);
-				_.merge(defaultItem.discounts, {
-					single: {
-						value: -item.discounts.single.rate
+			_.chain(allRateQtys)
+				.map(function(qty, index) {
+					var formattedItem = _.cloneDeep(defaultItem),
+						priceHasChanged = index === 0 && price;
+
+					if (price && price.qty < qty) {
+						price = price.next;
+						priceHasChanged = !_.isNil(price);
 					}
-				});
-			} else if (_.has(item, 'discounts.cumulative.rate')) {
-				_.merge(defaultItem.discounts, {
-					cumulative: {
-						value: -item.discounts.cumulative.rate,
-						maximum: item.discounts.cumulative.maximum
+					if (singleDiscount && singleDiscount.qty < qty) {
+						singleDiscount = singleDiscount.next;
 					}
-				});
-			}
+					if (cumulativeDiscount && cumulativeDiscount.qty < qty) {
+						cumulativeDiscount = cumulativeDiscount.next;
+					}
 
-			if (itemHasRate) {
-				var formattedItem = _.cloneDeep(defaultItem);
+					if (priceHasChanged) {
+						formattedItem.rate.value = price.rate;
+					} else if (price === null) {
+						formattedItem.rate.value = null;	// To tell to the layout template that there is no price
+					} else {
+						formattedItem.rate.isCascade = false;
+					}
 
-				formattedItem.rate.value = item.rate;
+					if (singleDiscount) {
+						formattedItem.discounts.single = {
+							value: singleDiscount.rate
+						};
+					}
+					if (cumulativeDiscount) {
+						formattedItem.discounts.cumulative = _.merge({
+							value: cumulativeDiscount.rate
+						}, cumulativeDiscountExtra);
+					}
 
-				// If item has both rate and rates, it means the rate is the price for a number of items exceeding the maximum rates
-				if (itemHasMultipleRates) {
-					formattedItem.quantity = '0 - ∞';
-					defaultItem.rate.value = item.rate;
-				}
-				console.log('Adding normal row', formattedItem);
+					if (!_.isFinite(qty)) {
+						formattedItem.quantity = lastQty + ' - ∞';
+					} else if (lastQty === qty) {
+						formattedItem.quantity = _.toString(qty);
+					} else {
+						formattedItem.quantity = lastQty + ' - ' + qty;
+					}
+					lastQty = qty;
 
-				addRow(formattedItem);
-			}
-
-			if (itemHasMultipleRates || itemHasMultipleSingleDiscounts || itemHasMultipleCumulativeDiscounts) {
-				// For each rate or discount quantity limit we want to display a line,
-				// grouping the values for each quantity range
-				var itemRatesQtys = itemHasMultipleRates ? _.keys(item.rates) : [],
-					singleDiscountsQtys = itemHasMultipleSingleDiscounts ? _.keys(item.discounts.single.rates) : [],
-					cumulativeDiscountsQtys = itemHasMultipleCumulativeDiscounts ? _.keys(item.discounts.cumulative.rates) : [],
-					allRateQtys = _
-						.chain(itemRatesQtys)
-						.union(singleDiscountsQtys, cumulativeDiscountsQtys)
-						.map(_.toInteger)
-						.orderBy(_.identity, ['desc'])	// Descending order to work from upper quantity limit downwards
-						.value(),
-					rateValue = defaultItem.rate.value,
-					singleDiscount = _.get(defaultItem.discounts, 'single', {}),
-					cumulativeDiscount = _.get(defaultItem.discounts, 'cumulative', {});
-
-				console.log('allRateQtys', allRateQtys);
-
-				_.chain(allRateQtys)
-					.map(function(qty, index) {
-						var formattedItem = _.cloneDeep(defaultItem),
-							nextIndex = index + 1,
-							lowQty;
-
-						if (nextIndex < allRateQtys.length) {
-							lowQty = allRateQtys[nextIndex] + 1;
-							formattedItem.quantity = (lowQty === qty) ? _.toString(qty) : _.join([lowQty, qty], ' - ');
-						} else {
-							formattedItem.quantity = 0 + ' - ' + qty;
-						}
-
-						// Set rate
-						if (itemHasMultipleRates) {
-							if (_.has(item.rates, qty)) {
-								rateValue = item.rates[qty];
-							}
-							formattedItem.rate.value = rateValue;
-						}
-
-						// Set single discount
-						if (itemHasMultipleSingleDiscounts) {
-							if (_.has(item.discounts.single.rates, qty)) {
-								singleDiscount = {
-									value: -item.discounts.single.rates[qty]
-								};
-							}
-							formattedItem.discounts.single = singleDiscount;
-						}
-
-						// Set cumulative discount
-						if (itemHasMultipleCumulativeDiscounts) {
-							if (_.has(item.discounts.cumulative.rates, qty)) {
-								cumulativeDiscount = {
-									value: -item.discounts.cumulative.rates[qty]
-								};
-							}
-							formattedItem.discounts.cumulative = cumulativeDiscount;
-						}
-
-						return formattedItem;
-					})
-					.reverse()
-					.each(function(formattedItem) {
-						console.log('Adding complex row', formattedItem);
-						addRow(formattedItem);
-					})
-					.value();
-			}
+					return formattedItem;
+				})
+				.each(function(formattedItem) {
+					console.log('Adding complex row', formattedItem);
+					addRow(formattedItem);
+				})
+				.value();
 
 			if (_.has(item, 'activation_charge') && item.activation_charge > 0) {
 				var formattedItem = _.cloneDeep(defaultItem);

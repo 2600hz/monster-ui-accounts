@@ -20,10 +20,12 @@
 					<td class="quantity-cell">{{coalesce quantity @root.i18n.accountsApp.serviceItemsListing.labels.all}}</td>
 					<td class="rate-cell">
 					{{#if rate}}
-						{{#compare rate.value "!==" null}}
-							{{formatPrice rate.value 2}}
-						{{else}}
+						{{#compare rate.value "===" null}}
 							<span>--</span>
+						{{else}}
+							{{#if rate.value}}
+								{{formatPrice rate.value 2}}
+							{{/if}}
 						{{/compare}}
 						{{#if rate.isCascade}}
 							<span class="iconography" data-title="{{@root.i18n.accountsApp.serviceItemsListing.labels.cascadeTooltip}}" data-toggle="tooltip">
@@ -43,6 +45,7 @@
 						<div>
 							{{formatPrice discounts.cumulative.value 2}}
 						{{#if discounts.cumulative.maximum}}
+							&nbsp;
 							<span>({{discounts.cumulative.maximum}})</span>
 							<i class="fa fa-tags iconography" data-title="{{replaceVar @root.i18n.accountsApp.serviceItemsListing.discountTypes.cumulativeWithMax discounts.cumulative.maximum}}" data-toggle="tooltip"></i>
 						{{else}}
