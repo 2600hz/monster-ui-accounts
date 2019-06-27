@@ -18,6 +18,15 @@ define(function(require) {
 			'a': 'accounts.wizard.render'
 		},
 
+		appFlags: {
+			wizard: {
+				animationTimes: {
+					adminUser: 500,
+					planInput: 150
+				}
+			}
+		},
+
 		/**
 		 * Renders the new account wizard
 		 * @param  {Object} args
@@ -234,7 +243,7 @@ define(function(require) {
 
 				$adminUserItem
 					.addClass('remove')
-					.slideUp(500, function() {
+					.slideUp(self.appFlags.wizard.animationTimes.adminUser, function() {
 						$adminUserItem.remove();
 
 						// Update view correlatives
@@ -283,7 +292,7 @@ define(function(require) {
 			self.wizardAppendListItem({
 				item: $adminItemTemplate,
 				listContainer: $listContainer,
-				animationDuration: animate ? 500 : 0
+				animationDuration: animate ? self.appFlags.wizard.animationTimes.adminUser : 0
 			});
 		},
 
@@ -618,7 +627,7 @@ define(function(require) {
 					} else {
 						$servicePlanItem
 							.addClass('remove')
-							.slideUp(150, function() {
+							.slideUp(self.appFlags.wizard.animationTimes.planInput, function() {
 								var selectorCount = $planListContainer.find('.service-plan-item').length - 1;
 
 								$servicePlanItem.remove();
@@ -692,7 +701,7 @@ define(function(require) {
 			self.wizardAppendListItem({
 				item: $planSelectorTemplate,
 				listContainer: args.planListContainer,
-				animationDuration: _.get(args, 'animate', false) ? 150 : 0
+				animationDuration: _.get(args, 'animate', false) ? self.appFlags.wizard.animationTimes.planInput : 0
 			});
 		},
 

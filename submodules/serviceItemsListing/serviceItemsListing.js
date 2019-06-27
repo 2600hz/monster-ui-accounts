@@ -49,10 +49,13 @@ define(function(require) {
 					});
 				},
 				function(seriesCallback) {
-					self.serviceItemsListingGetFormattedServicePlan({
+					self.serviceItemsListingGetFormattedServicePlanCategories({
 						planIds: planIds,
 						success: function(formattedPlanCategories) {
 							seriesCallback(null, formattedPlanCategories);
+						},
+						error: function() {
+							seriesCallback(null, []);
 						}
 					});
 				}
@@ -70,7 +73,14 @@ define(function(require) {
 			});
 		},
 
-		serviceItemsListingGetFormattedServicePlan: function(args) {
+		/**
+		 * Gets the categories for a group of plans, already formatted to be rendered
+		 * @param  {Object} args
+		 * @param  {String[]} args.planIds  Plan IDs for which the categories will be obtained
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		serviceItemsListingGetFormattedServicePlanCategories: function(args) {
 			var self = this,
 				planIds = args.planIds,
 				successCallback = args.success,
@@ -84,7 +94,7 @@ define(function(require) {
 				return;
 			}
 
-			// Try to get from stored plans
+			// Try to get plan categories from plans already stored
 			planIds = _.sortBy(planIds);
 			storedPlans = self.serviceItemsListingGetStore('formattedPlans', []);
 			formattedPlanCategories = _
@@ -103,9 +113,11 @@ define(function(require) {
 			// Try to get service plan quote from API
 			self.serviceItemsListingRequestServiceQuote({
 				planIds: planIds,
-				success: function(data) {
+				success: function(serviceQuote) {
 					// Format plan, and add to store
-					var formattedPlanCategories = self.serviceItemsListingFormatQuoteData(data),
+					var formattedPlanCategories = self.serviceItemsListingFormatServiceQuote({
+							serviceQuote: serviceQuote
+						}),
 						formattedPlan = {
 							planIds: planIds,
 							categories: formattedPlanCategories
@@ -127,22 +139,32 @@ define(function(require) {
 			});
 		},
 
-		serviceItemsListingFormatQuoteData: function(data) {
+		/**
+		 * Formats a service plan quote into collections of items grouped by category
+		 * @param  {Object} args
+		 * @param  {Object} args.serviceQuote  Service quote to be formatted
+		 */
+		serviceItemsListingFormatServiceQuote: function(args) {
 			var self = this,
-				items = _.get(data, 'invoices[0].items', []),
-				plan = _.get(data, 'invoices[0].plan', {});
+				serviceQuote = args.serviceQuote,
+				items = _.get(serviceQuote, 'invoices[0].items', []),
+				plan = _.get(serviceQuote, 'invoices[0].plan', {});
 
 			return _
 				.chain(items)
 				.groupBy('category')
-				.map(function(items, category) {
+				.map(function(categoryItems, category) {
 					return {
 						title: monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, category),
 						category: category,
 						items: _
-							.chain(items)
-							.flatMap(function(fields) {
-								return self.serviceItemsListingFieldsFormatData(plan, category, fields.item);
+							.chain(categoryItems)
+							.flatMap(function(categoryItem) {
+								return self.serviceItemsListingFormatItemData({
+									plan: plan,
+									category: category,
+									subCategory: categoryItem.item
+								});
 							})
 							.sortBy('name')
 							.value()
@@ -152,15 +174,29 @@ define(function(require) {
 				.value();
 		},
 
-		serviceItemsListingFieldsFormatData: function(plan, categoryName, subCategoryName) {
+		/**
+		 * Formats an item's data into a list of one or more data rows
+		 * @param  {Object} args
+		 * @param  {Object} args.plan  Service plan details
+		 * @param  {String} args.category  Item category name
+		 * @param  {String} args.subCategory  Item sub-category name
+		 */
+		serviceItemsListingFormatItemData: function(args) {
 			var self = this,
-				defaultCategoryItem = _.get(plan, [categoryName, '_all'], {}),
+				plan = args.plan,
+				categoryName = args.category,
+				subCategoryName = args.subCategory,
 				subCategoryItem = _.get(plan, [categoryName, subCategoryName], {}),
-				item = _.merge(defaultCategoryItem, subCategoryItem),
-				label = item.name || monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, subCategoryName),
+				item = _
+					.chain(plan)
+					.get([categoryName, '_all'], {})	// Get default category item
+					.cloneDeep()	// Clone, to not alter the original one for future use
+					.merge(subCategoryItem)	// Merge the specific sub-category item
+					.value(),
+				itemLabel = item.name || monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, subCategoryName),
 				defaultItem = {
-					name: label,
-					label: label,
+					name: itemLabel,
+					label: itemLabel,
 					subCategory: subCategoryName,
 					quantity: null,
 					rate: {
@@ -169,48 +205,21 @@ define(function(require) {
 					isActivationCharges: false,
 					discounts: {}
 				},
-				itemHasRate = _.has(item, 'rate'),
-				mapQuantityRatePair = function(rate, qty) {
-					return {
-						qty: _.toInteger(qty),
-						rate: rate
-					};
-				},
-				getRatesAsLinkedList = function(ratePath, ratesPath) {
-					var sortedRates = _
-						.chain(item)
-						.get(ratesPath, {})
-						.map(mapQuantityRatePair)
-						.sortBy('qty')
-						.value();
-
-					if (_.has(item, ratePath)) {
-						sortedRates.push({
-							qty: Number.POSITIVE_INFINITY,
-							rate: _.get(item, ratePath)
-						});
-					}
-
-					return	_
-						.reduceRight(sortedRates, function(accum, value) {
-							if (_.has(accum, 'head')) {
-								_.merge(value, {
-									next: accum.head
-								});
-							}
-
-							accum.head = value;
-							accum.list.unshift(value);
-
-							return accum;
-						},
-						{
-							list: []
-						});
-				},
-				priceRates = getRatesAsLinkedList('rate', 'rates'),
-				singleDiscountRates = getRatesAsLinkedList('discounts.single.rate', 'discounts.single.rates'),
-				cumulativeDiscountRates = getRatesAsLinkedList('discounts.cumulative.rate', 'discounts.cumulative.rates'),
+				priceRates = self.serviceItemsListingGetRatesAsLinkedList({
+					item: item,
+					ratePath: 'rate',
+					ratesPath: 'rates'
+				}),
+				singleDiscountRates = self.serviceItemsListingGetRatesAsLinkedList({
+					item: item,
+					ratePath: 'discounts.single.rate',
+					ratesPath: 'discounts.single.rates'
+				}),
+				cumulativeDiscountRates = self.serviceItemsListingGetRatesAsLinkedList({
+					item: item,
+					ratePath: 'discounts.cumulative.rate',
+					ratesPath: 'discounts.cumulative.rates'
+				}),
 				itemRatesQtys = _.map(priceRates.list, 'qty'),
 				singleDiscountsQtys = _.map(singleDiscountRates.list, 'qty'),
 				cumulativeDiscountsQtys = _.map(cumulativeDiscountRates.list, 'qty'),
@@ -255,7 +264,7 @@ define(function(require) {
 					if (priceHasChanged) {
 						formattedItem.rate.value = price.rate;
 					} else if (price === null) {
-						formattedItem.rate.value = null;	// To tell to the layout template that there is no price
+						formattedItem.rate.value = null;	// Set to null to let the layout template know that there is no price
 					} else {
 						formattedItem.rate.isCascade = false;
 					}
@@ -299,11 +308,6 @@ define(function(require) {
 				});
 				formattedItem.rate.value = item.activation_charge;
 
-				if (itemHasRate) {
-					// Remove discounts, because they are already displayed in the rate row
-					formattedItem.discounts = {};
-				}
-
 				addRow(formattedItem);
 			}
 
@@ -313,6 +317,56 @@ define(function(require) {
 			}
 
 			return formattedItemList;
+		},
+
+		/* UTILITY FUNCTIONS */
+
+		/**
+		 * Collect item rates as a linked list
+		 * @param  {Object} args
+		 * @param  {Object} args.item  Sub-category item
+		 * @param  {String} args.ratePath  Path to the property that contains the item's main rate
+		 * @param  {String} args.ratesPath  Path to the property that contains the item's quantity rates
+		 */
+		serviceItemsListingGetRatesAsLinkedList: function(args) {
+			var item = args.item,
+				ratePath = args.ratePath,
+				ratesPath = args.ratesPath,
+				sortedRates = _
+					.chain(item)
+					.get(ratesPath, {})
+					.map(function(rate, qty) {
+						return {
+							qty: _.toInteger(qty),
+							rate: rate
+						};
+					})
+					.sortBy('qty')
+					.value();
+
+			if (_.has(item, ratePath)) {
+				sortedRates.push({
+					qty: Number.POSITIVE_INFINITY,
+					rate: _.get(item, ratePath)
+				});
+			}
+
+			return	_
+				.reduceRight(sortedRates, function(accum, value) {
+					if (_.has(accum, 'head')) {
+						_.merge(value, {
+							next: accum.head
+						});
+					}
+
+					accum.head = value;
+					accum.list.unshift(value);
+
+					return accum;
+				},
+				{
+					list: []
+				});
 		},
 
 		/* API REQUESTS */

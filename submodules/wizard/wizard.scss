@@ -176,6 +176,11 @@
 			height: 1rem;
 			margin-bottom: 1.75rem;
 
+			.service-plan-add.disabled {
+				color: $midgray2;
+				cursor: default;
+			}
+
 			.iconography-medium {
 				margin-right: 4px;
 				margin-top: -3px;
