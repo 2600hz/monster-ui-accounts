@@ -16,6 +16,8 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Element that will contain the listing
 		 * @param  {String[]} args.planIds  Array of plan IDs to be used to generate the listing
+		 * @param  {Boolean} [args.showProgressPanel=true]  Whether or not to display the
+		 *                                                      progress panel while loading data
 		 * @param  {Number} [args.maxStoredPlans]  Maximum plans to be cached in store
 		 * @param  {Function} [args.success]  Optional success callback
 		 * @param  {Function} [args.error]  Optional error callback
@@ -23,6 +25,7 @@ define(function(require) {
 		serviceItemsListingRender: function(args) {
 			var self = this,
 				planIds = args.planIds,
+				showProgressPanel = _.get(args, 'showProgressPanel', true),
 				$container = args.container,
 				initTemplate = function(formattedPlanCategories) {
 					var $template = $(self.getTemplate({
@@ -44,6 +47,11 @@ define(function(require) {
 			// executed in an ordered manner
 			monster.series([
 				function(seriesCallback) {
+					if (!showProgressPanel) {
+						seriesCallback(null);
+						return;
+					}
+
 					monster.ui.insertTemplate($container, function(insertTemplateCallback) {
 						seriesCallback(null, insertTemplateCallback);
 					});
@@ -64,11 +72,16 @@ define(function(require) {
 					_.has(args, 'error') && args.error(err);
 					return;
 				}
+				var data = _.get(results, 1),
+					$template = initTemplate(data);
 
-				var insertTemplateCallback = results[0],
-					data = _.get(results, 1);
+				if (showProgressPanel) {
+					var insertTemplateCallback = results[0];
+					insertTemplateCallback($template);
+				} else {
+					$container.empty().append($template);
+				}
 
-				insertTemplateCallback(initTemplate(data));
 				_.has(args, 'success') && args.success();
 			});
 		},

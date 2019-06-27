@@ -429,9 +429,15 @@ define(function(require) {
 		 */
 		wizardServicePlanRender: function(args) {
 			var self = this,
+				selectedPlanIds = _.get(args.data, 'servicePlan.selectedPlanIds', []),
 				$container = args.container,
+				$template = $(self.getTemplate({
+					name: 'step-servicePlan',
+					submodule: 'wizard'
+				})),
 				formatPlansData = function(planList) {
-					var listByCategory = _
+					return {
+						categories: _
 							.chain(planList)
 							.groupBy('category')
 							.map(function(plans, category) {
@@ -442,51 +448,39 @@ define(function(require) {
 							})
 							.sortBy('name')
 							.value(),
-						mapById = _.keyBy(planList, 'id');
-
-					return {
-						listByCategory: listByCategory,
-						mapById: mapById
+						count: planList.length
 					};
 				},
 				initTemplate = function(planList) {
-					var formattedPlans = formatPlansData(planList),
-						selectedPlanIds = _.get(args.data, 'servicePlan.selectedPlanIds', []),
+					var formattedPlanData = formatPlansData(planList),
 						selectedPlansCount = selectedPlanIds.length,
-						$template = $(self.getTemplate({
-							name: 'step-servicePlan',
-							submodule: 'wizard',
-							data: {
-								showAddLink: selectedPlanIds.length > 0
-							}
-						})),
+						selectedPlanIdsToRender = _.clone(selectedPlanIds),
 						$planListContainer = $template.find('#form_service_plan');
 
-					if (_.isEmpty(selectedPlanIds)) {
-						selectedPlanIds.push('');
+					if (_.isEmpty(selectedPlanIdsToRender)) {
+						selectedPlanIdsToRender.push('');
 					}
 
-					_.each(selectedPlanIds, function(planId, index) {
-						var plan = _.get(formatPlansData.mapById, planId);
-
+					_.each(selectedPlanIdsToRender, function(planId, index) {
 						self.wizardServicePlanAddPlan({
 							index: index,
-							planCategories: formattedPlans.listByCategory,
+							planCategories: formattedPlanData.categories,
 							planListContainer: $planListContainer,
+							disabledPlanIds: selectedPlanIds,
 							selectedPlanId: planId
 						});
-
-						if (plan) {
-							plan.disabled = true;
-						}
 					});
 
+					if (selectedPlansCount === 0 || selectedPlansCount >= formattedPlanData.count) {
+						self.wizardToggleElementsVisibility([ $template.find('.service-plan-add') ], false);
+					}
+
 					self.wizardServicePlanBindEvents({
-						planData: formattedPlans,
+						selectedPlanIds: selectedPlanIds,
+						planData: formattedPlanData,
 						planListArgs: {
 							container: $planListContainer,
-							lastIndex: selectedPlanIds.length - 1,
-							selectedCount: selectedPlansCount
+							lastIndex: selectedPlanIds.length - 1
 						},
 						template: $template
 					});
@@ -497,36 +491,59 @@ define(function(require) {
 			self.wizardRenderStep({
 				container: $container,
 				loadData: function(asyncCallback) {
-					self.wizardRequestServicePlanList({
-						success: function(servicePlanList) {
-							asyncCallback(null, servicePlanList);
+					monster.parallel({
+						servicePlanList: function(parallelCallback) {
+							self.wizardRequestServicePlanList({
+								success: function(servicePlanList) {
+									parallelCallback(null, servicePlanList);
+								},
+								error: function() {
+									parallelCallback(null, []);
+								}
+							});
 						},
-						error: function(parsedError) {
-							asyncCallback(null, []);
+						serviceItemsListingRender: function(parallelCallback) {
+							self.serviceItemsListingRender({
+								planIds: selectedPlanIds,
+								container: $template.find('#service_plan_aggregate'),
+								showProgressPanel: false,
+								success: function() {
+									parallelCallback(null);
+								},
+								error: function() {
+									parallelCallback(null);
+								}
+							});
 						}
+					}, function(err, results) {
+						asyncCallback(null, _.get(results, 'servicePlanList'));
 					});
 				},
 				initTemplate: initTemplate
 			});
 		},
 
-		wizardServicePlanUtil: function($template) {
+		wizardServicePlanUtil: function($template, args) {
 			var self = this;
 
-			// TODO: Not implemented
+			// Clean servicePlan previous data
+			delete args.data.servicePlan;
 
 			return {
 				valid: true,
-				data: {}
+				data: {
+					servicePlan: monster.ui.getFormData($template.find('form').get(0))
+				}
 			};
 		},
 
 		/**
 		 * Bind Service Plan step events
 		 * @param  {Object} args
-		 * @param  {Object} args.planData  Service plans
-		 * @param  {Array} args.planData.listByCategory  Service plans grouped by categories
-		 * @param  {Array} args.planData.mapById  Service plans with it's ID as property key
+		 * @param  {String[]} args.selectedplanIds  Selected plan IDs
+		 * @param  {Object} args.planData  Service plans data
+		 * @param  {Array} args.planData.categories  Service plans grouped by categories
+		 * @param  {Array} args.planData.count  Service plans count
 		 * @param  {Object} args.planListArgs  Args specific to the plan list
 		 * @param  {jQuery} args.planListArgs.container  Plan list container element
 		 * @param  {Number} args.planListArgs.lastIndex  Initial index for service plans
@@ -535,26 +552,16 @@ define(function(require) {
 		 */
 		wizardServicePlanBindEvents: function(args) {
 			var self = this,
+				selectedPlanIds = args.selectedPlanIds,
+				selectedCount = selectedPlanIds.length,
 				lastIndex = args.planListArgs.lastIndex,
-				selectedCount = args.planListArgs.selectedCount,
 				planData = args.planData,
-				planCategories = planData.listByCategory,
-				plansById = planData.mapById,
-				plansCount = _.size(plansById),
-				selectedPlanIds = [],
+				planCategories = planData.categories,
+				plansCount = planData.count,
 				$template = args.template,
 				$planListContainer = args.planListArgs.container,
 				$planAddLink = $template.find('.service-plan-add'),
 				$planRemoveFirst = $planListContainer.find('.service-plan-item:first-child .service-plan-remove'),
-				toggleElementVisibility = function(elements, visible) {
-					// The `visibility` property is used instead of `display` so that the element
-					// still occupies a place in the container's space
-					_.each(elements, function($element) {
-						$element.css({
-							visibility: visible ? 'visible' : 'hidden'
-						});
-					});
-				},
 				toggleSelectedPlan = function($servicePlanItem, oldPlanId, newPlanId) {
 					var $otherInputs = $servicePlanItem.siblings('.service-plan-item').find('select');
 
@@ -578,7 +585,7 @@ define(function(require) {
 					return;
 				}
 
-				toggleElementVisibility([$planRemoveFirst, $planAddLink], false);
+				self.wizardToggleElementsVisibility([$planRemoveFirst, $planAddLink], false);
 
 				lastIndex += 1;
 
@@ -623,7 +630,7 @@ define(function(require) {
 							.val('')
 							.data('value', '');
 
-						toggleElementVisibility([$planRemoveFirst, $planAddLink], false);
+						self.wizardToggleElementsVisibility([$planRemoveFirst, $planAddLink], false);
 					} else {
 						$servicePlanItem
 							.addClass('remove')
@@ -633,9 +640,9 @@ define(function(require) {
 								$servicePlanItem.remove();
 
 								if (selectorCount === 1) {
-									toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
+									self.wizardToggleElementsVisibility([$planRemoveFirst, $planAddLink], true);
 								} else if (selectorCount === selectedCount) {
-									toggleElementVisibility([$planAddLink], true);
+									self.wizardToggleElementsVisibility([$planAddLink], true);
 								}
 							});
 					}
@@ -659,13 +666,13 @@ define(function(require) {
 						if ($servicePlanItem.is(':first-child')) {
 							if (oldValue === '' && newValue !== '') {
 								if (selectedCount < plansCount) {
-									toggleElementVisibility([$planRemoveFirst, $planAddLink], true);
+									self.wizardToggleElementsVisibility([$planRemoveFirst, $planAddLink], true);
 								} else {
-									toggleElementVisibility([$planRemoveFirst], true);
+									self.wizardToggleElementsVisibility([$planRemoveFirst], true);
 								}
 							}
 						} else if (newValue !== '' && selectedCount < plansCount) {
-							toggleElementVisibility([$planAddLink], true);
+							self.wizardToggleElementsVisibility([$planAddLink], true);
 						}
 
 						$this.data('value', newValue);
@@ -977,6 +984,23 @@ define(function(require) {
 					data = _.get(results, 1);
 
 				insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
+			});
+		},
+
+		/**
+		 * Toggle the visibility of one or more elements
+		 * @param  {jQuery[]} elements  Elements to be manipulated
+		 * @param  {Boolean} visible  Whether or not set the elements visible
+		 */
+		wizardToggleElementsVisibility: function(elements, visible) {
+			var visbility = visible ? 'visible' : 'hidden';
+
+			// The `visibility` property is used instead of `display` so that the element
+			// still occupies a place in the container's space
+			_.each(elements, function($element) {
+				$element.css({
+					visibility: visbility
+				});
 			});
 		},
 
