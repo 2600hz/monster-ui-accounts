@@ -618,7 +618,7 @@ define(function(require) {
 					} else {
 						$servicePlanItem
 							.addClass('remove')
-							.slideUp(500, function() {
+							.slideUp(150, function() {
 								var selectorCount = $planListContainer.find('.service-plan-item').length - 1;
 
 								$servicePlanItem.remove();
