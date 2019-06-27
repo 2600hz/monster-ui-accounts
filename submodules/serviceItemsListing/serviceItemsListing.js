@@ -73,33 +73,6 @@ define(function(require) {
 				items = _.get(data, 'invoices[0].items', []),
 				plan = _.get(data, 'invoices[0].plan', {});
 
-			console.log(plan);
-			console.log(_.chain(plan).flatMap(x => _.toArray(x)).filter(x => x.discounts).value());
-
-			_.merge(plan.users._all, {
-				rates: {
-					'1': 41.99,
-					'5': 19.99
-				},
-				discounts: {
-					single: {
-						//rate: 1.00,
-						rates: {
-							'2': 1.10,
-							'6': 1.95
-						}
-					},
-					cumulative: {
-						//rate: 0.25,
-						//maximum: 4,
-						rates: {
-							'3': 0.35,
-							'10': 0.75
-						}
-					}
-				}
-			});
-
 			return _
 				.chain(items)
 				.groupBy('category')
@@ -159,8 +132,6 @@ define(function(require) {
 						});
 					}
 
-					console.log('sortedRates', sortedRates);
-
 					return	_
 						.reduceRight(sortedRates, function(accum, value) {
 							if (_.has(accum, 'head')) {
@@ -205,15 +176,6 @@ define(function(require) {
 				singleDiscount = singleDiscountRates.head,
 				cumulativeDiscount = cumulativeDiscountRates.head,
 				cumulativeDiscountExtra = _.has(item, 'discounts.cumulative.maximum') ? { maximum: item.discounts.cumulative.maximum } : {};
-
-			console.log('priceRates', priceRates);
-			console.log('singleDiscountRates', singleDiscountRates);
-			console.log('cumulativeDiscountRates', cumulativeDiscountRates);
-			console.log('allRateQtys', allRateQtys);
-
-			if (_.isEmpty(item)) {
-				console.log('Item empty for:', categoryName, subCategoryName);
-			}
 
 			_.chain(allRateQtys)
 				.map(function(qty, index) {
@@ -262,7 +224,6 @@ define(function(require) {
 					return formattedItem;
 				})
 				.each(function(formattedItem) {
-					console.log('Adding complex row', formattedItem);
 					addRow(formattedItem);
 				})
 				.value();
@@ -283,16 +244,12 @@ define(function(require) {
 					// Remove discounts, because they are already displayed in the rate row
 					formattedItem.discounts = {};
 				}
-				console.log('Adding activation charge row', formattedItem);
 
 				addRow(formattedItem);
 			}
 
 			// Else if no lines were added, we still want to add it to the list, so user knows it's in there
 			if (_.isEmpty(formattedItemList)) {
-				var formattedItem = _.cloneDeep(defaultItem);
-
-				console.log('Adding row just "because"', formattedItem);
 				addRow(defaultItem);
 			}
 
