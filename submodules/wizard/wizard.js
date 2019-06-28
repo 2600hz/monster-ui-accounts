@@ -493,7 +493,7 @@ define(function(require) {
 				loadData: function(asyncCallback) {
 					monster.parallel({
 						servicePlanList: function(parallelCallback) {
-							self.wizardRequestServicePlanList({
+							self.wizardGetServicePlanList({
 								success: function(servicePlanList) {
 									parallelCallback(null, servicePlanList);
 								},
@@ -927,7 +927,31 @@ define(function(require) {
 		},
 
 		/**
-		 * Gets the cached list of users for the current account. If the list is not cached, then
+		 * Gets the stored list of plans available for the current account. If the list is not
+		 * stored, then it is requested to the API.
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardGetServicePlanList: function(args) {
+			var self = this,
+				servicePlanList = self.wizardGetStore('servicePlans');
+
+			if (_.isUndefined(servicePlanList)) {
+				self.wizardRequestServicePlanList({
+					success: function(servicePlanList) {
+						self.wizardSetStore('servicePlans', servicePlanList);
+						args.success(servicePlanList);
+					},
+					error: args.error
+				});
+			} else {
+				args.success(servicePlanList);
+			}
+		},
+
+		/**
+		 * Gets the stored list of users for the current account. If the list is not stored, then
 		 * it is requested to the API.
 		 * @param  {Object} args
 		 * @param  {Function} args.success  Success callback
