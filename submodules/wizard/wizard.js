@@ -524,7 +524,11 @@ define(function(require) {
 		},
 
 		wizardServicePlanUtil: function($template, args) {
-			var self = this;
+			var self = this,
+				servicePlan = monster.ui.getFormData($template.find('form').get(0));
+
+			// Remove any empty planId, due to a clean input
+			_.pull(servicePlan.selectedPlanIds, '');
 
 			// Clean servicePlan previous data
 			delete args.data.servicePlan;
@@ -532,7 +536,7 @@ define(function(require) {
 			return {
 				valid: true,
 				data: {
-					servicePlan: monster.ui.getFormData($template.find('form').get(0))
+					servicePlan: servicePlan
 				}
 			};
 		},
