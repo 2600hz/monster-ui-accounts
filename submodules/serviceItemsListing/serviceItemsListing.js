@@ -99,7 +99,7 @@ define(function(require) {
 				successCallback = args.success,
 				errorCallback = args.error,
 				storedPlans,
-				formattedPlanCategories;
+				formattedPlan;
 
 			// No plan IDs provided
 			if (_.isEmpty(planIds)) {
@@ -110,16 +110,25 @@ define(function(require) {
 			// Try to get plan categories from plans already stored
 			planIds = _.sortBy(planIds);
 			storedPlans = self.serviceItemsListingGetStore('formattedPlans', []);
-			formattedPlanCategories = _
+			formattedPlan = _
 				.chain(storedPlans)
 				.find(function(plan) {
 					return _.isEqual(plan.planIds, planIds);
 				})
-				.get('categories')
 				.value();
 
-			if (formattedPlanCategories) {
-				successCallback(formattedPlanCategories);
+			if (formattedPlan) {
+				// Plans are stored like a queue, so we move the found plan to the top
+				// as it gained relevance for being a "cache hit"
+				storedPlans = _
+					.chain(storedPlans)
+					.reject(formattedPlan)
+					.concat(formattedPlan)
+					.value();
+
+				self.serviceItemsListingSetStore('formattedPlans', storedPlans);
+
+				successCallback(formattedPlan.categories);
 				return;
 			}
 
