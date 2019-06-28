@@ -56,7 +56,7 @@ define(function(require) {
 				},
 				container: $container,
 				steps: [
-					/*{
+					{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
 						template: 'wizardGeneralSettingsRender',
@@ -67,7 +67,7 @@ define(function(require) {
 						description: i18nSteps.accountContacts.description,
 						template: 'wizardAccountContactsRender',
 						util: 'wizardAccountContactsUtil'
-					},*/
+					},
 					{
 						label: i18nSteps.servicePlan.label,
 						description: i18nSteps.servicePlan.description,
