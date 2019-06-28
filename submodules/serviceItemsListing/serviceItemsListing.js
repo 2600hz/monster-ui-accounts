@@ -412,6 +412,7 @@ define(function(require) {
 					}
 				},
 				success: function(data) {
+					console.log('Quote', data.data);
 					args.success(data.data);
 				},
 				error: function(parsedError) {

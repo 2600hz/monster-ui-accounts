@@ -458,7 +458,44 @@
 				},
 				"usageAndCallRestrictions": {
 					"label": "Usage + Call Restrictions",
-					"description": "Assign trunk limits and call restrictions to this new account."
+					"description": "Assign trunk limits and call restrictions to this new account.",
+					"title": "Configure trunking limits and set call restrictions",
+					"trunkLimits": {
+						"title": "Trunk Limits",
+						"labels": {
+							"inbound": "Inbound Trunks",
+							"outbound": "Outbound Trunks",
+							"twoway": "Two-way Trunks",
+							"allowPerMinuteCalls": "Allow customers to make per-minute calls"
+						},
+						"help": {
+							"inbound": "The number of Inbound trunks defines how many simultaneous calls you can receive to your phone system.",
+							"outbound": "The number of Outbound trunks defines how many concurrent external calls you can place at one time.",
+							"twoway": "The number of Two-way trunks defines how many concurrent calls your platform can handle at one time."
+						}
+					},
+					"callRestrictions": {
+						"title": "Call Restrictions",
+						"description": "By default, all available calling capabilities are enabled for new accounts. If you wish to place call restrictions on this new account, simply turn off the calling capability to restrict this account from placing that type of call.",
+						"labels": {
+							"tollfree_us": "US Toll Free",
+							"toll_us": "US Toll",
+							"emergency": "Emergency Dispatch",
+							"caribbean": "Caribbean",
+							"did_us": "US DID",
+							"international": "US International",
+							"unknowkn": "Other"
+						},
+						"help": {
+							"tollfree_us": "Allow calls to business phone numbers that can be reached for free from US, Canada, and the Caribbean.",
+							"toll_us": "Enable users to calls to regular US phone numbers.",
+							"emergency": "Allow calls to emergency services.",
+							"caribbean": "Allow calls to the caribbean.",
+							"did_us": "Allow calls to DIDs within the US.",
+							"international": "Allow international calls.",
+							"unknowkn": "Please select this option when you want this account to place calls to ANY NUMBER other than mentioned on the list (when the format of the number is unknown to the system.)"
+						}
+					}
 				},
 				"creditBalanceAndFeatures": {
 					"label": "Credit Balance + Features",

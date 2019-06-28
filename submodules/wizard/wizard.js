@@ -56,7 +56,7 @@ define(function(require) {
 				},
 				container: $container,
 				steps: [
-					{
+					/*{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
 						template: 'wizardGeneralSettingsRender',
@@ -73,7 +73,7 @@ define(function(require) {
 						description: i18nSteps.servicePlan.description,
 						template: 'wizardServicePlanRender',
 						util: 'wizardServicePlanUtil'
-					},
+					},*/
 					{
 						label: i18nSteps.usageAndCallRestrictions.label,
 						description: i18nSteps.usageAndCallRestrictions.description,
@@ -766,11 +766,67 @@ define(function(require) {
 
 		/* USAGE AND CALL RESTRICTIONS */
 
+		/**
+		 * Render Usage and Call Restrictions step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} [args.data.usageAndCallRestrictions]  Data specific for the current step
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardUsageAndCallRestrictionsRender: function(args) {
 			var self = this,
-				$container = args.container;
+				$container = args.container,
+				initTemplate = function(userList) {
+					var $template = $(self.getTemplate({
+						name: 'step-usageAndCallRestrictions',
+						data: {
+							trunkTypes: [
+								'inbound',
+								'outbound',
+								'twoway'
+							],
+							callRestrictionTypes: [
+								'tollfree_us',
+								'toll_us',
+								'emergency',
+								'caribbean',
+								'did_us',
+								'international',
+								'unknowkn'
+							],
+							data: {
+								trunkLimits: {
+									inbound: 0,
+									outbound: 0,
+									twoway: 0
+								},
+								callRestrictions: {
+									tollfree_us: true,
+									toll_us: true,
+									emergency: true,
+									caribbean: true,
+									did_us: true,
+									international: true,
+									unknowkn: true
+								}
+							}
+						},
+						submodule: 'wizard'
+					}));
 
-			// TODO: Not implemented
+					monster.ui.spinner($template.find('.spinner'), {
+						min: 0
+					});
+
+					monster.ui.tooltips($template);
+
+					return $template;
+				};
+
+			self.wizardRenderStep({
+				container: $container,
+				initTemplate: initTemplate
+			});
 		},
 
 		wizardUsageAndCallRestrictionsUtil: function($template) {
