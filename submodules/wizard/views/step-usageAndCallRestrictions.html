@@ -21,7 +21,7 @@
 				{{/each}}
 					<div class="flex-item-3">
 					{{#monsterSwitch}}
-						<input type="checkbox" id="trunk_limits_allow_per_minute_calls" name="trunkLimits.allowPerMinuteCalls" />
+						<input type="checkbox" id="trunk_limits_allow_per_minute_calls" name="allowPerMinuteCalls"{{#if @root.data.allowPerMinuteCalls}} checked{{/if}}/>
 					{{/monsterSwitch}}
 						<label for="trunk_limits_allow_per_minute_calls" class="monster-switch-append-label">
 							{{usageAndCallRestrictionsI18n.trunkLimits.labels.allowPerMinuteCalls}}
@@ -51,7 +51,7 @@
 								</div>
 								<div class="card-section extra-content">
 								{{#monsterSwitch}}
-									<input type="checkbox" id="call_restrictions_{{typeSnakified}}" name="callRestrictions.{{type}}"{{#if (lookupPath @root.data.callRestrictions this false)}} checked{{/if}}/>
+									<input type="checkbox" id="call_restrictions_{{this}}" name="callRestrictions.{{this}}"{{#if (lookupPath @root.data.callRestrictions this false)}} checked{{/if}}/>
 								{{/monsterSwitch}}
 								</div>
 							</div>

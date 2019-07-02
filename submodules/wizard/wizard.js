@@ -52,6 +52,23 @@ define(function(require) {
 							language: isoFormattedDefaultLanguage,
 							timezone: monster.apps.auth.currentAccount.timezone
 						}
+					},
+					// Usage and Call Restrictions defaults
+					usageAndCallRestrictions: {
+						trunkLimits: {
+							inbound: 0,
+							outbound: 0,
+							twoway: 0
+						},
+						callRestrictions: {
+							tollfree_us: true,
+							toll_us: true,
+							emergency: true,
+							caribbean: true,
+							did_us: true,
+							international: true,
+							unknowkn: true
+						}
 					}
 				},
 				container: $container,
@@ -777,9 +794,8 @@ define(function(require) {
 			var self = this,
 				$container = args.container,
 				initTemplate = function(userList) {
-					var $template = $(self.getTemplate({
-						name: 'step-usageAndCallRestrictions',
-						data: {
+					var usageAndCallRestrictionsData = args.data.usageAndCallRestrictions,
+						dataTemplate = {
 							trunkTypes: [
 								'inbound',
 								'outbound',
@@ -794,25 +810,13 @@ define(function(require) {
 								'international',
 								'unknowkn'
 							],
-							data: {
-								trunkLimits: {
-									inbound: 0,
-									outbound: 0,
-									twoway: 0
-								},
-								callRestrictions: {
-									tollfree_us: true,
-									toll_us: true,
-									emergency: true,
-									caribbean: true,
-									did_us: true,
-									international: true,
-									unknowkn: true
-								}
-							}
+							data: usageAndCallRestrictionsData
 						},
-						submodule: 'wizard'
-					}));
+						$template = $(self.getTemplate({
+							name: 'step-usageAndCallRestrictions',
+							data: dataTemplate,
+							submodule: 'wizard'
+						}));
 
 					monster.ui.spinner($template.find('.spinner'), {
 						min: 0
@@ -830,13 +834,14 @@ define(function(require) {
 		},
 
 		wizardUsageAndCallRestrictionsUtil: function($template) {
-			var self = this;
-
-			// TODO: Not implemented
+			var self = this,
+				$form = $template.find('form');
 
 			return {
 				valid: true,
-				data: {}
+				data: {
+					usageAndCallRestrictions: monster.ui.getFormData($form.get(0))
+				}
 			};
 		},
 
