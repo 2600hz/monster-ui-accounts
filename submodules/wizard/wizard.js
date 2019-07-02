@@ -73,7 +73,7 @@ define(function(require) {
 				},
 				container: $container,
 				steps: [
-					/*{
+					{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
 						template: 'wizardGeneralSettingsRender',
@@ -90,7 +90,7 @@ define(function(require) {
 						description: i18nSteps.servicePlan.description,
 						template: 'wizardServicePlanRender',
 						util: 'wizardServicePlanUtil'
-					},*/
+					},
 					{
 						label: i18nSteps.usageAndCallRestrictions.label,
 						description: i18nSteps.usageAndCallRestrictions.description,
