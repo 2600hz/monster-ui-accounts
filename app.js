@@ -5,6 +5,7 @@ define(function(require) {
 		timezone = require('monster-timezone');
 
 	var appSubmodules = [
+		'serviceItemsListing',
 		'wizard'
 	];
 

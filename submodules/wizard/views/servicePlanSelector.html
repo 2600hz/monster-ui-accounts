@@ -1,0 +1,19 @@
+<div class="service-plan-item row-fluid">
+	<div class="input-field-container span5">
+		<select class="input-level-block" id="selectedPlanIds[{{index}}]" name="selectedPlanIds[{{index}}]" data-placeholder="{{i18n.accountsApp.wizard.steps.servicePlan.selectPlaceholder}}" data-value="{{selectedPlanId}}" required>
+		{{#select selectedPlanId}}
+			<option value=""></option>
+			{{#each planCategories}}
+				<optgroup label="{{name}}">
+				{{#each plans}}
+					<option value="{{id}}"{{#compare @root.selectedPlanId "!==" id}}{{#ifInArray id @root.disabledPlanIds}} disabled{{/ifInArray}}{{/compare}}>{{name}}</option>
+				{{/each}}
+				</optgroup>
+			{{/each}}
+		{{/select}}
+		</select>
+		<button class="service-plan-remove"{{#unless index}}{{#compare selectedPlanId "===" ""}} style="visibility:hidden"{{/compare}}{{/unless}}>
+			{{telicon "trash-x" class="iconography-medium"}}
+		</button>
+	</div>
+</div>
