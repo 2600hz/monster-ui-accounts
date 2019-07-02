@@ -77,7 +77,10 @@ define(function(require) {
 
 				if (showProgressPanel) {
 					var insertTemplateCallback = results[0];
-					insertTemplateCallback($template);
+					_.defer(function() {
+						// Defer, to ensure that the loading template does not replace the step template
+						insertTemplateCallback($template);
+					});
 				} else {
 					$container.empty().append($template);
 				}

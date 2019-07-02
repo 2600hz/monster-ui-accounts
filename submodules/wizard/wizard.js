@@ -1072,7 +1072,10 @@ define(function(require) {
 				var insertTemplateCallback = results[0],
 					data = _.get(results, 1);
 
-				insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
+				_.defer(function() {
+					// Defer, to ensure that the loading template does not replace the step template
+					insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
+				});
 			});
 		},
 
