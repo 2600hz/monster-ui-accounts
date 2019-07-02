@@ -19,13 +19,15 @@
 						<input id="trunk_limits_{{this}}" name="trunkLimits.{{this}}" class="spinner" value="{{lookupPath @root.data.trunkLimits this}}"/>
 					</div>
 				{{/each}}
-					<div class="flex-item-3">
+					<div class="flex-item-3 field-label-after">
 					{{#monsterSwitch}}
 						<input type="checkbox" id="trunk_limits_allow_per_minute_calls" name="allowPerMinuteCalls"{{#if @root.data.allowPerMinuteCalls}} checked{{/if}}/>
 					{{/monsterSwitch}}
-						<label for="trunk_limits_allow_per_minute_calls" class="monster-switch-append-label">
-							{{usageAndCallRestrictionsI18n.trunkLimits.labels.allowPerMinuteCalls}}
-						</label>
+						<div class="monster-switch-label">
+							<label for="trunk_limits_allow_per_minute_calls">
+								{{usageAndCallRestrictionsI18n.trunkLimits.labels.allowPerMinuteCalls}}
+							</label>
+						</div>
 					</div>
 				</div>
 			</div>

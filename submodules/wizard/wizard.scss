@@ -49,7 +49,8 @@
 		margin-left: -0.75rem;
 		margin-right: -0.75rem;
 
-		[class^="flex-item-"] {
+		[class^="flex-item-"],
+		[class*=" flex-item-"] {
 			flex: 0 0 auto;
 			box-sizing: border-box;
 			padding: 0 0.75rem 1.5rem 0.75rem;
@@ -61,6 +62,22 @@
 
 		.flex-item-3 {
 			width: 33.3333%;
+		}
+
+		@media all and (max-width: 980px) {
+			.flex-item-2 {
+				width: 100%;
+			}
+
+			.flex-item-3 {
+				width: 50%;
+			}
+		}
+
+		@media all and (max-width: 736px) {
+			.flex-item-3 {
+				width: 100%;
+			}
 		}
 	}
 
@@ -93,7 +110,7 @@
 		}
 	}
 
-	.section-body {
+	.step-body {
 		.ui-widget {
 			display: block;
 			height: 38px;
@@ -126,26 +143,28 @@
 				padding-right: 1rem;
 				margin-right: 1.25rem;
 			}
+		}
 
-			&.monster-switch-append-label {
-				margin-left: 1rem;
-				line-height: 14px;
-				display: inline-block;
-				vertical-align: middle;
+		.field-label-after {
+			display: flex;
+
+			.monster-switch {
+				flex: 0 0 initial;
 			}
-		}
-	}
 
-	.row-fluid {
-		height: 84px;	// To prevent rows to expand to fill containers height
+			.monster-switch-label {
+				flex: 1;
+				display: block;
+				margin-left: 1rem;
+				line-height: 26px;
 
-		&.row-text {
-			height: auto;
-			padding-bottom: 1.5rem;
-		}
-
-		> [class*="span"] {
-			min-height: 14px;
+				label {
+					display: inline-block;
+					margin-bottom: 0;
+					vertical-align: middle;
+					line-height: 14px;
+				}
+			}
 		}
 
 		// Make chosen dropdown to fill container width
@@ -173,6 +192,19 @@
 			&.monster-invalid {
 				border: 1px solid $danger-color;
 			}
+		}
+	}
+
+	.row-fluid {
+		height: 84px;	// To prevent rows to expand to fill containers height
+
+		&.row-text {
+			height: auto;
+			padding-bottom: 1.5rem;
+		}
+
+		> [class*="span"] {
+			min-height: 14px;
 		}
 	}
 
@@ -222,10 +254,10 @@
 			margin-bottom: 0.5rem;
 
 			.service-plan-item {
-				height: 54px;
 
 				.input-field-container {
 					display: flex;
+					padding-bottom: 1rem;
 
 					.chosen-container {
 						flex: 1;
