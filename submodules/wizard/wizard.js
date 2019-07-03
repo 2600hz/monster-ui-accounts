@@ -417,7 +417,9 @@ define(function(require) {
 
 			if (!_.isEmpty(errors)) {
 				isValid = false;
-				validateForm.showErrors(errors);
+
+				// Merge new errors with existing ones, in order to display all of them
+				validateForm.showErrors(_.merge(errors, validateForm.errorMap));
 			}
 
 			data = _.merge(monster.ui.getFormData($form.get(0)), data);
@@ -793,7 +795,7 @@ define(function(require) {
 		wizardUsageAndCallRestrictionsRender: function(args) {
 			var self = this,
 				$container = args.container,
-				initTemplate = function(userList) {
+				initTemplate = function() {
 					var usageAndCallRestrictionsData = args.data.usageAndCallRestrictions,
 						dataTemplate = {
 							trunkTypes: [

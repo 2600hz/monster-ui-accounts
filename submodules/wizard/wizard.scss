@@ -188,10 +188,6 @@
 		input, select {
 			margin-bottom: 0;
 			height: 38px;
-
-			&.monster-invalid {
-				border: 1px solid $danger-color;
-			}
 		}
 	}
 
