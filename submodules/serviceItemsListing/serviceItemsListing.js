@@ -125,7 +125,9 @@ define(function(require) {
 				// as it gained relevance for being a "cache hit"
 				storedPlans = _
 					.chain(storedPlans)
-					.reject(formattedPlan)
+					.reject(function(plan) {
+						return _.isEqual(plan.planIds, planIds);
+					})
 					.concat(formattedPlan)
 					.value();
 
@@ -415,7 +417,6 @@ define(function(require) {
 					}
 				},
 				success: function(data) {
-					console.log('Quote', data.data);
 					args.success(data.data);
 				},
 				error: function(parsedError) {
