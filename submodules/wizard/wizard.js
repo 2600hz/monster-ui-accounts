@@ -542,6 +542,13 @@ define(function(require) {
 			});
 		},
 
+		/**
+		 * Utility funcion to validate Service Plan form and extract data
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
 		wizardServicePlanUtil: function($template, args) {
 			var self = this,
 				servicePlan = monster.ui.getFormData($template.find('form').get(0));
@@ -835,6 +842,13 @@ define(function(require) {
 			});
 		},
 
+		/**
+		 * Utility funcion to validate Usage and Call Restrictions form and extract data
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
 		wizardUsageAndCallRestrictionsUtil: function($template) {
 			var self = this,
 				$form = $template.find('form');
