@@ -82,9 +82,6 @@ define(function(require) {
 								minutes: true,
 								service_plan: true,
 								transactions: true,
-								inbound: true,
-								outbound: true,
-								twoway: true,
 								error_tracker: true
 							}
 						}
@@ -92,7 +89,7 @@ define(function(require) {
 				},
 				container: $container,
 				steps: [
-					{
+					/*{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
 						template: 'wizardGeneralSettingsRender',
@@ -115,7 +112,7 @@ define(function(require) {
 						description: i18nSteps.usageAndCallRestrictions.description,
 						template: 'wizardUsageAndCallRestrictionsRender',
 						util: 'wizardUsageAndCallRestrictionsUtil'
-					},
+					},*/
 					{
 						label: i18nSteps.creditBalanceAndFeatures.label,
 						description: i18nSteps.creditBalanceAndFeatures.description,
@@ -933,23 +930,6 @@ define(function(require) {
 									{
 										name: 'transactions',
 										icon: 'billing'
-									}
-								]
-							},
-							{
-								category: 'trunking',
-								features: [
-									{
-										name: 'inbound',
-										icon: 'phone-inbound'
-									},
-									{
-										name: 'outbound',
-										icon: 'phone-outbound'
-									},
-									{
-										name: 'twoway',
-										icon: 'two-way'
 									}
 								]
 							},

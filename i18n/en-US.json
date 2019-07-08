@@ -530,12 +530,9 @@
 								"billing": "Credit Card",
 								"credit": "Credit Info",
 								"error_tracker": "UI Errors Log",
-								"inbound": "Inbound",
 								"minutes": "Minute Info",
-								"outbound": "Outbound",
 								"service_plan": "Service Plan",
 								"transactions": "Transactions",
-								"twoway": "Two-way",
 								"user": "User"
 							},
 							"help": {
@@ -543,13 +540,10 @@
 								"balance": "Allows you to keep track of your account usage, both general and historic. You can choose to include credit and minute details.",
 								"billing": "In this section you can add or update your credit card data as well as the billing contact information.",
 								"credit": "Show credit information in the usage dashboard.",
-								"inbound": "Allows you to see the number of inbound trunks allocated for this account, and modify them if your service plan let you do so. The number of Inbound trunks defines how many simultaneous calls you can receive to your phone system.",
 								"error_tracker": "Enables you to keep track of the web user interface errors, if there is any, to keep the health of the application on sight.",
 								"minutes": "Show minutes information in the usage dashboard.",
-								"outbound": "Here you can see the number of outbound trunks used by this account, and edit it if your service plan allows you. The number of Outbound trunks defines how many concurrent external calls you can place at one time.",
 								"service_plan": "Here you can see your current service plan details.",
 								"transactions": "Enables you to search the money transactions between two dates for the current account.",
-								"twoway": "Displays the number of two-way trunks available for this account, and modify them if the service plan allows it. The number of Two-way trunks defines how many concurrent calls your platform can handle at one time.",
 								"user": "Shows the current user configurations, and allows yo to change the according to your needs."
 							}
 						}
