@@ -89,7 +89,7 @@ define(function(require) {
 				},
 				container: $container,
 				steps: [
-					/*{
+					{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
 						template: 'wizardGeneralSettingsRender',
@@ -112,7 +112,7 @@ define(function(require) {
 						description: i18nSteps.usageAndCallRestrictions.description,
 						template: 'wizardUsageAndCallRestrictionsRender',
 						util: 'wizardUsageAndCallRestrictionsUtil'
-					},*/
+					},
 					{
 						label: i18nSteps.creditBalanceAndFeatures.label,
 						description: i18nSteps.creditBalanceAndFeatures.description,
