@@ -39,16 +39,132 @@
 		color: $woodsmoke;
 	}
 
-	.row-fluid {
-		height: 84px;	// To prevent rows to expand to fill containers height
+	.flex-container {
+		display: flex;
+	}
 
-		&.row-text {
-			height: auto;
-			padding-bottom: 1.5rem;
+	.flex-row-container {
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: -0.75rem;
+		margin-right: -0.75rem;
+
+		[class^="flex-item-"],
+		[class*=" flex-item-"] {
+			flex: 0 0 auto;
+			box-sizing: border-box;
+			padding: 0 0.75rem 1.5rem 0.75rem;
 		}
 
-		> [class*="span"] {
-			min-height: 14px;
+		.flex-item-2 {
+			width: 50%;
+		}
+
+		.flex-item-3 {
+			width: 33.3333%;
+		}
+
+		@media all and (max-width: 980px) {
+			.flex-item-2 {
+				width: 100%;
+			}
+
+			.flex-item-3 {
+				width: 50%;
+			}
+		}
+
+		@media all and (max-width: 736px) {
+			.flex-item-3 {
+				width: 100%;
+			}
+		}
+	}
+
+	.wizard-card {
+		flex: 1;
+		padding: 1rem;
+		background-color: $panel-background-color;
+		box-shadow: 0px 1px 4px 0px rgba(46, 46, 50, 0.24);
+		display: flex;
+		flex-direction: column;
+
+		.card-section {
+			margin-bottom: 1rem;
+			flex: 0 0 initial;
+
+			&.title {
+				line-height: 1rem;
+				font-size: 1rem;
+				font-weight: normal;
+				color: $woodsmoke;
+			}
+
+			&.description {
+				flex: 1;
+			}
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+	}
+
+	.step-body {
+		.ui-widget {
+			display: block;
+			height: 38px;
+
+			input {
+				display: block;
+				width: 100%;
+				height: 30px;
+				margin-top: 4px;
+				margin-bottom: 4px;
+			}
+		}
+
+		label {
+			&:not(.monster-checkbox-large):not(.monster-switch) {
+				margin-bottom: 8px;
+				line-height: 14px;
+
+				.iconography-help {
+					margin-left: 0.5rem;
+					color: $manatee;
+
+					&:hover {
+						color: $shark2;
+					}
+				}
+			}
+
+			&.monster-checkbox-large.prepend-label > span {
+				padding-right: 1rem;
+				margin-right: 1.25rem;
+			}
+		}
+
+		.field-label-after {
+			display: flex;
+
+			.monster-switch {
+				flex: 0 0 initial;
+			}
+
+			.monster-switch-label {
+				flex: 1;
+				display: block;
+				margin-left: 1rem;
+				line-height: 26px;
+
+				label {
+					display: inline-block;
+					margin-bottom: 0;
+					vertical-align: middle;
+					line-height: 14px;
+				}
+			}
 		}
 
 		// Make chosen dropdown to fill container width
@@ -69,30 +185,22 @@
 			}
 		}
 
-		label{
-			&:not(.monster-checkbox-large){
-				margin-bottom: 8px;
-				line-height: 14px;
-
-				.iconography-help {
-					margin-left: 0.5rem;
-					color: $shark2;
-				}
-			}
-
-			&.monster-checkbox-large.prepend-label > span{
-				padding-right: 1rem;
-				margin-right: 1.25rem;
-			}
-		}
-
 		input, select {
 			margin-bottom: 0;
 			height: 38px;
+		}
+	}
 
-			&.monster-invalid {
-				border: 1px solid $danger-color;
-			}
+	.row-fluid {
+		height: 84px;	// To prevent rows to expand to fill containers height
+
+		&.row-text {
+			height: auto;
+			padding-bottom: 1.5rem;
+		}
+
+		> [class*="span"] {
+			min-height: 14px;
 		}
 	}
 
@@ -142,10 +250,10 @@
 			margin-bottom: 0.5rem;
 
 			.service-plan-item {
-				height: 54px;
 
 				.input-field-container {
 					display: flex;
+					padding-bottom: 1rem;
 
 					.chosen-container {
 						flex: 1;

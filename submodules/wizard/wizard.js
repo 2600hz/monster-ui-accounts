@@ -52,6 +52,23 @@ define(function(require) {
 							language: isoFormattedDefaultLanguage,
 							timezone: monster.apps.auth.currentAccount.timezone
 						}
+					},
+					// Usage and Call Restrictions defaults
+					usageAndCallRestrictions: {
+						trunkLimits: {
+							inbound: 0,
+							outbound: 0,
+							twoway: 0
+						},
+						callRestrictions: {
+							tollfree_us: true,
+							toll_us: true,
+							emergency: true,
+							caribbean: true,
+							did_us: true,
+							international: true,
+							unknowkn: true
+						}
 					}
 				},
 				container: $container,
@@ -400,7 +417,9 @@ define(function(require) {
 
 			if (!_.isEmpty(errors)) {
 				isValid = false;
-				validateForm.showErrors(errors);
+
+				// Merge new errors with existing ones, in order to display all of them
+				validateForm.showErrors(_.merge(errors, validateForm.errorMap));
 			}
 
 			data = _.merge(monster.ui.getFormData($form.get(0)), data);
@@ -523,6 +542,13 @@ define(function(require) {
 			});
 		},
 
+		/**
+		 * Utility funcion to validate Service Plan form and extract data
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
 		wizardServicePlanUtil: function($template, args) {
 			var self = this,
 				servicePlan = monster.ui.getFormData($template.find('form').get(0));
@@ -766,21 +792,72 @@ define(function(require) {
 
 		/* USAGE AND CALL RESTRICTIONS */
 
+		/**
+		 * Render Usage and Call Restrictions step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} [args.data.usageAndCallRestrictions]  Data specific for the current step
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardUsageAndCallRestrictionsRender: function(args) {
 			var self = this,
-				$container = args.container;
+				$container = args.container,
+				initTemplate = function() {
+					var usageAndCallRestrictionsData = args.data.usageAndCallRestrictions,
+						dataTemplate = {
+							trunkTypes: [
+								'inbound',
+								'outbound',
+								'twoway'
+							],
+							callRestrictionTypes: [
+								'tollfree_us',
+								'toll_us',
+								'emergency',
+								'caribbean',
+								'did_us',
+								'international',
+								'unknowkn'
+							],
+							data: usageAndCallRestrictionsData
+						},
+						$template = $(self.getTemplate({
+							name: 'step-usageAndCallRestrictions',
+							data: dataTemplate,
+							submodule: 'wizard'
+						}));
 
-			// TODO: Not implemented
+					monster.ui.spinner($template.find('.spinner'), {
+						min: 0
+					});
+
+					monster.ui.tooltips($template);
+
+					return $template;
+				};
+
+			self.wizardRenderStep({
+				container: $container,
+				initTemplate: initTemplate
+			});
 		},
 
+		/**
+		 * Utility funcion to validate Usage and Call Restrictions form and extract data
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
 		wizardUsageAndCallRestrictionsUtil: function($template) {
-			var self = this;
-
-			// TODO: Not implemented
+			var self = this,
+				$form = $template.find('form');
 
 			return {
 				valid: true,
-				data: {}
+				data: {
+					usageAndCallRestrictions: monster.ui.getFormData($form.get(0))
+				}
 			};
 		},
 
@@ -1011,7 +1088,10 @@ define(function(require) {
 				var insertTemplateCallback = results[0],
 					data = _.get(results, 1);
 
-				insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
+				_.defer(function() {
+					// Defer, to ensure that the loading template does not replace the step template
+					insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
+				});
 			});
 		},
 

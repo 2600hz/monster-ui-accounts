@@ -1,5 +1,5 @@
 {{#*inline "textFieldPartial"}}
-	<div class="span6">
+	<div class="flex-item-2">
 	{{#with (lookupPath @root.i18n.accountsApp.wizard.steps.generalSettings.accountAdmins name @root.i18n) as |fieldI18n|}}
 		<label for="account_admins_{{../index}}_{{coalesce ../id ../name}}">{{coalesce fieldI18n.label ../name}}</label>
 		<input class="input-block-level" type="{{#if ../type}}{{../type}}{{else}}text{{/if}}" name="accountAdmins[{{../index}}].{{../name}}" id="account_admins_{{../index}}_{{coalesce ../id ../name}}"{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}} required value="{{#if ../value}}{{../value}}{{else}}{{lookupPath @root.data ../name}}{{/if}}">
@@ -14,19 +14,17 @@
 			{{telicon "trash-x" class="iconography-large"}}
 		</a>
 	</div>
-	<div class="row-fluid">
-		{{> textFieldPartial id="first_name" name="firstName" index=index}}
-		{{> textFieldPartial id="last_name" name="lastName" index=index}}
-	</div>
-	<div class="row-fluid">
-		{{> textFieldPartial type="email" name="email" index=index}}
-		{{> textFieldPartial type="password" name="password" index=index}}
-	</div>
-	<div class="row-fluid row-text">
-		<div class="span12">
-			{{#monsterCheckbox "large-checkbox" "prepend-label" i18n.accountsApp.wizard.steps.generalSettings.accountAdmins.sendMail.label}}
-				<input type="checkbox" id="account_admins_{{index}}_send_mail" name="accountAdmins[{{index}}].sendMail"{{#if (lookup data "sendMail")}} checked{{/if}} />
-			{{/monsterCheckbox}}
+	<div class="admin-user-body">
+		<div class="flex-row-container">
+			{{> textFieldPartial id="first_name" name="firstName" index=index}}
+			{{> textFieldPartial id="last_name" name="lastName" index=index}}
+			{{> textFieldPartial type="email" name="email" index=index}}
+			{{> textFieldPartial type="password" name="password" index=index}}
+			<div class="flex-item-2">
+				{{#monsterCheckbox "large-checkbox" "prepend-label" i18n.accountsApp.wizard.steps.generalSettings.accountAdmins.sendMail.label}}
+					<input type="checkbox" id="account_admins_{{index}}_send_mail" name="accountAdmins[{{index}}].sendMail"{{#if (lookup data "sendMail")}} checked{{/if}} />
+				{{/monsterCheckbox}}
+			</div>
 		</div>
 	</div>
 </div>
