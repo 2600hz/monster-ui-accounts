@@ -2,6 +2,7 @@
 
 $media-size-small: "all and (max-width : 736px)";
 $media-size-medium: "all and (max-width : 980px)";
+$color-highlight: #dbdbde;
 
 .wizard-step {
 	padding: 2rem 1.5rem;
@@ -26,11 +27,33 @@ $media-size-medium: "all and (max-width : 980px)";
 	}
 
 	.iconography-help {
-		margin-left: 0.5rem;
 		color: $manatee;
 
 		&:hover {
 			color: $shark2;
+		}
+	}
+
+	.help-tip {
+		display: inline-block;
+		margin-left: 0.5rem;
+
+		&.help-tip-button {
+			margin-left: 0.75rem;
+			margin-top: 9px;
+		}
+	}
+
+	.monster-button {
+		background: linear-gradient(-180deg, $foreground-primary-color 0%, #F4F4F5 100%);
+
+		&:hover {
+			background: linear-gradient(-180deg, #F4F4F5 0%, $white-lilac 100%);
+		}
+
+		&.selected {
+			background: $color-highlight;
+			color: $woodsmoke;
 		}
 	}
 
@@ -345,7 +368,7 @@ $media-size-medium: "all and (max-width : 980px)";
 						color: $woodsmoke;
 
 						&:hover {
-							background-color: #dbdbde;
+							background-color: $color-highlight;
 
 							& + .monster-panel-text {
 								display: block;
@@ -405,6 +428,96 @@ $media-size-medium: "all and (max-width : 980px)";
 
 				ul.features > li a {
 					margin-left: 38px;
+				}
+			}
+		}
+	}
+
+	&#step_app_restrictions {
+		.monster-panel-text {
+			margin-left: 20%;
+			width: auto;
+
+			@media #{$media-size-medium} {
+				margin-left: 0;
+			}
+		}
+
+		#section_allowed_apps {
+			.section-body {
+				transition: all 0.5s linear 0s;
+			}
+
+			.app-list {
+				position: relative;
+
+				.flex-item-3.app-item {
+					min-height: 120px;
+					transform-origin: top left;
+					transition: all 0.5s linear 0s;
+
+					&:not(.app-add):not(.visible) {
+						position: absolute;
+
+						.wizard-card {
+							opacity: 0;
+						}
+					}
+
+					.wizard-card {
+						transition: all 0.5s linear;
+
+						&:hover .app-remove {
+							color: $midgray2;
+						}
+
+						.app-icon {
+							flex: 0 0 initial;
+							width: 2rem;
+							height: 2rem;
+							background-position: center;
+							background-repeat: no-repeat;
+							background-size: contain;
+							border-radius: 0.5rem;
+						}
+
+						.app-name {
+							flex: 1;
+							padding: 0 0.75rem;
+							line-height: 2rem;
+							vertical-align: middle;
+						}
+
+						.app-remove {
+							flex: 0 0 initial;
+							width: 1rem;
+							height: 1rem;
+							color: $french-gray2;
+
+							&:hover {
+								color: $danger-color;
+							}
+						}
+					}
+
+					&.app-add .wizard-card {
+						background: #dbdbde;
+						cursor: pointer;
+
+						&:hover {
+							background: $french-gray2;
+						}
+
+						.card-section.description.flex-container {
+							justify-content: center;
+							align-items: center;
+						}
+
+						a {
+							color: $shark2;
+							text-decoration: none;
+						}
+					}
 				}
 			}
 		}

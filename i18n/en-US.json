@@ -551,7 +551,23 @@
 				},
 				"appRestrictions": {
 					"label": "Application Restrictions",
-					"description": "Decide which applications, if any, should be restricted on this new account."
+					"description": "Decide which applications, if any, should be restricted on this new account.",
+					"title": "Which applications should this new account have access to?",
+					"accessLevel": {
+						"description": "By default, new accounts have access to ALL available applications on the App Exchange. If you wish to customize application access for this new account, you can choose ‘Restricted Access’ below. This will BLOCK ACCESS TO ALL APPLICATIONS, requiring you to manually whitelist the applications you want this account to have access to.",
+						"help": "Restricted Access will BLOCK ACCESS TO ALL APPLICATIONS, requiring you to manually whitelist the applications you want this account to have access to.",
+						"important": "Important",
+						"notice": "This step merely sets the access restrictions for applications on this new account. It DOES NOT enable the applications on the account itself. To enable applications, you or another account administrator will need to do so within this new account’s App Exchange.",
+						"types": {
+							"full": "Full Access",
+							"restricted": "Restricted Access"
+						}
+					},
+					"apps": {
+						"title": "Restrict Access to the Following Applications",
+						"description": "This account will not be able to access any applications until you manually list which applications this account should have access to.",
+						"add": "Add Application(s)"
+					}
 				},
 				"review": {
 					"label": "Review + Confirm",
