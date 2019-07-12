@@ -69,6 +69,22 @@ define(function(require) {
 							international: true,
 							unknowkn: true
 						}
+					},
+					// Credit Balance and Features defaults
+					creditBalanceAndFeatures: {
+						controlCenterAccess: {
+							features: {
+								user: true,
+								account: true,
+								billing: true,
+								balance: true,
+								credit: true,
+								minutes: true,
+								service_plan: true,
+								transactions: true,
+								error_tracker: true
+							}
+						}
 					}
 				},
 				container: $container,
@@ -845,8 +861,6 @@ define(function(require) {
 		/**
 		 * Utility funcion to validate Usage and Call Restrictions form and extract data
 		 * @param  {jQuery} $template  Step template
-		 * @param  {Object} args  Wizard's arguments
-		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
 		 */
 		wizardUsageAndCallRestrictionsUtil: function($template) {
@@ -861,23 +875,180 @@ define(function(require) {
 			};
 		},
 
+		/* CREDIT BALANCE AND FEATURES */
+
+		/**
+		 * Render Credit Balance + Features step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} args.data.usageAndCallRestrictions  Data specific for the current step
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardCreditBalanceAndFeaturesRender: function(args) {
 			var self = this,
-				$container = args.container;
+				$container = args.container,
+				initTemplate = function() {
+					var controlCenterFeatureTree = [
+							{
+								category: 'settings',
+								features: [
+									{
+										name: 'user',
+										icon: 'user'
+									},
+									{
+										name: 'account',
+										icon: 'avatar--badge'
+									}
+								]
+							},
+							{
+								category: 'billing',
+								features: [
+									{
+										name: 'billing',
+										icon: 'credit-card'
+									},
+									{
+										name: 'balance',
+										icon: 'list',
+										features: [
+											{
+												name: 'credit',
+												icon: 'available-balance'
+											},
+											{
+												name: 'minutes',
+												icon: 'clock'
+											}
+										]
+									},
+									{
+										name: 'service_plan',
+										icon: 'service-plan'
+									},
+									{
+										name: 'transactions',
+										icon: 'billing'
+									}
+								]
+							},
+							{
+								category: 'misc',
+								features: [
+									{
+										name: 'error_tracker',
+										icon: 'bug'
+									}
+								]
+							}
+						],
+						featureTreeToList = function(features) {
+							return _.flatMap(features, function(feature) {
+								var flattenedFeatures = _.concat([ feature.name ], featureTreeToList(feature.features));
+								return flattenedFeatures;
+							});
+						},
+						controlCenterFeatureList = _
+							.chain(controlCenterFeatureTree)
+							.flatMap('features')
+							.thru(featureTreeToList)
+							.value(),
+						creditBalanceAndFeaturesData = args.data.creditBalanceAndFeatures,
+						$template = $(self.getTemplate({
+							name: 'step-creditBalanceAndFeatures',
+							data: {
+								currencySymbol: monster.util.getCurrencySymbol(),
+								controlCenter: {
+									featureTree: controlCenterFeatureTree,
+									featureList: controlCenterFeatureList
+								},
+								data: creditBalanceAndFeaturesData
+							},
+							submodule: 'wizard'
+						}));
 
-			// TODO: Not implemented
+					$template
+						.find('input#account_credit_initial_balance')
+							.mask('#0.00', {
+								reverse: true
+							});
+
+					monster.ui.tooltips($template);
+
+					self.wizardCreditBalanceAndFeaturesBindEvents({
+						template: $template
+					});
+
+					return $template;
+				};
+
+			self.wizardRenderStep({
+				container: $container,
+				initTemplate: initTemplate
+			});
 		},
 
+		/**
+		 * Utility funcion to validate Usage and Call Restrictions form and extract data
+		 * @param  {jQuery} $template  Step template
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
 		wizardCreditBalanceAndFeaturesUtil: function($template) {
-			var self = this;
-
-			// TODO: Not implemented
+			var self = this,
+				$form = $template.find('form');
 
 			return {
 				valid: true,
-				data: {}
+				data: {
+					creditBalanceAndFeatures: monster.ui.getFormData($form.get(0))
+				}
 			};
 		},
+
+		/**
+		 * Bind Credit Balance and features step events
+		 * @param  {Object} args
+		 * @param  {jQuery} args.template  Step template
+		 */
+		wizardCreditBalanceAndFeaturesBindEvents: function(args) {
+			var self = this,
+				$template = args.template,
+				$featureItemsWithSubFeatures = $template.find('.features').closest('.feature-item');
+
+			// Tick parent feature
+			$featureItemsWithSubFeatures
+				.find('.features input[type="checkbox"]')
+					.on('change', function() {
+						var $this = $(this),
+							isChecked = $this.is(':checked');
+
+						if (!isChecked) {
+							return;
+						}
+
+						$this
+							.closest('.features')
+								.siblings('.feature-item-link')
+									.find('input[type="checkbox"]:not(:checked)')
+										.prop('checked', isChecked);
+					});
+
+			// Tick/untick children features
+			$featureItemsWithSubFeatures
+				.find('input[type="checkbox"]')
+					.on('change', function() {
+						var $this = $(this),
+							isChecked = $this.is(':checked');
+
+						$this
+							.closest('.feature-item')
+								.find('.features input[type="checkbox"]')
+									.prop('checked', isChecked);
+					});
+		},
+
+		/* APP RESTRICTIONS */
 
 		wizardAppRestrictionsRender: function(args) {
 			var self = this,

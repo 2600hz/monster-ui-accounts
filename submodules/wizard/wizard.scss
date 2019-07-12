@@ -1,5 +1,8 @@
 @import "../../../../css/partials/base";
 
+$media-size-small: "all and (max-width : 736px)";
+$media-size-medium: "all and (max-width : 980px)";
+
 .wizard-step {
 	padding: 2rem 1.5rem;
 
@@ -20,6 +23,15 @@
 		font-size: 1.25rem;
 		width: 1.25rem;
 		height: 1.25rem;
+	}
+
+	.iconography-help {
+		margin-left: 0.5rem;
+		color: $manatee;
+
+		&:hover {
+			color: $shark2;
+		}
 	}
 
 	.step-title {
@@ -56,6 +68,10 @@
 			padding: 0 0.75rem 1.5rem 0.75rem;
 		}
 
+		.flex-item-1 {
+			width: 100%;
+		}
+
 		.flex-item-2 {
 			width: 50%;
 		}
@@ -64,7 +80,7 @@
 			width: 33.3333%;
 		}
 
-		@media all and (max-width: 980px) {
+		@media #{$media-size-medium} {
 			.flex-item-2 {
 				width: 100%;
 			}
@@ -74,7 +90,7 @@
 			}
 		}
 
-		@media all and (max-width: 736px) {
+		@media #{$media-size-small} {
 			.flex-item-3 {
 				width: 100%;
 			}
@@ -111,37 +127,38 @@
 	}
 
 	.step-body {
-		.ui-widget {
-			display: block;
-			height: 38px;
-
-			input {
-				display: block;
-				width: 100%;
-				height: 30px;
-				margin-top: 4px;
-				margin-bottom: 4px;
-			}
-		}
-
 		label {
 			&:not(.monster-checkbox-large):not(.monster-switch) {
 				margin-bottom: 8px;
 				line-height: 14px;
-
-				.iconography-help {
-					margin-left: 0.5rem;
-					color: $manatee;
-
-					&:hover {
-						color: $shark2;
-					}
-				}
 			}
 
 			&.monster-checkbox-large.prepend-label > span {
 				padding-right: 1rem;
 				margin-right: 1.25rem;
+			}
+		}
+
+		input, select {
+			margin-bottom: 0;
+			height: 38px;
+		}
+
+		// Make chosen dropdown to fill container width
+		.chosen-container {
+			width: auto !important;
+			display: block;
+
+			.chosen-single {
+				height: 38px;
+
+				span {
+					line-height: 38px;
+				}
+			}
+
+			.chosen-drop {
+				min-width: 100%;
 			}
 		}
 
@@ -167,40 +184,41 @@
 			}
 		}
 
-		// Make chosen dropdown to fill container width
-		.chosen-container {
-			width: auto !important;
-			display: block;
+		.input-append.input-block-level {
+			display: flex;
 
-			.chosen-single {
-				height: 38px;
+			button:first-child {
+				flex: initial;
+				border-right: none;
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+				font-weight: 600;
 
-				span {
-					line-height: 38px;
+				&:disabled,
+				&[disabled=disabled] {
+					border-color: $french-gray2;
+					color: $midgray2;
 				}
 			}
 
-			.chosen-drop {
-				min-width: 100%;
+			input:not(:first-child) {
+				flex: 1;
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
 			}
 		}
 
-		input, select {
-			margin-bottom: 0;
+		.ui-widget {
+			display: block;
 			height: 38px;
-		}
-	}
 
-	.row-fluid {
-		height: 84px;	// To prevent rows to expand to fill containers height
-
-		&.row-text {
-			height: auto;
-			padding-bottom: 1.5rem;
-		}
-
-		> [class*="span"] {
-			min-height: 14px;
+			input {
+				display: block;
+				width: 100%;
+				height: 30px;
+				margin-top: 4px;
+				margin-bottom: 4px;
+			}
 		}
 	}
 
@@ -292,6 +310,102 @@
 			.iconography-medium {
 				margin-right: 4px;
 				margin-top: -3px;
+			}
+		}
+	}
+
+	&#step_credit_balance_and_features {
+		ul.features {
+			margin-left: 0;
+			list-style: none;
+
+			li {
+				&.feature-category {
+					color: $woodsmoke;
+					font-weight: 600;
+					line-height: 14px;
+					padding-bottom: 0.75rem;
+					padding-top: 1.5rem;
+					padding-left: 1rem;
+
+					&:first-child {
+						padding-top: 1rem;
+					}
+				}
+
+				&.feature-item {
+					position: relative;
+					box-sizing: border-box;
+
+					a {
+						display: block;
+						height: 2.5rem;
+						padding-left: 1rem;
+						line-height: 2.5rem;
+						color: $woodsmoke;
+
+						&:hover {
+							background-color: #dbdbde;
+
+							& + .monster-panel-text {
+								display: block;
+								opacity: 1;
+							}
+						}
+					}
+
+					.feature-icon {
+						margin-left: 38px;
+						list-style: none;
+						margin-top: -3px;
+					}
+
+					.monster-checkbox {
+						display: block;
+						margin-bottom: 0;
+						line-height: 2.5rem;
+
+						i {
+							width: 1rem;
+							height: 1rem;
+							margin-top: 9px;
+						}
+
+						span {
+							margin-left: 0.75rem;
+							padding-left: 0;
+						}
+					}
+
+					.monster-panel-text {
+						position: absolute;
+						left: 130%;
+						top: 0;
+						width: 130%;
+						opacity: 0;
+						transition: opacity 0.25s ease-in-out;
+						z-index: 10;
+					}
+
+					@media #{$media-size-medium} {
+						.monster-panel-text {
+							display: none;
+							left: 0;
+							top: 3rem;
+							width: 200%;
+						}
+					}
+
+					@media #{$media-size-small} {
+						.monster-panel-text {
+							width: 100%;
+						}
+					}
+				}
+
+				ul.features > li a {
+					margin-left: 38px;
+				}
 			}
 		}
 	}
