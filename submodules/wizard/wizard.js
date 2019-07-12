@@ -951,20 +951,14 @@ define(function(require) {
 						},
 						controlCenterFeatureList = _
 							.chain(controlCenterFeatureTree)
-							.flatMap(function(category, index) {
-								return _.map(category.features, function(feature) {
-									return _.merge({
-										categoryIndex: index	// TODO: Calculate top position based on category index and feature index (42px for category 0, 50px for the rest, and 40px per feature index)
-									}, feature);
-								});
-							})
+							.flatMap('features')
 							.thru(featureTreeToList)
 							.value(),
 						creditBalanceAndFeaturesData = args.data.creditBalanceAndFeatures,
 						$template = $(self.getTemplate({
 							name: 'step-creditBalanceAndFeatures',
 							data: {
-								currencySymbol: self.wizardGetCurrencySymbol(),
+								currencySymbol: monster.util.getCurrencySymbol(),
 								controlCenter: {
 									featureTree: controlCenterFeatureTree,
 									featureList: controlCenterFeatureList
@@ -1182,34 +1176,6 @@ define(function(require) {
 					.appendTo($listContainer)
 					.slideDown(animationDuration);
 			}
-		},
-
-		/**
-		 * Gets the currency symbol for the current configuration
-		 * Based on: monster.util.formatPrice()
-		 */
-		wizardGetCurrencySymbol: function() {
-			var self = this,
-				currencySymbol = self.appFlags.wizard.currencySymbol,
-				formatter;
-
-			if (currencySymbol) {
-				return currencySymbol;
-			}
-
-			formatter = new Intl.NumberFormat(monster.config.whitelabel.language, {
-				style: 'currency',
-				currency: monster.config.currencyCode
-			});
-			self.appFlags.wizard.currencySymbol = _
-				.chain(formatter.formatToParts(0))
-				.find(function(part) {
-					return part.type === 'currency';
-				})
-				.get('value', monster.config.currencyCode)
-				.value();
-
-			return self.appFlags.wizard.currencySymbol;
 		},
 
 		/**
