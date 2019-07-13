@@ -1184,10 +1184,14 @@ define(function(require) {
 			$appList.find('.app-remove').on('click', function(e) {
 				e.preventDefault();
 
+				var $appItem = $(this).closest('.app-item');
+
+				_.pull(allowedAppIds, $appItem.data('id'));
+
 				self.wizardToggleAppCard({
 					action: 'hide',
 					container: $appList,
-					itemsToToggle: $(this).closest('.app-item')
+					itemsToToggle: $appItem
 				});
 			});
 		},

@@ -43,7 +43,7 @@
 			<div class="flex-row-container app-list">
 			{{#each @root.apps}}
 				{{debug}}
-				<div id="app_{{id}}" class="flex-item-3 flex-container app-item{{#ifInArray id @root.data.allowedAppIds}} visible"{{else}}" style="display:none"{{/ifInArray}}>
+				<div id="app_{{id}}" class="flex-item-3 flex-container app-item{{#ifInArray id @root.data.allowedAppIds}} visible"{{else}}" style="display:none"{{/ifInArray}} data-id="{{id}}">
 					<div class="wizard-card">
 						<div class="card-section title flex-container">
 							<div class="app-icon {{extraCssClass}}" style="{{#if icon}}background-image:url({{icon}}){{else}}background-color:#606069{{/if}}"></div>
