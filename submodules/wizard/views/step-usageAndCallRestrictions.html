@@ -14,7 +14,9 @@
 					<div class="flex-item-3">
 						<label for="trunk_limits_{{this}}">
 							{{tryI18n usageAndCallRestrictionsI18n.trunkLimits.labels this}}
-							<span data-title="{{tryI18n usageAndCallRestrictionsI18n.trunkLimits.help this}}" data-toggle="tooltip">{{telicon "question--circle" class="iconography-small iconography-help"}}</span>
+							<span class="help-tip" data-title="{{tryI18n usageAndCallRestrictionsI18n.trunkLimits.help this}}" data-toggle="tooltip">
+								{{telicon "question--circle" class="iconography-small iconography-help"}}
+							</span>
 						</label>
 						<input id="trunk_limits_{{this}}" name="trunkLimits.{{this}}" class="spinner" value="{{lookupPath @root.data.trunkLimits this}}"/>
 					</div>
