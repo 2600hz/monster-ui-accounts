@@ -1301,7 +1301,7 @@ define(function(require) {
 				$parentContainer = $container.parent(),
 				parentDiffHeight = $parentContainer.height() - $container.height(),
 				$itemsToToggle = args.itemsToToggle,
-				$siblings = $itemsToToggle.nextAll('.visible'),
+				$siblings = $itemsToToggle.siblings('.visible'),
 				firstBounds = $siblings.map(function() {
 					// FIRST: Get the original bounds for following siblings
 					return this.getBoundingClientRect();
@@ -1312,6 +1312,12 @@ define(function(require) {
 				$parentContainer.css({
 					maxHeight: '',
 					height: ''
+				});
+
+				$siblings.css({
+					maxHeight: '',
+					minHeight: '',
+					alignSelf: ''
 				});
 
 				if (action === 'hide') {
@@ -1353,6 +1359,10 @@ define(function(require) {
 						// No need to reflow here because of offsetTop and offsetLeft were
 						// requested for each item to toggle
 
+						/*self.wizardForceElementsReflow({
+							elements: $siblings.add($itemsToToggle)
+						});*/
+
 						callback(null);
 
 						return;
@@ -1392,13 +1402,9 @@ define(function(require) {
 							// INVERT: determine the delta between the
 							// first and last bounds to invert the element
 							deltaX = first.left - last.left,
-							deltaY = first.top - last.top,
-							deltaW = first.width / last.width,
-							deltaH = first.height / last.height;
-
-						/*console.log($elem.find('.app-name').text());
-						console.log({ deltaX, deltaY });
-						console.log({ deltaW, deltaH });*/
+							deltaY = first.top - last.top;
+							//deltaW = first.width / last.width,
+							//deltaH = first.height / last.height;
 
 						if (action === 'hide' && deltaY < 0) {
 							deltaY = 0;
@@ -1407,24 +1413,31 @@ define(function(require) {
 						// PLAY: animate the final element from its first bounds
 						// to its last bounds (which is no transform)
 						$elem.css({
-							//display: 'block',
 							transition: 'all 0s ease 0s',
-							transform: 'translate(' + deltaX + 'px, ' + deltaY + 'px)',
-							scale: '(' + deltaW + 'px, ' + deltaH + 'px)'
-							//height: first.height + 'px'
+							transform: 'translate(' + deltaX + 'px, ' + deltaY + 'px)', //scale(' + deltaW + ', ' + deltaH + ')'
+							maxHeight: first.height + 'px',
+							minHeight: first.height + 'px',
+							alignSelf: 'flex-start'
 						});
+						$elem.data('last_height', last.height);
 					});
+
+					/*self.wizardForceElementsReflow({
+						elements: $siblings
+					});*/
 
 					// Defer to wait for style updates in siblings
 					_.defer(callback, null);
 				}
 			], function() {
-				$siblings.css({
-					//display: '',
-					transition: '',
-					transform: '',
-					scale: ''
-					//height: ''
+				$siblings.each(function() {
+					var $this = $(this);
+					$this.css({
+						transition: '',
+						transform: '',
+						maxHeight: $this.data('last_height') + 'px',
+						minHeight: $this.data('last_height') + 'px'
+					});
 				});
 			});
 		},
@@ -1465,11 +1478,11 @@ define(function(require) {
 		 * @param  {jQuery} args.elements
 		 */
 		wizardForceElementsReflow: function(args) {
-			var newOffsets = [];	// Keep the offset heights in an array, to try to avoid any optimization
+			var offsetHeight;
 			args.elements.each(function() {
-				newOffsets.push(this.offsetHeight);
+				offsetHeight = this.offsetHeight;	// Save the offsetHeight, to try to avoid any optimization
 			});
-			return newOffsets;
+			return offsetHeight;
 		},
 
 		/**
