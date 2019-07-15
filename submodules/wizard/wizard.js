@@ -1174,7 +1174,7 @@ define(function(require) {
 			$template.find('.app-add .wizard-card').on('click', function() {
 				monster.pub('common.appSelector.renderPopup', {
 					scope: 'all',
-					excludeAppIds: allowedAppIds,
+					excludedApps: allowedAppIds,
 					callbacks: {
 						accept: function(selectedAppIds) {
 							var $selectedAppCards = $([]);
