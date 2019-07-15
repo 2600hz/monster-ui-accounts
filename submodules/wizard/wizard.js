@@ -1066,8 +1066,7 @@ define(function(require) {
 			var self = this,
 				$container = args.container,
 				initTemplate = function(appList) {
-					// Create a copy of the data, in order to not to alter the original one
-					var appRestrictionsData = _.cloneDeep(args.data.appRestrictions),
+					var appRestrictionsData = args.data.appRestrictions,
 						$template = $(self.getTemplate({
 							name: 'step-appRestrictions',
 							data: {
@@ -1081,7 +1080,7 @@ define(function(require) {
 					monster.ui.tooltips($template);
 
 					self.wizardAppRestrictionsBindEvents({
-						data: appRestrictionsData,
+						allowedAppIds: appRestrictionsData.allowedAppIds,
 						template: $template
 					});
 
@@ -1107,27 +1106,38 @@ define(function(require) {
 		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
 		 */
 		wizardAppRestrictionsUtil: function($template) {
-			var self = this;
-
-			// TODO: Not implemented
+			var self = this,
+				fullAccessLevel = $template.find('#access_level button.selected').data('value') === 'full',
+				allowedAppIds = (fullAccessLevel)
+					? []
+					: $template
+						.find('#section_allowed_apps .app-list .app-item.visible')
+							.map(function() {
+								return $(this).data('id');
+							})
+							.toArray();
 
 			return {
 				valid: true,
-				data: {}
+				data: {
+					appRestrictions: {
+						fullAccessLevel: fullAccessLevel,
+						allowedAppIds: allowedAppIds
+					}
+				}
 			};
 		},
 
 		/**
 		 * Bind App Restrictions step events
 		 * @param  {Object} args
-		 * @param  {jQuery} args.data  Step data
+		 * @param  {jQuery} args.allowedAppIds  Allowed app IDs
 		 * @param  {jQuery} args.template  Step template
 		 */
 		wizardAppRestrictionsBindEvents: function(args) {
 			var self = this,
 				slideAnimationDuration = 1000,
-				data = args.data,
-				allowedAppIds = data.allowedAppIds,
+				allowedAppIds = _.clone(args.allowedAppIds),	// Create a copy of the data, in order to not to alter the original one
 				$template = args.template,
 				$allowedAppsSection = $template.find('#section_allowed_apps'),
 				$appList = $allowedAppsSection.find('.app-list');
@@ -1139,9 +1149,7 @@ define(function(require) {
 
 				$this.addClass('selected').siblings().removeClass('selected');
 
-				data.fullAccessLevel = ($this.data('value') === 'full');
-
-				if (data.fullAccessLevel) {
+				if ($this.data('value') === 'full') {
 					$allowedAppsSection
 						.fadeOut({
 							duration: slideAnimationDuration,

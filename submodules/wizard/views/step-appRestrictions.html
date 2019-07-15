@@ -12,7 +12,7 @@
 			</div>
 			<div class="flex-row-container">
 				<div class="flex-item-1 flex-container access-level-toggle">
-					<div class="btn-group">
+					<div id="access_level" class="btn-group">
 						<button data-value="full" class="monster-button monster-button-fit{{#if @root.data.fullAccessLevel}} selected{{/if}}">{{ appRestrictionsI18n.accessLevel.types.full }}</button>
 						<button data-value="restricted" class="monster-button monster-button-fit{{#unless @root.data.fullAccessLevel}} selected{{/unless}}">{{ appRestrictionsI18n.accessLevel.types.restricted }}</button>
 					</div>
@@ -42,7 +42,6 @@
 			</div>
 			<div class="flex-row-container app-list">
 			{{#each @root.apps}}
-				{{debug}}
 				<div id="app_{{id}}" class="flex-item-3 flex-container app-item{{#ifInArray id @root.data.allowedAppIds}} visible"{{else}}" style="display:none"{{/ifInArray}} data-id="{{id}}">
 					<div class="wizard-card">
 						<div class="card-section title flex-container">
