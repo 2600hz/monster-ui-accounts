@@ -94,7 +94,7 @@ define(function(require) {
 				},
 				container: $container,
 				steps: [
-					/*{
+					{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
 						template: 'wizardGeneralSettingsRender',
@@ -123,7 +123,7 @@ define(function(require) {
 						description: i18nSteps.creditBalanceAndFeatures.description,
 						template: 'wizardCreditBalanceAndFeaturesRender',
 						util: 'wizardCreditBalanceAndFeaturesUtil'
-					},*/
+					},
 					{
 						label: i18nSteps.appRestrictions.label,
 						description: i18nSteps.appRestrictions.description,
@@ -1103,9 +1103,11 @@ define(function(require) {
 		/**
 		 * Utility funcion to extract App Restrictions data
 		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
 		 */
-		wizardAppRestrictionsUtil: function($template) {
+		wizardAppRestrictionsUtil: function($template, args) {
 			var self = this,
 				fullAccessLevel = $template.find('#access_level button.selected').data('value') === 'full',
 				allowedAppIds = (fullAccessLevel)
@@ -1116,6 +1118,9 @@ define(function(require) {
 								return $(this).data('id');
 							})
 							.toArray();
+
+			// Clean appRestrictions previous data, to avoid merging the array of allowedAppIds
+			delete args.data.appRestrictions;
 
 			return {
 				valid: true,
@@ -1315,8 +1320,8 @@ define(function(require) {
 					return this.getBoundingClientRect();
 				}).toArray();
 
+			// Set final values at the end of the animation
 			setTimeout(function() {
-				// Set new container height
 				$parentContainer.css({
 					maxHeight: '',
 					height: ''
@@ -1328,16 +1333,19 @@ define(function(require) {
 					alignSelf: ''
 				});
 
-				if (action === 'hide') {
-					$itemsToToggle
-						.hide()
-						.css({
-							top: '',
-							left: ''
-						});
+				if (action !== 'hide') {
+					return;
 				}
+
+				$itemsToToggle
+					.hide()
+					.css({
+						top: '',
+						left: ''
+					});
 			}, animationMillis);
 
+			// Animate step by step using the FLEX technique
 			monster.series([
 				function(callback) {
 					// Fix container height
@@ -1353,6 +1361,7 @@ define(function(require) {
 					callback(null);
 				},
 				function(callback) {
+					// Hide/show app items
 					if (action === 'hide') {
 						$itemsToToggle
 							.each(function() {
@@ -1366,10 +1375,6 @@ define(function(require) {
 
 						// No need to reflow here because of offsetTop and offsetLeft were
 						// requested for each item to toggle
-
-						/*self.wizardForceElementsReflow({
-							elements: $siblings.add($itemsToToggle)
-						});*/
 
 						callback(null);
 
@@ -1401,18 +1406,16 @@ define(function(require) {
 						height: parentContainerHeight
 					});
 
-					// Calculate deltas for following siblings
+					// Calculate deltas for siblings, and set transformation/size
 					$siblings.each(function(index, element) {
 						var first = firstBounds[index],
-							$elem = $(element),
+							$element = $(element),
 							// LAST: get the final bounds
 							last = element.getBoundingClientRect(),
 							// INVERT: determine the delta between the
 							// first and last bounds to invert the element
 							deltaX = first.left - last.left,
 							deltaY = first.top - last.top;
-							//deltaW = first.width / last.width,
-							//deltaH = first.height / last.height;
 
 						if (action === 'hide' && deltaY < 0) {
 							deltaY = 0;
@@ -1420,24 +1423,21 @@ define(function(require) {
 
 						// PLAY: animate the final element from its first bounds
 						// to its last bounds (which is no transform)
-						$elem.css({
+						$element.css({
 							transition: 'all 0s ease 0s',
-							transform: 'translate(' + deltaX + 'px, ' + deltaY + 'px)', //scale(' + deltaW + ', ' + deltaH + ')'
+							transform: 'translate(' + deltaX + 'px, ' + deltaY + 'px)',
 							maxHeight: first.height + 'px',
 							minHeight: first.height + 'px',
 							alignSelf: 'flex-start'
 						});
-						$elem.data('last_height', last.height);
+						$element.data('last_height', last.height);
 					});
-
-					/*self.wizardForceElementsReflow({
-						elements: $siblings
-					});*/
 
 					// Defer to wait for style updates in siblings
 					_.defer(callback, null);
 				}
 			], function() {
+				// Update CSS to trigger delta transitions
 				$siblings.each(function() {
 					var $this = $(this);
 					$this.css({
@@ -1572,7 +1572,6 @@ define(function(require) {
 		 * @param  {Function}  [args.loadData]  Optional load callback, which can be used to load
 		 *                                      data for the template before its initialization
 		 * @param  {Function}  args.initTemplate  Template initialization callback
-		 * @param  {Function}  [args.afterRender]  Callback to be executed after the step has been rendered
 		 */
 		wizardRenderStep: function(args) {
 			var self = this,
@@ -1600,14 +1599,8 @@ define(function(require) {
 					data = _.get(results, 1);
 
 				_.defer(function() {
-					var $template = initTemplate(data);
-
 					// Deferred, to ensure that the loading template does not replace the step template
-					insertTemplateCallback($template, function() {
-						self.wizardScrollToTop();
-
-						_.has(args, 'afterRender') && args.afterRender($template);
-					});
+					insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
 				});
 			});
 		},

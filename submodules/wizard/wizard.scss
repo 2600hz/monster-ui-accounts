@@ -465,7 +465,7 @@ $color-highlight: #dbdbde;
 					}
 
 					.wizard-card {
-						transition: all 0.5s linear;
+						transition: all 0.5s linear, background-color 0s;
 
 						&:hover .app-remove {
 							color: $midgray2;
@@ -497,6 +497,10 @@ $color-highlight: #dbdbde;
 							&:hover {
 								color: $danger-color;
 							}
+						}
+
+						.card-section.description {
+							line-height: 21px;
 						}
 					}
 
