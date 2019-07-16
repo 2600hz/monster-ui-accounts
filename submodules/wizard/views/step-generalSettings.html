@@ -1,15 +1,15 @@
 {{#*inline "accountInfoInputPartial"}}
 	<div class="flex-item-2">
-	{{#with (lookupPath @root.i18n.accountsApp.wizard.steps.generalSettings.accountInfo name @root.i18n) as |fieldI18n|}}
+	{{#with @root.i18n.accountsApp.wizard.steps.generalSettings.accountInfo as |accountInfoI18n|}}
 		<label for="account_info_{{coalesce ../id ../name}}">
-			{{coalesce fieldI18n.label ../name}}
-		{{#if fieldI18n.help}}
-			<span class="help-tip" title="{{fieldI18n.help}}" data-toggle="tooltip">
+			{{tryI18n accountInfoI18n.labels ../name}}
+		{{#if (lookup accountInfoI18n.help ../name)}}
+			<span class="help-tip" title="{{tryI18n accountInfoI18n.help ../name}}" data-toggle="tooltip">
 				{{telicon "question--circle" class="iconography-small iconography-help"}}
 			</span>
 		{{/if}}
 		</label>
-		<input class="input-block-level" type="text" name="accountInfo.{{../name}}" id="account_info_{{coalesce ../id ../name}}"{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}}{{#if ../required}} required{{/if}} value="{{lookupPath @root.data.accountInfo ../name}}">
+		<input class="input-block-level" type="text" name="accountInfo.{{../name}}" id="account_info_{{coalesce ../id ../name}}" placeholder="{{coalesce (lookup accountInfoI18n.placeholders ../name) (tryI18n accountInfoI18n.labels ../name)}}"{{#if ../required}} required{{/if}} value="{{lookupPath @root.data.accountInfo ../name}}">
 	{{/with}}
 	</div>
 {{/inline}}
@@ -35,11 +35,11 @@
 					{{> accountInfoInputPartial name="zip" required=true}}
 					{{> accountInfoInputPartial name="country" required=true}}
 					<div class="flex-item-2">
-						<label for="account_info_timezone">{{accountInfoI18n.timezone.label}}</label>
+						<label for="account_info_timezone">{{accountInfoI18n.labels.timezone}}</label>
 						<select id="account_info_timezone" name="accountInfo.timezone" required></select>
 					</div>
 					<div class="flex-item-2">
-						<label for="account_info_language">{{accountInfoI18n.language.label}}</label>
+						<label for="account_info_language">{{accountInfoI18n.labels.language}}</label>
 						{{languageSelector id="account_info_language" name="accountInfo.language" class="input-block-level" required="true" selectedLanguage=@root.data.accountInfo.language}}
 					</div>
 				</div>

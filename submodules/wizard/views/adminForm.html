@@ -1,8 +1,14 @@
 {{#*inline "textFieldPartial"}}
 	<div class="flex-item-2">
-	{{#with (lookupPath @root.i18n.accountsApp.wizard.steps.generalSettings.accountAdmins name @root.i18n) as |fieldI18n|}}
-		<label for="account_admins_{{../index}}_{{coalesce ../id ../name}}">{{coalesce fieldI18n.label ../name}}</label>
-		<input class="input-block-level" type="{{#if ../type}}{{../type}}{{else}}text{{/if}}" name="accountAdmins[{{../index}}].{{../name}}" id="account_admins_{{../index}}_{{coalesce ../id ../name}}"{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}} required value="{{#if ../value}}{{../value}}{{else}}{{lookupPath @root.data ../name}}{{/if}}">
+	{{#with @root.i18n.accountsApp.wizard.steps.generalSettings.accountAdmins as |accountAdminsI18n|}}
+		<label for="account_admins_{{../index}}_{{coalesce ../id ../name}}">
+		{{#if label}}
+			{{label}}
+		{{else}}
+			{{tryI18n accountAdminsI18n.labels ../name}}
+		{{/if}}
+		</label>
+		<input class="input-block-level" type="{{#if ../type}}{{../type}}{{else}}text{{/if}}" name="accountAdmins[{{../index}}].{{../name}}" id="account_admins_{{../index}}_{{coalesce ../id ../name}}" placeholder="{{coalesce (lookup accountAdminsI18n.placeholders ../name) label (tryI18n accountAdminsI18n.labels ../name)}}" required value="{{#if ../value}}{{../value}}{{else}}{{lookupPath @root.data ../name}}{{/if}}">
 	{{/with}}
 	</div>
 {{/inline}}
@@ -18,10 +24,10 @@
 		<div class="flex-row-container">
 			{{> textFieldPartial id="first_name" name="firstName" index=index}}
 			{{> textFieldPartial id="last_name" name="lastName" index=index}}
-			{{> textFieldPartial type="email" name="email" index=index}}
+			{{> textFieldPartial type="email" name="email" index=index label=i18n.accountsApp.wizard.steps.general.labels.email}}
 			{{> textFieldPartial type="password" name="password" index=index}}
 			<div class="flex-item-2">
-				{{#monsterCheckbox "large-checkbox" "prepend-label" i18n.accountsApp.wizard.steps.generalSettings.accountAdmins.sendMail.label}}
+				{{#monsterCheckbox "large-checkbox" "prepend-label" i18n.accountsApp.wizard.steps.generalSettings.accountAdmins.labels.sendMail}}
 					<input type="checkbox" id="account_admins_{{index}}_send_mail" name="accountAdmins[{{index}}].sendMail"{{#if (lookup data "sendMail")}} checked{{/if}} />
 				{{/monsterCheckbox}}
 			</div>
