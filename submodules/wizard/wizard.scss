@@ -42,10 +42,21 @@ $color-highlight: #dbdbde;
 		display: inline-block;
 		margin-left: 0.5rem;
 
-		&.help-tip-button {
+		&.help-tip-section, &.help-tip-button {
 			margin-left: 0.75rem;
+		}
+
+		&.help-tip-button {
 			margin-top: 9px;
 		}
+	}
+
+	.text-success {
+		color: $success-color;
+	}
+
+	.text-danger {
+		color: $danger-color;
 	}
 
 	.monster-button {
@@ -126,6 +137,14 @@ $color-highlight: #dbdbde;
 
 		.flex-item-3 {
 			width: 33.3333%;
+		}
+
+		.flex-item-4 {
+			width: 25%;
+		}
+
+		.flex-item-4-3 {
+			width: 75%;
 		}
 
 		@media #{$media-size-medium} {
@@ -556,6 +575,48 @@ $color-highlight: #dbdbde;
 					}
 				}
 			}
+		}
+	}
+
+	&#step_review {
+		[class^="field-value-"],
+		[class*=" field-value-"] {
+			color: $woodsmoke;
+			font-weight: 600;
+
+			.iconography-medium {
+				margin-right: 0.5rem;
+			}
+		}
+
+		.field-group {
+			padding-bottom: 0.5rem;
+		}
+
+		.field-label-horizontal, .field-value-horizontal {
+			padding-bottom: 1rem;
+		}
+
+		.field-label-horizontal {
+			line-height: 14px;
+			color: $woodsmoke;
+			letter-spacing: 0px;
+		}
+
+		.field-value-horizontal {
+			margin-top: -4px;
+			line-height: 21px;
+		}
+
+		.field-label-vertical {
+			margin-bottom: 0.5rem;
+			line-height: 0.75rem;
+			font-size: 0.75rem;
+			color: $midgray2;
+		}
+
+		.field-value-vertical {
+			line-height: 14px;
 		}
 	}
 }

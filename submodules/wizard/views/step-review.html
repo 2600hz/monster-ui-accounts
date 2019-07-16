@@ -1,0 +1,86 @@
+{{#*inline "horizontalFieldPartial"}}
+	<div class="flex-row-container">
+		<div class="flex-item-4 field-label-horizontal">
+			{{tryI18n (lookup (lookupPath @root.i18n.accountsApp.wizard.steps sectionName) "labels") fieldName}}
+		</div>
+		<div class="flex-item-4-3 field-value-horizontal">
+			{{lookup (lookupPath @root sectionName) fieldName}}
+		</div>
+	</div>
+{{/inline}}
+
+{{#*inline "verticalFieldPartial"}}
+	<div class="flex-item-4">
+		<div class="field-label-vertical">
+		{{#if label}}
+			{{label}}
+		{{else}}
+			{{tryI18n (lookup (lookupPath @root.i18n.accountsApp.wizard.steps sectionName) "labels") fieldName}}
+		{{/if}}
+		</div>
+		<div class="field-value-vertical">
+		{{#if @partial-block}}
+			{{> @partial-block value=(lookup this fieldName)}}
+		{{else}}
+			{{lookup this fieldName}}
+		{{/if}}
+		</div>
+	</div>
+{{/inline}}
+
+<div id="step_review" class="wizard-step">
+	<div class="step-title">
+		{{i18n.accountsApp.wizard.steps.review.title}}
+	</div>
+	<div class="section-title">
+		1. {{i18n.accountsApp.wizard.steps.generalSettings.label}}
+		<a href="javascript:void(0)" class="help-tip" data-title="{{@root.i18n.accountsApp.wizard.steps.general.help.edit}}" data-toggle="tooltip">
+			{{telicon "edit" class="iconography-medium iconography-help"}}
+		</a>
+	</div>
+	<div class="section-body">
+		{{> horizontalFieldPartial fieldName="accountName" sectionName="generalSettings.accountInfo"}}
+		{{> horizontalFieldPartial fieldName="accountRealm" sectionName="generalSettings.accountInfo"}}
+		<div class="flex-row-container">
+			<div class="flex-item-4 field-label-horizontal">
+				{{i18n.accountsApp.wizard.steps.generalSettings.accountInfo.labels.addressLine1}}
+			</div>
+			<div class="flex-item-4-3 field-value-horizontal">
+				{{generalSettings.accountInfo.addressLine1}}
+				<br/>
+				{{generalSettings.accountInfo.addressLine2}}
+				<br/>
+				{{generalSettings.accountInfo.addressLine3}}
+			</div>
+		</div>
+		{{> horizontalFieldPartial fieldName="timezone" sectionName="generalSettings.accountInfo"}}
+		{{> horizontalFieldPartial fieldName="language" sectionName="generalSettings.accountInfo"}}
+		<div class="flex-row-container">
+			<div class="flex-item-4 field-label-horizontal">
+				{{replaceVar i18n.accountsApp.wizard.steps.review.generalSettings.formats.accountAdminsCount generalSettings.accountAdmins.length}}
+			</div>
+			<div class="flex-item-4-3 field-group">
+			{{#each generalSettings.accountAdmins}}
+				<div class="flex-row-container">
+					{{> verticalFieldPartial fieldName="fullName" label=@root.i18n.accountsApp.wizard.steps.review.general.labels.fullName}}
+					{{> verticalFieldPartial fieldName="email" label=@root.i18n.accountsApp.wizard.steps.general.labels.email}}
+					{{> verticalFieldPartial fieldName="password" sectionName="generalSettings.accountAdmins"}}
+					{{#> verticalFieldPartial fieldName="sendMail" label=@root.i18n.accountsApp.wizard.steps.review.generalSettings.labels.sendMail}}
+						{{#if value}}
+							<div class="text-success">
+								{{telicon "check--circle" class="iconography-medium"}}
+								<span>{{@root.i18n.accountsApp.wizard.steps.review.generalSettings.labels.yes}}</span>
+							</div>
+						{{else}}
+							<div class="text-danger">
+								{{telicon "x--circle" class="iconography-medium"}}
+								<span>{{@root.i18n.accountsApp.wizard.steps.review.generalSettings.labels.no}}</span>
+							</div>
+						{{/if}}
+					{{/verticalFieldPartial}}
+				</div>
+			{{/each}}
+			</div>
+		</div>
+	</div>
+</div>

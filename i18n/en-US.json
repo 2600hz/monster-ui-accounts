@@ -548,9 +548,29 @@
 				},
 				"review": {
 					"label": "Review + Confirm",
-					"description": "Review account configurations before finalizing the creation of your new account."
+					"description": "Review account configurations before finalizing the creation of your new account.",
+					"title": "Please review and confirm the configurations for your new account",
+					"generalSettings": {
+						"formats": {
+							"addressLine3": "{{city}}, {{state}} {{zip}}",
+							"accountAdminsCount": "Account administrators ({{variable}})"
+						},
+						"labels": {
+							"no": "No",
+							"sendMail": "Email Notifications upon Creation",
+							"yes": "Yes"
+						}
+					},
+					"general": {
+						"labels": {
+							"fullName": "Name"
+						}
+					}
 				},
 				"general": {
+					"help": {
+						"edit": "Edit"
+					},
 					"labels": {
 						"email": "Email"
 					},

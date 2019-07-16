@@ -102,7 +102,7 @@ define(function(require) {
 						template: 'wizardGeneralSettingsRender',
 						util: 'wizardGeneralSettingsUtil'
 					},
-					{
+					/*{
 						label: i18nSteps.accountContacts.label,
 						description: i18nSteps.accountContacts.description,
 						template: 'wizardAccountContactsRender',
@@ -131,7 +131,7 @@ define(function(require) {
 						description: i18nSteps.appRestrictions.description,
 						template: 'wizardAppRestrictionsRender',
 						util: 'wizardAppRestrictionsUtil'
-					},
+					},*/
 					{
 						label: i18nSteps.review.label,
 						description: i18nSteps.review.description,
@@ -1208,9 +1208,59 @@ define(function(require) {
 
 		wizardReviewRender: function(args) {
 			var self = this,
-				$container = args.container;
+				$container = args.container,
+				initTemplate = function() {
+					var data = args.data,
+						dataTemplate = self.wizardReviewFormatData(data),
+						$template = $(self.getTemplate({
+							name: 'step-review',
+							data: dataTemplate,
+							submodule: 'wizard'
+						}));
 
-			// TODO: Not implemented
+					monster.ui.tooltips($template);
+
+					return $template;
+				};
+
+			self.wizardRenderStep({
+				container: $container,
+				initTemplate: initTemplate
+			});
+		},
+
+		wizardReviewFormatData: function(data) {
+			var self = this,
+				formattedData = _
+					.chain(data)
+					.cloneDeep()	// To not to alter data to save
+					.merge({
+						generalSettings: {
+							accountInfo: {
+								// Set formatted address line 3
+								addressLine3: self.getTemplate({
+									name: '!' + self.i18n.active().accountsApp.wizard.steps.review.generalSettings.formats.addressLine3,
+									data: data.generalSettings.accountInfo
+								})
+							}
+						}
+					})
+					.value();
+
+			// Replace language code with language name
+			formattedData.generalSettings.accountInfo.language = monster.util.tryI18n(monster.apps.core.i18n.active().monsterLanguages, formattedData.generalSettings.accountInfo.language);
+
+			// Set full name for account admins
+			_.each(formattedData.generalSettings.accountAdmins, function(admin) {
+				admin.fullName = monster.util.getUserFullName({
+					first_name: admin.firstName,
+					last_name: admin.lastName
+				});
+				delete admin.firstName;
+				delete admin.lastName;
+			});
+
+			return formattedData;
 		},
 
 		wizardReviewUtil: function($template) {
@@ -1224,6 +1274,14 @@ define(function(require) {
 			};
 		},
 
+		/* CLOSE WIZARD */
+
+		/**
+		 * Loads the account manager, to replace the wizard view
+		 * @param  {Object} args
+		 * @param  {jQuery} args.container  Main view container
+		 * @param  {String} args.parentAccountId  Parent Account ID
+		 */
 		wizardClose: function(args) {
 			var self = this,
 				$container = args.container,
