@@ -626,5 +626,9 @@ $color-highlight: #dbdbde;
 		.field-value-vertical {
 			line-height: 14px;
 		}
+
+		.service-items-listing.monster-table tbody td:not(.category-cell) {
+			font-weight: normal;
+		}
 	}
 }

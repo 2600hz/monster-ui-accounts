@@ -110,4 +110,22 @@
 			</div>
 		{{/horizontalFieldPartial}}
 	</div>
+
+	<!-- SERVICE PLAN -->
+	{{> sectionTitle index=3 label=i18n.accountsApp.wizard.steps.servicePlan.label}}
+	<div class="section-body">
+		{{#> horizontalFieldPartial fieldPath="servicePlan.selectedPlans" i18nSectionName="review.servicePlan" i18nFieldName="selectedServicePlans" hasContent=true}}
+			<div class="flex-row-container">
+				<div class="flex-item-1">
+					{{value}}
+				</div>
+			</div>
+			<div class="flex-row-container">
+				<div class="flex-item-1">
+					<div id="service_plan_aggregate" class="flex-item-1">
+					</div>
+				</div>
+			</div>
+		{{/horizontalFieldPartial}}
+	</div>
 </div>

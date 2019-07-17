@@ -561,6 +561,11 @@
 							"yes": "Yes"
 						}
 					},
+					"servicePlan": {
+						"labels": {
+							"selectedServicePlans": "Selected Service Plans"
+						}
+					},
 					"general": {
 						"labels": {
 							"fullName": "Name"

@@ -108,13 +108,13 @@ define(function(require) {
 						template: 'wizardAccountContactsRender',
 						util: 'wizardAccountContactsUtil'
 					},
-					/*{
+					{
 						label: i18nSteps.servicePlan.label,
 						description: i18nSteps.servicePlan.description,
 						template: 'wizardServicePlanRender',
 						util: 'wizardServicePlanUtil'
 					},
-					{
+					/*{
 						label: i18nSteps.usageAndCallRestrictions.label,
 						description: i18nSteps.usageAndCallRestrictions.description,
 						template: 'wizardUsageAndCallRestrictionsRender',
@@ -1209,16 +1209,15 @@ define(function(require) {
 
 		wizardReviewRender: function(args) {
 			var self = this,
+				data = args.data,
 				$container = args.container,
+				dataTemplate = self.wizardReviewFormatData(data),
+				$template = $(self.getTemplate({
+					name: 'step-review',
+					data: dataTemplate,
+					submodule: 'wizard'
+				})),
 				initTemplate = function() {
-					var data = args.data,
-						dataTemplate = self.wizardReviewFormatData(data),
-						$template = $(self.getTemplate({
-							name: 'step-review',
-							data: dataTemplate,
-							submodule: 'wizard'
-						}));
-
 					monster.ui.tooltips($template);
 
 					return $template;
@@ -1226,6 +1225,21 @@ define(function(require) {
 
 			self.wizardRenderStep({
 				container: $container,
+				loadData: function(asyncCallback) {
+					self.serviceItemsListingRender({
+						planIds: data.servicePlan.selectedPlanIds,
+						container: $template.find('#service_plan_aggregate'),
+						showProgressPanel: false,
+						success: function() {
+							console.log('Success');
+							asyncCallback(null);
+						},
+						error: function(err) {
+							console.log('Error', err);
+							asyncCallback(null);
+						}
+					});
+				},
 				initTemplate: initTemplate
 			});
 		},
@@ -1264,7 +1278,7 @@ define(function(require) {
 			// Replace representative's userId with its full name
 			if (_.has(formattedData.accountContacts, 'salesRep.representative')) {
 				formattedData.accountContacts.salesRep.representative = _
-					.chain(self.wizardGetStore('accountUsers'))
+					.chain(self.wizardGetStore('accountUsers'))	// At this point all the required data has been stored, so we can get it directly
 					.find({
 						id: formattedData.accountContacts.salesRep.representative
 					})
@@ -1272,6 +1286,27 @@ define(function(require) {
 						return monster.util.getUserFullName(user);
 					})
 					.value();
+			}
+
+			// Get plan names and quote
+			if (_.has(formattedData, 'servicePlan.selectedPlanIds')) {
+				var	selectedPlanIds = formattedData.servicePlan.selectedPlanIds,
+					servicePlanList = self.wizardGetStore('servicePlans');
+
+				formattedData.servicePlan = {
+					selectedPlans: _
+						.chain(selectedPlanIds)
+						.map(function(planId) {
+							return _
+								.chain(servicePlanList)
+								.find({ id: planId })
+								.get('name')
+								.value();
+						})
+						.sortBy()
+						.join(', ')
+						.value()
+				};
 			}
 
 			return formattedData;
