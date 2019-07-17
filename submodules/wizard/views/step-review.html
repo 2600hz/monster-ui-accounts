@@ -13,18 +13,14 @@
 		{{#if label}}
 			{{label}}
 		{{else}}
-			{{tryI18n (lookup (lookupPath @root.i18n.accountsApp.wizard.steps sectionName) "labels") fieldName}}
+			{{tryI18n (lookupPath (lookupPath @root.i18n.accountsApp.wizard.steps i18nSectionName) "labels") i18nFieldName}}
 		{{/if}}
 		</div>
 		<div class="flex-item-4-3 field-value-horizontal">
 		{{#if hasContent}}	{{!-- Necessary to know if there is a @partial-block to render, and to avoid endless recursion --}}
-			{{#if fieldName}}
-				{{> @partial-block value=(lookup (lookupPath @root sectionName) fieldName)}}
-			{{else}}
-				{{> @partial-block}}
-			{{/if}}
+			{{> @partial-block value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
 		{{else}}
-			{{lookup (lookupPath @root sectionName) fieldName}}
+			{{lookupPath this (coalesce fieldPath i18nFieldName)}}
 		{{/if}}
 		</div>
 	</div>
@@ -36,14 +32,14 @@
 		{{#if label}}
 			{{label}}
 		{{else}}
-			{{tryI18n (lookup (lookupPath @root.i18n.accountsApp.wizard.steps sectionName) "labels") fieldName}}
+			{{tryI18n (lookupPath (lookupPath @root.i18n.accountsApp.wizard.steps i18nSectionName) "labels") i18nFieldName}}
 		{{/if}}
 		</div>
 		<div class="field-value-vertical">
 		{{#if hasContent}}	{{!-- Necessary to know if there is a @partial-block to render, and to avoid endless recursion --}}
-			{{> @partial-block value=(lookup this fieldName)}}
+			{{> @partial-block value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
 		{{else}}
-			{{lookup this fieldName}}
+			{{lookupPath this (coalesce fieldPath i18nFieldName)}}
 		{{/if}}
 		</div>
 	</div>
@@ -53,40 +49,65 @@
 	<div class="step-title">
 		{{i18n.accountsApp.wizard.steps.review.title}}
 	</div>
+
+	<!-- GENERAL SETTINGS -->
 	{{> sectionTitle index=1 label=i18n.accountsApp.wizard.steps.generalSettings.label}}
 	<div class="section-body">
-		{{> horizontalFieldPartial fieldName="accountName" sectionName="generalSettings.accountInfo"}}
-		{{> horizontalFieldPartial fieldName="accountRealm" sectionName="generalSettings.accountInfo"}}
-		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.generalSettings.accountInfo.labels.addressLine1 hasContent=true}}
+		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.accountName" i18nSectionName="generalSettings.accountInfo" i18nFieldName="accountName"}}
+		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.accountRealm" i18nSectionName="generalSettings.accountInfo" i18nFieldName="accountRealm"}}
+		{{#> horizontalFieldPartial i18nSectionName="generalSettings.accountInfo" i18nFieldName="addressLine1" hasContent=true}}
 			{{generalSettings.accountInfo.addressLine1}}
 			<br/>
 			{{generalSettings.accountInfo.addressLine2}}
 			<br/>
 			{{generalSettings.accountInfo.addressLine3}}
 		{{/horizontalFieldPartial}}
-		{{> horizontalFieldPartial fieldName="timezone" sectionName="generalSettings.accountInfo"}}
-		{{> horizontalFieldPartial fieldName="language" sectionName="generalSettings.accountInfo"}}
+		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.timezone" i18nSectionName="generalSettings.accountInfo" i18nFieldName="timezone"}}
+		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.language" i18nSectionName="generalSettings.accountInfo" i18nFieldName="language"}}
 		{{#> horizontalFieldPartial label=(replaceVar i18n.accountsApp.wizard.steps.review.generalSettings.formats.accountAdminsCount generalSettings.accountAdmins.length) hasContent=true}}
 			{{#each generalSettings.accountAdmins}}
 				<div class="flex-row-container">
-					{{> verticalFieldPartial fieldName="fullName" label=../i18n.accountsApp.wizard.steps.review.general.labels.fullName}}
-					{{> verticalFieldPartial fieldName="email" label=../i18n.accountsApp.wizard.steps.general.labels.email}}
-					{{> verticalFieldPartial fieldName="password" sectionName="generalSettings.accountAdmins"}}
-					{{#> verticalFieldPartial fieldName="sendMail" label=../i18n.accountsApp.wizard.steps.review.generalSettings.labels.sendMail hasContent=true}}
+					{{> verticalFieldPartial fieldPath="fullName" i18nSectionName="review.general" i18nFieldName="fullName"}}
+					{{> verticalFieldPartial fieldPath="email" i18nSectionName="general" i18nFieldName="email"}}
+					{{> verticalFieldPartial fieldPath="password" i18nSectionName="generalSettings.accountAdmins" i18nFieldName="password"}}
+					{{#> verticalFieldPartial fieldPath="sendMail" i18nSectionName="review.generalSettings" i18nFieldName="sendMail" hasContent=true}}
 						{{#if value}}
 							<div class="text-success">
 								{{telicon "check--circle" class="iconography-medium"}}
-								<span>{{@root.i18n.accountsApp.wizard.steps.review.generalSettings.labels.yes}}</span>
+								<span>{{tryI18n @root.i18n.accountsApp.wizard.steps.review.generalSettings.labels "yes"}}</span>
 							</div>
 						{{else}}
 							<div class="text-danger">
 								{{telicon "x--circle" class="iconography-medium"}}
-								<span>{{@root.i18n.accountsApp.wizard.steps.review.generalSettings.labels.no}}</span>
+								<span>{{tryI18n @root.i18n.accountsApp.wizard.steps.review.generalSettings.labels "no"}}</span>
 							</div>
 						{{/if}}
 					{{/verticalFieldPartial}}
 				</div>
 			{{/each}}
+		{{/horizontalFieldPartial}}
+	</div>
+
+	<!-- ACCOUNT CONTACTS -->
+	{{> sectionTitle index=2 label=i18n.accountsApp.wizard.steps.accountContacts.label}}
+	<div class="section-body">
+	{{#if accountContacts.salesRep}}
+		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.representative" label=i18n.accountsApp.wizard.steps.accountContacts.salesRep.title}}
+		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.contractEndDate" i18nSectionName="accountContacts.salesRep" i18nFieldName="contractEndDate"}}
+	{{/if}}
+		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.technicalContact.title hasContent=true}}
+			<div class="flex-row-container">
+				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.fullName" i18nSectionName="review.general" i18nFieldName="fullName" hasContent=false}}
+				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.email" i18nSectionName="general" i18nFieldName="email" hasContent=false}}
+				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.phoneNumber.userFormat" i18nSectionName="general" i18nFieldName="phoneNumber" hasContent=false}}
+			</div>
+		{{/horizontalFieldPartial}}
+		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.billingContact.title hasContent=true}}
+			<div class="flex-row-container">
+				{{> verticalFieldPartial fieldPath="accountContacts.billingContact.fullName" i18nSectionName="review.general" i18nFieldName="fullName" hasContent=false}}
+				{{> verticalFieldPartial fieldPath="accountContacts.billingContact.email" i18nSectionName="general" i18nFieldName="email" hasContent=false}}
+				{{> verticalFieldPartial fieldPath="accountContacts.billingContact.phoneNumber.userFormat" i18nSectionName="general" i18nFieldName="phoneNumber" hasContent=false}}
+			</div>
 		{{/horizontalFieldPartial}}
 	</div>
 </div>

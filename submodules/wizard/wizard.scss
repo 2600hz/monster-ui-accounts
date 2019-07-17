@@ -605,7 +605,15 @@ $color-highlight: #dbdbde;
 
 		.field-value-horizontal {
 			margin-top: -4px;
+			margin-bottom: 4px;
 			line-height: 21px;
+
+			.flex-row-container:last-child {
+				[class^="flex-item-"],
+				[class*=" flex-item-"] {
+					padding-bottom: 0;
+				}
+			}
 		}
 
 		.field-label-vertical {

@@ -102,13 +102,13 @@ define(function(require) {
 						template: 'wizardGeneralSettingsRender',
 						util: 'wizardGeneralSettingsUtil'
 					},
-					/*{
+					{
 						label: i18nSteps.accountContacts.label,
 						description: i18nSteps.accountContacts.description,
 						template: 'wizardAccountContactsRender',
 						util: 'wizardAccountContactsUtil'
 					},
-					{
+					/*{
 						label: i18nSteps.servicePlan.label,
 						description: i18nSteps.servicePlan.description,
 						template: 'wizardServicePlanRender',
@@ -362,7 +362,8 @@ define(function(require) {
 							name: 'step-accountContacts',
 							data: {
 								data: formattedData,
-								users: userList
+								users: userList,
+								showSalesRepSection: true
 							},
 							submodule: 'wizard'
 						})),
@@ -1260,6 +1261,19 @@ define(function(require) {
 				delete admin.lastName;
 			});
 
+			// Replace representative's userId with its full name
+			if (_.has(formattedData.accountContacts, 'salesRep.representative')) {
+				formattedData.accountContacts.salesRep.representative = _
+					.chain(self.wizardGetStore('accountUsers'))
+					.find({
+						id: formattedData.accountContacts.salesRep.representative
+					})
+					.thru(function(user) {
+						return monster.util.getUserFullName(user);
+					})
+					.value();
+			}
+
 			return formattedData;
 		},
 
@@ -1686,7 +1700,7 @@ define(function(require) {
 
 		/**
 		 * Store getter
-		 * @param  {Array|String} [path]
+		 * @param  {('accountUsers'|'apps'|'servicePlans')} [path]
 		 * @param  {*} [defaultValue]
 		 * @return {*}
 		 */
@@ -1704,7 +1718,7 @@ define(function(require) {
 
 		/**
 		 * Store setter
-		 * @param  {Array|String|*} path|value
+		 * @param  {('accountUsers'|'apps'|'servicePlans')} path|value
 		 * @param  {*} [value]
 		 */
 		wizardSetStore: function(path, value) {
