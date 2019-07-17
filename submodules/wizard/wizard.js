@@ -434,7 +434,7 @@ define(function(require) {
 				if (_.has(formattedNumber, 'e164Number')) {
 					_.set(data, fieldName, formattedNumber);
 				} else {
-					errors[fieldName] = self.i18n.active().accountsApp.wizard.steps.general.phoneNumber.invalid;
+					errors[fieldName] = self.i18n.active().accountsApp.wizard.steps.general.errors.phoneNumber.invalid;
 				}
 			});
 

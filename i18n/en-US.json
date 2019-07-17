@@ -410,13 +410,13 @@
 					"title": "Add important contact information pertaining to this account",
 					"salesRep": {
 						"title": "Account Sales Representative",
-						"representative": {
-							"label": "Representative",
-							"placeholder": "Select a representative..."
+						"labels": {
+							"representative": "Representative",
+							"contractEndDate": "Contract End Date"
 						},
-						"contractEndDate": {
-							"label": "Contract End Date",
-							"placeholder": "mm/dd/yyyy"
+						"placeholders": {
+							"representative": "Select a representative...",
+							"contractEndDate": "mm/dd/yyyy"
 						}
 					},
 					"technicalContact": {
@@ -572,17 +572,14 @@
 						"edit": "Edit"
 					},
 					"labels": {
-						"email": "Email"
+						"email": "Email",
+						"fullName": "Full Name",
+						"phoneNumber": "Phone Number"
 					},
-					"email": {
-						"label": "Email"
-					},
-					"fullName": {
-						"label": "Full Name"
-					},
-					"phoneNumber": {
-						"label": "Phone Number",
-						"invalid": "Invalid phone number"
+					"errors": {
+						"phoneNumber": {
+							"invalid": "Invalid phone number"
+						}
 					}
 				}
 			},
