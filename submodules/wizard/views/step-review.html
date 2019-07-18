@@ -45,6 +45,32 @@
 	</div>
 {{/inline}}
 
+{{#*inline "booleanLabel"}}
+	{{#if value}}
+		<div class="text-success">
+			{{telicon "check--circle" class="iconography-medium"}}
+			<span class="iconography-text">
+			{{#compare mode "===" "Status"}}
+				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "enabled"}}
+			{{else}}
+				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "yes"}}
+			{{/compare}}
+			</span>
+		</div>
+	{{else}}
+		<div class="text-danger">
+			{{telicon "x--circle" class="iconography-medium"}}
+			<span>
+			{{#compare mode "===" "Status"}}
+				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "disabled"}}
+			{{else}}
+				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "no"}}
+			{{/compare}}
+			</span>
+		</div>
+	{{/if}}
+{{/inline}}
+
 <div id="step_review" class="wizard-step">
 	<div class="step-title">
 		{{i18n.accountsApp.wizard.steps.review.title}}
@@ -71,17 +97,7 @@
 					{{> verticalFieldPartial fieldPath="email" i18nSectionName="general" i18nFieldName="email"}}
 					{{> verticalFieldPartial fieldPath="password" i18nSectionName="generalSettings.accountAdmins" i18nFieldName="password"}}
 					{{#> verticalFieldPartial fieldPath="sendMail" i18nSectionName="review.generalSettings" i18nFieldName="sendMail" hasContent=true}}
-						{{#if value}}
-							<div class="text-success">
-								{{telicon "check--circle" class="iconography-medium"}}
-								<span>{{tryI18n @root.i18n.accountsApp.wizard.steps.review.generalSettings.labels "yes"}}</span>
-							</div>
-						{{else}}
-							<div class="text-danger">
-								{{telicon "x--circle" class="iconography-medium"}}
-								<span>{{tryI18n @root.i18n.accountsApp.wizard.steps.review.generalSettings.labels "no"}}</span>
-							</div>
-						{{/if}}
+						{{> booleanLabel mode="YesNo"}}
 					{{/verticalFieldPartial}}
 				</div>
 			{{/each}}
@@ -121,11 +137,23 @@
 				</div>
 			</div>
 			<div class="flex-row-container">
-				<div class="flex-item-1">
-					<div id="service_plan_aggregate" class="flex-item-1">
-					</div>
+				<div id="service_plan_aggregate" class="flex-item-1">
 				</div>
 			</div>
+		{{/horizontalFieldPartial}}
+	</div>
+
+	<!-- USAGE AND CALL RESTRICTIONS -->
+	{{> sectionTitle index=4 label=i18n.accountsApp.wizard.steps.review.usageBilling.title}}
+	<div class="section-body">
+		{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.inbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="inbound"}}
+		{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.outbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="outbound"}}
+		{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.twoway" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="twoway"}}
+		{{#> horizontalFieldPartial fieldPath="creditBalanceAndFeatures.accountCredit.initialBalance" i18nSectionName="creditBalanceAndFeatures.accountCredit" i18nFieldName="initialBalance" hasContent=true}}
+			{{formatPrice value 2}}
+		{{/horizontalFieldPartial}}
+		{{#> horizontalFieldPartial fieldPath="usageAndCallRestrictions.allowPerMinuteCalls" i18nSectionName="review.usageBilling" i18nFieldName="allowPerMinuteCalls" hasContent=true}}
+			{{> booleanLabel mode="Status"}}
 		{{/horizontalFieldPartial}}
 	</div>
 </div>

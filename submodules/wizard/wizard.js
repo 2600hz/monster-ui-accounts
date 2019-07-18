@@ -114,7 +114,7 @@ define(function(require) {
 						template: 'wizardServicePlanRender',
 						util: 'wizardServicePlanUtil'
 					},
-					/*{
+					{
 						label: i18nSteps.usageAndCallRestrictions.label,
 						description: i18nSteps.usageAndCallRestrictions.description,
 						template: 'wizardUsageAndCallRestrictionsRender',
@@ -126,7 +126,7 @@ define(function(require) {
 						template: 'wizardCreditBalanceAndFeaturesRender',
 						util: 'wizardCreditBalanceAndFeaturesUtil'
 					},
-					{
+					/*{
 						label: i18nSteps.appRestrictions.label,
 						description: i18nSteps.appRestrictions.description,
 						template: 'wizardAppRestrictionsRender',
@@ -1231,11 +1231,9 @@ define(function(require) {
 						container: $template.find('#service_plan_aggregate'),
 						showProgressPanel: false,
 						success: function() {
-							console.log('Success');
 							asyncCallback(null);
 						},
 						error: function(err) {
-							console.log('Error', err);
 							asyncCallback(null);
 						}
 					});

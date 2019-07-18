@@ -556,9 +556,7 @@
 							"accountAdminsCount": "Account administrators ({{variable}})"
 						},
 						"labels": {
-							"no": "No",
-							"sendMail": "Email Notifications upon Creation",
-							"yes": "Yes"
+							"sendMail": "Email Notifications upon Creation"
 						}
 					},
 					"servicePlan": {
@@ -566,9 +564,19 @@
 							"selectedServicePlans": "Selected Service Plans"
 						}
 					},
+					"usageBilling": {
+						"title": "Usage Billing",
+						"labels": {
+							"allowPerMinuteCalls": "Allow per-minute calls that go over the above limit, and bill the per-minute cost of the call"
+						}
+					},
 					"general": {
 						"labels": {
-							"fullName": "Name"
+							"disabled": "Disabled",
+							"enabled": "Enabled",
+							"fullName": "Name",
+							"no": "No",
+							"yes": "Yes"
 						}
 					}
 				},

@@ -51,6 +51,12 @@ $color-highlight: #dbdbde;
 		}
 	}
 
+	.text-success, .text-danger {
+		.iconography-medium {
+			margin-top: -2px;
+		}
+	}
+
 	.text-success {
 		color: $success-color;
 	}
@@ -589,30 +595,22 @@ $color-highlight: #dbdbde;
 			}
 		}
 
-		.field-group {
-			padding-bottom: 0.5rem;
-		}
-
 		.field-label-horizontal, .field-value-horizontal {
+			margin-top: -4px;
+			margin-bottom: 4px;
 			padding-bottom: 1rem;
+			line-height: 21px;
 		}
 
 		.field-label-horizontal {
-			line-height: 14px;
 			color: $woodsmoke;
 			letter-spacing: 0px;
 		}
 
-		.field-value-horizontal {
-			margin-top: -4px;
-			margin-bottom: 4px;
-			line-height: 21px;
-
-			.flex-row-container:last-child {
-				[class^="flex-item-"],
-				[class*=" flex-item-"] {
-					padding-bottom: 0;
-				}
+		.field-value-horizontal .flex-row-container:last-child {
+			[class^="flex-item-"],
+			[class*=" flex-item-"] {
+				padding-bottom: 0;
 			}
 		}
 
@@ -629,6 +627,19 @@ $color-highlight: #dbdbde;
 
 		.service-items-listing.monster-table tbody td:not(.category-cell) {
 			font-weight: normal;
+		}
+
+		.field-group-column {
+			width: 43.75%;
+
+			.field-label-horizontal {
+				width: 57.1429%;
+			}
+
+			.field-value-horizontal {
+				flex: 1;
+				width: auto;
+			}
 		}
 	}
 }
