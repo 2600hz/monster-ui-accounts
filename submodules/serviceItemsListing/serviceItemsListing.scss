@@ -19,6 +19,7 @@
 
 	th {
 		width: 20%;
+		border-bottom: 1px solid $french-gray2;
 		text-transform: uppercase;
 		text-align: left;
 		letter-spacing: 0.4px;
@@ -35,21 +36,27 @@
 	}
 
 	tbody {
+		background: none;
+
 		td {
 			width: 20%;
+			border-bottom-color: $french-gray2;
 
 			// To override .monster-table specific style
-			&.item-cell:first-child {
+			&:first-child {
 				width: 40%;
 				padding-left: 2rem;
+				border-left: none;
+			}
+
+			&:last-child {
+				border-right: none;
 			}
 
 			&.category-cell {
 				width: 100%;
 				background: #dbdbde;
 				border-radius: 0px;
-				box-shadow: inset 0px 1px 0px 0px $french-gray2,
-				inset 0px -1px 0px 0px $french-gray2;
 				font-weight: 600;
 				text-align: left;
 				color: $woodsmoke;

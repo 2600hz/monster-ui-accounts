@@ -327,7 +327,7 @@ define(function(require) {
 				var formattedItem = _.cloneDeep(defaultItem);
 
 				formattedItem.isActivationCharges = true;
-				formattedItem.name = self.getTemplate({
+				formattedItem.label = self.getTemplate({
 					name: '!' + self.i18n.active().accountsApp.serviceItemsListing.labels.activationCharge,
 					data: {
 						itemName: formattedItem.name
