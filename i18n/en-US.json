@@ -570,6 +570,9 @@
 							"allowPerMinuteCalls": "Allow per-minute calls that go over the above limit, and bill the per-minute cost of the call"
 						}
 					},
+					"controlCenterAccessAndCallRestrictions": {
+						"title": "Control Center Access & Call Restrictions"
+					},
 					"general": {
 						"labels": {
 							"disabled": "Disabled",

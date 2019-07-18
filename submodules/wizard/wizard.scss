@@ -126,8 +126,8 @@ $color-highlight: #dbdbde;
 		margin-left: -0.75rem;
 		margin-right: -0.75rem;
 
-		[class^="flex-item-"],
-		[class*=" flex-item-"] {
+		[class^="flex-item"],
+		[class*=" flex-item"] {
 			flex: 0 0 auto;
 			box-sizing: border-box;
 			padding: 0 0.75rem 1.5rem 0.75rem;
@@ -358,7 +358,7 @@ $color-highlight: #dbdbde;
 						margin-left: 0.5rem;
 
 						.iconography-medium {
-							margin-left: -2px;
+							margin-left: -6px;
 							margin-top: -3px;
 						}
 
@@ -608,8 +608,8 @@ $color-highlight: #dbdbde;
 		}
 
 		.field-value-horizontal .flex-row-container:last-child {
-			[class^="flex-item-"],
-			[class*=" flex-item-"] {
+			[class^="flex-item"],
+			[class*=" flex-item"] {
 				padding-bottom: 0;
 			}
 		}
@@ -632,8 +632,20 @@ $color-highlight: #dbdbde;
 		.field-group-column {
 			width: 43.75%;
 
+			.column-title {
+				color: $woodsmoke;
+				font-size: 14px;
+				font-weight: 600;
+				line-height: 14px;
+				padding-bottom: 1.5rem;
+			}
+
 			.field-label-horizontal {
 				width: 57.1429%;
+
+				.iconography-text-right {
+					margin-left: 0.75rem;
+				}
 			}
 
 			.field-value-horizontal {

@@ -25,6 +25,72 @@ define(function(require) {
 					planInput: 150,
 					allowedApps: 500,
 					toggleAppCards: 400
+				},
+				callRestrictionTypes: [
+					'tollfree_us',
+					'toll_us',
+					'emergency',
+					'caribbean',
+					'did_us',
+					'international',
+					'unknowkn'
+				],
+				controlCenterFeatures: {
+					tree: [
+						{
+							category: 'settings',
+							features: [
+								{
+									name: 'user',
+									icon: 'user'
+								},
+								{
+									name: 'account',
+									icon: 'avatar--badge'
+								}
+							]
+						},
+						{
+							category: 'billing',
+							features: [
+								{
+									name: 'billing',
+									icon: 'credit-card'
+								},
+								{
+									name: 'balance',
+									icon: 'list',
+									features: [
+										{
+											name: 'credit',
+											icon: 'available-balance'
+										},
+										{
+											name: 'minutes',
+											icon: 'clock'
+										}
+									]
+								},
+								{
+									name: 'service_plan',
+									icon: 'service-plan'
+								},
+								{
+									name: 'transactions',
+									icon: 'billing'
+								}
+							]
+						},
+						{
+							category: 'misc',
+							features: [
+								{
+									name: 'error_tracker',
+									icon: 'bug'
+								}
+							]
+						}
+					]
 				}
 			}
 		},
@@ -834,15 +900,7 @@ define(function(require) {
 								'outbound',
 								'twoway'
 							],
-							callRestrictionTypes: [
-								'tollfree_us',
-								'toll_us',
-								'emergency',
-								'caribbean',
-								'did_us',
-								'international',
-								'unknowkn'
-							],
+							callRestrictionTypes: self.appFlags.wizard.callRestrictionTypes,
 							data: usageAndCallRestrictionsData
 						},
 						$template = $(self.getTemplate({
@@ -896,80 +954,13 @@ define(function(require) {
 			var self = this,
 				$container = args.container,
 				initTemplate = function() {
-					var controlCenterFeatureTree = [
-							{
-								category: 'settings',
-								features: [
-									{
-										name: 'user',
-										icon: 'user'
-									},
-									{
-										name: 'account',
-										icon: 'avatar--badge'
-									}
-								]
-							},
-							{
-								category: 'billing',
-								features: [
-									{
-										name: 'billing',
-										icon: 'credit-card'
-									},
-									{
-										name: 'balance',
-										icon: 'list',
-										features: [
-											{
-												name: 'credit',
-												icon: 'available-balance'
-											},
-											{
-												name: 'minutes',
-												icon: 'clock'
-											}
-										]
-									},
-									{
-										name: 'service_plan',
-										icon: 'service-plan'
-									},
-									{
-										name: 'transactions',
-										icon: 'billing'
-									}
-								]
-							},
-							{
-								category: 'misc',
-								features: [
-									{
-										name: 'error_tracker',
-										icon: 'bug'
-									}
-								]
-							}
-						],
-						featureTreeToList = function(features) {
-							return _.flatMap(features, function(feature) {
-								var flattenedFeatures = _.concat([ feature.name ], featureTreeToList(feature.features));
-								return flattenedFeatures;
-							});
-						},
-						controlCenterFeatureList = _
-							.chain(controlCenterFeatureTree)
-							.flatMap('features')
-							.thru(featureTreeToList)
-							.value(),
-						creditBalanceAndFeaturesData = args.data.creditBalanceAndFeatures,
+					var creditBalanceAndFeaturesData = args.data.creditBalanceAndFeatures,
 						$template = $(self.getTemplate({
 							name: 'step-creditBalanceAndFeatures',
 							data: {
 								currencySymbol: monster.util.getCurrencySymbol(),
 								controlCenter: {
-									featureTree: controlCenterFeatureTree,
-									featureList: controlCenterFeatureList
+									featureTree: self.appFlags.wizard.controlCenterFeatures.tree
 								},
 								data: creditBalanceAndFeaturesData
 							},
@@ -1244,6 +1235,7 @@ define(function(require) {
 
 		wizardReviewFormatData: function(data) {
 			var self = this,
+				wizardAppFlags = self.appFlags.wizard,
 				formattedData = _
 					.chain(data)
 					.cloneDeep()	// To not to alter data to save
@@ -1258,7 +1250,13 @@ define(function(require) {
 							}
 						}
 					})
-					.value();
+					.value(),
+				featureTreeToList = function(features) {
+					return _.flatMap(features, function(feature) {
+						var flattenedFeatures = _.concat([ feature ], featureTreeToList(feature.features));
+						return flattenedFeatures;
+					});
+				};
 
 			// Replace language code with language name
 			formattedData.generalSettings.accountInfo.language = monster.util.tryI18n(monster.apps.core.i18n.active().monsterLanguages, formattedData.generalSettings.accountInfo.language);
@@ -1306,6 +1304,17 @@ define(function(require) {
 						.value()
 				};
 			}
+
+			// Add static data from appFlags
+			if (!_.has(wizardAppFlags.controlCenterFeatures, 'list')) {
+				wizardAppFlags.controlCenterFeatures.list = _
+					.chain(wizardAppFlags.controlCenterFeatures.tree)
+					.flatMap('features')
+					.thru(featureTreeToList)
+					.value();
+			}
+			formattedData.creditBalanceAndFeatures.controlCenterAccess.featureList = wizardAppFlags.controlCenterFeatures.list;
+			formattedData.usageAndCallRestrictions.callRestrictionTypes = wizardAppFlags.callRestrictionTypes;
 
 			return formattedData;
 		},

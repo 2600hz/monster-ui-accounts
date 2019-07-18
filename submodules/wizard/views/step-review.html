@@ -143,7 +143,7 @@
 		{{/horizontalFieldPartial}}
 	</div>
 
-	<!-- USAGE AND CALL RESTRICTIONS -->
+	<!-- USAGE BILLING -->
 	{{> sectionTitle index=4 label=i18n.accountsApp.wizard.steps.review.usageBilling.title}}
 	<div class="section-body">
 		{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.inbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="inbound"}}
@@ -155,5 +155,49 @@
 		{{#> horizontalFieldPartial fieldPath="usageAndCallRestrictions.allowPerMinuteCalls" i18nSectionName="review.usageBilling" i18nFieldName="allowPerMinuteCalls" hasContent=true}}
 			{{> booleanLabel mode="Status"}}
 		{{/horizontalFieldPartial}}
+	</div>
+
+	<!-- CONTROL CENTER ACCESS AND CALL RESTRICTIONS -->
+	{{> sectionTitle index=5 label=i18n.accountsApp.wizard.steps.review.controlCenterAccessAndCallRestrictions.title}}
+	<div class="section-body">
+		<div class="flex-row-container">
+			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-1 column-title">
+						{{i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.controlCenterAccess.title}}
+					</div>
+				</div>
+			{{#each creditBalanceAndFeatures.controlCenterAccess.featureList}}
+				<div class="flex-row-container">
+					<div class="flex-item field-label-horizontal">
+						{{telicon icon class="feature-icon iconography-medium"}}
+						<span class="iconography-text-right">
+							{{tryI18n @root.i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.controlCenterAccess.features.labels name}}
+						</span>
+					</div>
+					<div class="flex-item field-value-horizontal">
+						{{> booleanLabel value=(lookup @root.creditBalanceAndFeatures.controlCenterAccess.features name) mode="Status"}}
+					</div>
+				</div>
+			{{/each}}
+			</div>
+			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-1 column-title">
+						{{i18n.accountsApp.wizard.steps.usageAndCallRestrictions.callRestrictions.title}}
+					</div>
+				</div>
+			{{#each usageAndCallRestrictions.callRestrictionTypes}}
+				<div class="flex-row-container">
+					<div class="flex-item field-label-horizontal">
+						{{tryI18n @root.i18n.accountsApp.wizard.steps.usageAndCallRestrictions.callRestrictions.labels this}}
+					</div>
+					<div class="flex-item field-value-horizontal">
+						{{> booleanLabel value=(lookup @root.usageAndCallRestrictions.callRestrictions this) mode="Status"}}
+					</div>
+				</div>
+			{{/each}}
+			</div>
+		</div>
 	</div>
 </div>
