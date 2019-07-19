@@ -200,4 +200,37 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- APP RESTRICTIONS -->
+	{{> sectionTitle index=6 label=i18n.accountsApp.wizard.steps.appRestrictions.label}}
+	<div class="section-body">
+		<div class="flex-row-container">
+			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-2 ">
+					{{#if appRestrictions.fullAccessLevel}}
+						{{i18n.accountsApp.wizard.steps.review.appRestrictions.accessLevel.types.full}}
+					{{else}}
+						{{i18n.accountsApp.wizard.steps.review.appRestrictions.accessLevel.types.restricted}}
+					{{/if}}
+					</div>
+				</div>
+	{{#unless appRestrictions.fullAccessLevel}}
+		{{#each appRestrictions.apps}}
+			{{#ifInArray id ../appRestrictions.allowedAppIds}}
+				<div class="app-list flex-container">
+					<div class="flex-item-1 flex-row-container app-item">
+						<div class="flex-item app-icon {{extraCssClass}}" style="{{#if icon}}background-image:url({{icon}}){{else}}background-color:#606069{{/if}}">
+						</div>
+						<div class="flex-item app-name">
+							{{label}}
+						</div>
+					</div>
+				</div>
+			{{/ifInArray}}
+		{{/each}}
+	{{/unless}}
+			</div>
+		</div>
+	</div>
 </div>

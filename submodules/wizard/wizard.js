@@ -192,12 +192,12 @@ define(function(require) {
 						template: 'wizardCreditBalanceAndFeaturesRender',
 						util: 'wizardCreditBalanceAndFeaturesUtil'
 					},
-					/*{
+					{
 						label: i18nSteps.appRestrictions.label,
 						description: i18nSteps.appRestrictions.description,
 						template: 'wizardAppRestrictionsRender',
 						util: 'wizardAppRestrictionsUtil'
-					},*/
+					},
 					{
 						label: i18nSteps.review.label,
 						description: i18nSteps.review.description,
@@ -1198,6 +1198,12 @@ define(function(require) {
 
 		/* REVIEW */
 
+		/**
+		 * Render Review step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardReviewRender: function(args) {
 			var self = this,
 				data = args.data,
@@ -1233,6 +1239,24 @@ define(function(require) {
 			});
 		},
 
+		/**
+		 * Utility funcion to extract Review data. Not used, as this is only a review step, so it
+		 * does not provide any new data.
+		 * @param  {jQuery} $template  Step template
+		 * @returns  {Object}  Object that contains a `valid` flag value
+		 */
+		wizardReviewUtil: function($template) {
+			var self = this;
+
+			return {
+				valid: true
+			};
+		},
+
+		/**
+		 * Fomat the wizard data to be rendered for review
+		 * @param  {Object} data  Wizard data
+		 */
 		wizardReviewFormatData: function(data) {
 			var self = this,
 				wizardAppFlags = self.appFlags.wizard,
@@ -1316,18 +1340,10 @@ define(function(require) {
 			formattedData.creditBalanceAndFeatures.controlCenterAccess.featureList = wizardAppFlags.controlCenterFeatures.list;
 			formattedData.usageAndCallRestrictions.callRestrictionTypes = wizardAppFlags.callRestrictionTypes;
 
+			// Set app list
+			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
+
 			return formattedData;
-		},
-
-		wizardReviewUtil: function($template) {
-			var self = this;
-
-			// TODO: Not implemented
-
-			return {
-				valid: true,
-				data: {}
-			};
 		},
 
 		/* CLOSE WIZARD */

@@ -295,6 +295,27 @@ $color-highlight: #dbdbde;
 		}
 	}
 
+	.app-icon {
+		flex: 0 0 initial;
+		width: 2rem;
+		height: 2rem;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: contain;
+		border-radius: 0.5rem;
+
+		&.app-icon-empty {
+			background-color:$midgray;
+		}
+	}
+
+	.app-name {
+		flex: 1;
+		padding: 0 0.75rem;
+		line-height: 2rem;
+		vertical-align: middle;
+	}
+
 	.admin-user-item {
 		padding-top: 1.5rem;
 		border-top: 1px solid $french-gray2;
@@ -521,27 +542,6 @@ $color-highlight: #dbdbde;
 							color: $midgray2;
 						}
 
-						.app-icon {
-							flex: 0 0 initial;
-							width: 2rem;
-							height: 2rem;
-							background-position: center;
-							background-repeat: no-repeat;
-							background-size: contain;
-							border-radius: 0.5rem;
-
-							&.app-icon-empty {
-								background-color:$midgray;
-							}
-						}
-
-						.app-name {
-							flex: 1;
-							padding: 0 0.75rem;
-							line-height: 2rem;
-							vertical-align: middle;
-						}
-
 						.app-remove {
 							flex: 0 0 initial;
 							width: 1rem;
@@ -651,6 +651,14 @@ $color-highlight: #dbdbde;
 			.field-value-horizontal {
 				flex: 1;
 				width: auto;
+			}
+		}
+
+		.app-list .app-item {
+			padding-bottom: 1rem;
+
+			.app-name {
+				padding-bottom: 0;
 			}
 		}
 	}
