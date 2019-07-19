@@ -657,6 +657,10 @@ $color-highlight: #dbdbde;
 		.app-list .app-item {
 			padding-bottom: 1rem;
 
+			.app-icon {
+				padding: 0;
+			}
+
 			.app-name {
 				padding-bottom: 0;
 			}
