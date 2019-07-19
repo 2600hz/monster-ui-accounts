@@ -428,8 +428,8 @@ define(function(require) {
 							name: 'step-accountContacts',
 							data: {
 								data: formattedData,
-								users: userList,
-								showSalesRepSection: true
+								users: userList
+								//showSalesRepSection: true
 							},
 							submodule: 'wizard'
 						})),
@@ -1217,6 +1217,10 @@ define(function(require) {
 				initTemplate = function() {
 					monster.ui.tooltips($template);
 
+					self.wizardReviewBindEvents({
+						template: $template
+					});
+
 					return $template;
 				};
 
@@ -1344,6 +1348,28 @@ define(function(require) {
 			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
 
 			return formattedData;
+		},
+
+		/**
+		 * Bind Review step events
+		 * @param  {Object} args
+		 * @param  {jQuery} args.template  Step template
+		 */
+		wizardReviewBindEvents: function(args) {
+			var self = this,
+				$template = args.template;
+
+			$template
+				.find('.edit-step')
+					.on('click', function(e) {
+						e.preventDefault();
+
+						var stepId = $(this).data('step_id');
+
+						monster.pub('common.navigationWizard.goToStep', {
+							stepId: stepId
+						});
+					});
 		},
 
 		/* CLOSE WIZARD */
