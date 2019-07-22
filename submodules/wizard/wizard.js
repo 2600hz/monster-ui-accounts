@@ -22,7 +22,9 @@ define(function(require) {
 			wizard: {
 				animationTimes: {
 					adminUser: 500,
-					planInput: 150
+					planInput: 150,
+					allowedApps: 500,
+					toggleAppCards: 400
 				}
 			}
 		},
@@ -1134,7 +1136,7 @@ define(function(require) {
 		 */
 		wizardAppRestrictionsBindEvents: function(args) {
 			var self = this,
-				slideAnimationDuration = 1000,
+				slideAnimationDuration = self.appFlags.wizard.animationTimes.allowedApps,
 				allowedAppIds = _.clone(args.allowedAppIds),	// Create a copy of the data, in order to not to alter the original one
 				$template = args.template,
 				$allowedAppsSection = $template.find('#section_allowed_apps'),
@@ -1299,7 +1301,7 @@ define(function(require) {
 		 */
 		wizardToggleAppCard: function(args) {
 			var self = this,
-				animationMillis = 500,
+				animationMillis = self.appFlags.wizard.animationTimes.toggleAppCards,
 				action = args.action,
 				$container = args.container,
 				$parentContainer = $container.parent(),
