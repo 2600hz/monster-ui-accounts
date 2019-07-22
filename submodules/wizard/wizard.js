@@ -88,13 +88,13 @@ define(function(require) {
 					},
 					// App Restrictions defaults
 					appRestrictions: {
-						fullAccessLevel: true,
+						accessLevel: 'full',
 						allowedAppIds: []
 					}
 				},
 				container: $container,
 				steps: [
-					{
+					/*{
 						label: i18nSteps.generalSettings.label,
 						description: i18nSteps.generalSettings.description,
 						template: 'wizardGeneralSettingsRender',
@@ -123,7 +123,7 @@ define(function(require) {
 						description: i18nSteps.creditBalanceAndFeatures.description,
 						template: 'wizardCreditBalanceAndFeaturesRender',
 						util: 'wizardCreditBalanceAndFeaturesUtil'
-					},
+					},*/
 					{
 						label: i18nSteps.appRestrictions.label,
 						description: i18nSteps.appRestrictions.description,
@@ -1109,15 +1109,11 @@ define(function(require) {
 		 */
 		wizardAppRestrictionsUtil: function($template, args) {
 			var self = this,
-				fullAccessLevel = $template.find('#access_level button.selected').data('value') === 'full',
-				allowedAppIds = (fullAccessLevel)
-					? []
-					: $template
-						.find('#section_allowed_apps .app-list .app-item.visible')
-							.map(function() {
-								return $(this).data('id');
-							})
-							.toArray();
+				formData = monster.ui.getFormData($template.find('form').get(0));
+
+			if (formData.accessLevel === 'full') {
+				formData.allowedAppIds = [];
+			};
 
 			// Clean appRestrictions previous data, to avoid merging the array of allowedAppIds
 			delete args.data.appRestrictions;
@@ -1125,10 +1121,7 @@ define(function(require) {
 			return {
 				valid: true,
 				data: {
-					appRestrictions: {
-						fullAccessLevel: fullAccessLevel,
-						allowedAppIds: allowedAppIds
-					}
+					appRestrictions: formData
 				}
 			};
 		},
@@ -1147,14 +1140,8 @@ define(function(require) {
 				$allowedAppsSection = $template.find('#section_allowed_apps'),
 				$appList = $allowedAppsSection.find('.app-list');
 
-			$template.find('.access-level-toggle button').on('click', function(e) {
-				e.preventDefault();
-
-				var $this = $(this);
-
-				$this.addClass('selected').siblings().removeClass('selected');
-
-				if ($this.data('value') === 'full') {
+			$template.find('#access_level .radio-button').on('change', function() {
+				if (this.value === 'full') {
 					$allowedAppsSection
 						.fadeOut({
 							duration: slideAnimationDuration,
@@ -1184,6 +1171,8 @@ define(function(require) {
 								$selectedAppCards = $selectedAppCards.add($appList.find('#app_' + appId));
 							});
 
+							$selectedAppCards.find('.app-selected').prop('checked', true);
+
 							self.wizardToggleAppCard({
 								action: 'show',
 								container: $appList,
@@ -1194,12 +1183,14 @@ define(function(require) {
 				});
 			});
 
-			$appList.find('.app-remove').on('click', function(e) {
-				e.preventDefault();
-
+			$appList.find('.app-remove .app-selected').on('change', function(e) {
 				var $appItem = $(this).closest('.app-item');
 
 				_.pull(allowedAppIds, $appItem.data('id'));
+
+				if (this.checked) {
+					return;
+				}
 
 				self.wizardToggleAppCard({
 					action: 'hide',

@@ -34,6 +34,10 @@ $color-highlight: #dbdbde;
 		}
 	}
 
+	.input-hidden {
+		display: none;
+	}
+
 	.help-tip {
 		display: inline-block;
 		margin-left: 0.5rem;
@@ -50,8 +54,15 @@ $color-highlight: #dbdbde;
 		&:hover {
 			background: linear-gradient(-180deg, #F4F4F5 0%, $white-lilac 100%);
 		}
+	}
 
-		&.selected {
+	.radio-button {
+		& + label.monster-button {
+			margin-bottom: 0;
+			display: inline-block;
+		}
+
+		&:checked + label.monster-button {
 			background: $color-highlight;
 			color: $woodsmoke;
 		}
@@ -492,6 +503,8 @@ $color-highlight: #dbdbde;
 							flex: 0 0 initial;
 							width: 1rem;
 							height: 1rem;
+							margin-bottom: 0;
+							line-height: 16px;
 							color: $french-gray2;
 
 							&:hover {

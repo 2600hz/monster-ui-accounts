@@ -3,73 +3,84 @@
 	<div class="step-title">
 		{{appRestrictionsI18n.title}}
 	</div>
-	<div class="section-body flex-row-container">
-		<div class="flex-item-2">
-			<div class="flex-row-container">
-				<div class="flex-item-1">
-					{{appRestrictionsI18n.accessLevel.description}}
-				</div>
-			</div>
-			<div class="flex-row-container">
-				<div class="flex-item-1 flex-container access-level-toggle">
-					<div id="access_level" class="btn-group">
-						<button data-value="full" class="monster-button monster-button-fit{{#if @root.data.fullAccessLevel}} selected{{/if}}">{{ appRestrictionsI18n.accessLevel.types.full }}</button>
-						<button data-value="restricted" class="monster-button monster-button-fit{{#unless @root.data.fullAccessLevel}} selected{{/unless}}">{{ appRestrictionsI18n.accessLevel.types.restricted }}</button>
-					</div>
-					<div>
-						<span class="help-tip help-tip-button" data-title="{{appRestrictionsI18n.accessLevel.help}}" data-toggle="tooltip">
-							{{telicon "question--circle" class="iconography-small iconography-help"}}
-						</span>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="flex-item-2">
-			{{#monsterPanelText appRestrictionsI18n.accessLevel.important 'info'}}
-				<p>{{appRestrictionsI18n.accessLevel.notice}}</p>
-			{{/monsterPanelText}}
-		</div>
-	</div>
-	<div id="section_allowed_apps" {{#if @root.data.fullAccessLevel}}style="display: none"{{else}}class="visible"{{/if}}>
-		<div class="section-title">
-			{{appRestrictionsI18n.apps.title}}
-		</div>
-		<div class="section-body">
-			<div class="flex-row-container">
+	<div class="step-body">
+		<form id="form_app_restrictions" name="form_app_restrictions" action="javascript:void(0);">
+			<div class="section-body flex-row-container">
 				<div class="flex-item-2">
-					{{appRestrictionsI18n.apps.description}}
-				</div>
-			</div>
-			<div class="flex-row-container app-list">
-			{{#each @root.apps}}
-				<div id="app_{{id}}" class="flex-item-3 flex-container app-item{{#ifInArray id @root.data.allowedAppIds}} visible"{{else}}" style="display:none"{{/ifInArray}} data-id="{{id}}">
-					<div class="wizard-card">
-						<div class="card-section title flex-container">
-							<div class="app-icon {{extraCssClass}}" style="{{#if icon}}background-image:url({{icon}}){{else}}background-color:#606069{{/if}}"></div>
-							<div class="app-name">
-								{{label}}
+					<div class="flex-row-container">
+						<div class="flex-item-1">
+							{{appRestrictionsI18n.accessLevel.description}}
+						</div>
+					</div>
+					<div class="flex-row-container">
+						<div class="flex-item-1 flex-container access-level-toggle">
+							<div id="access_level" class="btn-group">
+								<input type="radio" name="accessLevel" id="access_level_full" class="radio-button input-hidden" value="full"{{#compare @root.data.accessLevel "===" "full"}} checked{{/compare}}/>
+								<label for="access_level_full" class="monster-button monster-button-fit">
+									{{appRestrictionsI18n.accessLevel.types.full}}
+								</label>
+								<input type="radio" name="accessLevel" id="access_level_restricted" class="radio-button input-hidden" value="restricted"{{#compare @root.data.accessLevel "!==" "full"}} checked{{/compare}}/>
+								<label for="access_level_restricted" class="monster-button monster-button-fit">
+									{{appRestrictionsI18n.accessLevel.types.restricted}}
+								</label>
 							</div>
-							<a class="app-remove" href="javascript:void(0);">
-								{{telicon "trash-x" class="iconography"}}
-							</a>
-						</div>
-						<div class="card-section description">
-							{{description}}
+							<div>
+								<span class="help-tip help-tip-button" data-title="{{appRestrictionsI18n.accessLevel.help}}" data-toggle="tooltip">
+									{{telicon "question--circle" class="iconography-small iconography-help"}}
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
-			{{/each}}
-				<div class="flex-item-3 flex-container app-item app-add visible"{{#unless @root.anyAppToSelect}} style="display:none"{{/unless}}>
-					<div class="wizard-card">
-						<div class="card-section description flex-container">
-							<a class="monster-link blue" href="javascript:void(0);">
-								{{telicon "plus" class="iconography-medium"}}{{appRestrictionsI18n.apps.add}}
-							</a>
+				<div class="flex-item-2">
+					{{#monsterPanelText appRestrictionsI18n.accessLevel.important 'info'}}
+						<p>{{appRestrictionsI18n.accessLevel.notice}}</p>
+					{{/monsterPanelText}}
+				</div>
+			</div>
+			<div id="section_allowed_apps" {{#compare @root.data.accessLevel "===" "full"}}style="display: none"{{else}}class="visible"{{/compare}}>
+				<div class="section-title">
+					{{appRestrictionsI18n.apps.title}}
+				</div>
+				<div class="section-body">
+					<div class="flex-row-container">
+						<div class="flex-item-2">
+							{{appRestrictionsI18n.apps.description}}
+						</div>
+					</div>
+					<div class="flex-row-container app-list">
+					{{#each @root.apps}}
+						<div id="app_{{id}}" class="flex-item-3 flex-container app-item{{#ifInArray id @root.data.allowedAppIds}} visible"{{else}}" style="display:none"{{/ifInArray}} data-id="{{id}}">
+							<div class="wizard-card">
+								<div class="card-section title flex-container">
+									<div class="app-icon {{extraCssClass}}" style="{{#if icon}}background-image:url({{icon}}){{else}}background-color:#606069{{/if}}"></div>
+									<div class="app-name">
+										{{label}}
+									</div>
+									<label class="app-remove" href="javascript:void(0);">
+										{{telicon "trash-x" class="iconography"}}
+										<input class="app-selected input-hidden" type="checkbox" name="allowedAppIds[]" value="{{id}}"{{#ifInArray id @root.data.allowedAppIds}} checked{{/ifInArray}}/>
+									</label>
+								</div>
+								<div class="card-section description">
+									{{description}}
+								</div>
+							</div>
+						</div>
+					{{/each}}
+						<div class="flex-item-3 flex-container app-item app-add visible"{{#unless @root.anyAppToSelect}} style="display:none"{{/unless}}>
+							<div class="wizard-card">
+								<div class="card-section description flex-container">
+									<a class="monster-link blue" href="javascript:void(0);">
+										{{telicon "plus" class="iconography-medium"}}{{appRestrictionsI18n.apps.add}}
+									</a>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</form>
 	</div>
 {{/with}}
 </div>
