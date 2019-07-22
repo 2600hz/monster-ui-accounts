@@ -143,43 +143,17 @@
 		{{/horizontalFieldPartial}}
 	</div>
 
-	<!-- USAGE BILLING -->
-	{{> sectionTitle index=4 stepId=3 label=i18n.accountsApp.wizard.steps.review.usageBilling.title}}
-	<div class="section-body">
-		{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.inbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="inbound"}}
-		{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.outbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="outbound"}}
-		{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.twoway" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="twoway"}}
-		{{#> horizontalFieldPartial fieldPath="creditBalanceAndFeatures.accountCredit.initialBalance" i18nSectionName="creditBalanceAndFeatures.accountCredit" i18nFieldName="initialBalance" hasContent=true}}
-			{{formatPrice value 2}}
-		{{/horizontalFieldPartial}}
-		{{#> horizontalFieldPartial fieldPath="usageAndCallRestrictions.allowPerMinuteCalls" i18nSectionName="review.usageBilling" i18nFieldName="allowPerMinuteCalls" hasContent=true}}
-			{{> booleanLabel mode="Status"}}
-		{{/horizontalFieldPartial}}
-	</div>
-
-	<!-- CONTROL CENTER ACCESS AND CALL RESTRICTIONS -->
-	{{> sectionTitle index=5 stepId=3 label=i18n.accountsApp.wizard.steps.review.controlCenterAccessAndCallRestrictions.title}}
+	<!-- USAGE + CALL RESTRICTIONS -->
+	{{> sectionTitle index=4 stepId=3 label=i18n.accountsApp.wizard.steps.usageAndCallRestrictions.label}}
 	<div class="section-body">
 		<div class="flex-row-container">
 			<div class="flex-item field-group-column">
-				<div class="flex-row-container">
-					<div class="flex-item-1 column-title">
-						{{i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.controlCenterAccess.title}}
-					</div>
-				</div>
-			{{#each creditBalanceAndFeatures.controlCenterAccess.featureList}}
-				<div class="flex-row-container">
-					<div class="flex-item field-label-horizontal">
-						{{telicon icon class="feature-icon iconography-medium"}}
-						<span class="iconography-text-right">
-							{{tryI18n @root.i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.controlCenterAccess.features.labels name}}
-						</span>
-					</div>
-					<div class="flex-item field-value-horizontal">
-						{{> booleanLabel value=(lookup @root.creditBalanceAndFeatures.controlCenterAccess.features name) mode="Status"}}
-					</div>
-				</div>
-			{{/each}}
+				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.inbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="inbound"}}
+				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.outbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="outbound"}}
+				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.twoway" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="twoway"}}
+				{{#> horizontalFieldPartial fieldPath="usageAndCallRestrictions.allowPerMinuteCalls" i18nSectionName="review.usageBilling" i18nFieldName="allowPerMinuteCalls" hasContent=true}}
+					{{> booleanLabel mode="Status"}}
+				{{/horizontalFieldPartial}}
 			</div>
 			<div class="flex-item field-group-column">
 				<div class="flex-row-container">
@@ -201,6 +175,38 @@
 		</div>
 	</div>
 
+	<!-- CREDIT BALANCE + FEATURES -->
+	{{> sectionTitle index=5 stepId=4 label=i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.label}}
+	<div class="section-body">
+		<div class="flex-row-container">
+			<div class="flex-item field-group-column">
+				{{#> horizontalFieldPartial fieldPath="creditBalanceAndFeatures.accountCredit.initialBalance" i18nSectionName="creditBalanceAndFeatures.accountCredit" i18nFieldName="initialBalance" hasContent=true}}
+					{{formatPrice value 2}}
+				{{/horizontalFieldPartial}}
+			</div>
+			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-1 column-title">
+						{{i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.controlCenterAccess.title}}
+					</div>
+				</div>
+			{{#each creditBalanceAndFeatures.controlCenterAccess.featureList}}
+				<div class="flex-row-container">
+					<div class="flex-item field-label-horizontal">
+						{{telicon icon class="feature-icon iconography-medium"}}
+						<span class="iconography-text-right">
+							{{tryI18n @root.i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.controlCenterAccess.features.labels name}}
+						</span>
+					</div>
+					<div class="flex-item field-value-horizontal">
+						{{> booleanLabel value=(lookup @root.creditBalanceAndFeatures.controlCenterAccess.features name) mode="Status"}}
+					</div>
+				</div>
+			{{/each}}
+			</div>
+		</div>
+	</div>
+
 	<!-- APP RESTRICTIONS -->
 	{{> sectionTitle index=6 stepId=5 label=i18n.accountsApp.wizard.steps.appRestrictions.label}}
 	<div class="section-body">
@@ -208,14 +214,10 @@
 			<div class="flex-item field-group-column">
 				<div class="flex-row-container">
 					<div class="flex-item-2 ">
-					{{#if appRestrictions.fullAccessLevel}}
-						{{i18n.accountsApp.wizard.steps.review.appRestrictions.accessLevel.types.full}}
-					{{else}}
-						{{i18n.accountsApp.wizard.steps.review.appRestrictions.accessLevel.types.restricted}}
-					{{/if}}
+						{{tryI18n i18n.accountsApp.wizard.steps.review.appRestrictions.accessLevel.types appRestrictions.accessLevel}}
 					</div>
 				</div>
-	{{#unless appRestrictions.fullAccessLevel}}
+	{{#compare appRestrictions.accessLevel "!==" "full"}}
 		{{#each appRestrictions.apps}}
 			{{#ifInArray id ../appRestrictions.allowedAppIds}}
 				<div class="app-list flex-container">
@@ -229,7 +231,7 @@
 				</div>
 			{{/ifInArray}}
 		{{/each}}
-	{{/unless}}
+	{{/compare}}
 			</div>
 		</div>
 	</div>

@@ -161,6 +161,14 @@ $color-highlight: #dbdbde;
 			.flex-item-3 {
 				width: 50%;
 			}
+
+			.flex-item-4 {
+				width: 50%;
+			}
+
+			.flex-item-4-3 {
+				width: 100%;
+			}
 		}
 
 		@media #{$media-size-small} {
@@ -608,10 +616,7 @@ $color-highlight: #dbdbde;
 		}
 
 		.field-value-horizontal .flex-row-container:last-child {
-			[class^="flex-item"],
-			[class*=" flex-item"] {
-				padding-bottom: 0;
-			}
+			margin-bottom: -1.5rem;
 		}
 
 		.field-label-vertical {
@@ -651,6 +656,19 @@ $color-highlight: #dbdbde;
 			.field-value-horizontal {
 				flex: 1;
 				width: auto;
+			}
+
+
+			@media #{$media-size-medium} {
+				.field-label-horizontal, .field-value-horizontal {
+					width: 100%;
+				}
+			}
+		}
+
+		@media #{$media-size-small} {
+			.field-group-column {
+				width: 100%;
 			}
 		}
 

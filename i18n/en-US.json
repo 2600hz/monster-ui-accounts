@@ -565,13 +565,9 @@
 						}
 					},
 					"usageBilling": {
-						"title": "Usage Billing",
 						"labels": {
 							"allowPerMinuteCalls": "Allow per-minute calls that go over the above limit, and bill the per-minute cost of the call"
 						}
-					},
-					"controlCenterAccessAndCallRestrictions": {
-						"title": "Control Center Access & Call Restrictions"
 					},
 					"appRestrictions": {
 						"accessLevel": {
