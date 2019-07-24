@@ -222,7 +222,7 @@
 			{{#ifInArray id ../appRestrictions.allowedAppIds}}
 				<div class="app-list flex-container">
 					<div class="flex-item-1 flex-row-container app-item">
-						<div class="flex-item app-icon {{extraCssClass}}" style="{{#if icon}}background-image:url({{icon}}){{else}}background-color:#606069{{/if}}">
+						<div class="flex-item app-icon{{#unless icon}} app-icon-empty{{/unless}} {{extraCssClass}}"{{#if icon}} style="background-image:url({{icon}})"{{/if}}>
 						</div>
 						<div class="flex-item app-name">
 							{{label}}
