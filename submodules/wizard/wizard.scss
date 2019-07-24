@@ -4,7 +4,7 @@ $media-size-small: "all and (max-width : 736px)";
 $media-size-medium: "all and (max-width : 980px)";
 $color-highlight: #dbdbde;
 
-.wizard-step {
+#navigation_wizard_wrapper .wizard-step {
 	padding: 2rem 1.5rem;
 
 	.iconography-small {
@@ -56,16 +56,30 @@ $color-highlight: #dbdbde;
 		}
 	}
 
-	.radio-button {
-		& + label.monster-button {
+	.btn-group {
+		.monster-button {
+			border-radius: 0;
+
+			&:first-of-type {
+				border-top-left-radius: 2px;
+				border-bottom-left-radius: 2px;
+			}
+
+			&:last-of-type {
+				border-top-right-radius: 2px;
+				border-bottom-right-radius: 2px;
+			}
+		}
+
+		label.monster-button {
 			margin-bottom: 0;
 			display: inline-block;
 		}
+	}
 
-		&:checked + label.monster-button {
-			background: $color-highlight;
-			color: $woodsmoke;
-		}
+	.radio-button:checked + .monster-button {
+		background: $color-highlight;
+		color: $woodsmoke;
 	}
 
 	.step-title {
@@ -162,7 +176,7 @@ $color-highlight: #dbdbde;
 
 	.step-body {
 		label {
-			&:not(.monster-checkbox-large):not(.monster-switch) {
+			&:not(.monster-checkbox-large):not(.monster-switch):not(.monster-button) {
 				margin-bottom: 8px;
 				line-height: 14px;
 			}
