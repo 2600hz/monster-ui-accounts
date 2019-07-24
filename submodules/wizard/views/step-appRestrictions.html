@@ -57,10 +57,10 @@
 									<div class="app-name">
 										{{label}}
 									</div>
-									<label class="app-remove" href="javascript:void(0);">
+									<a class="app-remove">
 										{{telicon "trash-x" class="iconography"}}
 										<input class="app-selected input-hidden" type="checkbox" name="allowedAppIds[]" value="{{id}}"{{#ifInArray id @root.data.allowedAppIds}} checked{{/ifInArray}}/>
-									</label>
+									</a>
 								</div>
 								<div class="card-section description">
 									{{description}}

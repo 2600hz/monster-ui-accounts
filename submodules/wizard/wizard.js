@@ -1185,14 +1185,16 @@ define(function(require) {
 				});
 			});
 
-			$appList.find('.app-remove .app-selected').on('change', function(e) {
-				var $appItem = $(this).closest('.app-item');
+			$appList.find('.app-remove').on('click', function(e) {
+				e.preventDefault();
+
+				var $this = $(this),
+					$appSelectedInput = $this.find('.app-selected'),
+					$appItem = $this.closest('.app-item');
 
 				_.pull(allowedAppIds, $appItem.data('id'));
 
-				if (this.checked) {
-					return;
-				}
+				$appSelectedInput.prop('checked', false);
 
 				self.wizardToggleAppCard({
 					action: 'hide',
