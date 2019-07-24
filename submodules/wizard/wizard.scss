@@ -504,6 +504,10 @@ $color-highlight: #dbdbde;
 							background-repeat: no-repeat;
 							background-size: contain;
 							border-radius: 0.5rem;
+
+							&.app-icon-empty {
+								background-color:$midgray;
+							}
 						}
 
 						.app-name {
