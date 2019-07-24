@@ -27,7 +27,7 @@
 							{{/if}}
 						{{/compare}}
 						{{#if rate.isCascade}}
-							<span class="iconography" data-title="{{@root.i18n.accountsApp.serviceItemsListing.labels.cascadeTooltip}}" data-toggle="tooltip">
+							<span class="iconography" title="{{@root.i18n.accountsApp.serviceItemsListing.labels.cascadeTooltip}}" data-toggle="tooltip">
 								{{telicon "account-tree"}}
 							</span>
 						{{/if}}
@@ -37,7 +37,7 @@
 					{{#if discounts.single.value}}
 						<div>
 							{{formatPrice discounts.single.value 2}}
-							<i class="fa fa-tag iconography" data-title="{{@root.i18n.accountsApp.serviceItemsListing.discountTypes.single}}" data-toggle="tooltip"></i>
+							<i class="fa fa-tag iconography" title="{{@root.i18n.accountsApp.serviceItemsListing.discountTypes.single}}" data-toggle="tooltip"></i>
 						</div>
 					{{/if}}
 					{{#if discounts.cumulative.value}}
@@ -46,9 +46,9 @@
 						{{#if discounts.cumulative.maximum}}
 							&nbsp;
 							<span>({{discounts.cumulative.maximum}})</span>
-							<i class="fa fa-tags iconography" data-title="{{replaceVar @root.i18n.accountsApp.serviceItemsListing.discountTypes.cumulativeWithMax discounts.cumulative.maximum}}" data-toggle="tooltip"></i>
+							<i class="fa fa-tags iconography" title="{{replaceVar @root.i18n.accountsApp.serviceItemsListing.discountTypes.cumulativeWithMax discounts.cumulative.maximum}}" data-toggle="tooltip"></i>
 						{{else}}
-							<i class="fa fa-tags iconography" data-title="{{@root.i18n.accountsApp.serviceItemsListing.discountTypes.cumulative}}" data-toggle="tooltip"></i>
+							<i class="fa fa-tags iconography" title="{{@root.i18n.accountsApp.serviceItemsListing.discountTypes.cumulative}}" data-toggle="tooltip"></i>
 						{{/if}}
 						</div>
 					{{/if}}

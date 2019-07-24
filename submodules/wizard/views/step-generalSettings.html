@@ -4,7 +4,7 @@
 		<label for="account_info_{{coalesce ../id ../name}}">
 			{{coalesce fieldI18n.label ../name}}
 		{{#if fieldI18n.help}}
-			<span class="help-tip" data-title="{{fieldI18n.help}}" data-toggle="tooltip">
+			<span class="help-tip" title="{{fieldI18n.help}}" data-toggle="tooltip">
 				{{telicon "question--circle" class="iconography-small iconography-help"}}
 			</span>
 		{{/if}}
