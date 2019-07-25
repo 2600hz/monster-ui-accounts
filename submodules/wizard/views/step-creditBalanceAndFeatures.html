@@ -27,7 +27,7 @@
 		{{creditBalanceAndFeaturesI18n.title}}
 	</div>
 	<div class="step-body">
-		<form id="form_credit_balance_and_features" name="form_credit_balance_and_features" action="javascript:void(0);">
+		<form id="form_credit_balance_and_features">
 			<div class="section-title">
 				{{creditBalanceAndFeaturesI18n.accountCredit.title}}
 			</div>
@@ -35,12 +35,12 @@
 				<div class="flex-item-3">
 					<label for="account_credit_initial_balance">
 						{{creditBalanceAndFeaturesI18n.accountCredit.labels.initialBalance}}
-						<span data-title="{{creditBalanceAndFeaturesI18n.accountCredit.help.initialBalance}}" data-toggle="tooltip">
+						<span class="help-tip" title="{{creditBalanceAndFeaturesI18n.accountCredit.help.initialBalance}}" data-toggle="tooltip">
 							{{telicon "question--circle" class="iconography-small iconography-help"}}
 						</span>
 					</label>
 					<div class="input-append input-block-level">
-						<button class="monster-button-fit" disabled>
+						<button type="button" class="monster-button-fit" disabled>
 							{{@root.currencySymbol}}
 						</button>
 						<input id="account_credit_initial_balance" name="accountCredit.initialBalance" type="text" class="input-block-level" pattern="\d+(\.\d{2})?" placeholder="{{creditBalanceAndFeaturesI18n.accountCredit.placeholders.initialBalance}}" value="{{@root.data.accountCredit.initialBalance}}"/>
@@ -49,7 +49,7 @@
 			</div>
 			<div class="section-title">
 				{{creditBalanceAndFeaturesI18n.controlCenterAccess.title}}
-				<span data-title="{{creditBalanceAndFeaturesI18n.controlCenterAccess.help}}" data-toggle="tooltip">
+				<span class="help-tip" title="{{creditBalanceAndFeaturesI18n.controlCenterAccess.help}}" data-toggle="tooltip">
 					{{telicon "question--circle" class="iconography-small iconography-help"}}
 				</span>
 			</div>

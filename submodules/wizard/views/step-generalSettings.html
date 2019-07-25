@@ -1,7 +1,14 @@
 {{#*inline "accountInfoInputPartial"}}
 	<div class="flex-item-2">
 	{{#with (lookupPath @root.i18n.accountsApp.wizard.steps.generalSettings.accountInfo name @root.i18n) as |fieldI18n|}}
-		<label for="account_info_{{coalesce ../id ../name}}">{{coalesce fieldI18n.label ../name}}{{#if fieldI18n.help}}<span data-title="{{fieldI18n.help}}" data-toggle="tooltip">{{telicon "question--circle" class="iconography-small iconography-help"}}</span>{{/if}}</label>
+		<label for="account_info_{{coalesce ../id ../name}}">
+			{{coalesce fieldI18n.label ../name}}
+		{{#if fieldI18n.help}}
+			<span class="help-tip" title="{{fieldI18n.help}}" data-toggle="tooltip">
+				{{telicon "question--circle" class="iconography-small iconography-help"}}
+			</span>
+		{{/if}}
+		</label>
 		<input class="input-block-level" type="text" name="accountInfo.{{../name}}" id="account_info_{{coalesce ../id ../name}}"{{#if (coalesce fieldI18n.placeholder fieldI18n.label)}} placeholder="{{coalesce fieldI18n.placeholder fieldI18n.label}}"{{/if}}{{#if ../required}} required{{/if}} value="{{lookupPath @root.data.accountInfo ../name}}">
 	{{/with}}
 	</div>
@@ -12,7 +19,7 @@
 		{{i18n.accountsApp.wizard.steps.generalSettings.title}}
 	</div>
 	<div class="step-body">
-		<form id="form_general_settings" name="form_general_settings">
+		<form id="form_general_settings">
 			<div class="step-section">
 			{{#with i18n.accountsApp.wizard.steps.generalSettings.accountInfo as |accountInfoI18n|}}
 				<div class="section-title">

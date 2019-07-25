@@ -22,7 +22,9 @@ define(function(require) {
 			wizard: {
 				animationTimes: {
 					adminUser: 500,
-					planInput: 150
+					planInput: 150,
+					allowedApps: 500,
+					toggleAppCards: 400
 				}
 			}
 		},
@@ -85,6 +87,11 @@ define(function(require) {
 								error_tracker: true
 							}
 						}
+					},
+					// App Restrictions defaults
+					appRestrictions: {
+						accessLevel: 'full',
+						allowedAppIds: []
 					}
 				},
 				container: $container,
@@ -1050,23 +1057,154 @@ define(function(require) {
 
 		/* APP RESTRICTIONS */
 
+		/**
+		 * Render App Restrictions step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} args.data.appRestrictions  Data specific for the current step
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardAppRestrictionsRender: function(args) {
 			var self = this,
-				$container = args.container;
+				$container = args.container,
+				initTemplate = function(appList) {
+					var appRestrictionsData = args.data.appRestrictions,
+						$template = $(self.getTemplate({
+							name: 'step-appRestrictions',
+							data: {
+								apps: appList,
+								anyAppToSelect: (appList.length - appRestrictionsData.allowedAppIds.length) > 0,
+								data: appRestrictionsData
+							},
+							submodule: 'wizard'
+						}));
 
-			// TODO: Not implemented
+					monster.ui.tooltips($template);
+
+					self.wizardAppRestrictionsBindEvents({
+						allowedAppIds: appRestrictionsData.allowedAppIds,
+						template: $template
+					});
+
+					return $template;
+				};
+
+			self.wizardRenderStep({
+				container: $container,
+				loadData: function(asyncCallback) {
+					self.wizardGetAppList({
+						success: function(appList) {
+							asyncCallback(null, appList);
+						}
+					});
+				},
+				initTemplate: initTemplate
+			});
 		},
 
-		wizardAppRestrictionsUtil: function($template) {
-			var self = this;
+		/**
+		 * Utility funcion to extract App Restrictions data
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
+		 */
+		wizardAppRestrictionsUtil: function($template, args) {
+			var self = this,
+				formData = monster.ui.getFormData($template.find('form').get(0));
 
-			// TODO: Not implemented
+			if (formData.accessLevel === 'full' || !_.has(formData, 'allowedAppIds')) {
+				formData.allowedAppIds = [];
+			};
+
+			// Clean appRestrictions previous data, to avoid merging the array of allowedAppIds
+			delete args.data.appRestrictions;
 
 			return {
 				valid: true,
-				data: {}
+				data: {
+					appRestrictions: formData
+				}
 			};
 		},
+
+		/**
+		 * Bind App Restrictions step events
+		 * @param  {Object} args
+		 * @param  {jQuery} args.allowedAppIds  Allowed app IDs
+		 * @param  {jQuery} args.template  Step template
+		 */
+		wizardAppRestrictionsBindEvents: function(args) {
+			var self = this,
+				slideAnimationDuration = self.appFlags.wizard.animationTimes.allowedApps,
+				allowedAppIds = _.clone(args.allowedAppIds),	// Create a copy of the data, in order to not to alter the original one
+				$template = args.template,
+				$allowedAppsSection = $template.find('#section_allowed_apps'),
+				$appList = $allowedAppsSection.find('.app-list');
+
+			$template.find('#access_level .radio-button').on('change', function() {
+				if (this.value === 'full') {
+					$allowedAppsSection
+						.fadeOut({
+							duration: slideAnimationDuration,
+							queue: false
+						})
+						.slideUp(slideAnimationDuration);
+				} else {
+					$allowedAppsSection
+						.fadeIn({
+							duration: slideAnimationDuration,
+							queue: false
+						})
+						.slideDown(slideAnimationDuration);
+				}
+			});
+
+			$template.find('.app-add .wizard-card').on('click', function() {
+				monster.pub('common.appSelector.renderPopup', {
+					scope: 'all',
+					excludedApps: allowedAppIds,
+					callbacks: {
+						accept: function(selectedAppIds) {
+							var $selectedAppCards = $([]);
+
+							_.each(selectedAppIds, function(appId) {
+								allowedAppIds.push(appId);
+								$selectedAppCards = $selectedAppCards.add($appList.find('#app_' + appId));
+							});
+
+							$selectedAppCards.find('.app-selected').prop('checked', true);
+
+							self.wizardToggleAppCard({
+								action: 'show',
+								container: $appList,
+								itemsToToggle: $selectedAppCards
+							});
+						}
+					}
+				});
+			});
+
+			$appList.find('.app-remove').on('click', function(e) {
+				e.preventDefault();
+
+				var $this = $(this),
+					$appSelectedInput = $this.find('.app-selected'),
+					$appItem = $this.closest('.app-item');
+
+				_.pull(allowedAppIds, $appItem.data('id'));
+
+				$appSelectedInput.prop('checked', false);
+
+				self.wizardToggleAppCard({
+					action: 'hide',
+					container: $appList,
+					itemsToToggle: $appItem
+				});
+			});
+		},
+
+		/* REVIEW */
 
 		wizardReviewRender: function(args) {
 			var self = this,
@@ -1154,6 +1292,160 @@ define(function(require) {
 		/* UTILITY FUNCTIONS */
 
 		/**
+		 * Toggles the display of one or more application cards, in an animated way.
+		 * The animation is similar to Isotope, but without having to worry about responsiveness
+		 * thanks to flexbox.
+		 * The animation uses the FLEX technique.
+		 * @param  {Object} args
+		 * @param  {('show'|'hide')} args.action  Show or hide the elements
+		 * @param  {jQuery} args.container  Items container
+		 * @param  {jQuery} args.itemsToToggle  Items to toggle
+		 */
+		wizardToggleAppCard: function(args) {
+			var self = this,
+				animationMillis = self.appFlags.wizard.animationTimes.toggleAppCards,
+				action = args.action,
+				$container = args.container,
+				$parentContainer = $container.parent(),
+				parentDiffHeight = $parentContainer.height() - $container.height(),
+				$itemsToToggle = args.itemsToToggle,
+				$siblings = $itemsToToggle.siblings('.visible'),
+				firstBounds = $siblings.map(function() {
+					// FIRST: Get the original bounds for following siblings
+					return this.getBoundingClientRect();
+				}).toArray();
+
+			// Set final values at the end of the animation
+			setTimeout(function() {
+				$parentContainer.css({
+					maxHeight: '',
+					height: ''
+				});
+
+				$siblings.css({
+					maxHeight: '',
+					minHeight: '',
+					alignSelf: ''
+				});
+
+				if (action !== 'hide') {
+					return;
+				}
+
+				$itemsToToggle
+					.hide()
+					.css({
+						top: '',
+						left: ''
+					});
+			}, animationMillis);
+
+			// Animate step by step using the FLEX technique
+			monster.series([
+				function(callback) {
+					// Fix container height
+					$parentContainer.css({
+						height: $parentContainer.height() + 'px',
+						maxHeight: $parentContainer.height() + 'px'
+					});
+
+					self.wizardForceElementsReflow({
+						elements: $parentContainer
+					});
+
+					callback(null);
+				},
+				function(callback) {
+					// Hide/show app items
+					if (action === 'hide') {
+						$itemsToToggle
+							.each(function() {
+								$(this)
+									.css({
+										top: this.offsetTop + 'px',
+										left: this.offsetLeft + 'px'
+									})
+									.removeClass('visible');
+							});
+
+						// No need to reflow here because of offsetTop and offsetLeft were
+						// requested for each item to toggle
+
+						callback(null);
+
+						return;
+					}
+
+					$itemsToToggle.css({
+						display: ''
+					});
+
+					self.wizardForceElementsReflow({
+						elements: $itemsToToggle
+					});
+
+					$itemsToToggle
+						.addClass('visible');
+
+					self.wizardForceElementsReflow({
+						elements: $itemsToToggle
+					});
+
+					callback(null);
+				},
+				function(callback) {
+					// Update parent height
+					var parentContainerHeight = ((action === 'show') ? $parentContainer.get(0).scrollHeight : $container.height() + parentDiffHeight) + 'px';
+					$parentContainer.css({
+						maxHeight: parentContainerHeight,
+						height: parentContainerHeight
+					});
+
+					// Calculate deltas for siblings, and set transformation/size
+					$siblings.each(function(index, element) {
+						var first = firstBounds[index],
+							$element = $(element),
+							// LAST: get the final bounds
+							last = element.getBoundingClientRect(),
+							// INVERT: determine the delta between the
+							// first and last bounds to invert the element
+							deltaX = first.left - last.left,
+							deltaY = first.top - last.top;
+
+						if (action === 'hide' && deltaY < 0) {
+							deltaY = 0;
+						}
+
+						// PLAY: animate the final element from its first bounds
+						// to its last bounds (which is no transform)
+						$element.css({
+							transition: 'all 0s ease 0s',
+							transform: 'translate(' + deltaX + 'px, ' + deltaY + 'px)',
+							maxHeight: first.height + 'px',
+							minHeight: first.height + 'px',
+							alignSelf: 'flex-start'
+						});
+						$element.data('last_height', last.height);
+					});
+
+					// Defer to wait for style updates in siblings
+					_.defer(callback, null);
+				}
+			], function() {
+				// Update CSS to trigger delta transitions
+				$siblings.each(function() {
+					var $this = $(this);
+					$this.css({
+						transition: '',
+						transform: '',
+						maxHeight: $this.data('last_height') + 'px',
+						minHeight: $this.data('last_height') + 'px'
+					});
+				});
+			});
+		},
+
+		/**
 		 * Append a list item element to a list container, optionally with a slide-down effect
 		 * @param  {Object} args
 		 * @param  {jQuery} args.item  Item element to append
@@ -1175,6 +1467,48 @@ define(function(require) {
 					.css({ display: 'none' })
 					.appendTo($listContainer)
 					.slideDown(animationDuration);
+			}
+		},
+
+		/**
+		 * Forces the browser to synchronously calculate layout (also known as reflow/layout thrashing)
+		 *
+		 * References:
+		 * https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+		 * https://kellegous.com/j/2013/01/26/layout-performance/
+		 *
+		 * @param  {Object} args
+		 * @param  {jQuery} args.elements
+		 */
+		wizardForceElementsReflow: function(args) {
+			var offsetHeight;
+			args.elements.each(function() {
+				offsetHeight = this.offsetHeight;	// Save the offsetHeight, to try to avoid any optimization
+			});
+			return offsetHeight;
+		},
+
+		/**
+		 * Gets the stored list of apps available. If the list is not stored, then it is
+		 * requested to the API.
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 */
+		wizardGetAppList: function(args) {
+			var self = this,
+				appList = self.wizardGetStore('apps');
+
+			if (_.isUndefined(appList)) {
+				monster.pub('apploader.getAppList', {
+					scope: 'all',
+					callback: function(appList) {
+						appList = _.sortBy(appList, 'label');
+						self.wizardSetStore('apps', appList);
+						args.success(appList);
+					}
+				});
+			} else {
+				args.success(appList);
 			}
 		},
 
@@ -1260,7 +1594,7 @@ define(function(require) {
 					data = _.get(results, 1);
 
 				_.defer(function() {
-					// Defer, to ensure that the loading template does not replace the step template
+					// Deferred, to ensure that the loading template does not replace the step template
 					insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
 				});
 			});
