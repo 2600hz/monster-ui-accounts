@@ -1113,7 +1113,7 @@ define(function(require) {
 			var self = this,
 				formData = monster.ui.getFormData($template.find('form').get(0));
 
-			if (formData.accessLevel === 'full') {
+			if (formData.accessLevel === 'full' || !_.has(formData, 'allowedAppIds')) {
 				formData.allowedAppIds = [];
 			};
 
