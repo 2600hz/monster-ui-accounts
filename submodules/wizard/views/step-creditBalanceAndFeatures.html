@@ -27,7 +27,7 @@
 		{{creditBalanceAndFeaturesI18n.title}}
 	</div>
 	<div class="step-body">
-		<form id="form_credit_balance_and_features" action="javascript:void(0);">
+		<form id="form_credit_balance_and_features">
 			<div class="section-title">
 				{{creditBalanceAndFeaturesI18n.accountCredit.title}}
 			</div>
@@ -40,7 +40,7 @@
 						</span>
 					</label>
 					<div class="input-append input-block-level">
-						<button class="monster-button-fit" disabled>
+						<button type="button" class="monster-button-fit" disabled>
 							{{@root.currencySymbol}}
 						</button>
 						<input id="account_credit_initial_balance" name="accountCredit.initialBalance" type="text" class="input-block-level" pattern="\d+(\.\d{2})?" placeholder="{{creditBalanceAndFeaturesI18n.accountCredit.placeholders.initialBalance}}" value="{{@root.data.accountCredit.initialBalance}}"/>
