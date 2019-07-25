@@ -207,7 +207,7 @@ define(function(require) {
 				],
 				title: i18n.title,
 				cancel: 'wizardClose',
-				done: 'wizardClose',
+				done: 'wizardSubmit',
 				doneButton: i18n.doneButton
 			});
 		},
@@ -1250,8 +1250,6 @@ define(function(require) {
 		 * @returns  {Object}  Object that contains a `valid` flag value
 		 */
 		wizardReviewUtil: function($template) {
-			var self = this;
-
 			return {
 				valid: true
 			};
@@ -1368,6 +1366,110 @@ define(function(require) {
 							stepId: stepId
 						});
 					});
+		},
+
+		/* SUBMIT */
+
+		/**
+		 * Submit all the collected data to the API, to create the account and all of its
+		 * components
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that was stored across steps
+		 */
+		wizardSubmit: function(args) {
+			var self = this,
+				wizardData = args.data,
+				accountDocument = self.wizardSubmitGetFormattedAccountDocument(wizardData);
+
+			console.log(accountDocument);
+
+			self.wizardClose(args);
+		},
+
+		/**
+		 * Build the account document to submit to the API, from the wizard data
+		 * @param  {Object} wizardData  Wizard's data
+		 * @returns  {Object}  Account document
+		 */
+		wizardSubmitGetFormattedAccountDocument: function(wizardData) {
+			var self = this,
+				accountInfo = wizardData.generalSettings.accountInfo,
+				accountContacts = wizardData.accountContacts,
+				billingContact = accountContacts.billingContact,
+				technicalContact = accountContacts.technicalContact,
+				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
+				accountDocument = {
+					blacklist: _
+						.chain(self.wizardGetStore('apps'))
+						.map('id')
+						.difference(wizardData.appRestrictions.allowedAppIds)
+						.value(),
+					call_restriction: _
+						.mapValues(wizardData.usageAndCallRestrictions.callRestrictions, function(value) {
+							return {
+								action: value ? 'inherit' : 'deny'
+							};
+						}),
+					contact: {
+						country: accountInfo.country,
+						region: accountInfo.state,
+						locality: accountInfo.city,
+						postal_code: accountInfo.zip,
+						street_address: accountInfo.addressLine1,
+						street_address_extra: accountInfo.addressLine2,
+						email: billingContact.email,
+						name: billingContact.fullName,
+						number: billingContact.phoneNumber.e164Number
+					},
+					technical: {
+						email: technicalContact.email,
+						name: technicalContact.fullName,
+						number: technicalContact.phoneNumber.e164Number
+					},
+					language: accountInfo.language,
+					name: accountInfo.accountName,
+					realm: accountInfo.realm,
+					timezone: accountInfo.timezone,
+					ui_restrictions: {
+						myaccount: _
+							.chain(self.appFlags.wizard.controlCenterFeatures.tree)
+							.flatMap('features')
+							.keyBy('name')
+							.mapValues(function(feature) {
+								var restriction = {
+									show_tab: controlCenterFeatures[feature.name]
+								};
+
+								if (_.has(feature, 'features')) {
+									_.each(feature.features, function(subFeature) {
+										restriction['show_' + subFeature.name] = controlCenterFeatures[subFeature.name];
+									});
+								}
+
+								return restriction;
+							})
+							// Merge trunk features with default values, as they were not set in the wizard
+							.merge({
+								inbound: {
+									show_tab: true
+								},
+								outbound: {
+									show_tab: true
+								},
+								twoway: {
+									show_tab: true
+								}
+							})
+							.value()
+					}
+				};
+
+			// Clean empty data
+			if (_.isEmpty(accountDocument.realm)) {
+				delete accountDocument.realm;
+			}
+
+			return accountDocument;
 		},
 
 		/* CLOSE WIZARD */
