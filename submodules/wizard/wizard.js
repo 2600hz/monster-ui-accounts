@@ -1379,9 +1379,15 @@ define(function(require) {
 		wizardSubmit: function(args) {
 			var self = this,
 				wizardData = args.data,
-				accountDocument = self.wizardSubmitGetFormattedAccountDocument(wizardData);
+				account = self.wizardSubmitGetFormattedAccount(wizardData),
+				users = self.wizardSubmitGetFormattedUsers(wizardData),
+				plan = self.wizardSubmitGetFormattedServicePlan(wizardData),
+				limits = self.wizardSubmitGetFormattedLimits(wizardData);
 
-			console.log(accountDocument);
+			console.log('account', account);
+			console.log('users', users);
+			console.log('plan', plan);
+			console.log('limits', limits);
 
 			self.wizardClose(args);
 		},
@@ -1391,7 +1397,7 @@ define(function(require) {
 		 * @param  {Object} wizardData  Wizard's data
 		 * @returns  {Object}  Account document
 		 */
-		wizardSubmitGetFormattedAccountDocument: function(wizardData) {
+		wizardSubmitGetFormattedAccount: function(wizardData) {
 			var self = this,
 				accountInfo = wizardData.generalSettings.accountInfo,
 				accountContacts = wizardData.accountContacts,
@@ -1470,6 +1476,63 @@ define(function(require) {
 			}
 
 			return accountDocument;
+		},
+
+		/**
+		 * Build an array with the user documents to submit to the API, from the wizard data
+		 * @param  {Object} wizardData  Wizard's data
+		 * @returns  {Array}  Array of user documents
+		 */
+		wizardSubmitGetFormattedUsers: function(wizardData) {
+			var self = this;
+
+			return _.map(wizardData.generalSettings.accountAdmins, function(adminUser) {
+				return {
+					first_name: adminUser.firstName,
+					last_name: adminUser.lastName,
+					username: adminUser.email,
+					password: adminUser.password,
+					priv_level: 'admin',
+					send_email_on_creation: adminUser.sendMail
+				};
+			});
+		},
+
+		/**
+		 * Build an object that contain the selected service plans that will compose the plan
+		 * for the new account, from the wizard data, to submit to the API
+		 * @param  {Object} wizardData  Wizard's data
+		 * @returns  {Object}  Object that contains the selected service plans
+		 */
+		wizardSubmitGetFormattedServicePlan: function(wizardData) {
+			var self = this,
+				selectedPlanIds = wizardData.servicePlan.selectedPlanIds;
+
+			if (_.isEmpty(selectedPlanIds)) {
+				return null;
+			}
+
+			return {
+				add: selectedPlanIds
+			};
+		},
+
+		/**
+		 * Build an object that contain the account limits to submit to the API, from the wizard data
+		 * @param  {Object} wizardData  Wizard's data
+		 * @returns  {Object}  Plan limits
+		 */
+		wizardSubmitGetFormattedLimits: function(wizardData) {
+			var self = this,
+				limits = {
+					allow_prepay: true
+				};
+
+			_.each(wizardData.usageAndCallRestrictions.trunkLimits, function(value, trunkType) {
+				limits[trunkType + '_trunks'] = value;
+			});
+
+			return limits;
 		},
 
 		/* CLOSE WIZARD */
