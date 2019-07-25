@@ -566,13 +566,6 @@
       ],
       "value": ""
     }, {
-      "id": "1e23266d-8e7a-4cf0-ae12-05ac852b81ce",
-      "comment": "",
-      "command": "click",
-      "target": "id=trunk_limits_inbound",
-      "targets": [],
-      "value": ""
-    }, {
       "id": "db75b952-60c2-4104-914a-e6ef16cc9eaf",
       "comment": "",
       "command": "type",
@@ -780,7 +773,7 @@
       ],
       "value": ""
     }, {
-      "id": "933ceb20-4838-4c29-a6d8-613400a16232",
+      "id": "f9906232-f479-42cf-a6af-3b4c0731975a",
       "comment": "",
       "command": "click",
       "target": "id=next",
