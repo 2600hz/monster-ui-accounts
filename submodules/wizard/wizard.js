@@ -1306,9 +1306,7 @@ define(function(require) {
 					.find({
 						id: formattedData.accountContacts.salesRep.representative
 					})
-					.thru(function(user) {
-						return monster.util.getUserFullName(user);
-					})
+					.thru(monster.util.getUserFullName)
 					.value();
 			}
 
