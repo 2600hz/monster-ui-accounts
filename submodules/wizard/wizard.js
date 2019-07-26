@@ -91,7 +91,8 @@ define(function(require) {
 							]
 						}
 					]
-				}
+				},
+				toastTimeout: 10000
 			}
 		},
 
@@ -1379,15 +1380,122 @@ define(function(require) {
 		wizardSubmit: function(args) {
 			var self = this,
 				wizardData = args.data,
-				account = self.wizardSubmitGetFormattedAccount(wizardData),
-				users = self.wizardSubmitGetFormattedUsers(wizardData),
-				plan = self.wizardSubmitGetFormattedServicePlan(wizardData),
-				limits = self.wizardSubmitGetFormattedLimits(wizardData);
+				$container = args.container,
+				// This function creates a new async.js callback, to allow the parallel tasks to
+				// continue regardless if one of them fail, because it packs the error as part of
+				// the result, and returns a null value as error
+				addErrorToResult = function(callback) {
+					return function(err, result) {
+						var newResult = {};
 
-			console.log('account', account);
-			console.log('users', users);
-			console.log('plan', plan);
-			console.log('limits', limits);
+						if (err) {
+							newResult.error = err;
+						}
+
+						if (result) {
+							newResult.value = result;
+						}
+
+						callback(null, newResult);
+					};
+				};
+
+			monster.waterfall([
+				function(waterfallCallback) {
+					self.wizardRequestResourceCreateOrUpdate({
+						resource: 'account.create',
+						accountId: args.parentAccountId,
+						data: self.wizardSubmitGetFormattedAccount(wizardData),
+						callback: function(err, newAccount) {
+							if (err) {
+								waterfallCallback({
+									type: 'account',
+									error: err
+								});
+							} else {
+								waterfallCallback(null, newAccount.id);
+							}
+						}
+					});
+				},
+				function(newAccountId, waterfallCallback) {
+					var users = self.wizardSubmitGetFormattedUsers(wizardData),
+						parallelFunctions = {
+							plan: function(parallelCallback) {
+								self.wizardRequestResourceCreateOrUpdate({
+									resource: 'services.bulkChange',
+									accountId: newAccountId,
+									data: self.wizardSubmitGetFormattedServicePlan(wizardData),
+									callback: addErrorToResult(parallelCallback)
+								});
+							},
+							limits: function(parallelCallback) {
+								self.wizardRequestLimitsUpdate({
+									accountId: newAccountId,
+									limits: self.wizardSubmitGetFormattedLimits(wizardData),
+									callback: addErrorToResult(parallelCallback)
+								});
+							},
+							credit: function(parallelCallback) {
+								self.wizardRequestResourceCreateOrUpdate({
+									resource: 'ledgers.credit',
+									accountId: newAccountId,
+									data: self.wizardSubmitGetFormattedLedgerCredit(wizardData),
+									callback: addErrorToResult(parallelCallback)
+								});
+							},
+							noMatchCallflow: function(parallelCallback) {
+								// TODO: createNoMatchCallflow
+								parallelCallback(null);
+							}
+						};
+
+					_.each(users, function(user, index) {
+						parallelFunctions['user' + index] = function(parallelCallback) {
+							self.wizardRequestResourceCreateOrUpdate({
+								resource: 'user.create',
+								accountId: newAccountId,
+								data: user,
+								callback: addErrorToResult(parallelCallback)
+							});
+						};
+					});
+
+					monster.parallel(parallelFunctions, function(err, results) {
+						var errors = _.transform(results, function(newObj, value, key) {
+							if (!_.has(value, 'error')) {
+								return;
+							}
+							newObj[key] = value;
+						});
+
+						if (_.isEmpty(errors)) {
+							waterfallCallback(null, newAccountId);
+							return;
+						}
+
+						waterfallCallback({
+							type: 'features',
+							error: errors
+						}, newAccountId);
+					});
+				}
+			], function(err, newAccountId) {
+				if (err) {
+					self.wizardSubmitNotifyErrors(err);
+
+					if (err.type === 'account') {
+						// Nor the account nor any of its related parts were created
+						// So let's remain in the wizard
+						return;
+					}
+				}
+
+				monster.pub('accountsManager.activate', {
+					container: $container,
+					parentId: newAccountId
+				});
+			});
 
 			self.wizardClose(args);
 		},
@@ -1479,6 +1587,34 @@ define(function(require) {
 		},
 
 		/**
+		 * Build the ledger credit object to submit to the API, from the wizard data
+		 * @param  {Object} wizardData  Wizard's data
+		 * @returns  {Object}  Ledger credit data
+		 */
+		wizardSubmitGetFormattedLedgerCredit: function(wizardData) {
+			var self = this,
+				amount = _.toNumber(wizardData.creditBalanceAndFeatures.accountCredit.initialBalance);
+
+			return {
+				amount: amount,
+				description: 'Credit added by administrator',
+				metadata: {
+					automatic_description: true,
+					ui_request: true
+				},
+				source: {
+					id: monster.util.guid(),
+					service: 'adjustments'
+				},
+				usage: {
+					quantity: amount,
+					type: 'credit',
+					unit: monster.config.currencyCode
+				}
+			};
+		},
+
+		/**
 		 * Build an array with the user documents to submit to the API, from the wizard data
 		 * @param  {Object} wizardData  Wizard's data
 		 * @returns  {Array}  Array of user documents
@@ -1535,6 +1671,63 @@ define(function(require) {
 			return limits;
 		},
 
+		wizardSubmitNotifyErrors: function(error) {
+			var self = this,
+				errorCollection = error.error,
+				isAnyUserError = _.some(errorCollection, function(error, key) {
+					return _.startsWith(key, 'user');
+				}),
+				toastOptions = {
+					timeOut: self.appFlags.wizard.toastTimeout
+				};
+
+			if (_.get(error, 'type') === 'account') {
+				// Nor the account nor any of its related parts were created
+				monster.ui.toast({
+					type: 'error',
+					message: self.i18n.active().toastrMessages.newAccount.accountError,
+					options: toastOptions
+				});
+
+				return;
+			}
+
+			// If the account creation did not fail, there were errors in any of the features
+
+			// User errors
+			if (isAnyUserError) {
+				monster.ui.toast({
+					type: 'error',
+					message: self.i18n.active().toastrMessages.newAccount.adminError,
+					options: toastOptions
+				});
+			}
+
+			// Limits errors
+			if (_.get(errorCollection, 'limits.error') === 403) {
+				monster.ui.toast({
+					type: 'error',
+					message: self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError,
+					options: toastOptions
+				});
+			} else if (_.get(errorCollection, 'limits.error', 402) !== 402) { // Only show error if error isn't a 402, because a 402 is handled generically
+				monster.ui.toast({
+					type: 'error',
+					message: self.i18n.active().toastrMessages.newAccount.limitsError,
+					options: toastOptions
+				});
+			}
+
+			// Credit errors
+			if (_.has(errorCollection, 'credit')) {
+				monster.ui.toast({
+					type: 'error',
+					message: self.i18n.active().toastrMessages.newAccount.creditError,
+					options: toastOptions
+				});
+			}
+		},
+
 		/* CLOSE WIZARD */
 
 		/**
@@ -1555,6 +1748,82 @@ define(function(require) {
 		},
 
 		/* API REQUESTS */
+
+		/**
+		 * Request limits update for an account
+		 * @param  {Object} args
+		 * @param  {String} args.accountId  Account ID
+		 * @param  {Object} args.limits  Limits to update
+		 * @param  {Function} args.callback  Async.js callback
+		 */
+		wizardRequestLimitsUpdate: function(args) {
+			var self = this,
+				accountId = args.accountId,
+				newLimits = args.limits,
+				callback = args.callback;
+
+			monster.waterfall([
+				function(waterfallCallback) {
+					self.callApi({
+						resource: 'limits.get',
+						data: {
+							accountId: accountId
+						},
+						success: function(data) {
+							waterfallCallback(null, data.data);
+						},
+						error: function(parsedError) {
+							waterfallCallback(parsedError);
+						}
+					});
+				},
+				function(limits, waterfallCallback) {
+					self.callApi({
+						resource: 'limits.update',
+						data: {
+							accountId: accountId,
+							data: _.merge(limits, newLimits),
+							generateError: false
+						},
+						success: function(data) {
+							waterfallCallback(null, data.data);
+						},
+						error: function(parsedError) {
+							waterfallCallback(parsedError);
+						},
+						onChargesCancelled: function() {
+							waterfallCallback(null, {});
+						}
+					});
+				}
+			], callback);
+		},
+
+		/**
+		 * Request the creation of a new resource document
+		 * @param  {Object} args
+		 * @param  {('account'|'user')} args.resource  Resource name
+		 * @param  {String} args.accountId  Account ID
+		 * @param  {Object} args.data  New user data
+		 * @param  {Function} args.callback  Async.js callback
+		 */
+		wizardRequestResourceCreateOrUpdate: function(args) {
+			var self = this;
+
+			self.callApi({
+				resource: args.resource,
+				data: {
+					accountId: args.accountId,
+					data: args.data
+				},
+				success: function(data) {
+					args.callback(null, data.data);
+				},
+				error: function(parsedError) {
+					args.callback(parsedError);
+				}
+			});
+		},
 
 		/**
 		 * Request the list of service plans for the current account
