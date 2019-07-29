@@ -1503,6 +1503,7 @@ define(function(require) {
 				}
 
 				monster.pub('accountsManager.activate', {
+					container: $container,
 					selectedId: newAccountId
 				});
 			});
@@ -1690,8 +1691,6 @@ define(function(require) {
 				toastOptions = {
 					timeOut: self.appFlags.wizard.toastTimeout
 				};
-
-			console.log(errorCollection);
 
 			if (_.get(error, 'type') === 'account') {
 				// Nor the account nor any of its related parts were created
