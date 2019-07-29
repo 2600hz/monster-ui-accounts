@@ -1406,6 +1406,7 @@ define(function(require) {
 						resource: 'account.create',
 						accountId: wizardData.parentAccountId,
 						data: self.wizardSubmitGetFormattedAccount(wizardData),
+						generateError: true,
 						callback: function(err, newAccount) {
 							if (err) {
 								waterfallCallback({
@@ -1476,7 +1477,7 @@ define(function(require) {
 							if (!_.has(value, 'error')) {
 								return;
 							}
-							newObj[key] = value;
+							newObj[key] = value.error;
 						});
 
 						if (_.isEmpty(errors)) {
@@ -1684,11 +1685,13 @@ define(function(require) {
 				isAnyUserError = _.some(errorCollection, function(error, key) {
 					return _.startsWith(key, 'user');
 				}),
-				limitsErrorCode = _.chain(errorCollection).get('limits.error').toInteger().value(),
-				planErrorCode = _.chain(errorCollection).get('plan.error').toInteger().value(),
+				limitsErrorCode = _.get(errorCollection, 'limits.error'),
+				planErrorCode = _.get(errorCollection, 'plan.error'),
 				toastOptions = {
 					timeOut: self.appFlags.wizard.toastTimeout
 				};
+
+			console.log(errorCollection);
 
 			if (_.get(error, 'type') === 'account') {
 				// Nor the account nor any of its related parts were created
@@ -1713,14 +1716,14 @@ define(function(require) {
 			}
 
 			// Limits errors
-			if (limitsErrorCode > 0) {
-				if (limitsErrorCode === 403) {
+			if (limitsErrorCode) {
+				if (limitsErrorCode === '403') {
 					monster.ui.toast({
 						type: 'warning',
 						message: self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError,
 						options: toastOptions
 					});
-				} else if (limitsErrorCode !== 402) { // Only show error if error isn't a 402, because a 402 is handled generically
+				} else if (limitsErrorCode !== '402') { // Only show error if error isn't a 402, because a 402 is handled generically
 					monster.ui.toast({
 						type: 'warning',
 						message: self.i18n.active().toastrMessages.newAccount.limitsError,
@@ -1730,14 +1733,14 @@ define(function(require) {
 			}
 
 			// Plan errors
-			if (planErrorCode > 0) {
-				if (planErrorCode === 403) {
+			if (planErrorCode) {
+				if (planErrorCode === '403') {
 					monster.ui.toast({
 						type: 'warning',
 						message: self.i18n.active().toastrMessages.newAccount.forbiddenPlanError,
 						options: toastOptions
 					});
-				} else if (planErrorCode !== 402) { // Only show error if error isn't a 402, because a 402 is handled generically
+				} else if (planErrorCode !== '402') { // Only show error if error isn't a 402, because a 402 is handled generically
 					monster.ui.toast({
 						type: 'warning',
 						message: self.i18n.active().toastrMessages.newAccount.planError,
@@ -1833,6 +1836,7 @@ define(function(require) {
 		 * @param  {('account'|'user')} args.resource  Resource name
 		 * @param  {String} args.accountId  Account ID
 		 * @param  {Object} args.data  New user data
+		 * @param  {Boolean} [args.generateError=false]  Whether or not show error dialog
 		 * @param  {Function} args.callback  Async.js callback
 		 */
 		wizardRequestResourceCreateOrUpdate: function(args) {
@@ -1842,7 +1846,8 @@ define(function(require) {
 				resource: args.resource,
 				data: {
 					accountId: args.accountId,
-					data: args.data
+					data: args.data,
+					generateError: _.get(args, 'generateError', false)
 				},
 				success: function(data) {
 					args.callback(null, data.data);
