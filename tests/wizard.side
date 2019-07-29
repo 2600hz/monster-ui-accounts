@@ -156,7 +156,7 @@
         ["xpath=//form[@id='form_general_settings']/div/div[2]/div[8]/input", "xpath:idRelative"],
         ["xpath=//div[8]/input", "xpath:position"]
       ],
-      "value": "United States of America"
+      "value": "USA"
     }, {
       "id": "f0de6f68-88b2-4b4e-bd50-b03f608905a2",
       "comment": "",
@@ -415,7 +415,7 @@
       "command": "//type",
       "target": "css=input:nth-child(1)",
       "targets": [],
-      "value": "erik"
+      "value": "e"
     }, {
       "id": "01028202-c64c-431a-a618-e16f08990397",
       "comment": "",
@@ -436,7 +436,7 @@
       "command": "//type",
       "target": "id=sales_rep_contract_end_date",
       "targets": [],
-      "value": "31/12/2020"
+      "value": "31/12/2030"
     }, {
       "id": "1d7a079c-d34f-4b67-901a-ff52d071c7ff",
       "comment": "",
@@ -485,7 +485,7 @@
         ["xpath=//form[@id='form_account_contacts']/div/div[6]/div/input", "xpath:idRelative"],
         ["xpath=//div[6]/div/input", "xpath:position"]
       ],
-      "value": "Kate Zucchino"
+      "value": "Mary Doe"
     }, {
       "id": "c251ffc0-8453-46d9-9c35-38af4316c551",
       "comment": "",
@@ -499,7 +499,7 @@
         ["xpath=//form[@id='form_account_contacts']/div/div[6]/div[2]/input", "xpath:idRelative"],
         ["xpath=//div[6]/div[2]/input", "xpath:position"]
       ],
-      "value": "kate@email.com"
+      "value": "mary@email.com"
     }, {
       "id": "55da9bbc-154f-462b-8a35-157355c790ec",
       "comment": "",
@@ -540,72 +540,10 @@
       ],
       "value": ""
     }, {
-      "id": "d8d5e152-7a89-4d73-985e-24ca79cb3762",
-      "comment": "",
-      "command": "type",
-      "target": "css=input",
-      "targets": [
-        ["css=input", "css:finder"],
-        ["xpath=//input[@type='text']", "xpath:attributes"],
-        ["xpath=//div[@id='selectedPlanIds_0__chosen']/div/div/input", "xpath:idRelative"],
-        ["xpath=//input", "xpath:position"]
-      ],
-      "value": "nothin"
-    }, {
-      "id": "bcc8e306-fdbb-450e-bbdd-d32281dbebf6",
-      "comment": "",
-      "command": "sendKeys",
-      "target": "css=input",
-      "targets": [
-        ["css=input", "css:finder"],
-        ["xpath=//input[@type='text']", "xpath:attributes"],
-        ["xpath=//div[@id='selectedPlanIds_0__chosen']/div/div/input", "xpath:idRelative"],
-        ["xpath=//input", "xpath:position"]
-      ],
-      "value": "${KEY_ENTER}"
-    }, {
-      "id": "bf44cc29-38ac-4b32-b390-10c75f172900",
-      "comment": "",
-      "command": "click",
-      "target": "linkText=Add another plan",
-      "targets": [
-        ["linkText=Add another plan", "linkText"],
-        ["css=.service-plan-add", "css:finder"],
-        ["xpath=//a[contains(text(),'Add another plan')]", "xpath:link"],
-        ["xpath=//div[@id='step_service_plan']/div[2]/div/div/div/div/a", "xpath:idRelative"],
-        ["xpath=(//a[contains(@href, 'javascript:void(0);')])[8]", "xpath:href"],
-        ["xpath=//div/div/div/div/a", "xpath:position"],
-        ["xpath=//a[contains(.,'Add another plan')]", "xpath:innerText"]
-      ],
-      "value": ""
-    }, {
-      "id": "46fa4aae-7802-436b-9cd0-4fc4475215fa",
-      "comment": "",
-      "command": "click",
-      "target": "css=.chosen-default b",
-      "targets": [
-        ["css=.chosen-default b", "css:finder"],
-        ["xpath=(//div[@id='selectedPlanIds_0__chosen']/a/div/b)[2]", "xpath:idRelative"],
-        ["xpath=//div[2]/div/div/a/div/b", "xpath:position"]
-      ],
-      "value": ""
-    }, {
-      "id": "5aff396b-2612-4696-826e-46da39e23c75",
-      "comment": "",
-      "command": "type",
-      "target": "css=.service-plan-item:nth-child(2) input",
-      "targets": [
-        ["css=.service-plan-item:nth-child(2) input", "css:finder"],
-        ["xpath=(//input[@type='text'])[2]", "xpath:attributes"],
-        ["xpath=(//div[@id='selectedPlanIds_0__chosen']/div/div/input)[2]", "xpath:idRelative"],
-        ["xpath=//div[2]/div/div/div/div/input", "xpath:position"]
-      ],
-      "value": "the"
-    }, {
       "id": "4ca2b1c5-3468-4179-9c86-c3708748e225",
       "comment": "",
       "command": "sendKeys",
-      "target": "css=.service-plan-item:nth-child(2) input",
+      "target": "css=.service-plan-item:nth-child(1) input",
       "targets": [
         ["css=.service-plan-item:nth-child(2) input", "css:finder"],
         ["xpath=(//input[@type='text'])[2]", "xpath:attributes"],
@@ -854,6 +792,13 @@
         ["xpath=//button[2]", "xpath:position"],
         ["xpath=//button[contains(.,'Next')]", "xpath:innerText"]
       ],
+      "value": ""
+    }, {
+      "id": "b69542f6-0cae-4aed-9cce-1355a27342bb",
+      "comment": "",
+      "command": "click",
+      "target": "id=done",
+      "targets": [],
       "value": ""
     }]
   }],
