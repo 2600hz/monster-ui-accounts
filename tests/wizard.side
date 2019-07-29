@@ -1,11 +1,11 @@
 {
   "id": "ea4a7a3d-b7bd-4d23-8ad9-56c73eb5f981",
   "version": "2.0",
-  "name": "MACT-1",
+  "name": "Account Wizard",
   "url": "http://localhost:3000/#/apps/accounts",
   "tests": [{
     "id": "b68f1581-4eaf-42d0-8088-49159185c930",
-    "name": "Full Wizard Standard",
+    "name": "Golden Path",
     "commands": [{
       "id": "7ec17795-1fb4-472c-8c65-91dc47f66074",
       "comment": "",
