@@ -1616,7 +1616,7 @@ define(function(require) {
 					service: 'adjustments'
 				},
 				usage: {
-					quantity: amount,
+					quantity: 0,
 					type: 'credit',
 					unit: monster.config.currencyCode
 				}
