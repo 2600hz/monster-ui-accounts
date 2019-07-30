@@ -1636,6 +1636,7 @@ define(function(require) {
 					first_name: adminUser.firstName,
 					last_name: adminUser.lastName,
 					username: adminUser.email,
+					email: adminUser.email,
 					password: adminUser.password,
 					priv_level: 'admin',
 					send_email_on_creation: adminUser.sendMail
