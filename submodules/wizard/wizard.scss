@@ -42,10 +42,27 @@ $color-highlight: #dbdbde;
 		display: inline-block;
 		margin-left: 0.5rem;
 
-		&.help-tip-button {
+		&.help-tip-section, &.help-tip-button {
 			margin-left: 0.75rem;
+		}
+
+		&.help-tip-button {
 			margin-top: 9px;
 		}
+	}
+
+	.text-success, .text-danger {
+		.iconography-medium {
+			margin-top: -2px;
+		}
+	}
+
+	.text-success {
+		color: $success-color;
+	}
+
+	.text-danger {
+		color: $danger-color;
 	}
 
 	.monster-button {
@@ -109,8 +126,8 @@ $color-highlight: #dbdbde;
 		margin-left: -0.75rem;
 		margin-right: -0.75rem;
 
-		[class^="flex-item-"],
-		[class*=" flex-item-"] {
+		[class^="flex-item"],
+		[class*=" flex-item"] {
 			flex: 0 0 auto;
 			box-sizing: border-box;
 			padding: 0 0.75rem 1.5rem 0.75rem;
@@ -128,6 +145,14 @@ $color-highlight: #dbdbde;
 			width: 33.3333%;
 		}
 
+		.flex-item-4 {
+			width: 25%;
+		}
+
+		.flex-item-4-3 {
+			width: 75%;
+		}
+
 		@media #{$media-size-medium} {
 			.flex-item-2 {
 				width: 100%;
@@ -135,6 +160,14 @@ $color-highlight: #dbdbde;
 
 			.flex-item-3 {
 				width: 50%;
+			}
+
+			.flex-item-4 {
+				width: 50%;
+			}
+
+			.flex-item-4-3 {
+				width: 100%;
 			}
 		}
 
@@ -270,6 +303,27 @@ $color-highlight: #dbdbde;
 		}
 	}
 
+	.app-icon {
+		flex: 0 0 initial;
+		width: 2rem;
+		height: 2rem;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: contain;
+		border-radius: 0.5rem;
+
+		&.app-icon-empty {
+			background-color:$midgray;
+		}
+	}
+
+	.app-name {
+		flex: 1;
+		padding: 0 0.75rem;
+		line-height: 2rem;
+		vertical-align: middle;
+	}
+
 	.admin-user-item {
 		padding-top: 1.5rem;
 		border-top: 1px solid $french-gray2;
@@ -333,7 +387,7 @@ $color-highlight: #dbdbde;
 						margin-left: 0.5rem;
 
 						.iconography-medium {
-							margin-left: -2px;
+							margin-left: -6px;
 							margin-top: -3px;
 						}
 
@@ -496,27 +550,6 @@ $color-highlight: #dbdbde;
 							color: $midgray2;
 						}
 
-						.app-icon {
-							flex: 0 0 initial;
-							width: 2rem;
-							height: 2rem;
-							background-position: center;
-							background-repeat: no-repeat;
-							background-size: contain;
-							border-radius: 0.5rem;
-
-							&.app-icon-empty {
-								background-color:$midgray;
-							}
-						}
-
-						.app-name {
-							flex: 1;
-							padding: 0 0.75rem;
-							line-height: 2rem;
-							vertical-align: middle;
-						}
-
 						.app-remove {
 							flex: 0 0 initial;
 							width: 1rem;
@@ -555,6 +588,99 @@ $color-highlight: #dbdbde;
 						}
 					}
 				}
+			}
+		}
+	}
+
+	&#step_review {
+		[class^="field-value-"],
+		[class*=" field-value-"] {
+			color: $woodsmoke;
+			font-weight: 600;
+
+			.iconography-medium {
+				margin-right: 0.5rem;
+			}
+		}
+
+		.field-label-horizontal, .field-value-horizontal {
+			margin-top: -4px;
+			margin-bottom: 4px;
+			padding-bottom: 1rem;
+			line-height: 21px;
+		}
+
+		.field-label-horizontal {
+			color: $woodsmoke;
+			letter-spacing: 0px;
+		}
+
+		.field-value-horizontal .flex-row-container:last-child {
+			margin-bottom: -1.5rem;
+		}
+
+		.field-label-vertical {
+			margin-bottom: 0.5rem;
+			line-height: 0.75rem;
+			font-size: 0.75rem;
+			color: $midgray2;
+		}
+
+		.field-value-vertical {
+			line-height: 14px;
+		}
+
+		.service-items-listing.monster-table tbody td:not(.category-cell) {
+			font-weight: normal;
+		}
+
+		.field-group-column {
+			width: 43.75%;
+
+			.column-title {
+				color: $woodsmoke;
+				font-size: 14px;
+				font-weight: 600;
+				line-height: 14px;
+				padding-bottom: 1.5rem;
+			}
+
+			.field-label-horizontal {
+				width: 57.1429%;
+
+				.iconography-text-right {
+					margin-left: 0.75rem;
+				}
+			}
+
+			.field-value-horizontal {
+				flex: 1;
+				width: auto;
+			}
+
+
+			@media #{$media-size-medium} {
+				.field-label-horizontal, .field-value-horizontal {
+					width: 100%;
+				}
+			}
+		}
+
+		@media #{$media-size-small} {
+			.field-group-column {
+				width: 100%;
+			}
+		}
+
+		.app-list .app-item {
+			padding-bottom: 1rem;
+
+			.app-icon {
+				padding: 0;
+			}
+
+			.app-name {
+				padding-bottom: 0;
 			}
 		}
 	}

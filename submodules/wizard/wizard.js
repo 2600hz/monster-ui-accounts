@@ -25,6 +25,72 @@ define(function(require) {
 					planInput: 150,
 					allowedApps: 500,
 					toggleAppCards: 400
+				},
+				callRestrictionTypes: [
+					'tollfree_us',
+					'toll_us',
+					'emergency',
+					'caribbean',
+					'did_us',
+					'international',
+					'unknowkn'
+				],
+				controlCenterFeatures: {
+					tree: [
+						{
+							category: 'settings',
+							features: [
+								{
+									name: 'user',
+									icon: 'user'
+								},
+								{
+									name: 'account',
+									icon: 'avatar--badge'
+								}
+							]
+						},
+						{
+							category: 'billing',
+							features: [
+								{
+									name: 'billing',
+									icon: 'credit-card'
+								},
+								{
+									name: 'balance',
+									icon: 'list',
+									features: [
+										{
+											name: 'credit',
+											icon: 'available-balance'
+										},
+										{
+											name: 'minutes',
+											icon: 'clock'
+										}
+									]
+								},
+								{
+									name: 'service_plan',
+									icon: 'service-plan'
+								},
+								{
+									name: 'transactions',
+									icon: 'billing'
+								}
+							]
+						},
+						{
+							category: 'misc',
+							features: [
+								{
+									name: 'error_tracker',
+									icon: 'bug'
+								}
+							]
+						}
+					]
 				}
 			}
 		},
@@ -363,6 +429,7 @@ define(function(require) {
 							data: {
 								data: formattedData,
 								users: userList
+								//showSalesRepSection: true
 							},
 							submodule: 'wizard'
 						})),
@@ -434,7 +501,7 @@ define(function(require) {
 				if (_.has(formattedNumber, 'e164Number')) {
 					_.set(data, fieldName, formattedNumber);
 				} else {
-					errors[fieldName] = self.i18n.active().accountsApp.wizard.steps.general.phoneNumber.invalid;
+					errors[fieldName] = self.i18n.active().accountsApp.wizard.steps.general.errors.phoneNumber.invalid;
 				}
 			});
 
@@ -833,15 +900,7 @@ define(function(require) {
 								'outbound',
 								'twoway'
 							],
-							callRestrictionTypes: [
-								'tollfree_us',
-								'toll_us',
-								'emergency',
-								'caribbean',
-								'did_us',
-								'international',
-								'unknowkn'
-							],
+							callRestrictionTypes: self.appFlags.wizard.callRestrictionTypes,
 							data: usageAndCallRestrictionsData
 						},
 						$template = $(self.getTemplate({
@@ -895,80 +954,13 @@ define(function(require) {
 			var self = this,
 				$container = args.container,
 				initTemplate = function() {
-					var controlCenterFeatureTree = [
-							{
-								category: 'settings',
-								features: [
-									{
-										name: 'user',
-										icon: 'user'
-									},
-									{
-										name: 'account',
-										icon: 'avatar--badge'
-									}
-								]
-							},
-							{
-								category: 'billing',
-								features: [
-									{
-										name: 'billing',
-										icon: 'credit-card'
-									},
-									{
-										name: 'balance',
-										icon: 'list',
-										features: [
-											{
-												name: 'credit',
-												icon: 'available-balance'
-											},
-											{
-												name: 'minutes',
-												icon: 'clock'
-											}
-										]
-									},
-									{
-										name: 'service_plan',
-										icon: 'service-plan'
-									},
-									{
-										name: 'transactions',
-										icon: 'billing'
-									}
-								]
-							},
-							{
-								category: 'misc',
-								features: [
-									{
-										name: 'error_tracker',
-										icon: 'bug'
-									}
-								]
-							}
-						],
-						featureTreeToList = function(features) {
-							return _.flatMap(features, function(feature) {
-								var flattenedFeatures = _.concat([ feature.name ], featureTreeToList(feature.features));
-								return flattenedFeatures;
-							});
-						},
-						controlCenterFeatureList = _
-							.chain(controlCenterFeatureTree)
-							.flatMap('features')
-							.thru(featureTreeToList)
-							.value(),
-						creditBalanceAndFeaturesData = args.data.creditBalanceAndFeatures,
+					var creditBalanceAndFeaturesData = args.data.creditBalanceAndFeatures,
 						$template = $(self.getTemplate({
 							name: 'step-creditBalanceAndFeatures',
 							data: {
 								currencySymbol: monster.util.getCurrencySymbol(),
 								controlCenter: {
-									featureTree: controlCenterFeatureTree,
-									featureList: controlCenterFeatureList
+									featureTree: self.appFlags.wizard.controlCenterFeatures.tree
 								},
 								data: creditBalanceAndFeaturesData
 							},
@@ -1206,24 +1198,186 @@ define(function(require) {
 
 		/* REVIEW */
 
+		/**
+		 * Render Review step
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {jQuery} args.container  Step container element
+		 */
 		wizardReviewRender: function(args) {
 			var self = this,
-				$container = args.container;
+				data = args.data,
+				$container = args.container,
+				dataTemplate = self.wizardReviewFormatData(data),
+				$template = $(self.getTemplate({
+					name: 'step-review',
+					data: dataTemplate,
+					submodule: 'wizard'
+				})),
+				initTemplate = function() {
+					monster.ui.tooltips($template);
 
-			// TODO: Not implemented
+					self.wizardReviewBindEvents({
+						template: $template
+					});
+
+					return $template;
+				};
+
+			self.wizardRenderStep({
+				container: $container,
+				loadData: function(asyncCallback) {
+					self.serviceItemsListingRender({
+						planIds: data.servicePlan.selectedPlanIds,
+						container: $template.find('#service_plan_aggregate'),
+						showProgressPanel: false,
+						success: function() {
+							asyncCallback(null);
+						},
+						error: function(err) {
+							asyncCallback(null);
+						}
+					});
+				},
+				initTemplate: initTemplate
+			});
 		},
 
+		/**
+		 * Utility funcion to extract Review data. Not used, as this is only a review step, so it
+		 * does not provide any new data.
+		 * @param  {jQuery} $template  Step template
+		 * @returns  {Object}  Object that contains a `valid` flag value
+		 */
 		wizardReviewUtil: function($template) {
 			var self = this;
 
-			// TODO: Not implemented
-
 			return {
-				valid: true,
-				data: {}
+				valid: true
 			};
 		},
 
+		/**
+		 * Fomat the wizard data to be rendered for review
+		 * @param  {Object} data  Wizard data
+		 */
+		wizardReviewFormatData: function(data) {
+			var self = this,
+				wizardAppFlags = self.appFlags.wizard,
+				formattedData = _
+					.chain(data)
+					.cloneDeep()	// To not to alter data to save
+					.merge({
+						generalSettings: {
+							accountInfo: {
+								// Set formatted address line 3
+								addressLine3: self.getTemplate({
+									name: '!' + self.i18n.active().accountsApp.wizard.steps.review.generalSettings.formats.addressLine3,
+									data: data.generalSettings.accountInfo
+								})
+							}
+						}
+					})
+					.value(),
+				featureTreeToList = function(features) {
+					return _.flatMap(features, function(feature) {
+						var flattenedFeatures = _.concat([ feature ], featureTreeToList(feature.features));
+						return flattenedFeatures;
+					});
+				};
+
+			// Replace language code with language name
+			formattedData.generalSettings.accountInfo.language = monster.util.tryI18n(monster.apps.core.i18n.active().monsterLanguages, formattedData.generalSettings.accountInfo.language);
+
+			// Set full name for account admins
+			_.each(formattedData.generalSettings.accountAdmins, function(admin) {
+				admin.fullName = monster.util.getUserFullName({
+					first_name: admin.firstName,
+					last_name: admin.lastName
+				});
+				delete admin.firstName;
+				delete admin.lastName;
+			});
+
+			// Replace representative's userId with its full name
+			if (_.has(formattedData.accountContacts, 'salesRep.representative')) {
+				formattedData.accountContacts.salesRep.representative = _
+					.chain(self.wizardGetStore('accountUsers'))	// At this point all the required data has been stored, so we can get it directly
+					.find({
+						id: formattedData.accountContacts.salesRep.representative
+					})
+					.thru(monster.util.getUserFullName)
+					.value();
+			}
+
+			// Get plan names and quote
+			if (_.has(formattedData, 'servicePlan.selectedPlanIds')) {
+				var	selectedPlanIds = formattedData.servicePlan.selectedPlanIds,
+					servicePlanList = self.wizardGetStore('servicePlans');
+
+				formattedData.servicePlan = {
+					selectedPlans: _
+						.chain(selectedPlanIds)
+						.map(function(planId) {
+							return _
+								.chain(servicePlanList)
+								.find({ id: planId })
+								.get('name')
+								.value();
+						})
+						.sortBy()
+						.join(', ')
+						.value()
+				};
+			}
+
+			// Add static data from appFlags
+			if (!_.has(wizardAppFlags.controlCenterFeatures, 'list')) {
+				wizardAppFlags.controlCenterFeatures.list = _
+					.chain(wizardAppFlags.controlCenterFeatures.tree)
+					.flatMap('features')
+					.thru(featureTreeToList)
+					.value();
+			}
+			formattedData.creditBalanceAndFeatures.controlCenterAccess.featureList = wizardAppFlags.controlCenterFeatures.list;
+			formattedData.usageAndCallRestrictions.callRestrictionTypes = wizardAppFlags.callRestrictionTypes;
+
+			// Set app list
+			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
+
+			return formattedData;
+		},
+
+		/**
+		 * Bind Review step events
+		 * @param  {Object} args
+		 * @param  {jQuery} args.template  Step template
+		 */
+		wizardReviewBindEvents: function(args) {
+			var self = this,
+				$template = args.template;
+
+			$template
+				.find('.edit-step')
+					.on('click', function(e) {
+						e.preventDefault();
+
+						var stepId = $(this).data('step_id');
+
+						monster.pub('common.navigationWizard.goToStep', {
+							stepId: stepId
+						});
+					});
+		},
+
+		/* CLOSE WIZARD */
+
+		/**
+		 * Loads the account manager, to replace the wizard view
+		 * @param  {Object} args
+		 * @param  {jQuery} args.container  Main view container
+		 * @param  {String} args.parentAccountId  Parent Account ID
+		 */
 		wizardClose: function(args) {
 			var self = this,
 				$container = args.container,
@@ -1628,7 +1782,7 @@ define(function(require) {
 
 		/**
 		 * Store getter
-		 * @param  {Array|String} [path]
+		 * @param  {('accountUsers'|'apps'|'servicePlans')} [path]
 		 * @param  {*} [defaultValue]
 		 * @return {*}
 		 */
@@ -1646,7 +1800,7 @@ define(function(require) {
 
 		/**
 		 * Store setter
-		 * @param  {Array|String|*} path|value
+		 * @param  {('accountUsers'|'apps'|'servicePlans')} path|value
 		 * @param  {*} [value]
 		 */
 		wizardSetStore: function(path, value) {
