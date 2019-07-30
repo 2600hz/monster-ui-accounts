@@ -107,7 +107,8 @@ define(function(require) {
 				parent = args.container,
 				selectedId = args.selectedId,
 				selectedTab = args.selectedTab,
-				callback = args.callback;
+				callback = args.callback,
+				$window = $(window);
 
 			monster.pub('common.accountBrowser.render', {
 				container: parent.find('.edition-view .left-menu'),
@@ -148,16 +149,18 @@ define(function(require) {
 				});
 			});
 
+			// Adjusting the layout divs height to always fit the window's size
+			$window.on('resize.accountsManager', function(e) {
+				var $accountListContainer = parent.find('.account-list-container'),
+					$mainContent = parent.find('.main-content'),
+					listHeight = this.innerHeight - $accountListContainer.position().top + 'px'; //
+				$accountListContainer.css('height', listHeight);
+				$mainContent.css('height', this.innerHeight - $mainContent.position().top + 'px');
+			});
+
 			// give time to the DOM to load all the elements before the resize happens
 			setTimeout(function() {
-				// Adjusting the layout divs height to always fit the window's size
-				$(window).on('resize.accountsManager', function(e) {
-					var $accountListContainer = parent.find('.account-list-container'),
-						$mainContent = parent.find('.main-content'),
-						listHeight = this.innerHeight - $accountListContainer.position().top + 'px'; //
-					$accountListContainer.css('height', listHeight);
-					$mainContent.css('height', this.innerHeight - $mainContent.position().top + 'px');
-				}).resize();
+				$window.resize();
 			}, 100);
 		},
 
