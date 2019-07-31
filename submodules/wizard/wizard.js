@@ -26,15 +26,6 @@ define(function(require) {
 					allowedApps: 500,
 					toggleAppCards: 400
 				},
-				callRestrictionTypes: [
-					'tollfree_us',
-					'toll_us',
-					'emergency',
-					'caribbean',
-					'did_us',
-					'international',
-					'unknowkn'
-				],
 				controlCenterFeatures: {
 					tree: [
 						{
@@ -129,13 +120,7 @@ define(function(require) {
 							twoway: 0
 						},
 						callRestrictions: {
-							tollfree_us: true,
-							toll_us: true,
-							emergency: true,
-							caribbean: true,
-							did_us: true,
-							international: true,
-							unknowkn: true
+							_all: true
 						}
 					},
 					// Credit Balance and Features defaults
@@ -892,7 +877,7 @@ define(function(require) {
 		wizardUsageAndCallRestrictionsRender: function(args) {
 			var self = this,
 				$container = args.container,
-				initTemplate = function() {
+				initTemplate = function(classifierList) {
 					var usageAndCallRestrictionsData = args.data.usageAndCallRestrictions,
 						dataTemplate = {
 							trunkTypes: [
@@ -900,7 +885,7 @@ define(function(require) {
 								'outbound',
 								'twoway'
 							],
-							callRestrictionTypes: self.appFlags.wizard.callRestrictionTypes,
+							callRestrictionTypes: classifierList,
 							data: usageAndCallRestrictionsData
 						},
 						$template = $(self.getTemplate({
@@ -920,6 +905,16 @@ define(function(require) {
 
 			self.wizardRenderStep({
 				container: $container,
+				loadData: function(asyncCallback) {
+					self.wizardGetPhoneNumberClassifierList({
+						success: function(classifierList) {
+							asyncCallback(null, classifierList);
+						},
+						error: function() {
+							asyncCallback(null, []);
+						}
+					});
+				},
 				initTemplate: initTemplate
 			});
 		},
@@ -927,11 +922,17 @@ define(function(require) {
 		/**
 		 * Utility funcion to validate Usage and Call Restrictions form and extract data
 		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
 		 */
-		wizardUsageAndCallRestrictionsUtil: function($template) {
+		wizardUsageAndCallRestrictionsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form');
+
+			// Clean usageAndCallRestrictions previous data, to avoid keeping default values that
+			// are not overwriten by the new data
+			delete args.data.usageAndCallRestrictions;
 
 			return {
 				valid: true,
@@ -1340,7 +1341,7 @@ define(function(require) {
 					.value();
 			}
 			formattedData.creditBalanceAndFeatures.controlCenterAccess.featureList = wizardAppFlags.controlCenterFeatures.list;
-			formattedData.usageAndCallRestrictions.callRestrictionTypes = wizardAppFlags.callRestrictionTypes;
+			formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
 
 			// Set app list
 			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
@@ -1682,6 +1683,45 @@ define(function(require) {
 		},
 
 		/**
+		 * Gets the stored list of phone number classifiers available for the current account.
+		 * If the list is not stored, then it is requested to the API.
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardGetPhoneNumberClassifierList: function(args) {
+			var self = this,
+				requestData = function(reqArgs) {
+					self.wizardRequestResourceList({
+						resource: 'numbers.listClassifiers',
+						success: function(classifierList) {
+							var formattedClassifierList = _
+								.chain(classifierList)
+								.map(function(classifier, type) {
+									return {
+										type: type,
+										label: _.get(
+											self.i18n.active().accountsApp.wizard,
+											'steps.usageAndCallRestrictions.callRestrictions.labels.' + type,
+											classifier.friendly_name)
+									};
+								})
+								.sortBy('label')
+								.value();
+
+							reqArgs.success(formattedClassifierList);
+						},
+						error: reqArgs.error
+					});
+				};
+
+			self.wizardGetDataList(_.merge({
+				storeKey: 'numberClassifiers',
+				requestData: requestData
+			}, args));
+		},
+
+		/**
 		 * Gets the stored list of plans available for the current account. If the list is not
 		 * stored, then it is requested to the API.
 		 * @param  {Object} args
@@ -1781,7 +1821,7 @@ define(function(require) {
 
 		/**
 		 * Store getter
-		 * @param  {('accountUsers'|'apps'|'servicePlans')} [path]
+		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans')} [path]
 		 * @param  {*} [defaultValue]
 		 * @return {*}
 		 */
@@ -1799,7 +1839,7 @@ define(function(require) {
 
 		/**
 		 * Store setter
-		 * @param  {('accountUsers'|'apps'|'servicePlans')} path|value
+		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans'|*)} path|value
 		 * @param  {*} [value]
 		 */
 		wizardSetStore: function(path, value) {
