@@ -108,11 +108,8 @@ define(function(require) {
 				i18n = self.i18n.active().accountsApp.wizard,
 				i18nSteps = i18n.steps,
 				defaultLanguage = _.get(monster, 'config.whitelabel.language', monster.defaultLanguage),
-				isoFormattedDefaultLanguage = defaultLanguage.substr(0, 3).concat(defaultLanguage.substr(defaultLanguage.length - 2, 2).toUpperCase());
-
-			monster.pub('common.navigationWizard.render', {
-				thisArg: self,
-				data: {
+				isoFormattedDefaultLanguage = defaultLanguage.substr(0, 3).concat(defaultLanguage.substr(defaultLanguage.length - 2, 2).toUpperCase()),
+				defaultData = {
 					parentAccountId: parentAccountId,
 					// General Settings defaults
 					generalSettings: {
@@ -159,7 +156,15 @@ define(function(require) {
 						accessLevel: 'full',
 						allowedAppIds: []
 					}
-				},
+				};
+
+			if (!_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value()) {
+				defaultData.generalSettings.accountInfo.whitelabeledAccountRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
+			}
+
+			monster.pub('common.navigationWizard.render', {
+				thisArg: self,
+				data: defaultData,
 				container: $container,
 				steps: [
 					{
@@ -290,7 +295,8 @@ define(function(require) {
 		wizardGeneralSettingsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
-				isValid = false;
+				isValid = false,
+				generalSettingsData;
 
 			// Set dynamic validations
 			$form.find('.admin-user-item input[type="password"]').each(function() {
@@ -300,6 +306,7 @@ define(function(require) {
 			});
 
 			isValid = monster.ui.valid($form);
+			generalSettingsData = monster.ui.getFormData($form.get(0));
 
 			if (isValid) {
 				// Clean generalSettings previous data, to avoid merging the array of admin
@@ -307,12 +314,17 @@ define(function(require) {
 				// in combining the contents of the object and source arrays. This causes to keep
 				// deleted admin users, because they are present in the old data.
 				delete args.data.generalSettings;
+
+				// Set whitelabeledAccountRealm as accountRealm, if exists
+				if (_.has(generalSettingsData.accountInfo, 'whitelabeledAccountRealm')) {
+					generalSettingsData.accountInfo.accountRealm = generalSettingsData.accountInfo.whitelabeledAccountRealm;
+				}
 			}
 
 			return {
 				valid: isValid,
 				data: {
-					generalSettings: monster.ui.getFormData($form.get(0))
+					generalSettings: generalSettingsData
 				}
 			};
 		},
