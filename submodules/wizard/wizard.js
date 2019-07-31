@@ -1392,46 +1392,21 @@ define(function(require) {
 		/* API REQUESTS */
 
 		/**
-		 * Request the list of service plans for the current account
+		 * Request a list of resources for the current account
 		 * @param  {Object} args
+		 * @param  {String} args.resource
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
-		wizardRequestServicePlanList: function(args) {
+		wizardRequestResourceList: function(args) {
 			var self = this;
 
 			self.callApi({
-				resource: 'servicePlan.list',
+				resource: args.resource,
 				data: {
 					accountId: self.accountId,
 					filters: {
 						paginate: false
-					}
-				},
-				success: function(data) {
-					args.success(data.data);
-				},
-				error: function(parsedError) {
-					_.has(args, 'error') && args.error(parsedError);
-				}
-			});
-		},
-
-		/**
-		 * Request the list of users for the current account
-		 * @param  {Object} args
-		 * @param  {Function} args.success  Success callback
-		 * @param  {Function} [args.error]  Optional error callback
-		 */
-		wizardRequestUserList: function(args) {
-			var self = this;
-
-			self.callApi({
-				resource: 'user.list',
-				data: {
-					accountId: self.accountId,
-					filters: {
-						paginate: 'false'
 					}
 				},
 				success: function(data) {
@@ -1649,20 +1624,60 @@ define(function(require) {
 		 * @param  {Function} args.success  Success callback
 		 */
 		wizardGetAppList: function(args) {
-			var self = this,
-				appList = self.wizardGetStore('apps');
+			var self = this;
 
-			if (_.isUndefined(appList)) {
-				monster.pub('apploader.getAppList', {
-					scope: 'all',
-					callback: function(appList) {
-						appList = _.sortBy(appList, 'label');
-						self.wizardSetStore('apps', appList);
-						args.success(appList);
-					}
+			self.wizardGetDataList(_.merge({
+				storeKey: 'apps',
+				requestData: function(reqArgs) {
+					monster.pub('apploader.getAppList', {
+						scope: 'all',
+						callback: function(appList) {
+							appList = _.sortBy(appList, 'label');
+							reqArgs.success(appList);
+						}
+					});
+				}
+			}, args));
+		},
+
+		/**
+		 * Gets a list of data saved in the local store. If the list is not stored, then it is
+		 * requested to the API, for which either the resource name or the request data
+		 * function should be provided.
+		 * @param  {Object} args
+		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans')} args.storeKey  Key used to save/retrieve the data in the store
+		 * @param  {String} [args.resource]  Resource name to request the data from the API
+		 * @param  {Function} [args.requestData]  Function to be used to request the data, if a
+		 *                                        resource name is not provided
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardGetDataList: function(args) {
+			var self = this,
+				storeKey = args.storeKey,
+				requestData = args.requestData,
+				dataList = self.wizardGetStore(storeKey),
+				successCallback = function(dataList) {
+					self.wizardSetStore(storeKey, dataList);
+					args.success(dataList);
+				};
+
+			if (!_.isUndefined(dataList)) {
+				args.success(dataList);
+				return;
+			}
+
+			if (_.has(args, 'resource')) {
+				self.wizardRequestResourceList({
+					resource: args.resource,
+					success: successCallback,
+					error: args.error
 				});
 			} else {
-				args.success(appList);
+				requestData({
+					success: successCallback,
+					error: args.error
+				});
 			}
 		},
 
@@ -1674,20 +1689,12 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetServicePlanList: function(args) {
-			var self = this,
-				servicePlanList = self.wizardGetStore('servicePlans');
+			var self = this;
 
-			if (_.isUndefined(servicePlanList)) {
-				self.wizardRequestServicePlanList({
-					success: function(servicePlanList) {
-						self.wizardSetStore('servicePlans', servicePlanList);
-						args.success(servicePlanList);
-					},
-					error: args.error
-				});
-			} else {
-				args.success(servicePlanList);
-			}
+			self.wizardGetDataList(_.merge({
+				storeKey: 'servicePlans',
+				resource: 'servicePlan.list'
+			}, args));
 		},
 
 		/**
@@ -1698,20 +1705,12 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetUserList: function(args) {
-			var self = this,
-				userList = self.wizardGetStore('accountUsers');
+			var self = this;
 
-			if (_.isUndefined(userList)) {
-				self.wizardRequestUserList({
-					success: function(userList) {
-						self.wizardSetStore('accountUsers', userList);
-						args.success(userList);
-					},
-					error: args.error
-				});
-			} else {
-				args.success(userList);
-			}
+			self.wizardGetDataList(_.merge({
+				storeKey: 'accountUsers',
+				resource: 'user.list'
+			}, args));
 		},
 
 		/**
