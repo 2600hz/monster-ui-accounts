@@ -27,7 +27,11 @@
 				</div>
 				<div class="section-body flex-row-container">
 					{{> accountInfoInputPartial id="account_name" name="accountName" required=true}}
+				{{#if @root.data.accountInfo.whitelabeledAccountRealm}}
+					{{> accountInfoInputPartial id="account_realm" name="whitelabeledAccountRealm" required=true}}
+				{{else}}
 					{{> accountInfoInputPartial id="account_realm" name="accountRealm"}}
+				{{/if}}
 					{{> accountInfoInputPartial id="address_line_1" name="addressLine1" required=true}}
 					{{> accountInfoInputPartial id="address_line_2" name="addressLine2" required=true}}
 					{{> accountInfoInputPartial name="city" required=true}}
