@@ -464,13 +464,13 @@
 							"unknowkn": "Other"
 						},
 						"help": {
-							"tollfree_us": "Allow calls to business phone numbers that can be reached for free from US, Canada, and the Caribbean.",
-							"toll_us": "Enable users to calls to regular US phone numbers.",
-							"emergency": "Allow calls to emergency services.",
-							"caribbean": "Allow calls to the caribbean.",
-							"did_us": "Allow calls to DIDs within the US.",
-							"international": "Allow international calls.",
-							"unknowkn": "Please select this option when you want this account to place calls to ANY NUMBER other than mentioned on the list (when the format of the number is unknown to the system.)"
+							"tollfree_us": "Allows calls on the account to be placed to US TollFree numbers.",
+							"toll_us": "Allows calls on the account to be placed to US Toll numbers.",
+							"emergency": "Allows calls on the account to be placed to Emergency Dispatch numbers.",
+							"caribbean": "Allows calls on the account to be placed to Caribbean numbers.",
+							"did_us": "Allows calls on the account to be placed to US DID numbers.",
+							"international": "Allows calls on the account to be placed to International numbers.",
+							"unknowkn": "Allows calls on the account to be placed to all other numbers."
 						}
 					}
 				},
@@ -513,15 +513,15 @@
 								"user": "User"
 							},
 							"help": {
-								"account": "Allows you to see and edit the general configurations for your account.",
-								"balance": "Allows you to keep track of your account usage, both general and historic. You can choose to include credit and minute details.",
-								"billing": "In this section you can add or update your credit card data as well as the billing contact information.",
-								"credit": "Show credit information in the usage dashboard.",
-								"error_tracker": "Enables you to keep track of the web user interface errors, if there is any, to keep the health of the application on sight.",
-								"minutes": "Show minutes information in the usage dashboard.",
-								"service_plan": "Here you can see your current service plan details.",
-								"transactions": "Enables you to search the money transactions between two dates for the current account.",
-								"user": "Shows the current user configurations, and allows yo to change the according to your needs."
+								"account": "Allows users to view/change account name, account realm, technical contact, account timezone/language preferences...",
+								"balance": "Allows users to view the \"Per Minute\" tab of Usage Charges.",
+								"billing": "Allows users to view/change the card on file and billing contact.",
+								"credit": "Allows users to view the \"Credit Info\" tab in their Control Center.",
+								"error_tracker": "Allows users to view the UI Errors log, which may be beneficial for troubleshooting.",
+								"minutes": "Allows users to view the \"Minutes Info\" tab in their Control Center.",
+								"service_plan": "Allows users to view/download a copy of the Service Plan applied to the account.",
+								"transactions": "Allows users to view the Transactions log.",
+								"user": "Allows users to view/change their passwords, timezone & language preferences, date/time display, colorblind mode, and more..."
 							}
 						}
 					}
