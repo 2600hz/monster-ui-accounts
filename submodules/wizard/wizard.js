@@ -107,14 +107,13 @@ define(function(require) {
 				parentAccountId = args.parentAccountId,
 				i18n = self.i18n.active().accountsApp.wizard,
 				i18nSteps = i18n.steps,
-				defaultLanguage = _.get(monster, 'config.whitelabel.language', monster.defaultLanguage),
-				isoFormattedDefaultLanguage = defaultLanguage.substr(0, 3).concat(defaultLanguage.substr(defaultLanguage.length - 2, 2).toUpperCase()),
+				defaultLanguage = _.get(monster.config, 'whitelabel.language', monster.defaultLanguage),
 				defaultData = {
 					parentAccountId: parentAccountId,
 					// General Settings defaults
 					generalSettings: {
 						accountInfo: {
-							language: isoFormattedDefaultLanguage,
+							language: defaultLanguage,
 							timezone: monster.apps.auth.currentAccount.timezone
 						}
 					},
