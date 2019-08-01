@@ -91,8 +91,7 @@ define(function(require) {
 							]
 						}
 					]
-				},
-				toastTimeout: 10000
+				}
 			}
 		},
 
@@ -1674,80 +1673,66 @@ define(function(require) {
 
 		wizardSubmitNotifyErrors: function(error) {
 			var self = this,
-				errorCollection = error.error,
-				isAnyUserError = _.some(errorCollection, function(error, key) {
-					return _.startsWith(key, 'user');
-				}),
-				limitsErrorCode = _.get(errorCollection, 'limits.error'),
-				planErrorCode = _.get(errorCollection, 'plan.error'),
-				toastOptions = {
-					timeOut: self.appFlags.wizard.toastTimeout
-				};
+				errorCollection,
+				isAnyUserError,
+				limitsErrorCode,
+				planErrorCode,
+				errorMessageKeys;
 
 			if (_.get(error, 'type') === 'account') {
 				// Nor the account nor any of its related parts were created
 				monster.ui.toast({
 					type: 'error',
-					message: self.i18n.active().toastrMessages.newAccount.accountError,
-					options: toastOptions
+					message: self.i18n.active().toastrMessages.newAccount.accountError
 				});
 
 				return;
 			}
 
 			// If the account creation did not fail, there were errors in any of the features
+			errorCollection = error.error;
+			isAnyUserError = _.some(errorCollection, function(error, key) {
+				return _.startsWith(key, 'user');
+			});
+			limitsErrorCode = _.get(errorCollection, 'limits.error');
+			planErrorCode = _.get(errorCollection, 'plan.error');
+			errorMessageKeys = [];
 
 			// User errors
 			if (isAnyUserError) {
-				monster.ui.toast({
-					type: 'warning',
-					message: self.i18n.active().toastrMessages.newAccount.adminError,
-					options: toastOptions
-				});
+				errorMessageKeys.push('adminError');
 			}
 
 			// Limits errors
 			if (limitsErrorCode) {
 				if (limitsErrorCode === '403') {
-					monster.ui.toast({
-						type: 'warning',
-						message: self.i18n.active().toastrMessages.newAccount.forbiddenLimitsError,
-						options: toastOptions
-					});
+					errorMessageKeys.push('forbiddenLimitsError');
 				} else if (limitsErrorCode !== '402') { // Only show error if error isn't a 402, because a 402 is handled generically
-					monster.ui.toast({
-						type: 'warning',
-						message: self.i18n.active().toastrMessages.newAccount.limitsError,
-						options: toastOptions
-					});
+					errorMessageKeys.push('limitsError');
 				}
 			}
 
 			// Plan errors
 			if (planErrorCode) {
 				if (planErrorCode === '403') {
-					monster.ui.toast({
-						type: 'warning',
-						message: self.i18n.active().toastrMessages.newAccount.forbiddenPlanError,
-						options: toastOptions
-					});
+					errorMessageKeys.push('forbiddenPlanError');
 				} else if (planErrorCode !== '402') { // Only show error if error isn't a 402, because a 402 is handled generically
-					monster.ui.toast({
-						type: 'warning',
-						message: self.i18n.active().toastrMessages.newAccount.planError,
-						options: toastOptions
-					});
+					errorMessageKeys.push('planError');
 				}
 			}
 
 			// Credit errors
 			if (_.has(errorCollection, 'credit')) {
+				errorMessageKeys.push('creditError');
+			}
+
+			// Show collected error messages
+			_.each(errorMessageKeys, function(errorKey) {
 				monster.ui.toast({
 					type: 'warning',
-					message: self.i18n.active().toastrMessages.newAccount.creditError,
-					options: toastOptions
+					message: monster.util.tryI18n(self.i18n.active().toastrMessages.newAccount, errorKey)
 				});
-			}
+			});
 		},
 
 		/* CLOSE WIZARD */
