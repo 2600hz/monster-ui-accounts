@@ -164,10 +164,10 @@
 			{{#each usageAndCallRestrictions.callRestrictionTypes}}
 				<div class="flex-row-container">
 					<div class="flex-item field-label-horizontal">
-						{{tryI18n @root.i18n.accountsApp.wizard.steps.usageAndCallRestrictions.callRestrictions.labels this}}
+						{{label}}
 					</div>
 					<div class="flex-item field-value-horizontal">
-						{{> booleanLabel value=(lookup @root.usageAndCallRestrictions.callRestrictions this) mode="Status"}}
+						{{> booleanLabel value=(lookup @root.usageAndCallRestrictions.callRestrictions type) mode="Status"}}
 					</div>
 				</div>
 			{{/each}}
