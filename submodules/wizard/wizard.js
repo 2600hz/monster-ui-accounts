@@ -1559,17 +1559,11 @@ define(function(require) {
 							.flatMap('features')
 							.keyBy('name')
 							.mapValues(function(feature) {
-								var restriction = {
+								return _.transform(feature.features, function(object, subFeature) {
+									_.set(object, 'show_' + subFeature.name, controlCenterFeatures[subFeature.name]);
+								}, {
 									show_tab: controlCenterFeatures[feature.name]
-								};
-
-								if (_.has(feature, 'features')) {
-									_.each(feature.features, function(subFeature) {
-										restriction['show_' + subFeature.name] = controlCenterFeatures[subFeature.name];
-									});
-								}
-
-								return restriction;
+								});
 							})
 							// Merge trunk features with default values, as they were not set in the wizard
 							.merge({
@@ -1669,16 +1663,13 @@ define(function(require) {
 		 * @returns  {Object}  Plan limits
 		 */
 		wizardSubmitGetFormattedLimits: function(wizardData) {
-			var self = this,
-				limits = {
-					allow_prepay: true
-				};
+			var self = this;
 
-			_.each(wizardData.usageAndCallRestrictions.trunkLimits, function(value, trunkType) {
-				limits[trunkType + '_trunks'] = value;
+			return _.transform(wizardData.usageAndCallRestrictions.trunkLimits, function(object, value, trunkType) {
+				_.set(object, trunkType + '_trunks', value);
+			}, {
+				allow_prepay: true
 			});
-
-			return limits;
 		},
 
 		wizardSubmitNotifyErrors: function(error) {
@@ -1833,7 +1824,7 @@ define(function(require) {
 		/**
 		 * Request the creation of a new resource document
 		 * @param  {Object} args
-		 * @param  {('account'|'user')} args.resource  Resource name
+		 * @param  {String} args.resource  Resource name
 		 * @param  {String} args.accountId  Account ID
 		 * @param  {Object} args.data  New user data
 		 * @param  {Boolean} [args.generateError=false]  Whether or not show error dialog
