@@ -26,15 +26,6 @@ define(function(require) {
 					allowedApps: 500,
 					toggleAppCards: 400
 				},
-				callRestrictionTypes: [
-					'tollfree_us',
-					'toll_us',
-					'emergency',
-					'caribbean',
-					'did_us',
-					'international',
-					'unknowkn'
-				],
 				controlCenterFeatures: {
 					tree: [
 						{
@@ -107,17 +98,13 @@ define(function(require) {
 				parentAccountId = args.parentAccountId,
 				i18n = self.i18n.active().accountsApp.wizard,
 				i18nSteps = i18n.steps,
-				defaultLanguage = _.get(monster, 'config.whitelabel.language', monster.defaultLanguage),
-				isoFormattedDefaultLanguage = defaultLanguage.substr(0, 3).concat(defaultLanguage.substr(defaultLanguage.length - 2, 2).toUpperCase());
-
-			monster.pub('common.navigationWizard.render', {
-				thisArg: self,
-				data: {
+				defaultLanguage = _.get(monster.config, 'whitelabel.language', monster.defaultLanguage),
+				defaultData = {
 					parentAccountId: parentAccountId,
 					// General Settings defaults
 					generalSettings: {
 						accountInfo: {
-							language: isoFormattedDefaultLanguage,
+							language: defaultLanguage,
 							timezone: monster.apps.auth.currentAccount.timezone
 						}
 					},
@@ -129,13 +116,7 @@ define(function(require) {
 							twoway: 0
 						},
 						callRestrictions: {
-							tollfree_us: true,
-							toll_us: true,
-							emergency: true,
-							caribbean: true,
-							did_us: true,
-							international: true,
-							unknowkn: true
+							_all: true
 						}
 					},
 					// Credit Balance and Features defaults
@@ -159,7 +140,15 @@ define(function(require) {
 						accessLevel: 'full',
 						allowedAppIds: []
 					}
-				},
+				};
+
+			if (!_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value()) {
+				defaultData.generalSettings.accountInfo.whitelabeledAccountRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
+			}
+
+			monster.pub('common.navigationWizard.render', {
+				thisArg: self,
+				data: defaultData,
 				container: $container,
 				steps: [
 					{
@@ -290,7 +279,8 @@ define(function(require) {
 		wizardGeneralSettingsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
-				isValid = false;
+				isValid = false,
+				generalSettingsData;
 
 			// Set dynamic validations
 			$form.find('.admin-user-item input[type="password"]').each(function() {
@@ -300,6 +290,7 @@ define(function(require) {
 			});
 
 			isValid = monster.ui.valid($form);
+			generalSettingsData = monster.ui.getFormData($form.get(0));
 
 			if (isValid) {
 				// Clean generalSettings previous data, to avoid merging the array of admin
@@ -307,12 +298,17 @@ define(function(require) {
 				// in combining the contents of the object and source arrays. This causes to keep
 				// deleted admin users, because they are present in the old data.
 				delete args.data.generalSettings;
+
+				// Set whitelabeledAccountRealm as accountRealm, if exists
+				if (_.has(generalSettingsData.accountInfo, 'whitelabeledAccountRealm')) {
+					generalSettingsData.accountInfo.accountRealm = generalSettingsData.accountInfo.whitelabeledAccountRealm;
+				}
 			}
 
 			return {
 				valid: isValid,
 				data: {
-					generalSettings: monster.ui.getFormData($form.get(0))
+					generalSettings: generalSettingsData
 				}
 			};
 		},
@@ -892,7 +888,7 @@ define(function(require) {
 		wizardUsageAndCallRestrictionsRender: function(args) {
 			var self = this,
 				$container = args.container,
-				initTemplate = function() {
+				initTemplate = function(classifierList) {
 					var usageAndCallRestrictionsData = args.data.usageAndCallRestrictions,
 						dataTemplate = {
 							trunkTypes: [
@@ -900,7 +896,7 @@ define(function(require) {
 								'outbound',
 								'twoway'
 							],
-							callRestrictionTypes: self.appFlags.wizard.callRestrictionTypes,
+							callRestrictionTypes: classifierList,
 							data: usageAndCallRestrictionsData
 						},
 						$template = $(self.getTemplate({
@@ -920,6 +916,16 @@ define(function(require) {
 
 			self.wizardRenderStep({
 				container: $container,
+				loadData: function(asyncCallback) {
+					self.wizardGetPhoneNumberClassifierList({
+						success: function(classifierList) {
+							asyncCallback(null, classifierList);
+						},
+						error: function() {
+							asyncCallback(null, []);
+						}
+					});
+				},
 				initTemplate: initTemplate
 			});
 		},
@@ -927,11 +933,17 @@ define(function(require) {
 		/**
 		 * Utility funcion to validate Usage and Call Restrictions form and extract data
 		 * @param  {jQuery} $template  Step template
+		 * @param  {Object} args  Wizard's arguments
+		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
 		 */
-		wizardUsageAndCallRestrictionsUtil: function($template) {
+		wizardUsageAndCallRestrictionsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form');
+
+			// Clean usageAndCallRestrictions previous data, to avoid keeping default values that
+			// are not overwriten by the new data
+			delete args.data.usageAndCallRestrictions;
 
 			return {
 				valid: true,
@@ -1338,7 +1350,7 @@ define(function(require) {
 					.value();
 			}
 			formattedData.creditBalanceAndFeatures.controlCenterAccess.featureList = wizardAppFlags.controlCenterFeatures.list;
-			formattedData.usageAndCallRestrictions.callRestrictionTypes = wizardAppFlags.callRestrictionTypes;
+			formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
 
 			// Set app list
 			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
@@ -1837,44 +1849,19 @@ define(function(require) {
 		/**
 		 * Request the list of service plans for the current account
 		 * @param  {Object} args
+		 * @param  {String} args.resource
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
-		wizardRequestServicePlanList: function(args) {
+		wizardRequestResourceList: function(args) {
 			var self = this;
 
 			self.callApi({
-				resource: 'servicePlan.list',
+				resource: args.resource,
 				data: {
 					accountId: self.accountId,
 					filters: {
 						paginate: false
-					}
-				},
-				success: function(data) {
-					args.success(data.data);
-				},
-				error: function(parsedError) {
-					_.has(args, 'error') && args.error(parsedError);
-				}
-			});
-		},
-
-		/**
-		 * Request the list of users for the current account
-		 * @param  {Object} args
-		 * @param  {Function} args.success  Success callback
-		 * @param  {Function} [args.error]  Optional error callback
-		 */
-		wizardRequestUserList: function(args) {
-			var self = this;
-
-			self.callApi({
-				resource: 'user.list',
-				data: {
-					accountId: self.accountId,
-					filters: {
-						paginate: 'false'
 					}
 				},
 				success: function(data) {
@@ -2092,21 +2079,100 @@ define(function(require) {
 		 * @param  {Function} args.success  Success callback
 		 */
 		wizardGetAppList: function(args) {
-			var self = this,
-				appList = self.wizardGetStore('apps');
+			var self = this;
 
-			if (_.isUndefined(appList)) {
-				monster.pub('apploader.getAppList', {
-					scope: 'all',
-					callback: function(appList) {
-						appList = _.sortBy(appList, 'label');
-						self.wizardSetStore('apps', appList);
-						args.success(appList);
-					}
+			self.wizardGetDataList(_.merge({
+				storeKey: 'apps',
+				requestData: function(reqArgs) {
+					monster.pub('apploader.getAppList', {
+						scope: 'all',
+						callback: function(appList) {
+							appList = _.sortBy(appList, 'label');
+							reqArgs.success(appList);
+						}
+					});
+				}
+			}, args));
+		},
+
+		/**
+		 * Gets a list of data saved in the local store. If the list is not stored, then it is
+		 * requested to the API, for which either the resource name or the request data
+		 * function should be provided.
+		 * @param  {Object} args
+		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans')} args.storeKey  Key used to save/retrieve the data in the store
+		 * @param  {String} [args.resource]  Resource name to request the data from the API
+		 * @param  {Function} [args.requestData]  Function to be used to request the data, if a
+		 *                                        resource name is not provided
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardGetDataList: function(args) {
+			var self = this,
+				storeKey = args.storeKey,
+				requestData = args.requestData,
+				dataList = self.wizardGetStore(storeKey),
+				successCallback = function(dataList) {
+					self.wizardSetStore(storeKey, dataList);
+					args.success(dataList);
+				};
+
+			if (!_.isUndefined(dataList)) {
+				args.success(dataList);
+				return;
+			}
+
+			if (_.has(args, 'resource')) {
+				self.wizardRequestResourceList({
+					resource: args.resource,
+					success: successCallback,
+					error: args.error
 				});
 			} else {
-				args.success(appList);
+				requestData({
+					success: successCallback,
+					error: args.error
+				});
 			}
+		},
+
+		/**
+		 * Gets the stored list of phone number classifiers available for the current account.
+		 * If the list is not stored, then it is requested to the API.
+		 * @param  {Object} args
+		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
+		 */
+		wizardGetPhoneNumberClassifierList: function(args) {
+			var self = this,
+				requestData = function(reqArgs) {
+					self.wizardRequestResourceList({
+						resource: 'numbers.listClassifiers',
+						success: function(classifierList) {
+							var formattedClassifierList = _
+								.chain(classifierList)
+								.map(function(classifier, type) {
+									return {
+										type: type,
+										label: _.get(
+											self.i18n.active().accountsApp.wizard,
+											'steps.usageAndCallRestrictions.callRestrictions.labels.' + type,
+											classifier.friendly_name)
+									};
+								})
+								.sortBy('label')
+								.value();
+
+							reqArgs.success(formattedClassifierList);
+						},
+						error: reqArgs.error
+					});
+				};
+
+			self.wizardGetDataList(_.merge({
+				storeKey: 'numberClassifiers',
+				requestData: requestData
+			}, args));
 		},
 
 		/**
@@ -2117,20 +2183,12 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetServicePlanList: function(args) {
-			var self = this,
-				servicePlanList = self.wizardGetStore('servicePlans');
+			var self = this;
 
-			if (_.isUndefined(servicePlanList)) {
-				self.wizardRequestServicePlanList({
-					success: function(servicePlanList) {
-						self.wizardSetStore('servicePlans', servicePlanList);
-						args.success(servicePlanList);
-					},
-					error: args.error
-				});
-			} else {
-				args.success(servicePlanList);
-			}
+			self.wizardGetDataList(_.merge({
+				storeKey: 'servicePlans',
+				resource: 'servicePlan.list'
+			}, args));
 		},
 
 		/**
@@ -2141,20 +2199,12 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetUserList: function(args) {
-			var self = this,
-				userList = self.wizardGetStore('accountUsers');
+			var self = this;
 
-			if (_.isUndefined(userList)) {
-				self.wizardRequestUserList({
-					success: function(userList) {
-						self.wizardSetStore('accountUsers', userList);
-						args.success(userList);
-					},
-					error: args.error
-				});
-			} else {
-				args.success(userList);
-			}
+			self.wizardGetDataList(_.merge({
+				storeKey: 'accountUsers',
+				resource: 'user.list'
+			}, args));
 		},
 
 		/**
@@ -2225,7 +2275,7 @@ define(function(require) {
 
 		/**
 		 * Store getter
-		 * @param  {('accountUsers'|'apps'|'servicePlans')} [path]
+		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans')} [path]
 		 * @param  {*} [defaultValue]
 		 * @return {*}
 		 */
@@ -2243,7 +2293,7 @@ define(function(require) {
 
 		/**
 		 * Store setter
-		 * @param  {('accountUsers'|'apps'|'servicePlans')} path|value
+		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans'|*)} path|value
 		 * @param  {*} [value]
 		 */
 		wizardSetStore: function(path, value) {
