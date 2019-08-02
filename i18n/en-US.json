@@ -131,9 +131,11 @@
 		"newAccount": {
 			"accountError": "An unexpected error occured while creating the account.",
 			"adminError": "The account administrator could not be created.",
-			"limitsError": "An error occured while setting up the limits.",
+			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid.",
 			"forbiddenLimitsError": "You are not allowed to set those limits. Please contact your sales representative.",
-			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid."
+			"forbiddenPlanError": "You are not allowed to set the service plan. Please contact your sales representative.",
+			"limitsError": "An error occured while setting up the limits.",
+			"planError": "An error occured while setting up the service plan."
 		},
 		"uiRestrictionsUpdateSuccess": "UI restrictions updated successfully!",
 		"uiRestrictionsUpdateError": "An unexpected error occured when updating the UI restrictions, please try again later.",
