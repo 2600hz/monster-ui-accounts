@@ -905,7 +905,7 @@ define(function(require) {
 							submodule: 'wizard'
 						}));
 
-					monster.ui.spinner($template.find('.spinner'), {
+					monster.ui.numberPicker($template.find('.number-picker'), {
 						min: 0
 					});
 
