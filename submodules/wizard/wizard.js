@@ -1166,7 +1166,7 @@ define(function(require) {
 
 			$template.find('.app-add .wizard-card').on('click', function() {
 				monster.pub('common.appSelector.renderPopup', {
-					scope: 'all',
+					scope: 'account',
 					excludedApps: allowedAppIds,
 					callbacks: {
 						accept: function(selectedAppIds) {
@@ -2085,7 +2085,7 @@ define(function(require) {
 				storeKey: 'apps',
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
-						scope: 'all',
+						scope: 'account',
 						callback: function(appList) {
 							appList = _.sortBy(appList, 'label');
 							reqArgs.success(appList);
