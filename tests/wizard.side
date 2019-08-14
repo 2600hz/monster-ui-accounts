@@ -719,18 +719,18 @@
       "id": "1758a7e0-d2cb-465b-a629-dbc123381bd1",
       "comment": "",
       "command": "click",
-      "target": "css=.app-item:nth-child(51) > .app-title",
+      "target": "css=.app-item:nth-child(1) .app-title",
       "targets": [
-        ["css=.app-item:nth-child(51) > .app-title", "css:finder"],
-        ["xpath=//div[@id='ui-id-3']/div/div/div/div[2]/div[3]/ul/li[51]/div[2]", "xpath:idRelative"],
-        ["xpath=//li[51]/div[2]", "xpath:position"]
+        ["css=.integration > .app-title", "css:finder"],
+        ["xpath=//div[@id='ui-id-3']/div/div/div/div[2]/div[3]/ul/li[6]/div[2]", "xpath:idRelative"],
+        ["xpath=//li[6]/div[2]", "xpath:position"]
       ],
       "value": ""
     }, {
       "id": "5fb424ab-5d8c-4c47-a321-89a2aad4c82e",
       "comment": "",
       "command": "click",
-      "target": "css=.text-container:nth-child(45)",
+      "target": "css=.app-item:nth-child(2) .app-title",
       "targets": [
         ["css=.text-container:nth-child(45)", "css:finder"],
         ["xpath=//div[@id='ui-id-3']/div/div/div/div[2]/div[3]/ul/li[45]", "xpath:idRelative"],
@@ -741,7 +741,7 @@
       "id": "e7de7328-9a27-4fed-8e81-293892728f44",
       "comment": "",
       "command": "click",
-      "target": "css=.app-item:nth-child(40) > .app-title",
+      "target": "css=.app-item:nth-child(3) .app-title",
       "targets": [
         ["css=.app-item:nth-child(40) > .app-title", "css:finder"],
         ["xpath=//div[@id='ui-id-3']/div/div/div/div[2]/div[3]/ul/li[40]/div[2]", "xpath:idRelative"],
@@ -752,7 +752,7 @@
       "id": "e69a2054-adb9-47a2-91f7-e5089886f0b4",
       "comment": "",
       "command": "click",
-      "target": "css=.text-container:nth-child(17)",
+      "target": "css=.app-item:nth-child(4) .app-title",
       "targets": [
         ["css=.text-container:nth-child(17)", "css:finder"],
         ["xpath=//div[@id='ui-id-3']/div/div/div/div[2]/div[3]/ul/li[17]", "xpath:idRelative"],
@@ -763,11 +763,11 @@
       "id": "f89ca8a8-33ab-4229-814e-ffe3848adf26",
       "comment": "",
       "command": "click",
-      "target": "css=.monster-button-success",
+      "target": "css=.monster-button-success.accept",
       "targets": [
         ["css=.monster-button-success", "css:finder"],
         ["xpath=//button[@type='button']", "xpath:attributes"],
-        ["xpath=//div[@id='ui-id-3']/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[@id='ui-id-1']/div/div[2]/div/button", "xpath:idRelative"],
         ["xpath=//div[2]/div/button", "xpath:position"],
         ["xpath=//button[contains(.,'Select Applications')]", "xpath:innerText"]
       ],
