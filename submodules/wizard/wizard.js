@@ -290,9 +290,10 @@ define(function(require) {
 			});
 
 			isValid = monster.ui.valid($form);
-			generalSettingsData = monster.ui.getFormData($form.get(0));
 
 			if (isValid) {
+				generalSettingsData = monster.ui.getFormData($form.get(0));
+
 				// Clean generalSettings previous data, to avoid merging the array of admin
 				// users, due to the way that `lodash#merge` handles array merging, which consists
 				// in combining the contents of the object and source arrays. This causes to keep
@@ -495,9 +496,11 @@ define(function(require) {
 			var self = this,
 				$form = $template.find('form'),
 				isValid = monster.ui.valid($form),
-				accountContactsData = monster.ui.getFormData($form.get(0));
+				accountContactsData;
 
 			if (isValid) {
+				accountContactsData = monster.ui.getFormData($form.get(0));
+
 				// Extract and store date(s)
 				$form.find('input.hasDatePicker').each(function() {
 					var $this = $(this);
@@ -1113,10 +1116,10 @@ define(function(require) {
 		 */
 		wizardAppRestrictionsUtil: function($template, args) {
 			var self = this,
-				formData = monster.ui.getFormData($template.find('form').get(0));
+				appRestrictionsData = monster.ui.getFormData($template.find('form').get(0));
 
-			if (formData.accessLevel === 'full' || !_.has(formData, 'allowedAppIds')) {
-				formData.allowedAppIds = [];
+			if (appRestrictionsData.accessLevel === 'full' || !_.has(appRestrictionsData, 'allowedAppIds')) {
+				appRestrictionsData.allowedAppIds = [];
 			};
 
 			// Clean appRestrictions previous data, to avoid merging the array of allowedAppIds
@@ -1125,7 +1128,7 @@ define(function(require) {
 			return {
 				valid: true,
 				data: {
-					appRestrictions: formData
+					appRestrictions: appRestrictionsData
 				}
 			};
 		},
