@@ -3,7 +3,7 @@
 		<label for="{{id}}">
 			{{tryI18n @root.i18n.accountsApp.wizard.steps.general.labels fieldName}}
 		</label>
-		<input class="input-block-level{{#compare mask "===" "phoneNumber"}} phone-number{{/compare}}" type="{{#if type}}{{type}}{{else}}text{{/if}}" name="{{sectionName}}.{{fieldName}}" id="{{id}}" placeholder="{{coalesce (lookup @root.i18n.accountsApp.wizard.steps.general.placeholders fieldName) (tryI18n @root.i18n.accountsApp.wizard.steps.general.labels fieldName)}}"{{#if required}} required{{/if}}{{#if mask}} data-mask="{{mask}}"{{/if}} value="{{lookup (lookup @root.data sectionName) fieldName}}">
+		<input class="input-block-level" type="{{#if type}}{{type}}{{else}}text{{/if}}" name="{{sectionName}}.{{fieldName}}" id="{{id}}" placeholder="{{coalesce (lookup @root.i18n.accountsApp.wizard.steps.general.placeholders fieldName) (tryI18n @root.i18n.accountsApp.wizard.steps.general.labels fieldName)}}"{{#if required}} required{{/if}}{{#if mask}} data-mask="{{mask}}"{{/if}} value="{{lookup (lookup @root.data sectionName) fieldName}}">
 	</div>
 {{/inline}}
 

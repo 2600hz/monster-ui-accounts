@@ -446,6 +446,25 @@ define(function(require) {
 
 					monster.ui.tooltips($template);
 
+					monster.ui.validate($template.find('form'), {
+						rules: {
+							'technicalContact.phoneNumber': {
+								phoneNumber: true
+							},
+							'billingContact.phoneNumber': {
+								phoneNumber: true
+							}
+						},
+						messages: {
+							'technicalContact.phoneNumber': {
+								phoneNumber: self.i18n.active().accountsApp.wizard.steps.general.errors.phoneNumber.invalid
+							},
+							'billingContact.phoneNumber': {
+								phoneNumber: self.i18n.active().accountsApp.wizard.steps.general.errors.phoneNumber.invalid
+							}
+						}
+					});
+
 					return $template;
 				};
 
@@ -475,42 +494,21 @@ define(function(require) {
 		wizardAccountContactsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
-				validateForm = monster.ui.validate($form),
 				isValid = monster.ui.valid($form),
-				data = {},
-				errors = {};
-
-			// Extract and store date(s)
-			$form.find('input.hasDatePicker').each(function() {
-				var $this = $(this);
-
-				_.set(data, $this.attr('name'), $this.datepicker('getDate'));
-			});
-
-			// Validate and extract phone numbers
-			$form.find('input.phone-number').each(function() {
-				var $this = $(this),
-					fieldName = $this.attr('name'),
-					number = $this.val(),
-					formattedNumber = monster.util.getFormatPhoneNumber(number);
-
-				if (_.has(formattedNumber, 'e164Number')) {
-					_.set(data, fieldName, formattedNumber);
-				} else {
-					errors[fieldName] = self.i18n.active().accountsApp.wizard.steps.general.errors.phoneNumber.invalid;
-				}
-			});
-
-			if (!_.isEmpty(errors)) {
-				isValid = false;
-
-				// Merge new errors with existing ones, in order to display all of them
-				validateForm.showErrors(_.merge(errors, validateForm.errorMap));
-			}
-
-			data = _.merge(monster.ui.getFormData($form.get(0)), data);
+				accountContactsData = monster.ui.getFormData($form.get(0));
 
 			if (isValid) {
+				// Extract and store date(s)
+				$form.find('input.hasDatePicker').each(function() {
+					var $this = $(this);
+
+					_.set(accountContactsData, $this.attr('name'), $this.datepicker('getDate'));
+				});
+
+				// Format phone numbers
+				accountContactsData.technicalContact.phoneNumber = monster.util.getFormatPhoneNumber(accountContactsData.technicalContact.phoneNumber);
+				accountContactsData.billingContact.phoneNumber = monster.util.getFormatPhoneNumber(accountContactsData.billingContact.phoneNumber);
+
 				// Clean accountContacts previous data
 				delete args.data.accountContacts;
 			}
@@ -518,7 +516,7 @@ define(function(require) {
 			return {
 				valid: isValid,
 				data: {
-					accountContacts: data
+					accountContacts: accountContactsData
 				}
 			};
 		},
