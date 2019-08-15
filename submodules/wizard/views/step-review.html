@@ -1,7 +1,7 @@
 {{#*inline "sectionTitle"}}
 	<div class="section-title">
-		{{index}}. {{label}}
-		<a href="javascript:void(0)" class="edit-step help-tip" data-step_id="{{stepId}}" data-title="{{i18n.accountsApp.wizard.steps.general.help.edit}}" data-toggle="tooltip">
+		<span class="step-number"></span>. {{lookupPath (lookup i18n.accountsApp.wizard.steps stepName) "label" stepName}}
+		<a href="javascript:void(0)" class="edit-step help-tip" data-step_name="{{stepName}}" title="{{i18n.accountsApp.wizard.steps.general.help.edit}}" data-toggle="tooltip">
 			{{telicon "edit" class="iconography-medium iconography-help"}}
 		</a>
 	</div>
@@ -77,7 +77,7 @@
 	</div>
 
 	<!-- GENERAL SETTINGS -->
-	{{> sectionTitle index=1 stepId=0 label=i18n.accountsApp.wizard.steps.generalSettings.label}}
+	{{> sectionTitle stepName="generalSettings"}}
 	<div class="section-body">
 		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.accountName" i18nSectionName="generalSettings.accountInfo" i18nFieldName="accountName"}}
 		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.accountRealm" i18nSectionName="generalSettings.accountInfo" i18nFieldName="accountRealm"}}
@@ -105,7 +105,7 @@
 	</div>
 
 	<!-- ACCOUNT CONTACTS -->
-	{{> sectionTitle index=2 stepId=1 label=i18n.accountsApp.wizard.steps.accountContacts.label}}
+	{{> sectionTitle stepName="accountContacts"}}
 	<div class="section-body">
 	{{#if accountContacts.salesRep}}
 		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.representative" label=i18n.accountsApp.wizard.steps.accountContacts.salesRep.title}}
@@ -128,8 +128,10 @@
 	</div>
 
 	<!-- SERVICE PLAN -->
-	{{> sectionTitle index=3 stepId=2 label=i18n.accountsApp.wizard.steps.servicePlan.label}}
+{{#if servicePlan}}
+	{{> sectionTitle stepName="servicePlan"}}
 	<div class="section-body">
+	{{#if servicePlan.selectedPlans}}
 		{{#> horizontalFieldPartial fieldPath="servicePlan.selectedPlans" i18nSectionName="review.servicePlan" i18nFieldName="selectedServicePlans" hasContent=true}}
 			<div class="flex-row-container">
 				<div class="flex-item-1">
@@ -141,10 +143,17 @@
 				</div>
 			</div>
 		{{/horizontalFieldPartial}}
-	</div>
+	{{else}}
+		<div class="flex-row-container">
+			<div class="flex-item-1 field-label-horizontal">
+				{{i18n.accountsApp.wizard.steps.review.servicePlan.labels.noServicePlan}}
+			</div>
+		</div>
+	{{/if}}
+{{/if}}
 
 	<!-- USAGE + CALL RESTRICTIONS -->
-	{{> sectionTitle index=4 stepId=3 label=i18n.accountsApp.wizard.steps.usageAndCallRestrictions.label}}
+	{{> sectionTitle stepName="usageAndCallRestrictions"}}
 	<div class="section-body">
 		<div class="flex-row-container">
 			<div class="flex-item field-group-column">
@@ -176,7 +185,7 @@
 	</div>
 
 	<!-- CREDIT BALANCE + FEATURES -->
-	{{> sectionTitle index=5 stepId=4 label=i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.label}}
+	{{> sectionTitle stepName="creditBalanceAndFeatures"}}
 	<div class="section-body">
 		<div class="flex-row-container">
 			<div class="flex-item field-group-column">
@@ -208,7 +217,7 @@
 	</div>
 
 	<!-- APP RESTRICTIONS -->
-	{{> sectionTitle index=6 stepId=5 label=i18n.accountsApp.wizard.steps.appRestrictions.label}}
+	{{> sectionTitle stepName="appRestrictions"}}
 	<div class="section-body">
 		<div class="flex-row-container">
 			<div class="flex-item field-group-column">

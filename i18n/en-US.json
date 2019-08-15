@@ -565,7 +565,8 @@
 					},
 					"servicePlan": {
 						"labels": {
-							"selectedServicePlans": "Selected Service Plans"
+							"selectedServicePlans": "Selected Service Plans",
+							"noServicePlan": "No service plan selected"
 						}
 					},
 					"usageBilling": {

@@ -82,7 +82,16 @@ define(function(require) {
 							]
 						}
 					]
-				}
+				},
+				stepNames: [
+					'generalSettings',
+					'accountContacts',
+					'servicePlan',
+					'usageAndCallRestrictions',
+					'creditBalanceAndFeatures',
+					'appRestrictions',
+					'review'
+				]
 			}
 		},
 
@@ -140,64 +149,57 @@ define(function(require) {
 						accessLevel: 'full',
 						allowedAppIds: []
 					}
-				};
+				},
+				stepNames = self.appFlags.wizard.stepNames;
 
 			if (!_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value()) {
 				defaultData.generalSettings.accountInfo.whitelabeledAccountRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
 			}
 
-			monster.pub('common.navigationWizard.render', {
-				thisArg: self,
-				data: defaultData,
-				container: $container,
-				steps: [
-					{
-						label: i18nSteps.generalSettings.label,
-						description: i18nSteps.generalSettings.description,
-						template: 'wizardGeneralSettingsRender',
-						util: 'wizardGeneralSettingsUtil'
-					},
-					{
-						label: i18nSteps.accountContacts.label,
-						description: i18nSteps.accountContacts.description,
-						template: 'wizardAccountContactsRender',
-						util: 'wizardAccountContactsUtil'
-					},
-					{
-						label: i18nSteps.servicePlan.label,
-						description: i18nSteps.servicePlan.description,
-						template: 'wizardServicePlanRender',
-						util: 'wizardServicePlanUtil'
-					},
-					{
-						label: i18nSteps.usageAndCallRestrictions.label,
-						description: i18nSteps.usageAndCallRestrictions.description,
-						template: 'wizardUsageAndCallRestrictionsRender',
-						util: 'wizardUsageAndCallRestrictionsUtil'
-					},
-					{
-						label: i18nSteps.creditBalanceAndFeatures.label,
-						description: i18nSteps.creditBalanceAndFeatures.description,
-						template: 'wizardCreditBalanceAndFeaturesRender',
-						util: 'wizardCreditBalanceAndFeaturesUtil'
-					},
-					{
-						label: i18nSteps.appRestrictions.label,
-						description: i18nSteps.appRestrictions.description,
-						template: 'wizardAppRestrictionsRender',
-						util: 'wizardAppRestrictionsUtil'
-					},
-					{
-						label: i18nSteps.review.label,
-						description: i18nSteps.review.description,
-						template: 'wizardReviewRender',
-						util: 'wizardReviewUtil'
-					}
-				],
-				title: i18n.title,
-				cancel: 'wizardClose',
-				done: 'wizardSubmit',
-				doneButton: i18n.doneButton
+			monster.waterfall([
+				function(waterfallCallback) {
+					monster.ui.insertTemplate($container, function() {
+						waterfallCallback();
+					});
+				},
+				function(waterfallCallback) {
+					self.wizardGetServicePlanList({
+						success: function(plans) {
+							waterfallCallback(null, plans);
+						},
+						error: function() {
+							waterfallCallback(null, []);
+						}
+					});
+				}
+			], function(err, plans) {
+				if (err) {
+					return;
+				}
+
+				if (_.isEmpty(plans)) {
+					_.pullAt(stepNames, 2);
+				}
+
+				monster.pub('common.navigationWizard.render', {
+					thisArg: self,
+					data: defaultData,
+					container: $container,
+					steps: _.map(stepNames, function(stepName) {
+						var pascalCasedStepName = _.upperFirst(stepName);
+
+						return {
+							label: _.get(i18nSteps, [ stepName, 'label' ]),
+							description: _.get(i18nSteps, [ stepName, 'description' ]),
+							template: 'wizard' + pascalCasedStepName + 'Render',
+							util: 'wizard' + pascalCasedStepName + 'Util'
+						};
+					}),
+					title: i18n.title,
+					cancel: 'wizardClose',
+					done: 'wizardSubmit',
+					doneButton: i18n.doneButton
+				});
 			});
 		},
 
@@ -1230,16 +1232,25 @@ define(function(require) {
 				initTemplate = function() {
 					monster.ui.tooltips($template);
 
+					// The numbering is dynamically set through jQuery
+					// because some steps may be omitted from the template
+					$template.find('.step-number').each(function(idx, el) {
+						$(el).text(idx + 1);
+					});
+
 					self.wizardReviewBindEvents({
 						template: $template
 					});
 
 					return $template;
+				},
+				renderStepArgs = {
+					container: $container,
+					initTemplate: initTemplate
 				};
 
-			self.wizardRenderStep({
-				container: $container,
-				loadData: function(asyncCallback) {
+			if (_.has(data, 'servicePlan')) {
+				renderStepArgs.loadData = function(asyncCallback) {
 					self.serviceItemsListingRender({
 						planIds: data.servicePlan.selectedPlanIds,
 						container: $template.find('#service_plan_aggregate'),
@@ -1251,9 +1262,10 @@ define(function(require) {
 							asyncCallback(null);
 						}
 					});
-				},
-				initTemplate: initTemplate
-			});
+				};
+			}
+
+			self.wizardRenderStep(renderStepArgs);
 		},
 
 		/**
@@ -1373,7 +1385,8 @@ define(function(require) {
 					.on('click', function(e) {
 						e.preventDefault();
 
-						var stepId = $(this).data('step_id');
+						var stepName = $(this).data('step_name'),
+							stepId = _.indexOf(self.appFlags.wizard.stepNames, stepName);
 
 						monster.pub('common.navigationWizard.goToStep', {
 							stepId: stepId
@@ -1658,7 +1671,7 @@ define(function(require) {
 		 */
 		wizardSubmitGetFormattedServicePlan: function(wizardData) {
 			var self = this,
-				selectedPlanIds = wizardData.servicePlan.selectedPlanIds;
+				selectedPlanIds = _.get(wizardData, 'servicePlan.selectedPlanIds');
 
 			if (_.isEmpty(selectedPlanIds)) {
 				return null;
