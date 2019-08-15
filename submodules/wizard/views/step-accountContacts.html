@@ -1,0 +1,60 @@
+{{#*inline "inputPartial"}}
+	<div class="flex-item-3">
+		<label for="{{id}}">
+			{{tryI18n @root.i18n.accountsApp.wizard.steps.general.labels fieldName}}
+		</label>
+		<input class="input-block-level" type="{{#if type}}{{type}}{{else}}text{{/if}}" name="{{sectionName}}.{{fieldName}}" id="{{id}}" placeholder="{{coalesce (lookup @root.i18n.accountsApp.wizard.steps.general.placeholders fieldName) (tryI18n @root.i18n.accountsApp.wizard.steps.general.labels fieldName)}}"{{#if required}} required{{/if}}{{#if mask}} data-mask="{{mask}}"{{/if}} value="{{lookup (lookup @root.data sectionName) fieldName}}">
+	</div>
+{{/inline}}
+
+<div id="step_account_contacts" class="wizard-step container-fluid">
+	<div class="step-title">
+		{{i18n.accountsApp.wizard.steps.accountContacts.title}}
+	</div>
+	<div class="step-body">
+		<form id="form_account_contacts">
+			<div class="step-section">
+			{{#with i18n.accountsApp.wizard.steps.accountContacts as |accountContactsI18n|}}
+				{{#if @root.showSalesRepSection}}
+					<div class="section-title">
+						{{accountContactsI18n.salesRep.title}}
+					</div>
+					<div class="section-body flex-row-container">
+						<div class="flex-item-3">
+							<label for="sales_rep_representative">{{accountContactsI18n.salesRep.labels.representative}}</label>
+							<select class="input-level-block" id="sales_rep_representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.placeholders.representative}}" required>
+							{{#select @root.data.salesRep.representative}}
+								<option value=""></option>
+								{{#each @root.users}}
+									<option value="{{id}}">{{getUserFullName this}}</option>
+								{{/each}}
+							{{/select}}
+							</select>
+						</div>
+						<div class="flex-item-3">
+							<label for="sales_rep_contract_end_date">{{accountContactsI18n.salesRep.labels.contractEndDate}}</label>
+							<input class="input-block-level" type="text" name="salesRep.contractEndDate" id="sales_rep_contract_end_date" placeholder="{{accountContactsI18n.salesRep.placeholders.contractEndDate}}" readonly="true" required />
+						</div>
+					</div>
+				{{/if}}
+					<div class="section-title">
+						{{accountContactsI18n.technicalContact.title}}
+					</div>
+					<div class="section-body flex-row-container">
+						{{> inputPartial id="technical_contact_full_name" sectionName="technicalContact" fieldName="fullName" required=true}}
+						{{> inputPartial id="technical_contact_email" sectionName="technicalContact" fieldName="email" type="email" required=true}}
+						{{> inputPartial id="technical_contact_phone_number" sectionName="technicalContact" fieldName="phoneNumber" required=true mask="phoneNumber"}}
+					</div>
+					<div class="section-title">
+						{{accountContactsI18n.billingContact.title}}
+					</div>
+					<div class="section-body flex-row-container">
+						{{> inputPartial id="billing_contact_full_name" sectionName="billingContact" fieldName="fullName" required=true}}
+						{{> inputPartial id="billing_contact_email" sectionName="billingContact" fieldName="email" type="email" required=true}}
+						{{> inputPartial id="billing_contact_phone_number" sectionName="billingContact" fieldName="phoneNumber" required=true mask="phoneNumber"}}
+					</div>
+			{{/with}}
+			</div>
+		</form>
+	</div>
+</div>

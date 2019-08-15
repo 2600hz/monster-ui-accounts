@@ -1,0 +1,238 @@
+{{#*inline "sectionTitle"}}
+	<div class="section-title">
+		{{index}}. {{label}}
+		<a href="javascript:void(0)" class="edit-step help-tip" data-step_id="{{stepId}}" data-title="{{i18n.accountsApp.wizard.steps.general.help.edit}}" data-toggle="tooltip">
+			{{telicon "edit" class="iconography-medium iconography-help"}}
+		</a>
+	</div>
+{{/inline}}
+
+{{#*inline "horizontalFieldPartial"}}
+	<div class="flex-row-container">
+		<div class="flex-item-4 field-label-horizontal">
+		{{#if label}}
+			{{label}}
+		{{else}}
+			{{tryI18n (lookupPath (lookupPath @root.i18n.accountsApp.wizard.steps i18nSectionName) "labels") i18nFieldName}}
+		{{/if}}
+		</div>
+		<div class="flex-item-4-3 field-value-horizontal">
+		{{#if hasContent}}	{{!-- Necessary to know if there is a @partial-block to render, and to avoid endless recursion --}}
+			{{> @partial-block value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
+		{{else}}
+			{{lookupPath this (coalesce fieldPath i18nFieldName)}}
+		{{/if}}
+		</div>
+	</div>
+{{/inline}}
+
+{{#*inline "verticalFieldPartial"}}
+	<div class="flex-item-4">
+		<div class="field-label-vertical">
+		{{#if label}}
+			{{label}}
+		{{else}}
+			{{tryI18n (lookupPath (lookupPath @root.i18n.accountsApp.wizard.steps i18nSectionName) "labels") i18nFieldName}}
+		{{/if}}
+		</div>
+		<div class="field-value-vertical">
+		{{#if hasContent}}	{{!-- Necessary to know if there is a @partial-block to render, and to avoid endless recursion --}}
+			{{> @partial-block value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
+		{{else}}
+			{{lookupPath this (coalesce fieldPath i18nFieldName)}}
+		{{/if}}
+		</div>
+	</div>
+{{/inline}}
+
+{{#*inline "booleanLabel"}}
+	{{#if value}}
+		<div class="text-success">
+			{{telicon "check--circle" class="iconography-medium"}}
+			<span class="iconography-text">
+			{{#compare mode "===" "Status"}}
+				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "enabled"}}
+			{{else}}
+				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "yes"}}
+			{{/compare}}
+			</span>
+		</div>
+	{{else}}
+		<div class="text-danger">
+			{{telicon "x--circle" class="iconography-medium"}}
+			<span>
+			{{#compare mode "===" "Status"}}
+				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "disabled"}}
+			{{else}}
+				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "no"}}
+			{{/compare}}
+			</span>
+		</div>
+	{{/if}}
+{{/inline}}
+
+<div id="step_review" class="wizard-step">
+	<div class="step-title">
+		{{i18n.accountsApp.wizard.steps.review.title}}
+	</div>
+
+	<!-- GENERAL SETTINGS -->
+	{{> sectionTitle index=1 stepId=0 label=i18n.accountsApp.wizard.steps.generalSettings.label}}
+	<div class="section-body">
+		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.accountName" i18nSectionName="generalSettings.accountInfo" i18nFieldName="accountName"}}
+		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.accountRealm" i18nSectionName="generalSettings.accountInfo" i18nFieldName="accountRealm"}}
+		{{#> horizontalFieldPartial i18nSectionName="generalSettings.accountInfo" i18nFieldName="addressLine1" hasContent=true}}
+			{{generalSettings.accountInfo.addressLine1}}
+			<br/>
+			{{generalSettings.accountInfo.addressLine2}}
+			<br/>
+			{{generalSettings.accountInfo.addressLine3}}
+		{{/horizontalFieldPartial}}
+		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.timezone" i18nSectionName="generalSettings.accountInfo" i18nFieldName="timezone"}}
+		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.language" i18nSectionName="generalSettings.accountInfo" i18nFieldName="language"}}
+		{{#> horizontalFieldPartial label=(replaceVar i18n.accountsApp.wizard.steps.review.generalSettings.formats.accountAdminsCount generalSettings.accountAdmins.length) hasContent=true}}
+			{{#each generalSettings.accountAdmins}}
+				<div class="flex-row-container">
+					{{> verticalFieldPartial fieldPath="fullName" i18nSectionName="review.general" i18nFieldName="fullName"}}
+					{{> verticalFieldPartial fieldPath="email" i18nSectionName="general" i18nFieldName="email"}}
+					{{> verticalFieldPartial fieldPath="password" i18nSectionName="generalSettings.accountAdmins" i18nFieldName="password"}}
+					{{#> verticalFieldPartial fieldPath="sendMail" i18nSectionName="review.generalSettings" i18nFieldName="sendMail" hasContent=true}}
+						{{> booleanLabel mode="YesNo"}}
+					{{/verticalFieldPartial}}
+				</div>
+			{{/each}}
+		{{/horizontalFieldPartial}}
+	</div>
+
+	<!-- ACCOUNT CONTACTS -->
+	{{> sectionTitle index=2 stepId=1 label=i18n.accountsApp.wizard.steps.accountContacts.label}}
+	<div class="section-body">
+	{{#if accountContacts.salesRep}}
+		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.representative" label=i18n.accountsApp.wizard.steps.accountContacts.salesRep.title}}
+		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.contractEndDate" i18nSectionName="accountContacts.salesRep" i18nFieldName="contractEndDate"}}
+	{{/if}}
+		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.technicalContact.title hasContent=true}}
+			<div class="flex-row-container">
+				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.fullName" i18nSectionName="review.general" i18nFieldName="fullName" hasContent=false}}
+				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.email" i18nSectionName="general" i18nFieldName="email" hasContent=false}}
+				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.phoneNumber.userFormat" i18nSectionName="general" i18nFieldName="phoneNumber" hasContent=false}}
+			</div>
+		{{/horizontalFieldPartial}}
+		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.billingContact.title hasContent=true}}
+			<div class="flex-row-container">
+				{{> verticalFieldPartial fieldPath="accountContacts.billingContact.fullName" i18nSectionName="review.general" i18nFieldName="fullName" hasContent=false}}
+				{{> verticalFieldPartial fieldPath="accountContacts.billingContact.email" i18nSectionName="general" i18nFieldName="email" hasContent=false}}
+				{{> verticalFieldPartial fieldPath="accountContacts.billingContact.phoneNumber.userFormat" i18nSectionName="general" i18nFieldName="phoneNumber" hasContent=false}}
+			</div>
+		{{/horizontalFieldPartial}}
+	</div>
+
+	<!-- SERVICE PLAN -->
+	{{> sectionTitle index=3 stepId=2 label=i18n.accountsApp.wizard.steps.servicePlan.label}}
+	<div class="section-body">
+		{{#> horizontalFieldPartial fieldPath="servicePlan.selectedPlans" i18nSectionName="review.servicePlan" i18nFieldName="selectedServicePlans" hasContent=true}}
+			<div class="flex-row-container">
+				<div class="flex-item-1">
+					{{value}}
+				</div>
+			</div>
+			<div class="flex-row-container">
+				<div id="service_plan_aggregate" class="flex-item-1">
+				</div>
+			</div>
+		{{/horizontalFieldPartial}}
+	</div>
+
+	<!-- USAGE + CALL RESTRICTIONS -->
+	{{> sectionTitle index=4 stepId=3 label=i18n.accountsApp.wizard.steps.usageAndCallRestrictions.label}}
+	<div class="section-body">
+		<div class="flex-row-container">
+			<div class="flex-item field-group-column">
+				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.inbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="inbound"}}
+				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.outbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="outbound"}}
+				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.twoway" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="twoway"}}
+				{{#> horizontalFieldPartial fieldPath="usageAndCallRestrictions.allowPerMinuteCalls" i18nSectionName="review.usageBilling" i18nFieldName="allowPerMinuteCalls" hasContent=true}}
+					{{> booleanLabel mode="Status"}}
+				{{/horizontalFieldPartial}}
+			</div>
+			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-1 column-title">
+						{{i18n.accountsApp.wizard.steps.usageAndCallRestrictions.callRestrictions.title}}
+					</div>
+				</div>
+			{{#each usageAndCallRestrictions.callRestrictionTypes}}
+				<div class="flex-row-container">
+					<div class="flex-item field-label-horizontal">
+						{{label}}
+					</div>
+					<div class="flex-item field-value-horizontal">
+						{{> booleanLabel value=(lookup @root.usageAndCallRestrictions.callRestrictions type) mode="Status"}}
+					</div>
+				</div>
+			{{/each}}
+			</div>
+		</div>
+	</div>
+
+	<!-- CREDIT BALANCE + FEATURES -->
+	{{> sectionTitle index=5 stepId=4 label=i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.label}}
+	<div class="section-body">
+		<div class="flex-row-container">
+			<div class="flex-item field-group-column">
+				{{#> horizontalFieldPartial fieldPath="creditBalanceAndFeatures.accountCredit.initialBalance" i18nSectionName="creditBalanceAndFeatures.accountCredit" i18nFieldName="initialBalance" hasContent=true}}
+					{{formatPrice value 2}}
+				{{/horizontalFieldPartial}}
+			</div>
+			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-1 column-title">
+						{{i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.controlCenterAccess.title}}
+					</div>
+				</div>
+			{{#each creditBalanceAndFeatures.controlCenterAccess.featureList}}
+				<div class="flex-row-container">
+					<div class="flex-item field-label-horizontal">
+						{{telicon icon class="feature-icon iconography-medium"}}
+						<span class="iconography-text-right">
+							{{tryI18n @root.i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.controlCenterAccess.features.labels name}}
+						</span>
+					</div>
+					<div class="flex-item field-value-horizontal">
+						{{> booleanLabel value=(lookup @root.creditBalanceAndFeatures.controlCenterAccess.features name) mode="Status"}}
+					</div>
+				</div>
+			{{/each}}
+			</div>
+		</div>
+	</div>
+
+	<!-- APP RESTRICTIONS -->
+	{{> sectionTitle index=6 stepId=5 label=i18n.accountsApp.wizard.steps.appRestrictions.label}}
+	<div class="section-body">
+		<div class="flex-row-container">
+			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-2 ">
+						{{tryI18n i18n.accountsApp.wizard.steps.review.appRestrictions.accessLevel.types appRestrictions.accessLevel}}
+					</div>
+				</div>
+	{{#compare appRestrictions.accessLevel "!==" "full"}}
+		{{#each appRestrictions.apps}}
+			{{#ifInArray id ../appRestrictions.allowedAppIds}}
+				<div class="app-list flex-container">
+					<div class="flex-item-1 flex-row-container app-item">
+						<div class="flex-item app-icon{{#unless icon}} app-icon-empty{{/unless}} {{extraCssClass}}"{{#if icon}} style="background-image:url({{icon}})"{{/if}}>
+						</div>
+						<div class="flex-item app-name">
+							{{label}}
+						</div>
+					</div>
+				</div>
+			{{/ifInArray}}
+		{{/each}}
+	{{/compare}}
+			</div>
+		</div>
+	</div>
+</div>

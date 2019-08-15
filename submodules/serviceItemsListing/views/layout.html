@@ -1,0 +1,61 @@
+{{#if categories.length}}
+	<table class="service-items-listing monster-table">
+		<thead>
+			<tr>
+				<th class="item-cell">{{i18n.accountsApp.serviceItemsListing.columns.item}}</th>
+				<th class="quantity-cell">{{i18n.accountsApp.serviceItemsListing.columns.quantity}}</th>
+				<th class="rate-cell">{{i18n.accountsApp.serviceItemsListing.columns.rate}}</th>
+				<th class="discount-cell">{{i18n.accountsApp.serviceItemsListing.columns.discount}}</th>
+			</tr>
+		</thead>
+		<tbody>
+		{{#each categories}}
+			<tr>
+				<td class="category-cell" colspan="4">{{title}}</td>
+			</tr>
+			{{#each items}}
+				<tr>
+					<td class="item-cell">{{label}}</td>
+					<td class="quantity-cell">{{coalesce quantity @root.i18n.accountsApp.serviceItemsListing.labels.all}}</td>
+					<td class="rate-cell">
+					{{#if rate}}
+						{{#compare rate.value "===" null}}
+							<span>--</span>
+						{{else}}
+							{{#if rate.value}}
+								{{formatPrice rate.value 2}}
+							{{/if}}
+						{{/compare}}
+						{{#if rate.isCascade}}
+							<span class="iconography" title="{{@root.i18n.accountsApp.serviceItemsListing.labels.cascadeTooltip}}" data-toggle="tooltip">
+								{{telicon "account-tree"}}
+							</span>
+						{{/if}}
+					{{/if}}
+					</td>
+					<td class="discount-cell">
+					{{#if discounts.single.value}}
+						<div>
+							{{formatPrice discounts.single.value 2}}
+							<i class="fa fa-tag iconography" title="{{@root.i18n.accountsApp.serviceItemsListing.discountTypes.single}}" data-toggle="tooltip"></i>
+						</div>
+					{{/if}}
+					{{#if discounts.cumulative.value}}
+						<div>
+							{{formatPrice discounts.cumulative.value 2}}
+						{{#if discounts.cumulative.maximum}}
+							&nbsp;
+							<span>({{discounts.cumulative.maximum}})</span>
+							<i class="fa fa-tags iconography" title="{{replaceVar @root.i18n.accountsApp.serviceItemsListing.discountTypes.cumulativeWithMax discounts.cumulative.maximum}}" data-toggle="tooltip"></i>
+						{{else}}
+							<i class="fa fa-tags iconography" title="{{@root.i18n.accountsApp.serviceItemsListing.discountTypes.cumulative}}" data-toggle="tooltip"></i>
+						{{/if}}
+						</div>
+					{{/if}}
+					</td>
+				</tr>
+			{{/each}}
+		{{/each}}
+		</tbody>
+	</table>
+{{/if}}
