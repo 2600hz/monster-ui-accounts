@@ -302,6 +302,11 @@ define(function(require) {
 				if (_.has(generalSettingsData.accountInfo, 'whitelabeledAccountRealm')) {
 					generalSettingsData.accountInfo.accountRealm = generalSettingsData.accountInfo.whitelabeledAccountRealm;
 				}
+
+				// If there are no admin users, set an empty array
+				if (!_.has(generalSettingsData, 'accountAdmins')) {
+					generalSettingsData.accountAdmins = [];
+				}
 			}
 
 			return {
