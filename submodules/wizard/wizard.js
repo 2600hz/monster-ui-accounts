@@ -1449,19 +1449,12 @@ define(function(require) {
 					var newAccountId = newAccount.id,
 						users = self.wizardSubmitGetFormattedUsers(wizardData),
 						plan = self.wizardSubmitGetFormattedServicePlan(wizardData),
+						creditLedger = self.wizardSubmitGetFormattedLedgerCredit(wizardData),
 						parallelFunctions = {
 							limits: function(parallelCallback) {
 								self.wizardRequestLimitsUpdate({
 									accountId: newAccountId,
 									limits: self.wizardSubmitGetFormattedLimits(wizardData),
-									callback: addErrorToResult(parallelCallback)
-								});
-							},
-							credit: function(parallelCallback) {
-								self.wizardRequestResourceCreateOrUpdate({
-									resource: 'ledgers.credit',
-									accountId: newAccountId,
-									data: self.wizardSubmitGetFormattedLedgerCredit(wizardData),
 									callback: addErrorToResult(parallelCallback)
 								});
 							},
@@ -1482,6 +1475,17 @@ define(function(require) {
 								resource: 'services.bulkChange',
 								accountId: newAccountId,
 								data: plan,
+								callback: addErrorToResult(parallelCallback)
+							});
+						};
+					}
+
+					if (!_.isNil(creditLedger)) {
+						parallelFunctions.credit = function(parallelCallback) {
+							self.wizardRequestResourceCreateOrUpdate({
+								resource: 'ledgers.credit',
+								accountId: newAccountId,
+								data: creditLedger,
 								callback: addErrorToResult(parallelCallback)
 							});
 						};
@@ -1620,11 +1624,15 @@ define(function(require) {
 		/**
 		 * Build the ledger credit object to submit to the API, from the wizard data
 		 * @param  {Object} wizardData  Wizard's data
-		 * @returns  {Object}  Ledger credit data
+		 * @returns  {Object}  Ledger credit data. If the amount is zero, then returns null.
 		 */
 		wizardSubmitGetFormattedLedgerCredit: function(wizardData) {
 			var self = this,
 				amount = _.toNumber(wizardData.creditBalanceAndFeatures.accountCredit.initialBalance);
+
+			if (amount === 0) {
+				return null;
+			}
 
 			return {
 				amount: amount,
