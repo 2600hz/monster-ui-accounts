@@ -1543,11 +1543,13 @@ define(function(require) {
 				technicalContact = accountContacts.technicalContact,
 				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
 				accountDocument = {
-					blacklist: _
-						.chain(self.wizardGetStore('apps'))
-						.map('id')
-						.difference(wizardData.appRestrictions.allowedAppIds)
-						.value(),
+					blacklist: (wizardData.appRestrictions.accessLevel === 'full')
+						? []
+						: _
+							.chain(self.wizardGetStore('apps'))
+							.map('id')
+							.difference(wizardData.appRestrictions.allowedAppIds)
+							.value(),
 					call_restriction: _
 						.mapValues(wizardData.usageAndCallRestrictions.callRestrictions, function(value) {
 							return {
