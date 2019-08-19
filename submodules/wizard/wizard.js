@@ -582,7 +582,7 @@ define(function(require) {
 					});
 
 					if (selectedPlansCount === 0 || selectedPlansCount >= formattedPlanData.count) {
-						self.wizardToggleElementsVisibility([ $template.find('.service-plan-add') ], false);
+						self.wizardToggleElementsVisibility([$template.find('.service-plan-add')], false);
 					}
 
 					self.wizardServicePlanBindEvents({
@@ -681,8 +681,8 @@ define(function(require) {
 				plansCount = planData.count,
 				$template = args.template,
 				$planListContainer = args.planListArgs.container,
+				$planAggregateContainer = $template.find('#service_plan_aggregate'),
 				$planAddLink = $template.find('.service-plan-add'),
-				$planRemoveFirst = $planListContainer.find('.service-plan-item:first-child .service-plan-remove'),
 				toggleSelectedPlan = function($servicePlanItem, oldPlanId, newPlanId) {
 					var $otherInputs = $servicePlanItem.siblings('.service-plan-item').find('select');
 
@@ -697,6 +697,11 @@ define(function(require) {
 						selectedCount += 1;
 						$otherInputs.find('option[value="' + newPlanId + '"]').attr('disabled', '');
 					}
+				},
+				enablePlanSelectorControls = function(enable) {
+					$planListContainer.find('select').prop('disabled', !enable).trigger('chosen:updated');
+					$planListContainer.find('button.service-plan-remove').prop('disabled', !enable);
+					$planAddLink.toggleClass('disabled');
 				};
 
 			$planAddLink.on('click', function(e) {
@@ -706,7 +711,7 @@ define(function(require) {
 					return;
 				}
 
-				self.wizardToggleElementsVisibility([$planRemoveFirst, $planAddLink], false);
+				self.wizardToggleElementsVisibility([$planAddLink], false);
 
 				lastIndex += 1;
 
@@ -722,55 +727,70 @@ define(function(require) {
 			$planListContainer.on('click', '.service-plan-remove', function(e) {
 				e.preventDefault();
 
-				var $servicePlanItem = $(this).closest('.service-plan-item'),
+				enablePlanSelectorControls(false);
+
+				var $this = $(this),
+					$servicePlanItem = $this.closest('.service-plan-item'),
 					$selectInput = $servicePlanItem.find('select'),
 					value = $selectInput.val();
 
 				toggleSelectedPlan($servicePlanItem, value, null);
 
-				monster.series([
-					function(seriesCallback) {
+				monster.parallel([
+					function(parallelCallback) {
 						if (value === '') {
-							seriesCallback(null);
+							parallelCallback(null);
 							return;
 						}
 
-						self.wizardServicePlanGenerateListing({
+						self.serviceItemsListingRender({
 							planIds: selectedPlanIds,
-							template: $template,
-							planAddLink: $planAddLink,
-							planListContainer: $planListContainer,
-							callback: function() {
-								seriesCallback(null);
+							container: $planAggregateContainer,
+							success: function() {
+								parallelCallback(null);
+							},
+							error: function() {
+								parallelCallback(true);
 							}
 						});
+					},
+					function(parallelCallback) {
+						if ($servicePlanItem.is(':only-child')) {
+							$selectInput
+								.val('')
+								.data('value', '');
+
+							self.wizardToggleElementsVisibility([$this, $planAddLink], false);
+
+							parallelCallback(null);
+						} else {
+							$servicePlanItem
+								.addClass('remove')
+								.slideUp(self.appFlags.wizard.animationTimes.planInput, function() {
+									var $servicePlanItems = $servicePlanItem.siblings(),
+										$firstServicePlanItem = $servicePlanItems.first(),
+										selectorCount = $servicePlanItems.length;
+
+									$servicePlanItem.remove();
+
+									if (selectorCount === selectedCount) {
+										self.wizardToggleElementsVisibility([$planAddLink], true);
+									} else if ($firstServicePlanItem.find('select').val() === '') {
+										self.wizardToggleElementsVisibility([$firstServicePlanItem.find('.service-plan-remove')], false);
+									}
+
+									parallelCallback(null);
+								});
+						}
 					}
 				], function() {
-					if ($servicePlanItem.is(':first-child')) {
-						$selectInput
-							.val('')
-							.data('value', '');
-
-						self.wizardToggleElementsVisibility([$planRemoveFirst, $planAddLink], false);
-					} else {
-						$servicePlanItem
-							.addClass('remove')
-							.slideUp(self.appFlags.wizard.animationTimes.planInput, function() {
-								var selectorCount = $planListContainer.find('.service-plan-item').length - 1;
-
-								$servicePlanItem.remove();
-
-								if (selectorCount === 1) {
-									self.wizardToggleElementsVisibility([$planRemoveFirst, $planAddLink], true);
-								} else if (selectorCount === selectedCount) {
-									self.wizardToggleElementsVisibility([$planAddLink], true);
-								}
-							});
-					}
+					enablePlanSelectorControls(true);
 				});
 			});
 
 			$planListContainer.on('change', 'select', function() {
+				enablePlanSelectorControls(false);
+
 				var $this = $(this),
 					$servicePlanItem = $this.closest('.service-plan-item'),
 					oldValue = $this.data('value'),
@@ -778,26 +798,39 @@ define(function(require) {
 
 				toggleSelectedPlan($servicePlanItem, oldValue, newValue);
 
-				self.wizardServicePlanGenerateListing({
-					planIds: selectedPlanIds,
-					template: $template,
-					planAddLink: $planAddLink,
-					planListContainer: $planListContainer,
-					callback: function() {
-						if ($servicePlanItem.is(':first-child')) {
-							if (oldValue === '' && newValue !== '') {
-								if (selectedCount < plansCount) {
-									self.wizardToggleElementsVisibility([$planRemoveFirst, $planAddLink], true);
-								} else {
-									self.wizardToggleElementsVisibility([$planRemoveFirst], true);
-								}
+				monster.parallel([
+					function(parallelCallback) {
+						self.serviceItemsListingRender({
+							planIds: selectedPlanIds,
+							container: $planAggregateContainer,
+							success: function() {
+								parallelCallback(null);
+							},
+							error: function() {
+								parallelCallback(true);
 							}
-						} else if (newValue !== '' && selectedCount < plansCount) {
-							self.wizardToggleElementsVisibility([$planAddLink], true);
+						});
+					},
+					function(parallelCallback) {
+						if (oldValue === '' && newValue !== '') {
+							var elementsToShow = [];
+
+							if (selectedCount < plansCount) {
+								elementsToShow.push($planAddLink);
+							}
+							if ($servicePlanItem.is(':first-child')) {
+								elementsToShow.push($servicePlanItem.find('.service-plan-remove'));
+							}
+
+							self.wizardToggleElementsVisibility(elementsToShow, true);
 						}
 
 						$this.data('value', newValue);
+
+						parallelCallback(null);
 					}
+				], function(err) {
+					enablePlanSelectorControls(true);
 				});
 			});
 		},
@@ -830,54 +863,6 @@ define(function(require) {
 				item: $planSelectorTemplate,
 				listContainer: args.planListContainer,
 				animationDuration: _.get(args, 'animate', false) ? self.appFlags.wizard.animationTimes.planInput : 0
-			});
-		},
-
-		/**
-		 * Generate and render the plan listing
-		 * @param  {Object} args
-		 * @param  {String[]} args.planIds  List of selected plan IDs
-		 * @param  {jQuery} args.template  Step template
-		 * @param  {jQuery} args.planListContainer  Plan list container element
-		 * @param  {jQuery} args.planAddLink  Plan add link
-		 * @param  {Function} args.callback  Callback function
-		 */
-		wizardServicePlanGenerateListing: function(args) {
-			var self = this,
-				planIds = args.planIds,
-				callback = args.callback,
-				$template = args.template,
-				$planAddLink = args.planAddLink,
-				$planListContainer = args.planListContainer,
-				$selectors = $planListContainer.find('select'),
-				$removeButtons = $planListContainer.find('button.service-plan-remove'),
-				enablePlanSelectorControls = function(enable) {
-					$selectors.prop('disabled', !enable).trigger('chosen:updated');
-					$removeButtons.prop('disabled', !enable);
-					$planAddLink.toggleClass('disabled');
-				};
-
-			enablePlanSelectorControls(false);
-
-			monster.parallel([
-				function(parallelCallback) {
-					callback();
-					parallelCallback(null);
-				},
-				function(parallelCallback) {
-					self.serviceItemsListingRender({
-						planIds: planIds,
-						container: $template.find('#service_plan_aggregate'),
-						success: function() {
-							parallelCallback(null);
-						},
-						error: function() {
-							parallelCallback(true);
-						}
-					});
-				}
-			], function() {
-				enablePlanSelectorControls(true);
 			});
 		},
 

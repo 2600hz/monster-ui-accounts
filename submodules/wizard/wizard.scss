@@ -335,10 +335,8 @@ $color-highlight: #dbdbde;
 			border-top: none;
 		}
 
-		&:hover {
-			.admin-user-remove {
-				opacity: 1;
-			}
+		&:hover .admin-user-remove {
+			opacity: 1;
 		}
 
 		&.remove {
@@ -370,6 +368,11 @@ $color-highlight: #dbdbde;
 			margin-bottom: 0.5rem;
 
 			.service-plan-item {
+				transition: opacity 200ms ease-in-out;
+
+				&.remove {
+					opacity: 0;
+				}
 
 				.input-field-container {
 					display: flex;
