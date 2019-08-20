@@ -173,10 +173,6 @@ define(function(require) {
 					});
 				}
 			], function(err, plans) {
-				if (err) {
-					return;
-				}
-
 				if (_.isEmpty(plans)) {
 					_.pullAt(stepNames, 2);
 				}
