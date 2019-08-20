@@ -1704,7 +1704,7 @@ define(function(require) {
 			return _.transform(wizardData.usageAndCallRestrictions.trunkLimits, function(object, value, trunkType) {
 				_.set(object, trunkType + '_trunks', _.toNumber(value));
 			}, {
-				allow_prepay: true
+				allow_prepay: wizardData.usageAndCallRestrictions.allowPerMinuteCalls
 			});
 		},
 
