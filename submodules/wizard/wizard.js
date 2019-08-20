@@ -1702,7 +1702,7 @@ define(function(require) {
 			var self = this;
 
 			return _.transform(wizardData.usageAndCallRestrictions.trunkLimits, function(object, value, trunkType) {
-				_.set(object, trunkType + '_trunks', value);
+				_.set(object, trunkType + '_trunks', _.toNumber(value));
 			}, {
 				allow_prepay: true
 			});
@@ -1822,6 +1822,13 @@ define(function(require) {
 					});
 				},
 				function(limits, waterfallCallback) {
+					if (_.chain(limits).pick(_.keys(newLimits)).isEqual(newLimits).value()) {
+						// New limits are equal to the default ones,
+						// so there is no need for update
+						waterfallCallback(null, limits);
+						return;
+					}
+
 					self.callApi({
 						resource: 'limits.update',
 						data: {
