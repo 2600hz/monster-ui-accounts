@@ -159,7 +159,7 @@ define(function(require) {
 			monster.waterfall([
 				function(waterfallCallback) {
 					monster.ui.insertTemplate($container, function() {
-						waterfallCallback();
+						waterfallCallback(null);
 					});
 				},
 				function(waterfallCallback) {
