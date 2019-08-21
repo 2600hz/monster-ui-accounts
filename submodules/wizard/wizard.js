@@ -1555,20 +1555,22 @@ define(function(require) {
 							};
 						}),
 					contact: {
-						country: accountInfo.country,
-						region: accountInfo.state,
-						locality: accountInfo.city,
-						postal_code: accountInfo.zip,
-						street_address: accountInfo.addressLine1,
-						street_address_extra: accountInfo.addressLine2,
-						email: billingContact.email,
-						name: billingContact.fullName,
-						number: billingContact.phoneNumber.e164Number
-					},
-					technical: {
-						email: technicalContact.email,
-						name: technicalContact.fullName,
-						number: technicalContact.phoneNumber.e164Number
+						billing: {
+							country: accountInfo.country,
+							region: accountInfo.state,
+							locality: accountInfo.city,
+							postal_code: accountInfo.zip,
+							street_address: accountInfo.addressLine1,
+							street_address_extra: accountInfo.addressLine2,
+							email: billingContact.email,
+							name: billingContact.fullName,
+							number: billingContact.phoneNumber.e164Number
+						},
+						technical: {
+							email: technicalContact.email,
+							name: technicalContact.fullName,
+							number: technicalContact.phoneNumber.e164Number
+						}
 					},
 					language: accountInfo.language,
 					name: accountInfo.accountName,
