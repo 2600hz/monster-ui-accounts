@@ -1,0 +1,71 @@
+@import "../../../../css/partials/base";
+
+.service-items-listing.monster-table {
+	width: 100%;
+
+	tr {
+		height: auto;
+	}
+
+	th {
+		font-size: 0.75rem;
+		line-height: 0.75rem;
+	}
+
+	th, tbody td, tbody td:first-child {
+		padding: 11px 1rem;
+		line-height: 16px;
+	}
+
+	th {
+		width: 20%;
+		border-bottom: 1px solid $french-gray2;
+		text-transform: uppercase;
+		text-align: left;
+		letter-spacing: 0.4px;
+		color: $midgray2;
+
+		&:first-child {
+			width: 40%;
+		}
+
+		// To override .monster-table specific style
+		&:last-child {
+			text-align: left;
+		}
+	}
+
+	tbody {
+		background: none;
+
+		td {
+			width: 20%;
+			border-bottom-color: $french-gray2;
+
+			// To override .monster-table specific style
+			&:first-child {
+				width: 40%;
+				padding-left: 2rem;
+				border-left: none;
+			}
+
+			&:last-child {
+				border-right: none;
+			}
+
+			&.category-cell {
+				width: 100%;
+				background: #dbdbde;
+				border-radius: 0px;
+				font-weight: 600;
+				text-align: left;
+				color: $woodsmoke;
+			}
+		}
+	}
+
+	.iconography {
+		color: $midgray2;
+		margin-left: 0.75rem;
+	}
+}

@@ -125,7 +125,6 @@
 		"login": "Login:",
 		"password": "Contraseña:"
 	},
-	"deleteUserConfirm": "Este usuario será eliminado permanentemente. Continuar?",
 	"toastrMessages": {
 		"servicePlanUpdateSuccess": "Plan del servicio avctivo se ha actualizado con éxito!",
 		"servicePlanUpdateError": "¡Un error inesperado ocurrió! Por favor intente otra vez.",

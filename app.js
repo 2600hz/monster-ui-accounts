@@ -4,8 +4,19 @@ define(function(require) {
 		monster = require('monster'),
 		timezone = require('monster-timezone');
 
+	var appSubmodules = [
+		'serviceItemsListing',
+		'wizard'
+	];
+
+	require(_.map(appSubmodules, function(name) {
+		return './submodules/' + name + '/' + name;
+	}));
+
 	var app = {
 		name: 'accounts',
+
+		subModules: appSubmodules,
 
 		css: [ 'app' ],
 
@@ -32,12 +43,7 @@ define(function(require) {
 		},
 
 		subscribe: {
-			'accountsManager.activate': '_render',
-			'accountsManager.renderNewAccount': 'renderNewAccountWizard'
-		},
-
-		shortcuts: {
-			'a': 'accountsManager.renderNewAccount'
+			'accountsManager.activate': '_render'
 		},
 
 		load: function(callback) {
@@ -101,7 +107,8 @@ define(function(require) {
 				parent = args.container,
 				selectedId = args.selectedId,
 				selectedTab = args.selectedTab,
-				callback = args.callback;
+				callback = args.callback,
+				$window = $(window);
 
 			monster.pub('common.accountBrowser.render', {
 				container: parent.find('.edition-view .left-menu'),
@@ -109,9 +116,11 @@ define(function(require) {
 				addBackButton: true,
 				noFocus: true,
 				onNewAccountClick: function(parentAccountId, breadcrumbs) {
-					self.renderNewAccountWizard({
-						parent: parent,
-						accountId: parentAccountId || self.accountId
+					$(window).off('resize.accountsManager');
+
+					monster.pub('accounts.wizard.render', {
+						container: parent,
+						parentAccountId: parentAccountId || self.accountId
 					});
 				},
 				onAccountClick: function(accountId) {
@@ -140,17 +149,18 @@ define(function(require) {
 				});
 			});
 
+			// Adjusting the layout divs height to always fit the window's size
+			$window.on('resize.accountsManager', function(e) {
+				var $accountListContainer = parent.find('.account-list-container'),
+					$mainContent = parent.find('.main-content'),
+					listHeight = this.innerHeight - $accountListContainer.position().top + 'px'; //
+				$accountListContainer.css('height', listHeight);
+				$mainContent.css('height', this.innerHeight - $mainContent.position().top + 'px');
+			});
+
 			// give time to the DOM to load all the elements before the resize happens
 			setTimeout(function() {
-				// Adjusting the layout divs height to always fit the window's size
-				$(window).resize(function(e) {
-					var $accountListContainer = parent.find('.account-list-container'),
-						$mainContent = parent.find('.main-content'),
-						listHeight = this.innerHeight - $accountListContainer.position().top + 'px'; //
-					$accountListContainer.css('height', listHeight);
-					$mainContent.css('height', this.innerHeight - $mainContent.position().top + 'px');
-				});
-				$(window).resize();
+				$window.resize();
 			}, 100);
 		},
 
@@ -708,20 +718,28 @@ define(function(require) {
 
 					contentTemplate.find('.admin-element-link.delete').click(function(e) {
 						e.preventDefault();
-						var userId = $(this).parent().parent().data('user_id');
-						monster.ui.confirm(self.i18n.active().deleteUserConfirm, function() {
-							self.callApi({
-								resource: 'user.delete',
-								data: {
-									accountId: editAccountId,
-									userId: userId,
-									data: {}
-								},
-								success: function(data, status) {
-									self.renderEditAdminsForm(parent, editAccountId);
-									refreshAdminsHeader();
-								}
-							});
+						var $adminElement = $(this).closest('.admin-element'),
+							user = {
+								id: $adminElement.data('user_id'),
+								name: $adminElement.find('.admin-element-name').text(),
+								priv_level: 'admin'
+							};
+						monster.pub('common.deleteSmartUser.renderPopup', {
+							accountId: editAccountId,
+							user: user,
+							callback: function(data) {
+								monster.ui.toast({
+									type: 'success',
+									message: self.getTemplate({
+										name: '!' + self.i18n.active().toastrMessages.adminUserDeleted,
+										data: {
+											name: data.first_name + ' ' + data.last_name
+										}
+									})
+								});
+								self.renderEditAdminsForm(parent, editAccountId);
+								refreshAdminsHeader();
+							}
 						});
 					});
 

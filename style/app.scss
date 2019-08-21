@@ -1,3 +1,7 @@
+@import "../../../css/partials/base";
+@import url('../submodules/serviceItemsListing/serviceItemsListing.css');
+@import url('../submodules/wizard/wizard.css');
+
 /***** Top bar *****/
 
 #accounts_manager_view .content {
@@ -675,7 +679,7 @@
 	bottom: -7px;
 	transform: translateX(-50%);
 	position: absolute;
-	
+
 }
 
 .limits-tab-container .section-slider .slider-wrapper .slider-value:before {

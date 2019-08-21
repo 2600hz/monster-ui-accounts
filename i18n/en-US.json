@@ -122,7 +122,6 @@
 		"login": "Login:",
 		"password": "Password:"
 	},
-	"deleteUserConfirm": "This user will be permanently deleted. Continue?",
 	"toastrMessages": {
 		"limitsUpdateSuccess": "Limits updated successfully!",
 		"limitsUpdateError": "An unexpected error occured when updating the limits, please try again later.",
@@ -132,9 +131,11 @@
 		"newAccount": {
 			"accountError": "An unexpected error occured while creating the account.",
 			"adminError": "The account administrator could not be created.",
-			"limitsError": "An error occured while setting up the limits.",
+			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid.",
 			"forbiddenLimitsError": "You are not allowed to set those limits. Please contact your sales representative.",
-			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid."
+			"forbiddenPlanError": "You are not allowed to set the service plan. Please contact your sales representative.",
+			"limitsError": "An error occured while setting up the limits.",
+			"planError": "An error occured while setting up the service plan."
 		},
 		"uiRestrictionsUpdateSuccess": "UI restrictions updated successfully!",
 		"uiRestrictionsUpdateError": "An unexpected error occured when updating the UI restrictions, please try again later.",
@@ -147,7 +148,8 @@
 		"__comment": "UI-1508: Adding appstore restrictions",
 		"__version": "3.22",
 		"appstoreUpdateSuccess": "Allowed apps updated successfully!",
-		"appstoreUpdateError": "An unexpected error occured when updating the list of allowed apps, please try again later."
+		"appstoreUpdateError": "An unexpected error occured when updating the list of allowed apps, please try again later.",
+		"adminUserDeleted": "You successfully deleted administrator {{ name }}!"
 	},
 	"uiRestrictionsLegend": "Select what your customer can view",
 	"uiRestrictionsTooltip": "When you click on your name from top right corner of the screen, you will see a dropdown menu. To restrict the view of options for this Account simply uncheck.",
@@ -283,5 +285,330 @@
 
 	"__comment": "UI-1916: Add app specific shortcut",
 	"__version": "4.0",
-	"toggleAll": "Toggle All"
+	"toggleAll": "Toggle All",
+
+	"accountsApp": {
+		"serviceItemsListing": {
+			"columns": {
+				"item": "Service items",
+				"quantity": "Quantity",
+				"rate": "Rate",
+				"discount": "Discount"
+			},
+			"keys": {
+				"phone_numbers": "Phone Numbers",
+				"number_services": "Number Services",
+				"limits": "Limits",
+				"devices": "Devices",
+				"users": "Users",
+				"branding": "Branding",
+				"ips": "IPs",
+				"ui_apps": "UI Apps",
+				"cnam": "CNAM Update",
+				"e911": "e911",
+				"ata": "ATA",
+				"cellphone": "Cell Phone",
+				"fax": "Fax",
+				"landline": "Landline",
+				"mobile": "Mobile",
+				"sip_device": "SIP Device",
+				"sip_uri": "SIP URI",
+				"smartphone": "Smartphone",
+				"softphone": "Softphone",
+				"outbound_trunks": "Outbound Trunks",
+				"inbound_trunks": "Inbound Trunks",
+				"twoway_trunks": "Twoway Trunks",
+				"did_us": "US DID",
+				"tollfree_us": "US Tollfree",
+				"rate": "Rate",
+				"activation_charge": "Activation charge",
+				"minimum": "Minimum",
+				"exceptions": "Exceptions",
+				"as": "As",
+				"user": "Standard User",
+				"admin": "Account Admin",
+				"accounts": "Accounts Manager",
+				"callflows": "Advanced Callflows",
+				"carriers": "Carriers",
+				"cluster": "Cluster Manager",
+				"debug": "Debug App",
+				"migration": "Migration",
+				"numbers": "Numbers Manager",
+				"pbxs": "PBX Connector",
+				"pivot": "Pivot",
+				"port": "Port Manager",
+				"provisioner": "Provisioner",
+				"reporting": "Reseller Reporting",
+				"userportal": "Userportal",
+				"voip": "Smart PBX",
+				"webhooks": "Webhooks",
+				"discounts": "Discounts",
+				"maximum": "Maximum",
+				"per-minute-voip": "Per Minute VoIP",
+				"mobile_data": "Mobile Data (100mB)",
+				"support": "Support",
+				"markup_percentage": "Markup",
+				"markup_fixed_price": "Markup",
+				"markup_rate": "Rate"
+			},
+			"labels": {
+				"all": "All",
+				"activationCharge": "{{itemName}} - Activation Charge",
+				"cascadeTooltip": "Pricing and Discount Tiers are based on the total number of items across all sub-accounts"
+			},
+			"discountTypes": {
+				"single": "Single discount",
+				"cumulative": "Cumulative discount",
+				"cumulativeWithMax": "Cumulative discount (up to {{variable}} items)"
+			}
+		},
+		"wizard": {
+			"doneButton": "Create Account",
+			"steps": {
+				"generalSettings": {
+					"label": "General Settings",
+					"description": "Base account settings and administrator information.",
+					"title": "General Account & Administrator Information",
+					"accountInfo": {
+						"title": "Account Information",
+						"labels": {
+							"accountName": "Account Name",
+							"accountRealm": "Account Realm",
+							"whitelabeledAccountRealm": "Account Realm",
+							"addressLine1": "Primary Service Address",
+							"addressLine2": "Address Line 2",
+							"city": "City",
+							"state": "State/ Region/ Province",
+							"zip": "ZIP/ Postal Code",
+							"country": "Country",
+							"timezone": "Time Zone",
+							"language": "Language"
+						},
+						"help": {
+							"accountName": "The name of the account should be unique system-wide.",
+							"accountRealm": "A custom account realm can be set. However, it will be auto-generated if left empty.",
+							"whitelabeledAccountRealm": "The account realm has been auto-generated. However it can be edited if required, but must not be left empty.",
+							"addressLine1": "Primary service address."
+						},
+						"placeholders": {
+							"accountRealm": "Auto-generated realm",
+							"state": "State, region or province",
+							"zip": "Postal code"
+						}
+					},
+					"accountAdmins": {
+						"title": "Account Administrators",
+						"description": "You have the option to create administrators under this new account during this step. For each administrator added below,  a corresponding user will be created in SmartPBX. You can add as many administrators as your sitation requires.",
+						"adminLabel": "Administrator",
+						"labels": {
+							"firstName": "First Name",
+							"lastName": "Last Name",
+							"password": "Password",
+							"sendMail": "Send notifcation and welcome emails to this user upon account creation?"
+						}
+					}
+				},
+				"accountContacts": {
+					"label": "Account Contacts",
+					"description": "Note important contacts for this new account.",
+					"title": "Add important contact information pertaining to this account",
+					"salesRep": {
+						"title": "Account Sales Representative",
+						"labels": {
+							"representative": "Representative",
+							"contractEndDate": "Contract End Date"
+						},
+						"placeholders": {
+							"representative": "Select a representative...",
+							"contractEndDate": "mm/dd/yyyy"
+						}
+					},
+					"technicalContact": {
+						"title": "Technical Contact"
+					},
+					"billingContact": {
+						"title": "Billing Contact"
+					}
+				},
+				"servicePlan": {
+					"label": "Service Plan",
+					"description": "Select applicable Service Plan(s) to assign to this new account.",
+					"title": "Select one or more Service Plans to apply to this new account",
+					"selectPlaceholder": "Apply a Service Plan",
+					"add": "Add another plan"
+				},
+				"usageAndCallRestrictions": {
+					"label": "Usage + Call Restrictions",
+					"description": "Assign trunk limits and call restrictions to this new account.",
+					"title": "Configure trunking limits and set call restrictions",
+					"trunkLimits": {
+						"title": "Trunk Limits",
+						"labels": {
+							"inbound": "Inbound Trunks",
+							"outbound": "Outbound Trunks",
+							"twoway": "Two-way Trunks",
+							"allowPerMinuteCalls": "Allow customers to make per-minute calls"
+						},
+						"help": {
+							"inbound": "The number of Inbound trunks defines how many simultaneous calls you can receive to your phone system.",
+							"outbound": "The number of Outbound trunks defines how many concurrent external calls you can place at one time.",
+							"twoway": "The number of Two-way trunks defines how many concurrent calls your platform can handle at one time."
+						}
+					},
+					"callRestrictions": {
+						"title": "Call Restrictions",
+						"description": "By default, all available calling capabilities are enabled for new accounts. If you wish to place call restrictions on this new account, simply turn off the calling capability to restrict this account from placing that type of call.",
+						"labels": {
+							"tollfree_us": "US Toll Free",
+							"toll_us": "US Toll",
+							"emergency": "Emergency Dispatch",
+							"caribbean": "Caribbean",
+							"did_us": "US DID",
+							"international": "US International",
+							"unknowkn": "Other"
+						},
+						"help": {
+							"tollfree_us": "Allows calls on the account to be placed to US TollFree numbers.",
+							"toll_us": "Allows calls on the account to be placed to US Toll numbers.",
+							"emergency": "Allows calls on the account to be placed to Emergency Dispatch numbers.",
+							"caribbean": "Allows calls on the account to be placed to Caribbean numbers.",
+							"did_us": "Allows calls on the account to be placed to US DID numbers.",
+							"international": "Allows calls on the account to be placed to International numbers.",
+							"unknowkn": "Allows calls on the account to be placed to all other numbers."
+						}
+					}
+				},
+				"creditBalanceAndFeatures": {
+					"label": "Credit Balance + Features",
+					"description": "Add credit, and select which functionality this new account has access to in Control Center.",
+					"title": "Set initial account credit balance and configure control center access",
+					"accountCredit": {
+						"title": "Account Credit",
+						"labels": {
+							"initialBalance": "Initial Credit Balance"
+						},
+						"help": {
+							"initialBalance": "Adding credits manually allows you to immediately set your initial Current Balance. Maintaining a Current Balance is very important, as it is necessary for international or per-minute calls, e911, caller ID, and other system features that incur a charge."
+						},
+						"placeholders": {
+							"initialBalance": "0.00"
+						}
+					},
+					"controlCenterAccess": {
+						"title": "Control Center Access",
+						"help": "The Control Center is a module that allows you to manage general features of your account.",
+						"description": "You are able to restrict which Control Center features are accessible to this new account. Select the desired features, or leave them all available depending on your business use case and this account's needs.",
+						"featureCategories": {
+							"settings": "Settings",
+							"billing": "Billing",
+							"trunking": "Trunking",
+							"misc": "Misc."
+						},
+						"features": {
+							"labels": {
+								"account": "Account",
+								"balance": "Usage Charges",
+								"billing": "Credit Card",
+								"credit": "Credit Info",
+								"error_tracker": "UI Errors Log",
+								"minutes": "Minute Info",
+								"service_plan": "Service Plan",
+								"transactions": "Transactions",
+								"user": "User"
+							},
+							"help": {
+								"account": "Allows users to view/change account name, account realm, technical contact, account timezone/language preferences...",
+								"balance": "Allows users to view the \"Per Minute\" tab of Usage Charges.",
+								"billing": "Allows users to view/change the card on file and billing contact.",
+								"credit": "Allows users to view the \"Credit Info\" tab in their Control Center.",
+								"error_tracker": "Allows users to view the UI Errors log, which may be beneficial for troubleshooting.",
+								"minutes": "Allows users to view the \"Minutes Info\" tab in their Control Center.",
+								"service_plan": "Allows users to view/download a copy of the Service Plan applied to the account.",
+								"transactions": "Allows users to view the Transactions log.",
+								"user": "Allows users to view/change their passwords, timezone & language preferences, date/time display, colorblind mode, and more..."
+							}
+						}
+					}
+				},
+				"appRestrictions": {
+					"label": "Application Restrictions",
+					"description": "Decide which applications, if any, should be restricted on this new account.",
+					"title": "Which applications should this new account have access to?",
+					"accessLevel": {
+						"description": "By default, new accounts have access to ALL available applications on the App Exchange. If you wish to customize application access for this new account, you can choose ‘Restricted Access’ below. This will BLOCK ACCESS TO ALL APPLICATIONS, requiring you to manually whitelist the applications you want this account to have access to.",
+						"help": "Restricted Access will BLOCK ACCESS TO ALL APPLICATIONS, requiring you to manually whitelist the applications you want this account to have access to.",
+						"important": "Important",
+						"notice": "This step merely sets the access restrictions for applications on this new account. It DOES NOT enable the applications on the account itself. To enable applications, you or another account administrator will need to do so within this new account’s App Exchange.",
+						"types": {
+							"full": "Full Access",
+							"restricted": "Restricted Access"
+						}
+					},
+					"apps": {
+						"title": "Restrict Access to the Following Applications",
+						"description": "This account will not be able to access any applications until you manually list which applications this account should have access to.",
+						"add": "Add Application(s)"
+					}
+				},
+				"review": {
+					"label": "Review + Confirm",
+					"description": "Review account configurations before finalizing the creation of your new account.",
+					"title": "Please review and confirm the configurations for your new account",
+					"generalSettings": {
+						"formats": {
+							"addressLine3": "{{city}}, {{state}} {{zip}}",
+							"accountAdminsCount": "Account administrators ({{variable}})"
+						},
+						"labels": {
+							"sendMail": "Email Notifications upon Creation"
+						}
+					},
+					"servicePlan": {
+						"labels": {
+							"selectedServicePlans": "Selected Service Plans",
+							"noServicePlan": "No service plan selected"
+						}
+					},
+					"usageBilling": {
+						"labels": {
+							"allowPerMinuteCalls": "Allow per-minute calls that go over the above limit, and bill the per-minute cost of the call"
+						}
+					},
+					"appRestrictions": {
+						"accessLevel": {
+							"types": {
+								"full": "No application restrictions",
+								"restricted": "Access restricted to the following apps"
+							}
+						}
+					},
+					"general": {
+						"labels": {
+							"disabled": "Disabled",
+							"enabled": "Enabled",
+							"fullName": "Name",
+							"no": "No",
+							"yes": "Yes"
+						}
+					}
+				},
+				"general": {
+					"help": {
+						"edit": "Edit"
+					},
+					"labels": {
+						"email": "Email",
+						"fullName": "Full Name",
+						"phoneNumber": "Phone Number"
+					},
+					"errors": {
+						"phoneNumber": {
+							"invalid": "Invalid phone number"
+						}
+					}
+				}
+			},
+			"title": "Creating a New Account"
+		}
+	}
 }

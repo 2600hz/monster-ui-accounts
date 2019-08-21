@@ -1,0 +1,74 @@
+{{#*inline "accountInfoInputPartial"}}
+	<div class="flex-item-2">
+	{{#with @root.i18n.accountsApp.wizard.steps.generalSettings.accountInfo as |accountInfoI18n|}}
+		<label for="account_info_{{coalesce ../id ../name}}">
+			{{tryI18n accountInfoI18n.labels ../name}}
+		{{#if (lookup accountInfoI18n.help ../name)}}
+			<span class="help-tip" title="{{tryI18n accountInfoI18n.help ../name}}" data-toggle="tooltip">
+				{{telicon "question--circle" class="iconography-small iconography-help"}}
+			</span>
+		{{/if}}
+		</label>
+		<input class="input-block-level" type="text" name="accountInfo.{{../name}}" id="account_info_{{coalesce ../id ../name}}" placeholder="{{coalesce (lookup accountInfoI18n.placeholders ../name) (tryI18n accountInfoI18n.labels ../name)}}"{{#if ../required}} required{{/if}} value="{{lookupPath @root.data.accountInfo ../name}}">
+	{{/with}}
+	</div>
+{{/inline}}
+
+<div id="step_general_settings" class="wizard-step container-fluid">
+	<div class="step-title">
+		{{i18n.accountsApp.wizard.steps.generalSettings.title}}
+	</div>
+	<div class="step-body">
+		<form id="form_general_settings">
+			<div class="step-section">
+			{{#with i18n.accountsApp.wizard.steps.generalSettings.accountInfo as |accountInfoI18n|}}
+				<div class="section-title">
+					{{accountInfoI18n.title}}
+				</div>
+				<div class="section-body flex-row-container">
+					{{> accountInfoInputPartial id="account_name" name="accountName" required=true}}
+				{{#if @root.data.accountInfo.whitelabeledAccountRealm}}
+					{{> accountInfoInputPartial id="account_realm" name="whitelabeledAccountRealm" required=true}}
+				{{else}}
+					{{> accountInfoInputPartial id="account_realm" name="accountRealm"}}
+				{{/if}}
+					{{> accountInfoInputPartial id="address_line_1" name="addressLine1" required=true}}
+					{{> accountInfoInputPartial id="address_line_2" name="addressLine2" required=true}}
+					{{> accountInfoInputPartial name="city" required=true}}
+					{{> accountInfoInputPartial name="state" required=true}}
+					{{> accountInfoInputPartial name="zip" required=true}}
+					{{> accountInfoInputPartial name="country" required=true}}
+					<div class="flex-item-2">
+						<label for="account_info_timezone">{{accountInfoI18n.labels.timezone}}</label>
+						<select id="account_info_timezone" name="accountInfo.timezone" required></select>
+					</div>
+					<div class="flex-item-2">
+						<label for="account_info_language">{{accountInfoI18n.labels.language}}</label>
+						{{languageSelector id="account_info_language" name="accountInfo.language" class="input-block-level" required="true" selectedLanguage=@root.data.accountInfo.language}}
+					</div>
+				</div>
+			{{/with}}
+			</div>
+			<div class="step-section">
+			{{#with i18n.accountsApp.wizard.steps.generalSettings.accountAdmins as |accountAdminsI18n|}}
+				<div class="section-title">
+					{{accountAdminsI18n.title}}
+				</div>
+				<div class="section-body">
+					<div class="flex-row-container">
+						<div class="flex-item-2">
+							{{accountAdminsI18n.description}}
+						</div>
+					</div>
+					<div class="admin-user-list"></div>
+					<div class="flex-row-container">
+						<div class="flex-item-2">
+							<a class="admin-user-add monster-link blue" href="javascript:void(0);">{{telicon "plus" class="iconography-small"}} {{accountAdminsI18n.adminLabel}}</a>
+						</div>
+					</div>
+				</div>
+			{{/with}}
+			</div>
+		</form>
+	</div>
+</div>

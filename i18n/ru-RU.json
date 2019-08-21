@@ -124,7 +124,6 @@
 		"login": "Имя пользователя:",
 		"password": "Пароль:"
 	},
-	"deleteUserConfirm": "Пользователь будет удалён. Продолжить?",
 	"deleteAccountConfirm": "Учётная запись клиента будет удалена. Продолжить?",
 	"toastrMessages": {
 		"servicePlanUpdateSuccess": "Активный тарифный план был успешно обновлён!",
