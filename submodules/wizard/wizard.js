@@ -124,6 +124,7 @@ define(function(require) {
 							outbound: 0,
 							twoway: 0
 						},
+						allowPerMinuteCalls: false,
 						callRestrictions: {
 							_all: true
 						}
@@ -301,6 +302,11 @@ define(function(require) {
 				// Set whitelabeledAccountRealm as accountRealm, if exists
 				if (_.has(generalSettingsData.accountInfo, 'whitelabeledAccountRealm')) {
 					generalSettingsData.accountInfo.accountRealm = generalSettingsData.accountInfo.whitelabeledAccountRealm;
+				}
+
+				// If there are no admin users, set an empty array
+				if (!_.has(generalSettingsData, 'accountAdmins')) {
+					generalSettingsData.accountAdmins = [];
 				}
 			}
 
@@ -1443,20 +1449,11 @@ define(function(require) {
 				function(newAccount, waterfallCallback) {
 					var newAccountId = newAccount.id,
 						users = self.wizardSubmitGetFormattedUsers(wizardData),
-						plan = self.wizardSubmitGetFormattedServicePlan(wizardData),
 						parallelFunctions = {
 							limits: function(parallelCallback) {
 								self.wizardRequestLimitsUpdate({
 									accountId: newAccountId,
 									limits: self.wizardSubmitGetFormattedLimits(wizardData),
-									callback: addErrorToResult(parallelCallback)
-								});
-							},
-							credit: function(parallelCallback) {
-								self.wizardRequestResourceCreateOrUpdate({
-									resource: 'ledgers.credit',
-									accountId: newAccountId,
-									data: self.wizardSubmitGetFormattedLedgerCredit(wizardData),
 									callback: addErrorToResult(parallelCallback)
 								});
 							},
@@ -1468,19 +1465,36 @@ define(function(require) {
 								}, function(data) {
 									addErrorToResult(parallelCallback)(null, _.get(data, 'data'));
 								});
+							},
+							plan: function(parallelCallback) {
+								var plan = self.wizardSubmitGetFormattedServicePlan(wizardData);
+
+								if (_.isNil(plan)) {
+									return parallelCallback(null);
+								}
+
+								self.wizardRequestResourceCreateOrUpdate({
+									resource: 'services.bulkChange',
+									accountId: newAccountId,
+									data: plan,
+									callback: addErrorToResult(parallelCallback)
+								});
+							},
+							credit: function(parallelCallback) {
+								var creditLedger = self.wizardSubmitGetFormattedLedgerCredit(wizardData);
+
+								if (_.isNil(creditLedger)) {
+									return parallelCallback(null);
+								}
+
+								self.wizardRequestResourceCreateOrUpdate({
+									resource: 'ledgers.credit',
+									accountId: newAccountId,
+									data: creditLedger,
+									callback: addErrorToResult(parallelCallback)
+								});
 							}
 						};
-
-					if (!_.isNil(plan)) {
-						parallelFunctions.plan = function(parallelCallback) {
-							self.wizardRequestResourceCreateOrUpdate({
-								resource: 'services.bulkChange',
-								accountId: newAccountId,
-								data: plan,
-								callback: addErrorToResult(parallelCallback)
-							});
-						};
-					}
 
 					_.each(users, function(user, index) {
 						parallelFunctions['user' + index] = function(parallelCallback) {
@@ -1542,9 +1556,12 @@ define(function(require) {
 				billingContact = accountContacts.billingContact,
 				technicalContact = accountContacts.technicalContact,
 				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
+				apps = wizardData.appRestrictions.accessLevel === 'full'
+					? []
+					: self.wizardGetStore('apps'),
 				accountDocument = {
 					blacklist: _
-						.chain(self.wizardGetStore('apps'))
+						.chain(apps)
 						.map('id')
 						.difference(wizardData.appRestrictions.allowedAppIds)
 						.value(),
@@ -1615,11 +1632,15 @@ define(function(require) {
 		/**
 		 * Build the ledger credit object to submit to the API, from the wizard data
 		 * @param  {Object} wizardData  Wizard's data
-		 * @returns  {Object}  Ledger credit data
+		 * @returns  {Object|null}  Ledger credit data. If the amount is zero, then returns null.
 		 */
 		wizardSubmitGetFormattedLedgerCredit: function(wizardData) {
 			var self = this,
 				amount = _.toNumber(wizardData.creditBalanceAndFeatures.accountCredit.initialBalance);
+
+			if (amount === 0) {
+				return null;
+			}
 
 			return {
 				amount: amount,
@@ -1665,7 +1686,8 @@ define(function(require) {
 		 * Build an object that contain the selected service plans that will compose the plan
 		 * for the new account, from the wizard data, to submit to the API
 		 * @param  {Object} wizardData  Wizard's data
-		 * @returns  {Object}  Object that contains the selected service plans
+		 * @returns  {Object|null}  Object that contains the selected service plans. If no plans
+		 * 							were selected, then returns null.
 		 */
 		wizardSubmitGetFormattedServicePlan: function(wizardData) {
 			var self = this,
@@ -1689,12 +1711,18 @@ define(function(require) {
 			var self = this;
 
 			return _.transform(wizardData.usageAndCallRestrictions.trunkLimits, function(object, value, trunkType) {
-				_.set(object, trunkType + '_trunks', value);
+				_.set(object, trunkType + '_trunks', _.toNumber(value));
 			}, {
-				allow_prepay: true
+				allow_prepay: wizardData.usageAndCallRestrictions.allowPerMinuteCalls
 			});
 		},
 
+		/**
+		 * Notify any errors that were raised during data submission
+		 * @param  {Object} error  Main error object
+		 * @param  {('account'|'features')} error.type  Error type
+		 * @param  {Object} [error.error]  Error details per feature
+		 */
 		wizardSubmitNotifyErrors: function(error) {
 			var self = this,
 				errorCollection,
@@ -1809,6 +1837,12 @@ define(function(require) {
 					});
 				},
 				function(limits, waterfallCallback) {
+					if (_.chain(limits).pick(_.keys(newLimits)).isEqual(newLimits).value()) {
+						// New limits are equal to the default ones,
+						// so there is no need for update
+						return waterfallCallback(null, limits);
+					}
+
 					self.callApi({
 						resource: 'limits.update',
 						data: {
