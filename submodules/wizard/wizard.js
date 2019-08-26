@@ -1096,6 +1096,7 @@ define(function(require) {
 				container: $container,
 				loadData: function(asyncCallback) {
 					self.wizardGetAppList({
+						scope: 'account',
 						success: function(appList) {
 							asyncCallback(null, appList);
 						}
@@ -1444,6 +1445,21 @@ define(function(require) {
 					var newAccountId = newAccount.id,
 						users = self.wizardSubmitGetFormattedUsers(wizardData),
 						parallelFunctions = {
+							appBlacklist: function(parallelCallback) {
+								var blacklistedApps = self.wizardSubmitGetFormattedAppBlacklist(wizardData);
+
+								if (_.isNil(blacklistedApps)) {
+									return parallelCallback(null);
+								}
+
+								self.wizardRequestResourceCreateOrUpdate({
+									resource: 'appsStore.updateBlacklist',
+									accountId: newAccountId,
+									data: blacklistedApps,
+									generateError: true,
+									callback: addErrorToResult(parallelCallback)
+								});
+							},
 							limits: function(parallelCallback) {
 								self.wizardRequestLimitsUpdate({
 									accountId: newAccountId,
@@ -1550,15 +1566,7 @@ define(function(require) {
 				billingContact = accountContacts.billingContact,
 				technicalContact = accountContacts.technicalContact,
 				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
-				apps = wizardData.appRestrictions.accessLevel === 'full'
-					? []
-					: self.wizardGetStore('apps'),
 				accountDocument = {
-					blacklist: _
-						.chain(apps)
-						.map('id')
-						.difference(wizardData.appRestrictions.allowedAppIds)
-						.value(),
 					call_restriction: _
 						.mapValues(wizardData.usageAndCallRestrictions.callRestrictions, function(value) {
 							return {
@@ -1621,6 +1629,31 @@ define(function(require) {
 			}
 
 			return accountDocument;
+		},
+
+		/**
+		 * Gets the application blacklist from the wizard data
+		 * @param  {Object} wizardData  Wizard's data
+		 * @returns  {Object|null}  App blacklist data. If there are no apps to blacklist, then returns null.
+		 */
+		wizardSubmitGetFormattedAppBlacklist: function(wizardData) {
+			var self = this,
+				apps = wizardData.appRestrictions.accessLevel === 'full'
+					? []
+					: self.wizardGetStore(['apps', 'account']),
+				blacklist = _
+					.chain(apps)
+					.map('id')
+					.difference(wizardData.appRestrictions.allowedAppIds)
+					.value();
+
+			if (_.isEmpty(blacklist)) {
+				return null;
+			}
+
+			return {
+				blacklist: blacklist
+			};
 		},
 
 		/**
@@ -2116,16 +2149,18 @@ define(function(require) {
 		 * Gets the stored list of apps available. If the list is not stored, then it is
 		 * requested to the API.
 		 * @param  {Object} args
+		 * @param  {('all'|'account'|'user')} args.scope  App list scope
 		 * @param  {Function} args.success  Success callback
 		 */
 		wizardGetAppList: function(args) {
-			var self = this;
+			var self = this,
+				scope = args.scope;
 
 			self.wizardGetDataList(_.merge({
-				storeKey: 'apps',
+				storeKey: ['apps', scope],
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
-						scope: 'account',
+						scope: scope,
 						callback: function(appList) {
 							appList = _.sortBy(appList, 'label');
 							reqArgs.success(appList);
@@ -2313,7 +2348,7 @@ define(function(require) {
 
 		/**
 		 * Store getter
-		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans')} [path]
+		 * @param  {('accountUsers'|'numberClassifiers'|'servicePlans'|String[])} [path]
 		 * @param  {*} [defaultValue]
 		 * @return {*}
 		 */
@@ -2331,7 +2366,7 @@ define(function(require) {
 
 		/**
 		 * Store setter
-		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans'|*)} path|value
+		 * @param  {('accountUsers'|'numberClassifiers'|'servicePlans'|String[])} path|value
 		 * @param  {*} [value]
 		 */
 		wizardSetStore: function(path, value) {
