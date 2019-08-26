@@ -165,10 +165,14 @@ define(function(require) {
 					});
 				},
 				function(waterfallCallback) {
-					if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
-						return waterfallCallback(null, []);
+					if (monster.util.isReseller() || monster.util.isSuperDuper()) {
+						return waterfallCallback(null);
 					}
-
+					waterfallCallback({
+						nonReseller: true
+					});
+				},
+				function(waterfallCallback) {
 					self.wizardGetServicePlanList({
 						success: function(plans) {
 							waterfallCallback(null, plans);
