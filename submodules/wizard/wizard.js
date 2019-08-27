@@ -160,7 +160,16 @@ define(function(require) {
 			monster.waterfall([
 				function(waterfallCallback) {
 					monster.ui.insertTemplate($container, function() {
-						waterfallCallback(null);
+						// Defer to ensure that the loading template does not replace the step template
+						_.defer(waterfallCallback, null);
+					});
+				},
+				function(waterfallCallback) {
+					if (monster.util.isReseller() || monster.util.isSuperDuper()) {
+						return waterfallCallback(null);
+					}
+					waterfallCallback({
+						nonReseller: true
 					});
 				},
 				function(waterfallCallback) {
@@ -2271,10 +2280,8 @@ define(function(require) {
 				var insertTemplateCallback = results[0],
 					data = _.get(results, 1);
 
-				_.defer(function() {
-					// Deferred, to ensure that the loading template does not replace the step template
-					insertTemplateCallback(initTemplate(data), self.wizardScrollToTop);
-				});
+				// Deferred, to ensure that the loading template does not replace the step template
+				_.defer(insertTemplateCallback, initTemplate(data), self.wizardScrollToTop);
 			});
 		},
 
