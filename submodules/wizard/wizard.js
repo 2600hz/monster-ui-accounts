@@ -1099,6 +1099,9 @@ define(function(require) {
 						scope: 'account',
 						success: function(appList) {
 							asyncCallback(null, appList);
+						},
+						error: function() {
+							asyncCallback(null, []);
 						}
 					});
 				},
@@ -1446,17 +1449,9 @@ define(function(require) {
 						users = self.wizardSubmitGetFormattedUsers(wizardData),
 						parallelFunctions = {
 							appBlacklist: function(parallelCallback) {
-								var blacklistedApps = self.wizardSubmitGetFormattedAppBlacklist(wizardData);
-
-								if (_.isNil(blacklistedApps)) {
-									return parallelCallback(null);
-								}
-
-								self.wizardRequestResourceCreateOrUpdate({
-									resource: 'appsStore.updateBlacklist',
+								self.wizardRequestAppBlacklistUpdate({
 									accountId: newAccountId,
-									data: blacklistedApps,
-									generateError: true,
+									appRestrictions: wizardData.appRestrictions,
 									callback: addErrorToResult(parallelCallback)
 								});
 							},
@@ -1629,31 +1624,6 @@ define(function(require) {
 			}
 
 			return accountDocument;
-		},
-
-		/**
-		 * Gets the application blacklist from the wizard data
-		 * @param  {Object} wizardData  Wizard's data
-		 * @returns  {Object|null}  App blacklist data. If there are no apps to blacklist, then returns null.
-		 */
-		wizardSubmitGetFormattedAppBlacklist: function(wizardData) {
-			var self = this,
-				apps = wizardData.appRestrictions.accessLevel === 'full'
-					? []
-					: self.wizardGetStore(['apps', 'account']),
-				blacklist = _
-					.chain(apps)
-					.map('id')
-					.difference(wizardData.appRestrictions.allowedAppIds)
-					.value();
-
-			if (_.isEmpty(blacklist)) {
-				return null;
-			}
-
-			return {
-				blacklist: blacklist
-			};
 		},
 
 		/**
@@ -1834,6 +1804,56 @@ define(function(require) {
 		},
 
 		/* API REQUESTS */
+
+		/**
+		 * Request apps blacklist update for an account
+		 * @param  {Object} args
+		 * @param  {String} args.accountId  Account ID
+		 * @param  {Object} args.appRestrictions  App restrictions
+		 * @param  {('full'|'restricted')} args.appRestrictions.accessLevel  App restrictions
+		 * @param  {String[]} args.appRestrictions.allowedAppIds  Allowed app IDs
+		 * @param  {Function} args.callback  Async.js callback
+		 */
+		wizardRequestAppBlacklistUpdate: function(args) {
+			var self = this,
+				accountId = args.accountId,
+				appRestrictions = args.appRestrictions,
+				callback = args.callback;
+
+			monster.waterfall([
+				function(waterfallCallback) {
+					if (appRestrictions.accessLevel === 'full') {
+						return waterfallCallback(null, []);
+					}
+
+					self.wizardGetAppList({
+						scope: 'all',
+						success: function(appList) {
+							waterfallCallback(null, appList);
+						},
+						error: function(err) {
+							waterfallCallback(err);
+						}
+					});
+				},
+				function(appList, waterfallCallback) {
+					var blacklist = _
+						.chain(appList)
+						.map('id')
+						.difference(appRestrictions.allowedAppIds)
+						.value();
+
+					self.wizardRequestResourceCreateOrUpdate({
+						resource: 'appsStore.updateBlacklist',
+						accountId: accountId,
+						data: {
+							blacklist: blacklist
+						},
+						callback: waterfallCallback
+					});
+				}
+			], callback);
+		},
 
 		/**
 		 * Request limits update for an account
@@ -2151,6 +2171,7 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {('all'|'account'|'user')} args.scope  App list scope
 		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetAppList: function(args) {
 			var self = this,
@@ -2161,10 +2182,11 @@ define(function(require) {
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
 						scope: scope,
-						callback: function(appList) {
+						success: function(appList) {
 							appList = _.sortBy(appList, 'label');
 							reqArgs.success(appList);
-						}
+						},
+						error: args.error
 					});
 				}
 			}, args));
