@@ -1723,9 +1723,6 @@ define(function(require) {
 		wizardSubmitNotifyErrors: function(error) {
 			var self = this,
 				errorCollection,
-				isAnyUserError,
-				limitsErrorCode,
-				planErrorCode,
 				errorMessageKeys;
 
 			if (_.get(error, 'type') === 'account') {
@@ -1739,41 +1736,19 @@ define(function(require) {
 			}
 
 			// If the account creation did not fail, there were errors in any of the features
-			errorCollection = error.error;
-			isAnyUserError = _.some(errorCollection, function(error, key) {
-				return _.startsWith(key, 'user');
+			_.each(errorCollection, function(errorDetails, key) {
+				if (_.includes(['limits', 'plan'], key) && _.get(errorDetails, 'error') === 403) {
+					errorMessageKeys.push('forbidden' + _.upperFirst(key) + 'Error');
+				} else if (_.get(errorDetails, 'error') !== 402) {
+					if (_.startsWith(key, 'user')) {
+						if (!_.includes(errorMessageKeys, 'user')) {
+							errorMessageKeys.push('userError');
+						}
+					} else {
+						errorMessageKeys.push(key + 'Error');
+					}
+				}
 			});
-			limitsErrorCode = _.get(errorCollection, 'limits.error');
-			planErrorCode = _.get(errorCollection, 'plan.error');
-			errorMessageKeys = [];
-
-			// User errors
-			if (isAnyUserError) {
-				errorMessageKeys.push('adminError');
-			}
-
-			// Limits errors
-			if (limitsErrorCode) {
-				if (limitsErrorCode === '403') {
-					errorMessageKeys.push('forbiddenLimitsError');
-				} else if (limitsErrorCode !== '402') { // Only show error if error isn't a 402, because a 402 is handled generically
-					errorMessageKeys.push('limitsError');
-				}
-			}
-
-			// Plan errors
-			if (planErrorCode) {
-				if (planErrorCode === '403') {
-					errorMessageKeys.push('forbiddenPlanError');
-				} else if (planErrorCode !== '402') { // Only show error if error isn't a 402, because a 402 is handled generically
-					errorMessageKeys.push('planError');
-				}
-			}
-
-			// Credit errors
-			if (_.has(errorCollection, 'credit')) {
-				errorMessageKeys.push('creditError');
-			}
 
 			// Show collected error messages
 			_.each(errorMessageKeys, function(errorKey) {
