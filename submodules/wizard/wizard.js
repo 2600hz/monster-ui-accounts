@@ -1725,8 +1725,7 @@ define(function(require) {
 		 */
 		wizardSubmitNotifyErrors: function(error) {
 			var self = this,
-				errorCollection,
-				errorMessageKeys;
+				errorMessageKeys = [];
 
 			if (_.get(error, 'type') === 'account') {
 				// Nor the account nor any of its related parts were created
@@ -1739,13 +1738,13 @@ define(function(require) {
 			}
 
 			// If the account creation did not fail, there were errors in any of the features
-			_.each(errorCollection, function(errorDetails, key) {
-				if (_.includes(['limits', 'plan'], key) && _.get(errorDetails, 'error') === 403) {
+			_.each(error.error, function(errorDetails, key) {
+				if (_.includes(['limits', 'plan'], key) && _.get(errorDetails, 'error') === '403') {
 					errorMessageKeys.push('forbidden' + _.upperFirst(key) + 'Error');
-				} else if (_.get(errorDetails, 'error') !== 402) {
+				} else if (_.get(errorDetails, 'error') !== '402') {	// Only show error if error isn't a 402, because a 402 is handled generically
 					if (_.startsWith(key, 'user')) {
-						if (!_.includes(errorMessageKeys, 'user')) {
-							errorMessageKeys.push('userError');
+						if (!_.includes(errorMessageKeys, 'adminError')) {
+							errorMessageKeys.push('adminError');
 						}
 					} else {
 						errorMessageKeys.push(key + 'Error');
