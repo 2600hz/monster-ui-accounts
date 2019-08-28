@@ -153,6 +153,9 @@ define(function(require) {
 				},
 				stepNames = self.appFlags.wizard.stepNames;
 
+			// Clean store, in case it was not empty, to avoid using old data
+			self.wizardSetStore({});
+
 			if (!_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value()) {
 				defaultData.generalSettings.accountInfo.whitelabeledAccountRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
 			}
