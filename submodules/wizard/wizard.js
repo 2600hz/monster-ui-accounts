@@ -1366,7 +1366,7 @@ define(function(require) {
 			formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
 
 			// Set app list
-			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
+			formattedData.appRestrictions.apps = self.wizardGetStore(['apps', 'account']);
 
 			return formattedData;
 		},
