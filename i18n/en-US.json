@@ -130,11 +130,13 @@
 		"deleteAccountError": "An error occured while deleting the account, please try again.",
 		"newAccount": {
 			"accountError": "An unexpected error occured while creating the account.",
-			"adminError": "The account administrator could not be created.",
-			"creditError": "An error occured while adding credit to this new account, make sure your credit card information is valid.",
+			"adminError": "One or more account administrators could not be created.",
+			"appBlacklistError": "An error occurred while setting the app restrictions for the account.",
+			"creditError": "An error occurred while adding credit to this new account, make sure your credit card information is valid.",
 			"forbiddenLimitsError": "You are not allowed to set those limits. Please contact your sales representative.",
 			"forbiddenPlanError": "You are not allowed to set the service plan. Please contact your sales representative.",
 			"limitsError": "An error occured while setting up the limits.",
+			"noMatchCallflowError": "An error occurred while setting up the default callflow for the account.",
 			"planError": "An error occured while setting up the service plan."
 		},
 		"uiRestrictionsUpdateSuccess": "UI restrictions updated successfully!",

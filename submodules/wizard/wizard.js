@@ -153,6 +153,9 @@ define(function(require) {
 				},
 				stepNames = self.appFlags.wizard.stepNames;
 
+			// Clean store, in case it was not empty, to avoid using old data
+			self.wizardSetStore({});
+
 			if (!_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value()) {
 				defaultData.generalSettings.accountInfo.whitelabeledAccountRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
 			}
@@ -1096,8 +1099,12 @@ define(function(require) {
 				container: $container,
 				loadData: function(asyncCallback) {
 					self.wizardGetAppList({
+						scope: 'account',
 						success: function(appList) {
 							asyncCallback(null, appList);
+						},
+						error: function() {
+							asyncCallback(null, []);
 						}
 					});
 				},
@@ -1362,7 +1369,7 @@ define(function(require) {
 			formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
 
 			// Set app list
-			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
+			formattedData.appRestrictions.apps = self.wizardGetStore(['apps', 'account']);
 
 			return formattedData;
 		},
@@ -1444,6 +1451,13 @@ define(function(require) {
 					var newAccountId = newAccount.id,
 						users = self.wizardSubmitGetFormattedUsers(wizardData),
 						parallelFunctions = {
+							appBlacklist: function(parallelCallback) {
+								self.wizardRequestAppBlacklistUpdate({
+									accountId: newAccountId,
+									appRestrictions: wizardData.appRestrictions,
+									callback: addErrorToResult(parallelCallback)
+								});
+							},
 							limits: function(parallelCallback) {
 								self.wizardRequestLimitsUpdate({
 									accountId: newAccountId,
@@ -1550,15 +1564,7 @@ define(function(require) {
 				billingContact = accountContacts.billingContact,
 				technicalContact = accountContacts.technicalContact,
 				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
-				apps = wizardData.appRestrictions.accessLevel === 'full'
-					? []
-					: self.wizardGetStore('apps'),
 				accountDocument = {
-					blacklist: _
-						.chain(apps)
-						.map('id')
-						.difference(wizardData.appRestrictions.allowedAppIds)
-						.value(),
 					call_restriction: _
 						.mapValues(wizardData.usageAndCallRestrictions.callRestrictions, function(value) {
 							return {
@@ -1719,11 +1725,7 @@ define(function(require) {
 		 */
 		wizardSubmitNotifyErrors: function(error) {
 			var self = this,
-				errorCollection,
-				isAnyUserError,
-				limitsErrorCode,
-				planErrorCode,
-				errorMessageKeys;
+				errorMessageKeys = [];
 
 			if (_.get(error, 'type') === 'account') {
 				// Nor the account nor any of its related parts were created
@@ -1736,41 +1738,19 @@ define(function(require) {
 			}
 
 			// If the account creation did not fail, there were errors in any of the features
-			errorCollection = error.error;
-			isAnyUserError = _.some(errorCollection, function(error, key) {
-				return _.startsWith(key, 'user');
+			_.each(error.error, function(errorDetails, key) {
+				if (_.includes(['limits', 'plan'], key) && _.get(errorDetails, 'error') === '403') {
+					errorMessageKeys.push('forbidden' + _.upperFirst(key) + 'Error');
+				} else if (_.get(errorDetails, 'error') !== '402') {	// Only show error if error isn't a 402, because a 402 is handled generically
+					if (_.startsWith(key, 'user')) {
+						if (!_.includes(errorMessageKeys, 'adminError')) {
+							errorMessageKeys.push('adminError');
+						}
+					} else {
+						errorMessageKeys.push(key + 'Error');
+					}
+				}
 			});
-			limitsErrorCode = _.get(errorCollection, 'limits.error');
-			planErrorCode = _.get(errorCollection, 'plan.error');
-			errorMessageKeys = [];
-
-			// User errors
-			if (isAnyUserError) {
-				errorMessageKeys.push('adminError');
-			}
-
-			// Limits errors
-			if (limitsErrorCode) {
-				if (limitsErrorCode === '403') {
-					errorMessageKeys.push('forbiddenLimitsError');
-				} else if (limitsErrorCode !== '402') { // Only show error if error isn't a 402, because a 402 is handled generically
-					errorMessageKeys.push('limitsError');
-				}
-			}
-
-			// Plan errors
-			if (planErrorCode) {
-				if (planErrorCode === '403') {
-					errorMessageKeys.push('forbiddenPlanError');
-				} else if (planErrorCode !== '402') { // Only show error if error isn't a 402, because a 402 is handled generically
-					errorMessageKeys.push('planError');
-				}
-			}
-
-			// Credit errors
-			if (_.has(errorCollection, 'credit')) {
-				errorMessageKeys.push('creditError');
-			}
 
 			// Show collected error messages
 			_.each(errorMessageKeys, function(errorKey) {
@@ -1801,6 +1781,56 @@ define(function(require) {
 		},
 
 		/* API REQUESTS */
+
+		/**
+		 * Request apps blacklist update for an account
+		 * @param  {Object} args
+		 * @param  {String} args.accountId  Account ID
+		 * @param  {Object} args.appRestrictions  App restrictions
+		 * @param  {('full'|'restricted')} args.appRestrictions.accessLevel  App restrictions
+		 * @param  {String[]} args.appRestrictions.allowedAppIds  Allowed app IDs
+		 * @param  {Function} args.callback  Async.js callback
+		 */
+		wizardRequestAppBlacklistUpdate: function(args) {
+			var self = this,
+				accountId = args.accountId,
+				appRestrictions = args.appRestrictions,
+				callback = args.callback;
+
+			monster.waterfall([
+				function(waterfallCallback) {
+					if (appRestrictions.accessLevel === 'full') {
+						return waterfallCallback(null, []);
+					}
+
+					self.wizardGetAppList({
+						scope: 'all',
+						success: function(appList) {
+							waterfallCallback(null, appList);
+						},
+						error: function(err) {
+							waterfallCallback(err);
+						}
+					});
+				},
+				function(appList, waterfallCallback) {
+					var blacklist = _
+						.chain(appList)
+						.map('id')
+						.difference(appRestrictions.allowedAppIds)
+						.value();
+
+					self.wizardRequestResourceCreateOrUpdate({
+						resource: 'appsStore.updateBlacklist',
+						accountId: accountId,
+						data: {
+							blacklist: blacklist
+						},
+						callback: waterfallCallback
+					});
+				}
+			], callback);
+		},
 
 		/**
 		 * Request limits update for an account
@@ -2116,20 +2146,24 @@ define(function(require) {
 		 * Gets the stored list of apps available. If the list is not stored, then it is
 		 * requested to the API.
 		 * @param  {Object} args
+		 * @param  {('all'|'account'|'user')} args.scope  App list scope
 		 * @param  {Function} args.success  Success callback
+		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetAppList: function(args) {
-			var self = this;
+			var self = this,
+				scope = args.scope;
 
 			self.wizardGetDataList(_.merge({
-				storeKey: 'apps',
+				storeKey: ['apps', scope],
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
-						scope: 'account',
-						callback: function(appList) {
+						scope: scope,
+						success: function(appList) {
 							appList = _.sortBy(appList, 'label');
 							reqArgs.success(appList);
-						}
+						},
+						error: args.error
 					});
 				}
 			}, args));
@@ -2313,7 +2347,7 @@ define(function(require) {
 
 		/**
 		 * Store getter
-		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans')} [path]
+		 * @param  {('accountUsers'|'numberClassifiers'|'servicePlans'|String[])} [path]
 		 * @param  {*} [defaultValue]
 		 * @return {*}
 		 */
@@ -2331,7 +2365,7 @@ define(function(require) {
 
 		/**
 		 * Store setter
-		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans'|*)} path|value
+		 * @param  {('accountUsers'|'numberClassifiers'|'servicePlans'|String[])} path|value
 		 * @param  {*} [value]
 		 */
 		wizardSetStore: function(path, value) {
