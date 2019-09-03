@@ -507,12 +507,16 @@ define(function(require) {
 		 * @param  {jQuery} $template  Step template
 		 * @param  {Object} args  Wizard's arguments
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} args.eventArgs  Event arguments
+		 * @param  {Boolean} args.eventArgs.completeStep  Whether or not the current step will be
+		 *                                                completed
 		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
 		 */
-		wizardAccountContactsUtil: function($template, args) {
+		wizardAccountContactsUtil: function($template, args, eventArgs) {
 			var self = this,
 				$form = $template.find('form'),
-				isValid = monster.ui.valid($form),
+				// No need to validate if step won't be completed yet
+				isValid = !eventArgs.completeStep || monster.ui.valid($form),
 				accountContactsData;
 
 			if (isValid) {
