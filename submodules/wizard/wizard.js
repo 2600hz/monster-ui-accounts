@@ -207,7 +207,8 @@ define(function(require) {
 					title: i18n.title,
 					cancel: 'wizardClose',
 					done: 'wizardSubmit',
-					doneButton: i18n.doneButton
+					doneButton: i18n.doneButton,
+					validateOnStepChange: true
 				});
 			});
 		},
