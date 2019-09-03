@@ -1946,160 +1946,6 @@ define(function(require) {
 		/* UTILITY FUNCTIONS */
 
 		/**
-		 * Toggles the display of one or more application cards, in an animated way.
-		 * The animation is similar to Isotope, but without having to worry about responsiveness
-		 * thanks to flexbox.
-		 * The animation uses the FLEX technique.
-		 * @param  {Object} args
-		 * @param  {('show'|'hide')} args.action  Show or hide the elements
-		 * @param  {jQuery} args.container  Items container
-		 * @param  {jQuery} args.itemsToToggle  Items to toggle
-		 */
-		wizardToggleAppCard: function(args) {
-			var self = this,
-				animationMillis = self.appFlags.wizard.animationTimes.toggleAppCards,
-				action = args.action,
-				$container = args.container,
-				$parentContainer = $container.parent(),
-				parentDiffHeight = $parentContainer.height() - $container.height(),
-				$itemsToToggle = args.itemsToToggle,
-				$siblings = $itemsToToggle.siblings('.visible'),
-				firstBounds = $siblings.map(function() {
-					// FIRST: Get the original bounds for following siblings
-					return this.getBoundingClientRect();
-				}).toArray();
-
-			// Set final values at the end of the animation
-			setTimeout(function() {
-				$parentContainer.css({
-					maxHeight: '',
-					height: ''
-				});
-
-				$siblings.css({
-					maxHeight: '',
-					minHeight: '',
-					alignSelf: ''
-				});
-
-				if (action !== 'hide') {
-					return;
-				}
-
-				$itemsToToggle
-					.hide()
-					.css({
-						top: '',
-						left: ''
-					});
-			}, animationMillis);
-
-			// Animate step by step using the FLEX technique
-			monster.series([
-				function(callback) {
-					// Fix container height
-					$parentContainer.css({
-						height: $parentContainer.height() + 'px',
-						maxHeight: $parentContainer.height() + 'px'
-					});
-
-					self.wizardForceElementsReflow({
-						elements: $parentContainer
-					});
-
-					callback(null);
-				},
-				function(callback) {
-					// Hide/show app items
-					if (action === 'hide') {
-						$itemsToToggle
-							.each(function() {
-								$(this)
-									.css({
-										top: this.offsetTop + 'px',
-										left: this.offsetLeft + 'px'
-									})
-									.removeClass('visible');
-							});
-
-						// No need to reflow here because of offsetTop and offsetLeft were
-						// requested for each item to toggle
-
-						callback(null);
-
-						return;
-					}
-
-					$itemsToToggle.css({
-						display: ''
-					});
-
-					self.wizardForceElementsReflow({
-						elements: $itemsToToggle
-					});
-
-					$itemsToToggle
-						.addClass('visible');
-
-					self.wizardForceElementsReflow({
-						elements: $itemsToToggle
-					});
-
-					callback(null);
-				},
-				function(callback) {
-					// Update parent height
-					var parentContainerHeight = ((action === 'show') ? $parentContainer.get(0).scrollHeight : $container.height() + parentDiffHeight) + 'px';
-					$parentContainer.css({
-						maxHeight: parentContainerHeight,
-						height: parentContainerHeight
-					});
-
-					// Calculate deltas for siblings, and set transformation/size
-					$siblings.each(function(index, element) {
-						var first = firstBounds[index],
-							$element = $(element),
-							// LAST: get the final bounds
-							last = element.getBoundingClientRect(),
-							// INVERT: determine the delta between the
-							// first and last bounds to invert the element
-							deltaX = first.left - last.left,
-							deltaY = first.top - last.top;
-
-						if (action === 'hide' && deltaY < 0) {
-							deltaY = 0;
-						}
-
-						// PLAY: animate the final element from its first bounds
-						// to its last bounds (which is no transform)
-						$element.css({
-							transition: 'all 0s ease 0s',
-							transform: 'translate(' + deltaX + 'px, ' + deltaY + 'px)',
-							maxHeight: first.height + 'px',
-							minHeight: first.height + 'px',
-							alignSelf: 'flex-start'
-						});
-						$element.data('last_height', last.height);
-					});
-
-					// Defer to wait for style updates in siblings
-					_.defer(callback, null);
-				}
-			], function() {
-				// Update CSS to trigger delta transitions
-				$siblings.each(function() {
-					var $this = $(this);
-					$this.css({
-						transition: '',
-						transform: '',
-						maxHeight: $this.data('last_height') + 'px',
-						minHeight: $this.data('last_height') + 'px'
-					});
-				});
-			});
-		},
-
-		/**
 		 * Append a list item element to a list container, optionally with a slide-down effect
 		 * @param  {Object} args
 		 * @param  {jQuery} args.item  Item element to append
@@ -2316,6 +2162,160 @@ define(function(require) {
 
 				// Deferred, to ensure that the loading template does not replace the step template
 				_.defer(insertTemplateCallback, initTemplate(data), self.wizardScrollToTop);
+			});
+		},
+
+		/**
+		 * Toggles the display of one or more application cards, in an animated way.
+		 * The animation is similar to Isotope, but without having to worry about responsiveness
+		 * thanks to flexbox.
+		 * The animation uses the FLEX technique.
+		 * @param  {Object} args
+		 * @param  {('show'|'hide')} args.action  Show or hide the elements
+		 * @param  {jQuery} args.container  Items container
+		 * @param  {jQuery} args.itemsToToggle  Items to toggle
+		 */
+		wizardToggleAppCard: function(args) {
+			var self = this,
+				animationMillis = self.appFlags.wizard.animationTimes.toggleAppCards,
+				action = args.action,
+				$container = args.container,
+				$parentContainer = $container.parent(),
+				parentDiffHeight = $parentContainer.height() - $container.height(),
+				$itemsToToggle = args.itemsToToggle,
+				$siblings = $itemsToToggle.siblings('.visible'),
+				firstBounds = $siblings.map(function() {
+					// FIRST: Get the original bounds for following siblings
+					return this.getBoundingClientRect();
+				}).toArray();
+
+			// Set final values at the end of the animation
+			setTimeout(function() {
+				$parentContainer.css({
+					maxHeight: '',
+					height: ''
+				});
+
+				$siblings.css({
+					maxHeight: '',
+					minHeight: '',
+					alignSelf: ''
+				});
+
+				if (action !== 'hide') {
+					return;
+				}
+
+				$itemsToToggle
+					.hide()
+					.css({
+						top: '',
+						left: ''
+					});
+			}, animationMillis);
+
+			// Animate step by step using the FLEX technique
+			monster.series([
+				function(callback) {
+					// Fix container height
+					$parentContainer.css({
+						height: $parentContainer.height() + 'px',
+						maxHeight: $parentContainer.height() + 'px'
+					});
+
+					self.wizardForceElementsReflow({
+						elements: $parentContainer
+					});
+
+					callback(null);
+				},
+				function(callback) {
+					// Hide/show app items
+					if (action === 'hide') {
+						$itemsToToggle
+							.each(function() {
+								$(this)
+									.css({
+										top: this.offsetTop + 'px',
+										left: this.offsetLeft + 'px'
+									})
+									.removeClass('visible');
+							});
+
+						// No need to reflow here because of offsetTop and offsetLeft were
+						// requested for each item to toggle
+
+						callback(null);
+
+						return;
+					}
+
+					$itemsToToggle.css({
+						display: ''
+					});
+
+					self.wizardForceElementsReflow({
+						elements: $itemsToToggle
+					});
+
+					$itemsToToggle
+						.addClass('visible');
+
+					self.wizardForceElementsReflow({
+						elements: $itemsToToggle
+					});
+
+					callback(null);
+				},
+				function(callback) {
+					// Update parent height
+					var parentContainerHeight = ((action === 'show') ? $parentContainer.get(0).scrollHeight : $container.height() + parentDiffHeight) + 'px';
+					$parentContainer.css({
+						maxHeight: parentContainerHeight,
+						height: parentContainerHeight
+					});
+
+					// Calculate deltas for siblings, and set transformation/size
+					$siblings.each(function(index, element) {
+						var first = firstBounds[index],
+							$element = $(element),
+							// LAST: get the final bounds
+							last = element.getBoundingClientRect(),
+							// INVERT: determine the delta between the
+							// first and last bounds to invert the element
+							deltaX = first.left - last.left,
+							deltaY = first.top - last.top;
+
+						if (action === 'hide' && deltaY < 0) {
+							deltaY = 0;
+						}
+
+						// PLAY: animate the final element from its first bounds
+						// to its last bounds (which is no transform)
+						$element.css({
+							transition: 'all 0s ease 0s',
+							transform: 'translate(' + deltaX + 'px, ' + deltaY + 'px)',
+							maxHeight: first.height + 'px',
+							minHeight: first.height + 'px',
+							alignSelf: 'flex-start'
+						});
+						$element.data('last_height', last.height);
+					});
+
+					// Defer to wait for style updates in siblings
+					_.defer(callback, null);
+				}
+			], function() {
+				// Update CSS to trigger delta transitions
+				$siblings.each(function() {
+					var $this = $(this);
+					$this.css({
+						transition: '',
+						transform: '',
+						maxHeight: $this.data('last_height') + 'px',
+						minHeight: $this.data('last_height') + 'px'
+					});
+				});
 			});
 		},
 
