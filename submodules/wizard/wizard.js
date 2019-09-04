@@ -187,7 +187,7 @@ define(function(require) {
 				}
 			], function(err, plans) {
 				if (_.isEmpty(plans)) {
-					_.pullAt(stepNames, 2);
+					stepNames = _.without(stepNames, 'servicePlan');
 				}
 
 				monster.pub('common.navigationWizard.render', {
