@@ -208,7 +208,8 @@ define(function(require) {
 					cancel: 'wizardClose',
 					done: 'wizardSubmit',
 					doneButton: i18n.doneButton,
-					validateOnStepChange: true
+					validateOnStepChange: true,
+					cancelConfirmation: true
 				});
 			});
 		},
