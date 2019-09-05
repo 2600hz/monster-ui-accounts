@@ -209,7 +209,7 @@ define(function(require) {
 					done: 'wizardSubmit',
 					doneButton: i18n.doneButton,
 					validateOnStepChange: true,
-					cancelConfirmation: true
+					askForConfirmationOnCancel: true
 				});
 			});
 		},
