@@ -537,7 +537,7 @@
 					"description": "Decide which applications, if any, should be restricted on this new account.",
 					"title": "Which applications should this new account have access to?",
 					"accessLevel": {
-						"description": "By default, new accounts have access to ALL available applications on the App Exchange. If you wish to customize application access for this new account, you can choose ‘Restricted Access’ below. This will BLOCK ACCESS TO ALL APPLICATIONS, requiring you to manually whitelist the applications you want this account to have access to.",
+						"description": "New accounts have RESTRICTED ACCESS TO ALL APPLICATIONS on the App Exchange by default, requiring you to manually whitelist the applications you want this account to have access to. If you wish to explicitly grant access to ALL available applications on the App Exchange, you can choose the 'Full Access' option below.",
 						"help": "Restricted Access will BLOCK ACCESS TO ALL APPLICATIONS, requiring you to manually whitelist the applications you want this account to have access to.",
 						"important": "Important",
 						"notice": "This step merely sets the access restrictions for applications on this new account. It DOES NOT enable the applications on the account itself. To enable applications, you or another account administrator will need to do so within this new account’s App Exchange.",
