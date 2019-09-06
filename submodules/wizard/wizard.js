@@ -264,15 +264,6 @@ define(function(require) {
 						template: $template
 					});
 
-					// Set static validations
-					monster.ui.validate($template.find('form'), {
-						rules: {
-							'accountInfo.accountRealm': {
-								realm: true
-							}
-						}
-					});
-
 					return $template;
 				};
 
@@ -293,6 +284,14 @@ define(function(require) {
 			var self = this,
 				$form = $template.find('form'),
 				isValid = false,
+				validator = monster.ui.validate($template.find('form'), {
+					focusInvalid: true,
+					rules: {
+						'accountInfo.accountRealm': {
+							realm: true
+						}
+					}
+				}),
 				generalSettingsData;
 
 			// Set dynamic validations
@@ -322,6 +321,8 @@ define(function(require) {
 				if (!_.has(generalSettingsData, 'accountAdmins')) {
 					generalSettingsData.accountAdmins = [];
 				}
+			} else {
+				validator.focusInvalid();
 			}
 
 			return {
