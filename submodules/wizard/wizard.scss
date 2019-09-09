@@ -106,6 +106,15 @@ $color-highlight: #dbdbde;
 		color: $woodsmoke;
 	}
 
+	.step-action-button {
+		width: 2.375rem;
+		height: 2.375rem;
+		margin-left: 0.75rem;
+		background: linear-gradient(-180deg, $white 0%, $athens-gray 100%);
+		border: 1px solid $french-gray2;
+		border-radius: 2px;
+	}
+
 	.section-title {
 		margin-top: 1rem;
 		margin-bottom: 1.5rem;
