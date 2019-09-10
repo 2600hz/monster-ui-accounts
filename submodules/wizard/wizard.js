@@ -1,9 +1,12 @@
 define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
+		pdfMake = require('pdfmake'),
 		moment = require('moment'),
 		monster = require('monster'),
 		timezone = require('monster-timezone');
+
+	require('vfs_fonts');
 
 	var wizard = {
 
@@ -83,6 +86,27 @@ define(function(require) {
 						}
 					]
 				},
+				pdfStaticValues: {
+					styles: {
+						header: {
+							fontSize: 16,
+							bold: true
+						},
+						subHeader: {
+							fontSize: 14,
+							bold: true,
+							decoration: 'underline'
+						},
+						textNormal: {
+							fontSize: 9
+						},
+						textLabel: {
+						},
+						textValue: {
+							bold: true
+						}
+					}
+				},
 				stepNames: [
 					'generalSettings',
 					'accountContacts',
@@ -153,6 +177,9 @@ define(function(require) {
 				},
 				stepNames = self.appFlags.wizard.stepNames;
 
+			// TODO: Remove this. Is for test purposes only.
+			_.merge(defaultData, {"parentAccountId":"f795086a93dbffec4ac250167961b8a9","creditBalanceAndFeatures":{"controlCenterAccess":{"features":{"user":true,"account":false,"billing":true,"balance":true,"credit":true,"minutes":false,"service_plan":true,"transactions":true,"error_tracker":false}},"accountCredit":{"initialBalance":"500.00"}},"generalSettings":{"accountInfo":{"accountName":"New VoIP Company Account","accountRealm":"newvoip.test.com","addressLine1":"140 Geary St.","addressLine2":"3rd Floor","city":"San Francisco","state":"CA","zip":"94108","country":"USA","timezone":"America/New_York","language":"en-US"},"accountAdmins":[{"firstName":"John","lastName":"Smith","email":"jsmith@email.nonexistent","password":"xhi892sdh82","sendMail":true},{"firstName":"Jane","lastName":"Doe","email":"jane@email.nonexistent","password":"29jkhas92un","sendMail":false}]},"accountContacts":{"technicalContact":{"fullName":"John Smith","email":"jsmith@email.nonexistent","phoneNumber":{"isValid":true,"originalNumber":"4158862600","userFormat":"+1 415 886 2600","e164Number":"+14158862600","nationalFormat":"(415) 886-2600","internationalFormat":"+1 415 886 2600","country":{"code":"US","name":"United States"},"userFormatType":"international"}},"billingContact":{"fullName":"Mary Doe","email":"mary@email.nonexistent","phoneNumber":{"isValid":true,"originalNumber":"+14158862600","userFormat":"+1 415 886 2600","e164Number":"+14158862600","nationalFormat":"(415) 886-2600","internationalFormat":"+1 415 886 2600","country":{"code":"US","name":"United States"},"userFormatType":"international"}}},"servicePlan":{"selectedPlanIds":["35f6a034f50cfd9994ede2e3432e1e0a"]},"usageAndCallRestrictions":{"trunkLimits":{"inbound":"50","outbound":"25","twoway":"35"},"allowPerMinuteCalls":true,"callRestrictions":{"caribbean":true,"emergency":true,"did_us":true,"international":false,"toll_us":true,"tollfree_us":true,"unknown":true}},"appRestrictions":{"accessLevel":"restricted","allowedAppIds":["15b46a578ed892dae676c32696736668","b5db02f38dca8c053e1f8d7018aef086","8ec45dc2f7c5ec54aadd688e05184187","cd810ac95c1a68ba0c010773c4698b5d"]}});
+
 			// Clean store, in case it was not empty, to avoid using old data
 			self.wizardSetStore({});
 
@@ -194,7 +221,8 @@ define(function(require) {
 					thisArg: self,
 					data: defaultData,
 					container: $container,
-					steps: _.map(stepNames, function(stepName) {
+					// TODO: Remove filter for stepNames. For testing purposes only.
+					steps: _.map(['review'], function(stepName) {
 						var pascalCasedStepName = _.upperFirst(stepName);
 
 						return {
@@ -1246,13 +1274,20 @@ define(function(require) {
 			var self = this,
 				data = args.data,
 				$container = args.container,
-				dataTemplate = self.wizardReviewFormatData(data),
+				formattedAccountData = self.wizardReviewFormatData(data),
 				$template = $(self.getTemplate({
 					name: 'step-review',
-					data: dataTemplate,
+					data: formattedAccountData,
 					submodule: 'wizard'
 				})),
-				initTemplate = function() {
+				initTemplate = function(reviewData) {
+					var pdfDocDefinition = self.wizardPdfGenerateDocDefinition({
+						data: formattedAccountData,
+						images: {
+							brandingLogo: reviewData.logo
+						}
+					});
+
 					monster.ui.tooltips($template);
 
 					// The numbering is dynamically set through jQuery
@@ -1262,33 +1297,58 @@ define(function(require) {
 					});
 
 					self.wizardReviewBindEvents({
-						template: $template
+						template: $template,
+						pdfDocDefinition: pdfDocDefinition
 					});
 
 					return $template;
 				},
-				renderStepArgs = {
-					container: $container,
-					initTemplate: initTemplate
+				parallelFunctions = {
+					logo: function(parallelCallback) {
+						monster.waterfall([
+							function(waterfallCallback) {
+								self.wizardRequestWhitelabelLogo({
+									success: function() {
+										waterfallCallback(null, self.apiUrl + 'accounts/' + self.accountId + '/whitelabel/logo?auth_token=' + self.getAuthToken());
+									},
+									error: function() {
+										waterfallCallback(null, 'apps/core/style/static/images/logo.svg');
+									}
+								});
+							},
+							function(src, waterfallCallback) {
+								self.wizardConvertImageToDataUrl(src, function(dataUrl) {
+									waterfallCallback(null, dataUrl);
+								});
+							}
+						], parallelCallback);
+					},
+					servicePlan: function(parallelCallback) {
+						self.serviceItemsListingRender({
+							planIds: data.servicePlan.selectedPlanIds,
+							container: $template.find('#service_plan_aggregate'),
+							showProgressPanel: false,
+							success: function() {
+								parallelCallback(null);
+							},
+							error: function(err) {
+								parallelCallback(null);
+							}
+						});
+					}
 				};
 
-			if (_.has(data, 'servicePlan')) {
-				renderStepArgs.loadData = function(asyncCallback) {
-					self.serviceItemsListingRender({
-						planIds: data.servicePlan.selectedPlanIds,
-						container: $template.find('#service_plan_aggregate'),
-						showProgressPanel: false,
-						success: function() {
-							asyncCallback(null);
-						},
-						error: function(err) {
-							asyncCallback(null);
-						}
-					});
-				};
+			console.log('data', JSON.stringify(data));
+
+			if (!_.has(data, 'servicePlan')) {
+				delete parallelFunctions.servicePlan;
 			}
 
-			self.wizardRenderStep(renderStepArgs);
+			self.wizardRenderStep({
+				container: $container,
+				loadData: _.partial(monster.parallel, parallelFunctions),
+				initTemplate: initTemplate
+			});
 		},
 
 		/**
@@ -1398,10 +1458,12 @@ define(function(require) {
 		 * Bind Review step events
 		 * @param  {Object} args
 		 * @param  {jQuery} args.template  Step template
+		 * @param  {Object} args.pdfDocDefinition  PDF account document definition
 		 */
 		wizardReviewBindEvents: function(args) {
 			var self = this,
-				$template = args.template;
+				$template = args.template,
+				pdfDocDefinition = args.pdfDocDefinition;
 
 			$template
 				.find('.edit-step')
@@ -1423,6 +1485,18 @@ define(function(require) {
 							.closest('.password-field')
 								.find('.password-value')
 									.toggleClass('password-hidden');
+					});
+
+			$template
+				.find('#step_print')
+					.on('click', function() {
+						self.wizardPdfGetOrCreate(pdfDocDefinition).print();
+					});
+
+			$template
+				.find('#step_download')
+					.on('click', function() {
+						self.wizardPdfGetOrCreate(pdfDocDefinition).download();
 					});
 		},
 
@@ -1790,6 +1864,420 @@ define(function(require) {
 			});
 		},
 
+		/* PDF GENERATION */
+
+		/**
+		 * Gets a PDF from store if it exists, or generates a new PDF document based on the
+		 * provided definition
+		 * @param  {Object} pdfDoc
+		 * @param  {String} pdfDoc.id  Document unique ID
+		 * @param  {String} pdfDoc.definition  Document definition
+		 */
+		wizardPdfGetOrCreate: function(pdfDoc) {
+			var self = this,
+				documentId = pdfDoc.id,
+				documentDefinition = pdfDoc.definition,
+				pdfDocumentData = self.wizardGetStore('pdfDocument');
+
+			if (_.get(pdfDocumentData, 'id') === documentId) {
+				return pdfDocumentData;
+			}
+
+			// Document does not exist or is outdated, so create it
+			pdfDocumentData = {
+				id: documentId,
+				document: pdfMake.createPdf(documentDefinition)
+			};
+
+			console.log('PDF doc', pdfDocumentData);
+
+			self.wizardSetStore('pdfDocument', pdfDocumentData);
+
+			return pdfDocumentData.document;
+		},
+
+		/**
+		 * Generate the review's PDF document definition
+		 * @param  {Object} args
+		 * @param  {Object} args.data  Wizard data, formatted for the review step
+		 * @param  {Object} args.images  Images to be rendered inside the PDF document
+		 */
+		wizardPdfGenerateDocDefinition: function(args) {
+			var self = this,
+				data = args.data,
+				images = args.images;
+
+			return {
+				id: monster.util.guid(),
+				definition: {
+					content: self.wizardPdfBuildContent(data),
+					header: self.wizardPdfBuildHeader.bind(self),
+					images: images,
+					//info: self.pdfInfo(),
+					pageMargins: [20, 100, 20, 20],
+					pageSize: 'letter',
+					styles: self.appFlags.wizard.pdfStaticValues.styles
+				}
+			};
+		},
+
+		wizardPdfBuildHeader: function(currentPage, pageCount) {
+			var self = this,
+				i18n = self.i18n.active().accountsApp.wizard.document;
+
+			return {
+				margin: [20, 20, 20, 0],
+				columns: [
+					{
+						layout: 'noBorders',
+						width: '*',
+						table: {
+							body: [
+								[
+									{
+										fillColor: 'black',
+										image: 'brandingLogo',
+										width: 132
+									}
+								]
+							]
+						}
+					},
+					{
+						layout: 'noBorders',
+						width: 'auto',
+						table: {
+							widths: ['*', 'auto'],
+							body: [
+								[{
+									alignment: 'right',
+									fontSize: 7,
+									text: i18n.header.page
+								}, {
+									fontSize: 7,
+									text: self.getTemplate({
+										name: '!' + i18n.header.pageOf,
+										data: {
+											current: currentPage.toString(),
+											total: pageCount.toString()
+										}
+									})
+								}],
+								[{
+									alignment: 'right',
+									fontSize: 7,
+									text: i18n.header.date
+								}, {
+									fontSize: 7,
+									text: monster.util.toFriendlyDate(moment().toDate(), 'date')
+								}]
+							]
+						}
+					}
+				]
+			};
+		},
+
+		/**
+		 * Generate PDF content
+		 * @param  {Object} wizardReviewData  Wizard data, formatted for the review step
+		 */
+		wizardPdfBuildContent: function(wizardReviewData) {
+			var self = this,
+				i18n = self.i18n.active();
+
+			return [
+				{
+					text: i18n.accountsApp.wizard.steps.review.title,
+					style: 'header'
+				},
+				{
+					table: {
+						headerRows: 0,
+						widths: ['100%'],
+						body: self.wizardPdfBuildAllSections(wizardReviewData)
+					},
+					layout: {
+						hLineWidth: function(i) {
+							return (i % 2 === 0) ? 0 : 1;
+						},
+						vLineWidth: function() {
+							return 0;
+						}
+					}
+				}
+			];
+		},
+
+		/**
+		 * Generate main sections for PDF content
+		 * @param  {Object} wizardReviewData  Wizard data, formatted for the review step
+		 */
+		wizardPdfBuildAllSections: function(wizardReviewData) {
+			var self = this,
+				i18n = self.i18n.active();
+
+			return _
+				.chain(wizardReviewData)
+				.pick(self.appFlags.wizard.stepNames)	// Pick only data that belong to the wizard steps
+				.map(function(sectionData, sectionKey) {
+					return {
+						key: sectionKey,
+						data: sectionData
+					};
+				})
+				.flatMap(function(sectionInfo, index) {
+					var sectionKey = sectionInfo.key,
+						sectionData = sectionInfo.data,
+						sectionTitle = _.get(i18n.accountsApp.wizard.steps, [ sectionKey, 'label' ], _.startCase(sectionKey)),
+						buildFunctionName = 'wizardPdfBuild' + _.upperFirst(sectionKey);
+
+					return [
+						[
+							self.getTemplate({
+								name: '!' + i18n.accountsApp.wizard.document.sections.title,
+								data: {
+									correlative: index + 1,
+									title: sectionTitle
+								}
+							})
+						],
+						[
+							self[buildFunctionName]({
+								sectionKey: sectionKey,
+								sectionData: sectionData
+							})
+						]
+					];
+				})
+				.value();
+		},
+
+		/**
+		 * Build the General Settings section for the PDF content
+		 * @param  {Object} args
+		 * @param  {String} args.sectionKey  Section key
+		 * @param  {Object} args.sectionData  Section data
+		 */
+		wizardPdfBuildGeneralSettings: function(args) {
+			var self = this,
+				sectionKey = args.sectionKey,
+				sectionData = args.sectionData;
+
+			console.log('sectionData', sectionData);
+
+			return {
+				table: {
+					headerRows: 0,
+					widths: ['25%', '*'],
+					body: [
+						self.wizardPdfBuildHorizontalDataField({
+							fieldPath: [ sectionKey, 'accountInfo', 'accountName' ],
+							data: sectionData
+						}),
+						self.wizardPdfBuildHorizontalDataField({
+							fieldPath: [ sectionKey, 'accountInfo', 'accountRealm' ],
+							data: sectionData
+						}),
+						self.wizardPdfBuildHorizontalDataField({
+							fieldPath: [ sectionKey, 'accountInfo', 'addressLine1' ],
+							value: _
+								.chain(sectionData.accountInfo)
+								.filter(function(value, key) {
+									return _.startsWith(key, 'addressLine');
+								})
+								.join('\n')
+								.value()
+						}),
+						self.wizardPdfBuildHorizontalDataField({
+							fieldPath: [ sectionKey, 'accountInfo', 'timezone' ],
+							data: sectionData
+						}),
+						self.wizardPdfBuildHorizontalDataField({
+							fieldPath: [ sectionKey, 'accountInfo', 'language' ],
+							data: sectionData
+						}),
+						self.wizardPdfBuildHorizontalDataField({
+							label: self.getTemplate({
+								name: '!' + self.i18n.active().accountsApp.wizard.steps.review.generalSettings.formats.accountAdminsCount,
+								data: {
+									variable: sectionData.accountAdmins.length
+								}
+							}),
+							value: self.wizardPdfBuildDataTable({
+								items: sectionData.accountAdmins,
+								fields: {
+									fullName: 'review.general.labels.fullName',
+									email: 'general.labels.email',
+									password: 'generalSettings.accountAdmins.labels.password',
+									sendMail: 'review.generalSettings.labels.sendMail'
+								}
+							})
+						})
+					]
+				},
+				layout: 'noBorders'
+			};
+		},
+
+		/**
+		 * Build the Account Contacts section for the PDF content
+		 * @param  {Object} args
+		 * @param  {String} args.sectionKey  Section key
+		 * @param  {Object} args.sectionData  Section data
+		 */
+		wizardPdfBuildAccountContacts: function(args) {
+			return [];
+		},
+
+		/**
+		 * Build the Service Plan section for the PDF content
+		 * @param  {Object} args
+		 * @param  {String} args.sectionKey  Section key
+		 * @param  {Object} args.sectionData  Section data
+		 */
+		wizardPdfBuildServicePlan: function(args) {
+			return [];
+		},
+
+		/**
+		 * Build the Usage And Call Restrictions section for the PDF content
+		 * @param  {Object} args
+		 * @param  {String} args.sectionKey  Section key
+		 * @param  {Object} args.sectionData  Section data
+		 */
+		wizardPdfBuildUsageAndCallRestrictions: function(args) {
+			return [];
+		},
+
+		/**
+		 * Build the Credit Balance And Features section for the PDF content
+		 * @param  {Object} args
+		 * @param  {String} args.sectionKey  Section key
+		 * @param  {Object} args.sectionData  Section data
+		 */
+		wizardPdfBuildCreditBalanceAndFeatures: function(args) {
+			return [];
+		},
+
+		/**
+		 * Build the App Restrictions section for the PDF content
+		 * @param  {Object} args
+		 * @param  {String} args.sectionKey  Section key
+		 * @param  {Object} args.sectionData  Section data
+		 */
+		wizardPdfBuildAppRestrictions: function(args) {
+			return [];
+		},
+
+		/**
+		 * Builds a data row
+		 * @param  {Object} args
+		 * @param  {String} args.fieldPath  Path to the field that contains the data. Includes the section name.
+		 * @param  {Object} [args.data]  Section data
+		 * @param  {String|Object} [args.value]  Specific value
+		 */
+		wizardPdfBuildHorizontalDataField: function(args) {
+			var self = this,
+				path = args.fieldPath,
+				data = args.data,
+				label = args.label,
+				value = args.value,
+				fieldName,
+				labelsPath,
+				i18n,
+				dataPath;
+
+			if (path) {
+				fieldName = _.last(path);
+				labelsPath = _
+					.chain(path)
+					.take(path.length - 1)	// Exclude field name
+					.concat([ 'labels' ])
+					.value();
+				i18n = _.get(self.i18n.active().accountsApp.wizard.steps, labelsPath, {});
+				dataPath = _.drop(path, 1);	// Remove section name from path
+
+				if (_.isUndefined(label)) {
+					label = monster.util.tryI18n(i18n, fieldName);
+				}
+
+				if (_.isUndefined(value)) {
+					value = _.get(data, dataPath, '');
+				}
+			}
+
+			return [
+				{
+					text: label,
+					style: [ 'textNormal', 'textLabel' ]
+				},
+				_.isString(value)
+					? {
+						text: value,
+						style: [ 'textNormal', 'textValue' ]
+					}
+					: value
+			];
+		},
+
+		/**
+		 * Builds a data table definition, to render a list of items
+		 * @param  {Object} args
+		 * @param  {Object[]} args.items  Data items
+		 * @param  {Object} args.fields  Object whose property names are the paths to each item's
+		 *                               data, and they values are the paths to the i18n label
+		 */
+		wizardPdfBuildDataTable: function(args) {
+			var self = this,
+				items = args.items,
+				fields = args.fields,
+				i18n = self.i18n.active().accountsApp.wizard.steps;
+
+			return {
+				table: {
+					headerRows: 0,
+					widths: ['25%', '25%', '25%', '%25'],	// TODO: Make this kinda dynamic
+					body: _.map(items, function(item) {
+						return _.map(fields, function(fieldI18nPath, fieldValuePath) {
+							var value = _.get(item, fieldValuePath, '');
+
+							if (_.isBoolean(value)) {
+								value = self.wizardPdfBuildBooleanLabel(value);
+							}
+
+							return [
+								_.get(i18n, fieldI18nPath),
+								value
+							];
+						});
+					})
+				},
+				layout: 'noBorders'
+			};
+		},
+
+		/**
+		 * Returns the label representation for a boolean value
+		 * @param  {Object} args
+		 * @param  {('Status'|'YesNo')} args.mode  Mode to build the boolean value
+		 * @param  {Boolean} args.value  Value
+		 */
+		wizardPdfBuildBooleanLabel: function(args) {
+			var self = this,
+				mode = args.mode,
+				value = args.value,
+				i18n = self.i18n.active().accountsApp.wizard.steps.review.general.labels,
+				i18nTrue = (mode === 'Status')
+					? monster.util.tryI18n(i18n, 'enabled')
+					: monster.util.tryI18n(i18n, 'yes'),
+				i18nFalse = (mode === 'Status')
+					? monster.util.tryI18n(i18n, 'disabled')
+					: monster.util.tryI18n(i18n, 'no');
+
+			return value ? i18nTrue : i18nFalse;
+		},
+
 		/* CLOSE WIZARD */
 
 		/**
@@ -1976,6 +2464,32 @@ define(function(require) {
 			});
 		},
 
+		/**
+		 * Retrieves the whitelabel logo, if there's any
+		 * @param  {Object} args
+		 * @param  {Object} [args.data]
+		 * @param  {Function} [args.success]
+		 * @param  {Function} [args.error]
+		 */
+		wizardRequestWhitelabelLogo: function(args) {
+			var self = this;
+
+			self.callApi({
+				resource: 'whitelabel.getLogo',
+				data: _.merge({
+					accountId: self.accountId,
+					dataType: '*',
+					generateError: false
+				}, args.data),
+				success: function(data, status) {
+					_.has(args, 'success') && args.success(data.data);
+				},
+				error: function(parsedError) {
+					_.has(args, 'error') && args.error(parsedError);
+				}
+			});
+		},
+
 		/* UTILITY FUNCTIONS */
 
 		/**
@@ -2001,6 +2515,30 @@ define(function(require) {
 					.appendTo($listContainer)
 					.slideDown(animationDuration);
 			}
+		},
+
+		/**
+		 * Convert image to dataURL
+		 * Function copied from monster-ui-invoices/app.js
+		 * @param  {String}   src  Image URL
+		 * @param  {Function} callback
+		 */
+		wizardConvertImageToDataUrl: function(src, callback) {
+			var img = new Image();
+			img.crossOrigin = 'anonymous';
+			img.src = src;
+			img.onload = function() {
+				var canvas = document.createElement('CANVAS'),
+					ctx = canvas.getContext('2d'),
+					dataURL;
+				canvas.height = this.naturalHeight;
+				canvas.width = this.naturalWidth;
+				ctx.webkitImageSmoothingEnabled = false;
+				ctx.imageSmoothingEnabled = false;
+				ctx.drawImage(this, 0, 0);
+				dataURL = canvas.toDataURL();
+				callback(dataURL);
+			};
 		},
 
 		/**
