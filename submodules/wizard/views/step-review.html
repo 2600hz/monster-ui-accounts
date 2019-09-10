@@ -73,8 +73,8 @@
 
 <div id="step_review" class="wizard-step">
 	<div class="step-title">
-		{{i18n.accountsApp.wizard.steps.review.title}}
-	</div>
+			{{i18n.accountsApp.wizard.steps.review.title}}
+		</div>
 
 	<!-- GENERAL SETTINGS -->
 	{{> sectionTitle stepName="generalSettings"}}
@@ -157,6 +157,11 @@
 	<div class="section-body">
 		<div class="flex-row-container">
 			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-1 column-title">
+						{{i18n.accountsApp.wizard.steps.usageAndCallRestrictions.trunkLimits.title}}
+					</div>
+				</div>
 				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.inbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="inbound"}}
 				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.outbound" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="outbound"}}
 				{{> horizontalFieldPartial fieldPath="usageAndCallRestrictions.trunkLimits.twoway" i18nSectionName="usageAndCallRestrictions.trunkLimits" i18nFieldName="twoway"}}
@@ -189,6 +194,11 @@
 	<div class="section-body">
 		<div class="flex-row-container">
 			<div class="flex-item field-group-column">
+				<div class="flex-row-container">
+					<div class="flex-item-1 column-title">
+						{{i18n.accountsApp.wizard.steps.creditBalanceAndFeatures.accountCredit.title}}
+					</div>
+				</div>
 				{{#> horizontalFieldPartial fieldPath="creditBalanceAndFeatures.accountCredit.initialBalance" i18nSectionName="creditBalanceAndFeatures.accountCredit" i18nFieldName="initialBalance" hasContent=true}}
 					{{formatPrice value 2}}
 				{{/horizontalFieldPartial}}
