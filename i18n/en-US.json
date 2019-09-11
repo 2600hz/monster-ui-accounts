@@ -412,7 +412,7 @@
 				},
 				"accountContacts": {
 					"label": "Account Contacts",
-					"description": "Note important contacts for this new account.",
+					"description": "Provide technical and billing contacts to this new account.",
 					"title": "Add important contact information pertaining to this account",
 					"salesRep": {
 						"title": "Account Sales Representative",
