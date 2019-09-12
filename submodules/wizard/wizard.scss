@@ -115,6 +115,18 @@ $color-highlight: #dbdbde;
 		font-size: 1rem;
 		font-weight: 600;
 		color: $woodsmoke;
+
+		.help-tip {
+			color: $midgray2;
+
+			&:hover {
+				color: $woodsmoke;
+			}
+
+			.iconography-medium {
+				margin-top: -0.25rem;
+			}
+		}
 	}
 
 	.flex-container {
