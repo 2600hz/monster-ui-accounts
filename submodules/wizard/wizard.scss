@@ -688,7 +688,11 @@ $color-highlight: #dbdbde;
 			}
 
 			.app-name {
+				flex: 1;
 				padding-bottom: 0;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
 			}
 		}
 	}
