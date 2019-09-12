@@ -66,10 +66,10 @@ $color-highlight: #dbdbde;
 	}
 
 	.monster-button {
-		background: linear-gradient(-180deg, $foreground-primary-color 0%, #F4F4F5 100%);
+		background: linear-gradient(-180deg, $foreground-primary-color 0%, $athens-gray 100%);
 
 		&:hover {
-			background: linear-gradient(-180deg, #F4F4F5 0%, $white-lilac 100%);
+			background: linear-gradient(-180deg, $athens-gray 0%, $white-lilac 100%);
 		}
 	}
 
@@ -102,6 +102,7 @@ $color-highlight: #dbdbde;
 	.step-title {
 		padding-bottom: 1.5rem;
 		font-size: 23px;
+		line-height: 1.875rem;
 		color: $woodsmoke;
 	}
 
@@ -335,22 +336,26 @@ $color-highlight: #dbdbde;
 			border-top: none;
 		}
 
-		&:hover .admin-user-remove {
-			opacity: 1;
-		}
-
 		&.remove {
 			opacity: 0;
 		}
 
+		.admin-user-correlative {
+			display: inline-block;
+			min-width: 1rem;
+		}
+
 		.admin-user-remove {
+			margin-left: 0.5rem;
 			color: $font-primary-color;
 			cursor: pointer;
-			opacity: 0;
-			transition: opacity 0.125s ease-in-out;
 
 			&:hover {
 				color: $danger-color;
+			}
+
+			.iconography-medium {
+				margin-top: -3px;
 			}
 		}
 

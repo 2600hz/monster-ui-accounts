@@ -147,7 +147,7 @@ define(function(require) {
 					},
 					// App Restrictions defaults
 					appRestrictions: {
-						accessLevel: 'full',
+						accessLevel: 'restricted',
 						allowedAppIds: []
 					}
 				},
@@ -270,7 +270,8 @@ define(function(require) {
 							'accountInfo.accountRealm': {
 								realm: true
 							}
-						}
+						},
+						autoScrollOnInvalid: true
 					});
 
 					return $template;
@@ -481,7 +482,8 @@ define(function(require) {
 							'billingContact.phoneNumber': {
 								phoneNumber: self.i18n.active().accountsApp.wizard.steps.general.errors.phoneNumber.invalid
 							}
-						}
+						},
+						autoScrollOnInvalid: true
 					});
 
 					return $template;
