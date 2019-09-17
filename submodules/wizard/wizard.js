@@ -271,6 +271,7 @@ define(function(require) {
 								realm: true
 							}
 						},
+						onfocusout: self.wizardValidateFormField,
 						autoScrollOnInvalid: true
 					});
 
@@ -483,6 +484,7 @@ define(function(require) {
 								phoneNumber: self.i18n.active().accountsApp.wizard.steps.general.errors.phoneNumber.invalid
 							}
 						},
+						onfocusout: self.wizardValidateFormField,
 						autoScrollOnInvalid: true
 					});
 
@@ -2349,6 +2351,14 @@ define(function(require) {
 		 */
 		wizardScrollToTop: function() {
 			window.scrollTo(0, 0);
+		},
+
+		/**
+		 * Validates a form input field
+		 * @param  {Element} element  Input element
+		 */
+		wizardValidateFormField: function(element) {
+			$(element).valid();
 		},
 
 		/* STORE FUNCTIONS */
