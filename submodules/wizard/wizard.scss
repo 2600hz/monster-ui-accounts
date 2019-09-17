@@ -464,7 +464,7 @@ $color-highlight: #dbdbde;
 					position: relative;
 					box-sizing: border-box;
 
-					a {
+					.feature-item-link {
 						display: block;
 						height: 2.5rem;
 						padding-left: 1rem;
@@ -483,8 +483,8 @@ $color-highlight: #dbdbde;
 
 					.feature-icon {
 						margin-left: 38px;
-						list-style: none;
 						margin-top: -3px;
+						color: $midgray2;
 					}
 
 					.monster-checkbox {
@@ -493,7 +493,7 @@ $color-highlight: #dbdbde;
 						line-height: 2.5rem;
 
 						i {
-							margin-top: 9px;
+							margin-top: 10px;
 						}
 
 						span {
@@ -528,8 +528,8 @@ $color-highlight: #dbdbde;
 					}
 				}
 
-				ul.features > li a {
-					margin-left: 38px;
+				ul.features > li .feature-item-link {
+					margin-left: 2.5rem;
 				}
 			}
 		}
