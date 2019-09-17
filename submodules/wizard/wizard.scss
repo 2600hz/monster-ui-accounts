@@ -115,6 +115,18 @@ $color-highlight: #dbdbde;
 		font-size: 1rem;
 		font-weight: 600;
 		color: $woodsmoke;
+
+		.help-tip {
+			color: $midgray2;
+
+			&:hover {
+				color: $woodsmoke;
+			}
+
+			.iconography-medium {
+				margin-top: -0.25rem;
+			}
+		}
 	}
 
 	.flex-container {
@@ -182,8 +194,9 @@ $color-highlight: #dbdbde;
 	.wizard-card {
 		flex: 1;
 		padding: 1rem;
+		border-radius: 2px;
 		background-color: $panel-background-color;
-		box-shadow: 0px 1px 4px 0px rgba(46, 46, 50, 0.24);
+		box-shadow: 0px 1px 4px 0px rgba($shark2, 0.24);
 		display: flex;
 		flex-direction: column;
 
@@ -206,6 +219,10 @@ $color-highlight: #dbdbde;
 				margin-bottom: 0;
 			}
 		}
+	}
+
+	.app-add .wizard-card {
+		box-shadow: none;
 	}
 
 	.step-body {
@@ -298,8 +315,8 @@ $color-highlight: #dbdbde;
 				display: block;
 				width: 100%;
 				height: 30px;
-				margin-top: 4px;
-				margin-bottom: 4px;
+				margin-top: 0.25rem;
+				margin-bottom: 0.25rem;
 			}
 		}
 	}
@@ -418,7 +435,7 @@ $color-highlight: #dbdbde;
 			}
 
 			.iconography-medium {
-				margin-right: 4px;
+				margin-right: 0.25rem;
 				margin-top: -3px;
 			}
 		}
@@ -447,7 +464,7 @@ $color-highlight: #dbdbde;
 					position: relative;
 					box-sizing: border-box;
 
-					a {
+					.feature-item-link {
 						display: block;
 						height: 2.5rem;
 						padding-left: 1rem;
@@ -466,8 +483,8 @@ $color-highlight: #dbdbde;
 
 					.feature-icon {
 						margin-left: 38px;
-						list-style: none;
 						margin-top: -3px;
+						color: $midgray2;
 					}
 
 					.monster-checkbox {
@@ -476,9 +493,7 @@ $color-highlight: #dbdbde;
 						line-height: 2.5rem;
 
 						i {
-							width: 1rem;
-							height: 1rem;
-							margin-top: 9px;
+							margin-top: 10px;
 						}
 
 						span {
@@ -513,8 +528,8 @@ $color-highlight: #dbdbde;
 					}
 				}
 
-				ul.features > li a {
-					margin-left: 38px;
+				ul.features > li .feature-item-link {
+					margin-left: 2.5rem;
 				}
 			}
 		}
@@ -543,7 +558,7 @@ $color-highlight: #dbdbde;
 					transform-origin: top left;
 					transition: all 0.4s linear 0s;
 
-					&:not(.app-add):not(.visible) {
+					&:not(.visible) {
 						position: absolute;
 
 						.wizard-card {
@@ -612,8 +627,8 @@ $color-highlight: #dbdbde;
 		}
 
 		.field-label-horizontal, .field-value-horizontal {
-			margin-top: -4px;
-			margin-bottom: 4px;
+			margin-top: -0.25rem;
+			margin-bottom: 0.25rem;
 			padding-bottom: 1rem;
 			line-height: 21px;
 		}
@@ -688,7 +703,11 @@ $color-highlight: #dbdbde;
 			}
 
 			.app-name {
+				flex: 1;
 				padding-bottom: 0;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
 			}
 		}
 	}

@@ -73,8 +73,8 @@
 
 <div id="step_review" class="wizard-step">
 	<div class="step-title">
-			{{i18n.accountsApp.wizard.steps.review.title}}
-		</div>
+		{{i18n.accountsApp.wizard.steps.review.title}}
+	</div>
 
 	<!-- GENERAL SETTINGS -->
 	{{> sectionTitle stepName="generalSettings"}}
@@ -230,28 +230,26 @@
 	{{> sectionTitle stepName="appRestrictions"}}
 	<div class="section-body">
 		<div class="flex-row-container">
-			<div class="flex-item field-group-column">
-				<div class="flex-row-container">
-					<div class="flex-item-1">
-						{{tryI18n i18n.accountsApp.wizard.steps.review.appRestrictions.accessLevel.types appRestrictions.accessLevel}}
-					</div>
-				</div>
-	{{#compare appRestrictions.accessLevel "!==" "full"}}
-		{{#each appRestrictions.apps}}
-			{{#ifInArray id ../appRestrictions.allowedAppIds}}
-				<div class="app-list flex-container">
-					<div class="flex-item-1 flex-row-container app-item">
-						<div class="flex-item app-icon{{#unless icon}} app-icon-empty{{/unless}} {{extraCssClass}}"{{#if icon}} style="background-image:url({{icon}})"{{/if}}>
-						</div>
-						<div class="flex-item app-name">
-							{{label}}
-						</div>
-					</div>
-				</div>
-			{{/ifInArray}}
-		{{/each}}
-	{{/compare}}
+			<div class="flex-item-1">
+				{{tryI18n i18n.accountsApp.wizard.steps.review.appRestrictions.accessLevel.types appRestrictions.accessLevel}}
 			</div>
+		</div>
+		<div class="flex-row-container">
+{{#compare appRestrictions.accessLevel "!==" "full"}}
+	{{#each appRestrictions.apps}}
+		{{#ifInArray id ../appRestrictions.allowedAppIds}}
+			<div class="app-list flex-item-4 flex-container">
+				<div class="flex-item-1 flex-row-container app-item">
+					<div class="flex-item app-icon{{#unless icon}} app-icon-empty{{/unless}} {{extraCssClass}}"{{#if icon}} style="background-image:url({{icon}})"{{/if}}>
+					</div>
+					<div class="flex-item app-name">
+						{{label}}
+					</div>
+				</div>
+			</div>
+		{{/ifInArray}}
+	{{/each}}
+{{/compare}}
 		</div>
 	</div>
 </div>

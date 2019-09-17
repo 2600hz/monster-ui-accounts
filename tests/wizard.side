@@ -566,13 +566,6 @@
       "targets": [],
       "value": ""
     }, {
-      "id": "0f54936d-4cba-47ce-96f3-907db40ffa8f",
-      "comment": "",
-      "command": "runScript",
-      "target": "window.scrollTo(0,0)",
-      "targets": [],
-      "value": ""
-    }, {
       "id": "a0632a00-ab6c-460f-900a-5063e1013236",
       "comment": "",
       "command": "click",

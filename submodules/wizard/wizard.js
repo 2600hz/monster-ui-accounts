@@ -1097,6 +1097,7 @@ define(function(require) {
 
 					self.wizardAppRestrictionsBindEvents({
 						allowedAppIds: appRestrictionsData.allowedAppIds,
+						appCount: appList.length,
 						template: $template
 					});
 
@@ -1150,15 +1151,18 @@ define(function(require) {
 		 * Bind App Restrictions step events
 		 * @param  {Object} args
 		 * @param  {jQuery} args.allowedAppIds  Allowed app IDs
+		 * @param  {Number} args.appCount  Total count of available apps
 		 * @param  {jQuery} args.template  Step template
 		 */
 		wizardAppRestrictionsBindEvents: function(args) {
 			var self = this,
 				slideAnimationDuration = self.appFlags.wizard.animationTimes.allowedApps,
+				appCount = args.appCount,
 				allowedAppIds = _.clone(args.allowedAppIds),	// Create a copy of the data, in order to not to alter the original one
 				$template = args.template,
 				$allowedAppsSection = $template.find('#section_allowed_apps'),
-				$appList = $allowedAppsSection.find('.app-list');
+				$appList = $allowedAppsSection.find('.app-list'),
+				$appAdd = $allowedAppsSection.find('.app-add');
 
 			$template.find('#access_level .radio-button').on('change', function() {
 				if (this.value === 'full') {
@@ -1178,7 +1182,7 @@ define(function(require) {
 				}
 			});
 
-			$template.find('.app-add .wizard-card').on('click', function() {
+			$appAdd.find('.wizard-card').on('click', function() {
 				monster.pub('common.appSelector.renderPopup', {
 					scope: 'account',
 					excludedApps: allowedAppIds,
@@ -1192,6 +1196,10 @@ define(function(require) {
 							});
 
 							$selectedAppCards.find('.app-selected').prop('checked', true);
+
+							if (allowedAppIds.length === appCount) {
+								$appAdd.removeClass('visible');
+							}
 
 							self.wizardToggleAppCard({
 								action: 'show',
@@ -1213,6 +1221,8 @@ define(function(require) {
 				_.pull(allowedAppIds, $appItem.data('id'));
 
 				$appSelectedInput.prop('checked', false);
+
+				$appAdd.addClass('visible');
 
 				self.wizardToggleAppCard({
 					action: 'hide',
