@@ -445,8 +445,8 @@ define(function(require) {
 							name: 'step-accountContacts',
 							data: {
 								data: formattedData,
-								users: userList
-								//showSalesRepSection: true
+								users: userList,
+								showSalesRepSection: true
 							},
 							submodule: 'wizard'
 						})),
