@@ -608,16 +608,6 @@
 					}
 				}
 			},
-			"document": {
-				"header": {
-					"page": "Page:",
-					"pageOf": "{{current}} of {{total}}",
-					"date": "Issue Date:"
-				},
-				"sections": {
-					"title": "{{correlative}}. {{title}}"
-				}
-			},
 			"title": "Creating a New Account"
 		}
 	}
