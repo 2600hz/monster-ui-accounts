@@ -1892,6 +1892,7 @@ define(function(require) {
 						data: {
 							accountId: accountId,
 							data: _.merge(limits, newLimits),
+							acceptCharges: true,
 							generateError: false
 						},
 						success: function(data) {
@@ -1914,6 +1915,8 @@ define(function(require) {
 		 * @param  {String} args.resource  Resource name
 		 * @param  {String} args.accountId  Account ID
 		 * @param  {Object} args.data  New user data
+		 * @param  {Boolean} [args.acceptCharges=true]  Whether or not to accept charges without
+		 *                                              asking the user
 		 * @param  {Boolean} [args.generateError=false]  Whether or not show error dialog
 		 * @param  {Function} args.callback  Async.js callback
 		 */
@@ -1925,6 +1928,7 @@ define(function(require) {
 				data: {
 					accountId: args.accountId,
 					data: args.data,
+					acceptCharges: _.get(args, 'acceptCharges', true),
 					generateError: _.get(args, 'generateError', false)
 				},
 				success: function(data) {
