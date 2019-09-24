@@ -571,11 +571,6 @@
 							"noServicePlan": "No service plan selected"
 						}
 					},
-					"usageBilling": {
-						"labels": {
-							"allowPerMinuteCalls": "Allow per-minute calls that go over the above limit, and bill the per-minute cost of the call"
-						}
-					},
 					"appRestrictions": {
 						"accessLevel": {
 							"types": {
