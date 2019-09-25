@@ -1928,6 +1928,7 @@ define(function(require) {
 		 * Request the list of service plans for the current account
 		 * @param  {Object} args
 		 * @param  {String} args.resource
+		 * @param  {Boolean} [args.generateError=true]  Whether or not show error dialog
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
@@ -1940,14 +1941,13 @@ define(function(require) {
 					accountId: self.accountId,
 					filters: {
 						paginate: false
-					}
+					},
+					generateError: _.get(args, 'generateError', true)
 				},
 				success: function(data) {
 					args.success(data.data);
 				},
-				error: function(parsedError) {
-					_.has(args, 'error') && args.error(parsedError);
-				}
+				error: args.error
 			});
 		},
 
@@ -2032,6 +2032,8 @@ define(function(require) {
 		 * @param  {String} [args.resource]  Resource name to request the data from the API
 		 * @param  {Function} [args.requestData]  Function to be used to request the data, if a
 		 *                                        resource name is not provided
+		 * @param  {Boolean} [args.generateError=true]  Whether or not show error dialog, if there
+		 *                                              is an error while requesting the data
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
@@ -2051,11 +2053,15 @@ define(function(require) {
 			}
 
 			if (_.has(args, 'resource')) {
-				self.wizardRequestResourceList({
-					resource: args.resource,
-					success: successCallback,
-					error: args.error
-				});
+				var requestResourceArgs = _
+					.chain(args)
+					.pick('resource', 'error', 'generateError')
+					.merge({
+						success: successCallback
+					})
+					.value();
+
+				self.wizardRequestResourceList(requestResourceArgs);
 			} else {
 				requestData({
 					success: successCallback,
@@ -2111,12 +2117,21 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetServicePlanList: function(args) {
-			var self = this;
+			var self = this,
+				errorCallback = function(data, error, globalHandler) {
+					if (error.status !== 404) {
+						globalHandler(data, { generateError: true });
+					}
+					_.has(args, 'error') && args.error(data);
+				},
+				getDataListArgs = _.merge({}, args, {
+					storeKey: 'servicePlans',
+					resource: 'servicePlan.list',
+					generateError: false,
+					error: errorCallback
+				});
 
-			self.wizardGetDataList(_.merge({
-				storeKey: 'servicePlans',
-				resource: 'servicePlan.list'
-			}, args));
+			self.wizardGetDataList(getDataListArgs);
 		},
 
 		/**
