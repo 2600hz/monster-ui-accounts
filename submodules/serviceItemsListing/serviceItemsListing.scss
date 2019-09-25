@@ -7,22 +7,21 @@
 		height: auto;
 	}
 
-	th {
-		font-size: 0.75rem;
-		line-height: 0.75rem;
+	th, tbody td, tbody td:first-child {
+		padding: 0.75rem 1rem;
 	}
 
-	th, tbody td, tbody td:first-child {
-		padding: 11px 1rem;
-		line-height: 16px;
+	tbody td, tbody td:first-child {
+		line-height: 14px;
 	}
 
 	th {
 		width: 20%;
 		border-bottom: 1px solid $french-gray2;
-		text-transform: uppercase;
+		line-height: 0.75rem;
+		font-size: 0.75rem;
+		font-weight: normal;
 		text-align: left;
-		letter-spacing: 0.4px;
 		color: $midgray2;
 
 		&:first-child {
@@ -43,9 +42,8 @@
 			border-bottom-color: $french-gray2;
 
 			// To override .monster-table specific style
-			&:first-child {
+			&:first-child:not(.category-cell) {
 				width: 40%;
-				padding-left: 2rem;
 				border-left: none;
 			}
 
@@ -65,7 +63,8 @@
 	}
 
 	.iconography {
+		display: inline-block;
+		margin: -0.125rem 0 -0.125rem 0.75rem;
 		color: $midgray2;
-		margin-left: 0.75rem;
 	}
 }
