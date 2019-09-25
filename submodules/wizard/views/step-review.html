@@ -157,17 +157,11 @@
 	{{> sectionTitle stepName="servicePlan"}}
 	<div class="section-body">
 	{{#if servicePlan.selectedPlans}}
-		{{#> horizontalFieldPartial fieldPath="servicePlan.selectedPlans" i18nSectionName="review.servicePlan" i18nFieldName="selectedServicePlans" hasContent=true}}
-			<div class="flex-row-container">
-				<div class="flex-item-1">
-					{{value}}
-				</div>
+		{{> horizontalFieldPartial fieldPath="servicePlan.selectedPlans" i18nSectionName="review.servicePlan" i18nFieldName="selectedServicePlans"}}
+		<div class="flex-row-container print-block">
+			<div id="service_plan_aggregate" class="flex-item-4-3">
 			</div>
-			<div class="flex-row-container">
-				<div id="service_plan_aggregate" class="flex-item-1">
-				</div>
-			</div>
-		{{/horizontalFieldPartial}}
+		</div>
 	{{else}}
 		<div class="flex-row-container">
 			<div class="flex-item-1 field-label-horizontal">

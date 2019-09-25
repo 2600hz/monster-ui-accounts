@@ -1,7 +1,7 @@
 @import "../../../../css/partials/base";
 
-$media-size-small: "all and (max-width : 736px)";
-$media-size-medium: "all and (max-width : 980px)";
+$media-size-small: "screen and (max-width : 736px)";
+$media-size-medium: "screen and (max-width : 980px)";
 $color-highlight: #dbdbde;
 
 #navigation_wizard_wrapper .wizard-step {
@@ -760,6 +760,29 @@ $color-highlight: #dbdbde;
 				overflow: hidden;
 				white-space: nowrap;
 				text-overflow: ellipsis;
+			}
+		}
+
+		#service_plan_aggregate {
+			margin-left: auto;
+		}
+
+		@media print {
+			padding: 0;
+
+			.edit-step, .step-action-button {
+				display: none;
+			}
+
+			.section-title {
+				page-break-after: avoid;
+			}
+
+			// Some elements that use display:flex might be truncated on page breaks.
+			// This class sets them to display:block to avoid that behavior on print
+			// See https://stackoverflow.com/a/39228298/806975
+			.print-block {
+				display: block;
 			}
 		}
 	}
