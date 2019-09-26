@@ -4,7 +4,12 @@ $media-size-small: "screen and (max-width : 736px)";
 $media-size-medium: "screen and (max-width : 980px)";
 $color-highlight: #dbdbde;
 
+// Some lengths are specified in em, to be able to resize it for printing by only changing the
+// font size of the step's container
+// Beware that the em size for an element is proportional to its font-size, or its parent font size
+// which means that if the font-size:8px, then a margin:0.5em will be equivalent to 4px
 #navigation_wizard_wrapper .wizard-step {
+	font-size: 1rem;	// Set base font size for container
 	padding: 2rem 1.5rem;
 
 	.iconography-small {
@@ -100,9 +105,9 @@ $color-highlight: #dbdbde;
 	}
 
 	.step-title {
-		padding-bottom: 1.5rem;
-		font-size: 23px;
-		line-height: 1.875rem;
+		padding-bottom: 1.0434em;	// 24px
+		font-size: 1.4375em;		// 23px
+		line-height: 1em;			// 23px
 		color: $woodsmoke;
 	}
 
@@ -116,12 +121,12 @@ $color-highlight: #dbdbde;
 	}
 
 	.section-title {
-		margin-top: 1rem;
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.75rem;
+		margin-top: 1em;		// 16px
+		margin-bottom: 1.5em;	// 24px
+		padding-bottom: 0.75em;	// 12px
 		border-bottom: solid 1px $french-gray2;
-		line-height: 1rem;
-		font-size: 1rem;
+		line-height: 1em;		// 16px
+		font-size: 1em;			// 16px
 		font-weight: 600;
 		color: $woodsmoke;
 
@@ -133,7 +138,7 @@ $color-highlight: #dbdbde;
 			}
 
 			.iconography-medium {
-				margin-top: -0.25rem;
+				margin-top: -0.25em;	// -4px
 			}
 		}
 	}
@@ -619,37 +624,42 @@ $color-highlight: #dbdbde;
 			font-weight: 600;
 
 			.iconography-medium {
-				margin-right: 0.5rem;
+				margin-right: 0.5em;	// 8px
+				width: 1em;				// 16px
+				height: 1em;			// 16px
 			}
 		}
 
 		.field-label-horizontal, .field-value-horizontal {
-			margin-top: -0.25rem;
-			margin-bottom: 0.25rem;
-			padding-bottom: 1rem;
-			line-height: 21px;
+			font-size: 0.875em;			// 14px
+			margin-top: -0.2857em;		// -4px
+			margin-bottom: 0.2857em;	// 4px
+			padding-bottom: 1.1429em;	// 16px
+			line-height: 1.4286em;		// 20px
 		}
 
 		.field-label-horizontal {
 			color: $woodsmoke;
-			letter-spacing: 0px;
+			letter-spacing: 0;
 		}
 
-		.field-value-horizontal .flex-row-container:last-child {
-			margin-bottom: -1.5rem;
-		}
+		.field-value-horizontal {
+			.flex-row-container:last-child {
+				margin-bottom: -1.7143em;	// -24px
+			}
 
-		.field-label-vertical {
-			margin-bottom: 0.5rem;
-			line-height: 0.75rem;
-			font-size: 0.75rem;
-			color: $midgray2;
-		}
+			.field-label-vertical {
+				font-size: 0.75em;			// 12px
+				margin-bottom: 0.6667em;	// 8px
+				line-height: 1em;			// 12px
+				color: $midgray2;
+			}
 
-		.field-value-vertical {
-			line-height: 14px;
-			overflow: hidden;
-			text-overflow: ellipsis;
+			.field-value-vertical {
+				line-height: 1em;	// 14px
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
 		}
 
 		.service-items-listing.monster-table tbody td:not(.category-cell) {
@@ -661,17 +671,18 @@ $color-highlight: #dbdbde;
 
 			.column-title {
 				color: $woodsmoke;
-				font-size: 14px;
+				font-size: 0.875em;		// 14px
 				font-weight: 600;
-				line-height: 14px;
-				padding-bottom: 1.5rem;
+				line-height: 1em;		// 14px
+				padding-bottom: 1.7143em;	// 24px
 			}
 
 			.field-label-horizontal {
 				width: 57.1429%;
 
 				.iconography-text-right {
-					margin-left: 0.75rem;
+					// font-size: 14px;
+					margin-left: 0.8571em;	// 12px
 				}
 			}
 
@@ -748,7 +759,7 @@ $color-highlight: #dbdbde;
 		}
 
 		.app-list .app-item {
-			padding-bottom: 1rem;
+			padding-bottom: 1em;	// 14px
 
 			.app-icon {
 				padding: 0;
@@ -769,6 +780,7 @@ $color-highlight: #dbdbde;
 
 		@media print {
 			padding: 0;
+			font-size: 8pt;
 
 			.edit-step, .step-action-button {
 				display: none;
