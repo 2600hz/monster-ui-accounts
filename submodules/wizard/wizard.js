@@ -1415,6 +1415,15 @@ define(function(require) {
 							stepId: stepId
 						});
 					});
+
+			$template
+				.find('.password-toggle')
+					.on('change', function(e) {
+						$(this)
+							.closest('.password-field')
+								.find('.password-value')
+									.toggleClass('password-hidden');
+					});
 		},
 
 		/* SUBMIT */

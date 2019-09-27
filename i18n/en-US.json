@@ -589,7 +589,10 @@
 							"disabled": "Disabled",
 							"enabled": "Enabled",
 							"fullName": "Name",
+							"hide": "Hide",
 							"no": "No",
+							"passwordMask": "**********",
+							"show": "Show",
 							"yes": "Yes"
 						}
 					}
