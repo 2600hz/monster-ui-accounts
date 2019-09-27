@@ -799,8 +799,8 @@ $color-highlight: #dbdbde;
 				display: none;
 			}
 
-			.section-title {
-				page-break-after: avoid;
+			.print-nobreak {
+				page-break-inside: avoid;
 			}
 
 			// Some elements that use display:flex might be truncated on page breaks.
