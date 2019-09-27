@@ -1,8 +1,20 @@
 @import "../../../../css/partials/base";
 
-$media-size-small: "screen and (max-width : 736px)";
-$media-size-medium: "screen and (max-width : 980px)";
+$media-size-small: "(max-width : 736px)";
+$media-size-medium: "(max-width : 980px)";
 $color-highlight: #dbdbde;
+
+@mixin all-small {
+	@media all and (#{$media-size-small})  {
+		@content;
+	}
+}
+
+@mixin all-medium {
+	@media all and (#{$media-size-medium})  {
+		@content;
+	}
+}
 
 #navigation_wizard_wrapper .wizard-step {
 	padding: 2rem 1.5rem;
@@ -185,7 +197,7 @@ $color-highlight: #dbdbde;
 			width: 75%;
 		}
 
-		@media #{$media-size-medium} {
+		@include all-medium {
 			.flex-item-2 {
 				width: 100%;
 			}
@@ -203,7 +215,7 @@ $color-highlight: #dbdbde;
 			}
 		}
 
-		@media #{$media-size-small} {
+		@include all-small {
 			.flex-item-3 {
 				width: 100%;
 			}
@@ -509,7 +521,7 @@ $color-highlight: #dbdbde;
 						z-index: 10;
 					}
 
-					@media #{$media-size-medium} {
+					@include all-medium {
 						.monster-panel-text {
 							display: none;
 							left: 0;
@@ -518,7 +530,7 @@ $color-highlight: #dbdbde;
 						}
 					}
 
-					@media #{$media-size-small} {
+					@include all-small {
 						.monster-panel-text {
 							width: 100%;
 						}
@@ -537,7 +549,7 @@ $color-highlight: #dbdbde;
 			margin-left: 20%;
 			width: auto;
 
-			@media #{$media-size-medium} {
+			@include all-medium {
 				margin-left: 0;
 			}
 		}
@@ -681,14 +693,27 @@ $color-highlight: #dbdbde;
 			}
 
 
-			@media #{$media-size-medium} {
-				.field-label-horizontal, .field-value-horizontal {
-					width: 100%;
+			@include all-medium() {
+				.field-label-horizontal {
+					width: 66.67%;
+				}
+				.field-value-horizontal {
+					width: 33.33%;
+
+					.iconography-text {
+						display: none;
+					}
 				}
 			}
 		}
 
-		@media #{$media-size-small} {
+		@include all-medium {
+			.field-value-horizontal:not(.field-value-multiple) {
+				width: 50%;
+			}
+		}
+
+		@include all-small {
 			.field-group-column {
 				width: 100%;
 			}

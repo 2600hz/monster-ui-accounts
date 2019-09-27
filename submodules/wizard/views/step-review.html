@@ -16,7 +16,7 @@
 			{{tryI18n (lookupPath (lookupPath @root.i18n.accountsApp.wizard.steps i18nSectionName) "labels") i18nFieldName}}
 		{{/if}}
 		</div>
-		<div class="flex-item-4-3 field-value-horizontal">
+		<div class="flex-item-4-3 field-value-horizontal{{#if hasMultipleFields}} field-value-multiple{{/if}}">
 		{{#if hasContent}}	{{!-- Necessary to know if there is a @partial-block to render, and to avoid endless recursion --}}
 			{{> @partial-block value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
 		{{else}}
@@ -95,7 +95,7 @@
 		{{/horizontalFieldPartial}}
 		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.timezone" i18nSectionName="generalSettings.accountInfo" i18nFieldName="timezone"}}
 		{{> horizontalFieldPartial fieldPath="generalSettings.accountInfo.language" i18nSectionName="generalSettings.accountInfo" i18nFieldName="language"}}
-		{{#> horizontalFieldPartial label=(replaceVar i18n.accountsApp.wizard.steps.review.generalSettings.formats.accountAdminsCount generalSettings.accountAdmins.length) hasContent=true}}
+		{{#> horizontalFieldPartial label=(replaceVar i18n.accountsApp.wizard.steps.review.generalSettings.formats.accountAdminsCount generalSettings.accountAdmins.length) hasMultipleFields=true hasContent=true}}
 			{{#each generalSettings.accountAdmins}}
 				<div class="flex-row-container">
 					{{> verticalFieldPartial fieldPath="fullName" i18nSectionName="review.general" i18nFieldName="fullName"}}
@@ -136,14 +136,14 @@
 		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.representative" label=i18n.accountsApp.wizard.steps.accountContacts.salesRep.title}}
 		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.contractEndDate" i18nSectionName="accountContacts.salesRep" i18nFieldName="contractEndDate"}}
 	{{/if}}
-		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.technicalContact.title hasContent=true}}
+		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.technicalContact.title hasMultipleFields=true hasContent=true}}
 			<div class="flex-row-container">
 				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.fullName" i18nSectionName="review.general" i18nFieldName="fullName" hasContent=false}}
 				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.email" i18nSectionName="general" i18nFieldName="email" hasContent=false}}
 				{{> verticalFieldPartial fieldPath="accountContacts.technicalContact.phoneNumber.userFormat" i18nSectionName="general" i18nFieldName="phoneNumber" hasContent=false}}
 			</div>
 		{{/horizontalFieldPartial}}
-		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.billingContact.title hasContent=true}}
+		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.billingContact.title hasMultipleFields=true hasContent=true}}
 			<div class="flex-row-container">
 				{{> verticalFieldPartial fieldPath="accountContacts.billingContact.fullName" i18nSectionName="review.general" i18nFieldName="fullName" hasContent=false}}
 				{{> verticalFieldPartial fieldPath="accountContacts.billingContact.email" i18nSectionName="general" i18nFieldName="email" hasContent=false}}
