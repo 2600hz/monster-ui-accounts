@@ -131,6 +131,16 @@ $color-highlight: #dbdbde;
 
 	.flex-container {
 		display: flex;
+
+		.flex-initial {
+			display: block;
+			flex: 0 0 initial;
+		}
+
+		.flex-fit {
+			display: block;
+			flex: 1;
+		}
 	}
 
 	.flex-row-container {
@@ -651,6 +661,8 @@ $color-highlight: #dbdbde;
 
 		.field-value-vertical {
 			line-height: 14px;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.service-items-listing.monster-table tbody td:not(.category-cell) {
@@ -692,6 +704,59 @@ $color-highlight: #dbdbde;
 		@media #{$media-size-small} {
 			.field-group-column {
 				width: 100%;
+			}
+		}
+
+		.password-field {
+			display: flex;
+			flex-wrap: wrap;
+
+			.password-value {
+				flex: 0 0 auto;
+				min-width: 50%;
+				max-width: 100%;
+				height: 0.875rem;
+				margin-right: 1rem;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				.password-mask {
+					display: none;
+					font-size: 1rem;
+				}
+
+				&.password-hidden {
+					.password-text {
+						display: none;
+					}
+
+					.password-mask {
+						display: inline;
+					}
+				}
+			}
+
+			.password-toggle-label {
+				flex: 0 0 initial;
+				line-height: 0.875rem;
+				font-size: 0.75rem;
+			}
+
+			.password-toggle {
+				display: none;
+
+				&:checked {
+					& ~ .password-hide {
+						display: inline;
+					}
+					& ~ .password-show {
+						display: none;
+					}
+				}
+			}
+
+			.password-hide {
+				display: none;
 			}
 		}
 

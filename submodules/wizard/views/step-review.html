@@ -95,7 +95,27 @@
 				<div class="flex-row-container">
 					{{> verticalFieldPartial fieldPath="fullName" i18nSectionName="review.general" i18nFieldName="fullName"}}
 					{{> verticalFieldPartial fieldPath="email" i18nSectionName="general" i18nFieldName="email"}}
-					{{> verticalFieldPartial fieldPath="password" i18nSectionName="generalSettings.accountAdmins" i18nFieldName="password"}}
+					{{#> verticalFieldPartial fieldPath="password" i18nSectionName="generalSettings.accountAdmins" i18nFieldName="password"  hasContent=true}}
+						<div class="password-field">
+							<div class="password-value password-hidden">
+								<span class="password-text">
+									{{value}}
+								</span>
+								<span class="password-mask">
+									{{@root.i18n.accountsApp.wizard.steps.review.general.labels.passwordMask}}
+								</span>
+							</div>
+							<label class="password-toggle-label">
+								<input type="checkbox" class="password-toggle" data-index="{{@index}}" />
+								<span class="password-show">
+									{{@root.i18n.accountsApp.wizard.steps.review.general.labels.show}}
+								</span>
+								<span class="password-hide">
+									{{@root.i18n.accountsApp.wizard.steps.review.general.labels.hide}}
+								</span>
+							</label>
+						</div>
+					{{/verticalFieldPartial}}
 					{{#> verticalFieldPartial fieldPath="sendMail" i18nSectionName="review.generalSettings" i18nFieldName="sendMail" hasContent=true}}
 						{{> booleanLabel mode="YesNo"}}
 					{{/verticalFieldPartial}}
