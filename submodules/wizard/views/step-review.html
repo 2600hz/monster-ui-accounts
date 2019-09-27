@@ -60,7 +60,7 @@
 	{{else}}
 		<div class="text-danger">
 			{{telicon "x--circle" class="iconography-medium"}}
-			<span>
+			<span class="iconography-text">
 			{{#compare mode "===" "Status"}}
 				{{tryI18n @root.i18n.accountsApp.wizard.steps.review.general.labels "disabled"}}
 			{{else}}
@@ -169,6 +169,7 @@
 			</div>
 		</div>
 	{{/if}}
+	</div>
 {{/if}}
 
 	<!-- USAGE + CALL RESTRICTIONS -->
