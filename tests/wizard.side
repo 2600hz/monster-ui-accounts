@@ -548,8 +548,12 @@
       "id": "1d11e88a-df09-4696-ba2a-8354a3d89723",
       "comment": "",
       "command": "click",
-      "target": "css=.flex-item-3 > .monster-switch > span > span:nth-child(2)",
-      "targets": [],
+      "target": "css=.monster-checkbox > i",
+      "targets": [
+        ["css=.monster-checkbox > i", "css:finder"],
+        ["xpath=//form[@id='form_usage_and_call_restrictions']/div/div[2]/div[4]/label/i", "xpath:idRelative"],
+        ["xpath=//label/i", "xpath:position"]
+      ],
       "value": ""
     }, {
       "id": "8d75ab6c-e5ed-4128-9a0a-7b622679b532",

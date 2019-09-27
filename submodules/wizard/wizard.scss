@@ -271,28 +271,6 @@ $color-highlight: #dbdbde;
 			}
 		}
 
-		.field-label-after {
-			display: flex;
-
-			.monster-switch {
-				flex: 0 0 initial;
-			}
-
-			.monster-switch-label {
-				flex: 1;
-				display: block;
-				margin-left: 1rem;
-				line-height: 26px;
-
-				label {
-					display: inline-block;
-					margin-bottom: 0;
-					vertical-align: middle;
-					line-height: 14px;
-				}
-			}
-		}
-
 		.input-append.input-block-level {
 			display: flex;
 
