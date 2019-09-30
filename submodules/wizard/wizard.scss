@@ -4,14 +4,14 @@ $media-size-small: "(max-width : 736px)";
 $media-size-medium: "(max-width : 980px)";
 $color-highlight: #dbdbde;
 
-@mixin all-small {
+@mixin media-small {
 	@media all and (#{$media-size-small})  {
 		@content;
 	}
 }
 
-@mixin all-medium {
-	@media all and (#{$media-size-medium})  {
+@mixin media-medium-or-print {
+	@media all and (#{$media-size-medium}), print  {
 		@content;
 	}
 }
@@ -197,7 +197,7 @@ $color-highlight: #dbdbde;
 			width: 75%;
 		}
 
-		@include all-medium {
+		@include media-medium-or-print {
 			.flex-item-2 {
 				width: 100%;
 			}
@@ -215,7 +215,7 @@ $color-highlight: #dbdbde;
 			}
 		}
 
-		@include all-small {
+		@include media-small {
 			.flex-item-3 {
 				width: 100%;
 			}
@@ -521,7 +521,7 @@ $color-highlight: #dbdbde;
 						z-index: 10;
 					}
 
-					@include all-medium {
+					@include media-medium-or-print {
 						.monster-panel-text {
 							display: none;
 							left: 0;
@@ -530,7 +530,7 @@ $color-highlight: #dbdbde;
 						}
 					}
 
-					@include all-small {
+					@include media-small {
 						.monster-panel-text {
 							width: 100%;
 						}
@@ -549,7 +549,7 @@ $color-highlight: #dbdbde;
 			margin-left: 20%;
 			width: auto;
 
-			@include all-medium {
+			@include media-medium-or-print {
 				margin-left: 0;
 			}
 		}
@@ -693,7 +693,7 @@ $color-highlight: #dbdbde;
 			}
 
 
-			@include all-medium() {
+			@include media-medium-or-print() {
 				.field-label-horizontal {
 					width: 66.67%;
 				}
@@ -707,13 +707,13 @@ $color-highlight: #dbdbde;
 			}
 		}
 
-		@include all-medium {
+		@include media-medium-or-print {
 			.field-value-horizontal:not(.field-value-multiple) {
 				width: 50%;
 			}
 		}
 
-		@include all-small {
+		@include media-small {
 			.field-group-column {
 				width: 100%;
 			}
