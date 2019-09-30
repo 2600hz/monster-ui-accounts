@@ -18,7 +18,7 @@
 		</div>
 		<div class="flex-item-4-3 field-value-horizontal{{#if hasMultipleFields}} field-value-multiple{{/if}}">
 		{{#if hasContent}}	{{!-- Necessary to know if there is a @partial-block to render, and to avoid endless recursion --}}
-			{{> @partial-block value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
+			{{> @partial-block label=null value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
 		{{else}}
 			{{lookupPath this (coalesce fieldPath i18nFieldName)}}
 		{{/if}}
