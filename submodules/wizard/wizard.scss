@@ -800,12 +800,16 @@ $color-highlight: #dbdbde;
 		@media print {
 			padding: 0;
 
-			.edit-step, .step-action-button {
+			.edit-step,
+			.step-action-button,
+			.password-toggle-label,
+			.password-text,
+			.app-list .app-item .app-icon {
 				display: none;
 			}
 
-			.app-list .app-item .app-icon {
-				display: none;
+			.password-field .password-value .password-mask {
+				display: inline;
 			}
 
 			.print-nobreak {
