@@ -663,6 +663,7 @@ $color-highlight: #dbdbde;
 		}
 
 		.field-value-vertical {
+			min-height: 1rem;
 			line-height: 14px;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -800,6 +801,10 @@ $color-highlight: #dbdbde;
 			padding: 0;
 
 			.edit-step, .step-action-button {
+				display: none;
+			}
+
+			.app-list .app-item .app-icon {
 				display: none;
 			}
 
