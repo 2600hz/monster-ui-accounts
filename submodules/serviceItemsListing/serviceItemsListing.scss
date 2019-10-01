@@ -20,8 +20,9 @@
 		border-bottom: 1px solid $french-gray2;
 		line-height: 0.75rem;
 		font-size: 0.75rem;
-		font-weight: normal;
+		font-weight: 600;
 		text-align: left;
+		text-transform: uppercase;
 		color: $midgray2;
 
 		&:first-child {
@@ -44,6 +45,7 @@
 			// To override .monster-table specific style
 			&:first-child:not(.category-cell) {
 				width: 40%;
+				padding-left: 2rem;
 				border-left: none;
 			}
 

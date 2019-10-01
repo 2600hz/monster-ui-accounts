@@ -448,6 +448,10 @@ $color-highlight: #dbdbde;
 				margin-top: -3px;
 			}
 		}
+
+		#service_plan_aggregate {
+			margin-top: 0.25rem;
+		}
 	}
 
 	&#step_credit_balance_and_features {
@@ -803,9 +807,9 @@ $color-highlight: #dbdbde;
 				page-break-inside: avoid;
 			}
 
-			// Some elements that use display:flex might be truncated on page breaks.
-			// This class sets them to display:block to avoid that behavior on print
-			// See https://stackoverflow.com/a/39228298/806975
+			// Some elements that use display:flex might be truncated on page breaks in Firefox.
+			// This class sets them to display:block to avoid that behavior on print.
+			// See https://stackoverflow.com/a/45440750/806975
 			.print-block {
 				display: block;
 			}
