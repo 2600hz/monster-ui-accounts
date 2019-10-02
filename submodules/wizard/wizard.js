@@ -528,11 +528,28 @@ define(function(require) {
 				accountContactsData = monster.ui.getFormData($form.get(0));
 
 				// Extract and store date(s)
-				$form.find('input.hasDatePicker').each(function() {
+				$form.find('input.hasDatepicker').each(function() {
 					var $this = $(this);
 
 					_.set(accountContactsData, $this.attr('name'), $this.datepicker('getDate'));
 				});
+
+				// Replace representative's userId with its ID and full name
+				if (_.has(accountContactsData, 'salesRep.representative')) {
+					var representativeUserId = accountContactsData.salesRep.representative,
+						representativeFullName = _
+							.chain(self.wizardGetStore('accountUsers'))
+							.find({
+								id: representativeUserId
+							})
+							.thru(monster.util.getUserFullName)
+							.value();
+
+					accountContactsData.salesRep.representative = {
+						userId: representativeUserId,
+						fullName: representativeFullName
+					};
+				}
 
 				// Format phone numbers
 				accountContactsData.technicalContact.phoneNumber = monster.util.getFormatPhoneNumber(accountContactsData.technicalContact.phoneNumber);
@@ -1345,15 +1362,12 @@ define(function(require) {
 				delete admin.lastName;
 			});
 
-			// Replace representative's userId with its full name
+			// Replace representative's full data with user friendly data
 			if (_.has(formattedData.accountContacts, 'salesRep.representative')) {
-				formattedData.accountContacts.salesRep.representative = _
-					.chain(self.wizardGetStore('accountUsers'))	// At this point all the required data has been stored, so we can get it directly
-					.find({
-						id: formattedData.accountContacts.salesRep.representative
-					})
-					.thru(monster.util.getUserFullName)
-					.value();
+				formattedData.accountContacts.salesRep = {
+					contractEndDate: monster.util.toFriendlyDate(formattedData.accountContacts.salesRep.contractEndDate),
+					representative: formattedData.accountContacts.salesRep.representative.fullName
+				};
 			}
 
 			// Get plan names and quote
@@ -1592,6 +1606,15 @@ define(function(require) {
 				accountContacts = wizardData.accountContacts,
 				billingContact = accountContacts.billingContact,
 				technicalContact = accountContacts.technicalContact,
+				salesRepresentative = accountContacts.salesRep,
+				contractEndDateIso = moment(salesRepresentative.contractEndDate).format('YYYY-MM-DD'),
+				// Create moment's instance with the current account's timezone,
+				// using the selected date
+				contractEndDateWithCurrentTZ = moment.tz(
+					contractEndDateIso,
+					'YYYY-MM-DD',
+					monster.util.getCurrentTimeZone()
+				),
 				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
 				accountDocument = {
 					call_restriction: _
@@ -1616,6 +1639,14 @@ define(function(require) {
 							email: technicalContact.email,
 							name: technicalContact.fullName,
 							number: technicalContact.phoneNumber.e164Number
+						}
+					},
+					contract: {
+						end_date: monster.util.dateToGregorian(contractEndDateWithCurrentTZ.toDate()),
+						representative: {
+							account_id: self.accountId,
+							user_id: salesRepresentative.representative.userId,
+							name: salesRepresentative.representative.fullName
 						}
 					},
 					language: accountInfo.language,

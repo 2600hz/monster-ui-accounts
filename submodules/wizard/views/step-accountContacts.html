@@ -23,7 +23,7 @@
 						<div class="flex-item-3">
 							<label for="sales_rep_representative">{{accountContactsI18n.salesRep.labels.representative}}</label>
 							<select class="input-level-block" id="sales_rep_representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.placeholders.representative}}" required>
-							{{#select @root.data.salesRep.representative}}
+							{{#select @root.data.salesRep.representative.userId}}
 								<option value=""></option>
 								{{#each @root.users}}
 									<option value="{{id}}">{{getUserFullName this}}</option>
