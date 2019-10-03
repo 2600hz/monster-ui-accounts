@@ -528,13 +528,21 @@ define(function(require) {
 
 				// Extract and store date(s)
 				$form.find('input.hasDatepicker').each(function() {
-					var $this = $(this);
+					var $this = $(this),
+						propertyPath = $this.attr('name'),
+						selectedDate = $this.datepicker('getDate');
 
-					_.set(accountContactsData, $this.attr('name'), $this.datepicker('getDate'));
+					if (_.isNil(selectedDate)) {
+						_.unset(accountContactsData, propertyPath);
+					} else {
+						_.set(accountContactsData, propertyPath, selectedDate);
+					}
 				});
 
 				// Replace representative's userId with its ID and full name
-				if (_.has(accountContactsData, 'salesRep.representative')) {
+				if (_.isEmpty(accountContactsData.salesRep.representative)) {
+					delete accountContactsData.salesRep.representative;
+				} else {
 					var representativeUserId = accountContactsData.salesRep.representative,
 						representativeFullName = _
 							.chain(self.wizardGetStore('accountUsers'))
@@ -1362,11 +1370,18 @@ define(function(require) {
 			});
 
 			// Replace representative's full data with user friendly data
-			if (_.has(formattedData.accountContacts, 'salesRep.representative')) {
-				formattedData.accountContacts.salesRep = {
-					contractEndDate: monster.util.toFriendlyDate(formattedData.accountContacts.salesRep.contractEndDate),
-					representative: formattedData.accountContacts.salesRep.representative.fullName
-				};
+			formattedData.accountContacts.salesRep.representative = _.get(
+				formattedData.accountContacts.salesRep,
+				'representative.fullName'
+			);
+
+			if (_.has(formattedData.accountContacts.salesRep, 'contractEndDate')) {
+				var contractEndDate = formattedData.accountContacts.salesRep.contractEndDate,
+					// Convert to gregorian with current time zone, to prevent inconsistencies
+					// due to possible diff in browser's and account's time zones
+					contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(contractEndDate);
+
+				formattedData.accountContacts.salesRep.contractEndDate = monster.util.toFriendlyDate(contractEndDateGregorian, 'date', undefined, true);
 			}
 
 			// Get plan names and quote
@@ -1606,14 +1621,6 @@ define(function(require) {
 				billingContact = accountContacts.billingContact,
 				technicalContact = accountContacts.technicalContact,
 				salesRepresentative = accountContacts.salesRep,
-				contractEndDateIso = moment(salesRepresentative.contractEndDate).format('YYYY-MM-DD'),
-				// Create moment's instance with the current account's timezone,
-				// using the selected date
-				contractEndDateWithCurrentTZ = moment.tz(
-					contractEndDateIso,
-					'YYYY-MM-DD',
-					monster.util.getCurrentTimeZone()
-				),
 				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
 				accountDocument = {
 					call_restriction: _
@@ -1640,17 +1647,8 @@ define(function(require) {
 							number: technicalContact.phoneNumber.e164Number
 						}
 					},
-					contract: {
-						end_date: monster.util.dateToGregorian(contractEndDateWithCurrentTZ.toDate()),
-						representative: {
-							account_id: self.accountId,
-							user_id: salesRepresentative.representative.userId,
-							name: salesRepresentative.representative.fullName
-						}
-					},
 					language: accountInfo.language,
 					name: accountInfo.accountName,
-					realm: accountInfo.realm,
 					timezone: accountInfo.timezone,
 					ui_restrictions: {
 						myaccount: _
@@ -1680,9 +1678,25 @@ define(function(require) {
 					}
 				};
 
-			// Clean empty data
-			if (_.isEmpty(accountDocument.realm)) {
-				delete accountDocument.realm;
+			// Set optional data
+			if (_.has(accountInfo, 'realm')) {
+				accountDocument.realm = accountInfo.realm;
+			}
+			if (_.has(salesRepresentative, 'contractEndDate')) {
+				var contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(salesRepresentative.contractEndDate);
+
+				_.set(accountDocument, 'contract.end_date', contractEndDateGregorian);
+			}
+			if (_.has(salesRepresentative, 'representative')) {
+				_.set(
+					accountDocument,
+					'contract.representative',
+					{
+						account_id: self.accountId,
+						user_id: salesRepresentative.representative.userId,
+						name: salesRepresentative.representative.fullName
+					}
+				);
 			}
 
 			return accountDocument;
@@ -2412,6 +2426,19 @@ define(function(require) {
 		 */
 		wizardValidateFormField: function(element) {
 			$(element).valid();
+		},
+
+		/**
+		 * Converts the date part of a Javascript Date to gregorian time,
+		 * using the current time zone
+		 * @param  {Date} date  Date to convert
+		 * @returns  {Number}  Gregorian time
+		 */
+		wizardDateToGregorianWithCurrentTimeZone: function(date) {
+			return monster.util.dateToBeginningOfGregorianDay(
+				date,
+				monster.util.getCurrentTimeZone()
+			);
 		},
 
 		/* STORE FUNCTIONS */

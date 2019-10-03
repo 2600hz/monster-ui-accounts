@@ -127,8 +127,10 @@
 	<!-- ACCOUNT CONTACTS -->
 	{{> sectionTitle stepName="accountContacts"}}
 	<div class="section-body">
-	{{#if accountContacts.salesRep}}
+	{{#if accountContacts.salesRep.representative}}
 		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.representative" label=i18n.accountsApp.wizard.steps.accountContacts.salesRep.title}}
+	{{/if}}
+	{{#if accountContacts.salesRep.contractEndDate}}
 		{{> horizontalFieldPartial fieldPath="accountContacts.salesRep.contractEndDate" i18nSectionName="accountContacts.salesRep" i18nFieldName="contractEndDate"}}
 	{{/if}}
 		{{#> horizontalFieldPartial label=i18n.accountsApp.wizard.steps.accountContacts.technicalContact.title hasContent=true}}

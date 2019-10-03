@@ -21,7 +21,7 @@
 				<div class="section-body flex-row-container">
 					<div class="flex-item-3">
 						<label for="sales_rep_representative">{{accountContactsI18n.salesRep.labels.representative}}</label>
-						<select class="input-level-block" id="sales_rep_representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.placeholders.representative}}" required>
+						<select class="input-level-block" id="sales_rep_representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.placeholders.representative}}">
 						{{#select @root.data.salesRep.representative.userId}}
 							<option value=""></option>
 							{{#each @root.users}}
@@ -32,7 +32,7 @@
 					</div>
 					<div class="flex-item-3">
 						<label for="sales_rep_contract_end_date">{{accountContactsI18n.salesRep.labels.contractEndDate}}</label>
-						<input class="input-block-level" type="text" name="salesRep.contractEndDate" id="sales_rep_contract_end_date" placeholder="{{accountContactsI18n.salesRep.placeholders.contractEndDate}}" readonly="true" required />
+						<input class="input-block-level" type="text" name="salesRep.contractEndDate" id="sales_rep_contract_end_date" placeholder="{{accountContactsI18n.salesRep.placeholders.contractEndDate}}" readonly="true" />
 					</div>
 				</div>
 				<div class="section-title">
