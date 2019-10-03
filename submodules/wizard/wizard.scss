@@ -118,13 +118,11 @@ $color-highlight: #dbdbde;
 		color: $woodsmoke;
 	}
 
-	.step-action-button {
-		width: 2.375rem;
+	.monster-button.step-action {
+		min-width: 2.375rem;	// To override monster-button's default min-width
 		height: 2.375rem;
 		margin-left: 0.75rem;
-		background: linear-gradient(-180deg, $white 0%, $athens-gray 100%);
-		border: 1px solid $french-gray2;
-		border-radius: 2px;
+		padding: 0.5rem;
 	}
 
 	.section-title {
@@ -801,7 +799,7 @@ $color-highlight: #dbdbde;
 			padding: 0;
 
 			.edit-step,
-			.step-action-button,
+			.monster-button,
 			.password-toggle-label,
 			.password-text,
 			.app-list .app-item .app-icon {
