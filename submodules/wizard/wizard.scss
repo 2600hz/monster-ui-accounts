@@ -1,8 +1,20 @@
 @import "../../../../css/partials/base";
 
-$media-size-small: "all and (max-width : 736px)";
-$media-size-medium: "all and (max-width : 980px)";
+$media-size-small: "(max-width : 736px)";
+$media-size-medium: "(max-width : 980px)";
 $color-highlight: #dbdbde;
+
+@mixin media-small {
+	@media all and (#{$media-size-small})  {
+		@content;
+	}
+}
+
+@mixin media-medium-or-print {
+	@media all and (#{$media-size-medium}), print  {
+		@content;
+	}
+}
 
 #navigation_wizard_wrapper .wizard-step {
 	padding: 2rem 1.5rem;
@@ -106,6 +118,13 @@ $color-highlight: #dbdbde;
 		color: $woodsmoke;
 	}
 
+	.monster-button.step-action {
+		min-width: 2.375rem;	// To override monster-button's default min-width
+		height: 2.375rem;
+		margin-left: 0.75rem;
+		padding: 0.5rem;
+	}
+
 	.section-title {
 		margin-top: 1rem;
 		margin-bottom: 1.5rem;
@@ -176,7 +195,7 @@ $color-highlight: #dbdbde;
 			width: 75%;
 		}
 
-		@media #{$media-size-medium} {
+		@include media-medium-or-print {
 			.flex-item-2 {
 				width: 100%;
 			}
@@ -194,7 +213,7 @@ $color-highlight: #dbdbde;
 			}
 		}
 
-		@media #{$media-size-small} {
+		@include media-small {
 			.flex-item-3 {
 				width: 100%;
 			}
@@ -427,6 +446,10 @@ $color-highlight: #dbdbde;
 				margin-top: -3px;
 			}
 		}
+
+		#service_plan_aggregate {
+			margin-top: 0.25rem;
+		}
 	}
 
 	&#step_credit_balance_and_features {
@@ -500,7 +523,7 @@ $color-highlight: #dbdbde;
 						z-index: 10;
 					}
 
-					@media #{$media-size-medium} {
+					@include media-medium-or-print {
 						.monster-panel-text {
 							display: none;
 							left: 0;
@@ -509,7 +532,7 @@ $color-highlight: #dbdbde;
 						}
 					}
 
-					@media #{$media-size-small} {
+					@include media-small {
 						.monster-panel-text {
 							width: 100%;
 						}
@@ -528,7 +551,7 @@ $color-highlight: #dbdbde;
 			margin-left: 20%;
 			width: auto;
 
-			@media #{$media-size-medium} {
+			@include media-medium-or-print {
 				margin-left: 0;
 			}
 		}
@@ -638,6 +661,7 @@ $color-highlight: #dbdbde;
 		}
 
 		.field-value-vertical {
+			min-height: 1rem;
 			line-height: 14px;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -672,14 +696,27 @@ $color-highlight: #dbdbde;
 			}
 
 
-			@media #{$media-size-medium} {
-				.field-label-horizontal, .field-value-horizontal {
-					width: 100%;
+			@include media-medium-or-print() {
+				.field-label-horizontal {
+					width: 66.67%;
+				}
+				.field-value-horizontal {
+					width: 33.33%;
+
+					.iconography-text {
+						display: none;
+					}
 				}
 			}
 		}
 
-		@media #{$media-size-small} {
+		@include media-medium-or-print {
+			.field-value-horizontal:not(.field-value-multiple) {
+				width: 50%;
+			}
+		}
+
+		@include media-small {
 			.field-group-column {
 				width: 100%;
 			}
@@ -751,6 +788,37 @@ $color-highlight: #dbdbde;
 				overflow: hidden;
 				white-space: nowrap;
 				text-overflow: ellipsis;
+			}
+		}
+
+		#service_plan_aggregate {
+			margin-left: auto;
+		}
+
+		@media print {
+			padding: 0;
+
+			.edit-step,
+			.monster-button,
+			.password-toggle-label,
+			.password-text,
+			.app-list .app-item .app-icon {
+				display: none;
+			}
+
+			.password-field .password-value .password-mask {
+				display: inline;
+			}
+
+			.print-nobreak {
+				page-break-inside: avoid;
+			}
+
+			// Some elements that use display:flex might be truncated on page breaks in Firefox.
+			// This class sets them to display:block to avoid that behavior on print.
+			// See https://stackoverflow.com/a/45440750/806975
+			.print-block {
+				display: block;
 			}
 		}
 	}
