@@ -1452,6 +1452,14 @@ define(function(require) {
 								.find('.password-value')
 									.toggleClass('password-hidden');
 					});
+
+			$template
+				.find('#step_print')
+					.on('click', function(e) {
+						e.preventDefault();
+
+						window.print();
+					});
 		},
 
 		/* SUBMIT */

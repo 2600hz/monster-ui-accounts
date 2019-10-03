@@ -292,7 +292,7 @@
 	"accountsApp": {
 		"serviceItemsListing": {
 			"columns": {
-				"item": "Service items",
+				"item": "Service Items",
 				"quantity": "Quantity",
 				"rate": "Rate",
 				"discount": "Discount"
