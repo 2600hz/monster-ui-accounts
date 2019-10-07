@@ -209,7 +209,7 @@ define(function(require) {
 					done: 'wizardSubmit',
 					doneButton: i18n.doneButton,
 					validateOnStepChange: true,
-					askForConfirmationOnCancel: true
+					askForConfirmationBeforeExit: true
 				});
 			});
 		},
@@ -271,6 +271,7 @@ define(function(require) {
 								realm: true
 							}
 						},
+						onfocusout: self.wizardValidateFormField,
 						autoScrollOnInvalid: true
 					});
 
@@ -445,7 +446,6 @@ define(function(require) {
 							data: {
 								data: formattedData,
 								users: userList
-								//showSalesRepSection: true
 							},
 							submodule: 'wizard'
 						})),
@@ -483,6 +483,7 @@ define(function(require) {
 								phoneNumber: self.i18n.active().accountsApp.wizard.steps.general.errors.phoneNumber.invalid
 							}
 						},
+						onfocusout: self.wizardValidateFormField,
 						autoScrollOnInvalid: true
 					});
 
@@ -526,11 +527,36 @@ define(function(require) {
 				accountContactsData = monster.ui.getFormData($form.get(0));
 
 				// Extract and store date(s)
-				$form.find('input.hasDatePicker').each(function() {
-					var $this = $(this);
+				$form.find('input.hasDatepicker').each(function() {
+					var $this = $(this),
+						propertyPath = $this.attr('name'),
+						selectedDate = $this.datepicker('getDate');
 
-					_.set(accountContactsData, $this.attr('name'), $this.datepicker('getDate'));
+					if (_.isNil(selectedDate)) {
+						_.unset(accountContactsData, propertyPath);
+					} else {
+						_.set(accountContactsData, propertyPath, selectedDate);
+					}
 				});
+
+				// Replace representative's userId with its ID and full name
+				if (_.isEmpty(accountContactsData.salesRep.representative)) {
+					delete accountContactsData.salesRep.representative;
+				} else {
+					var representativeUserId = accountContactsData.salesRep.representative,
+						representativeFullName = _
+							.chain(self.wizardGetStore('accountUsers'))
+							.find({
+								id: representativeUserId
+							})
+							.thru(monster.util.getUserFullName)
+							.value();
+
+					accountContactsData.salesRep.representative = {
+						userId: representativeUserId,
+						fullName: representativeFullName
+					};
+				}
 
 				// Format phone numbers
 				accountContactsData.technicalContact.phoneNumber = monster.util.getFormatPhoneNumber(accountContactsData.technicalContact.phoneNumber);
@@ -1097,6 +1123,7 @@ define(function(require) {
 
 					self.wizardAppRestrictionsBindEvents({
 						allowedAppIds: appRestrictionsData.allowedAppIds,
+						appCount: appList.length,
 						template: $template
 					});
 
@@ -1150,15 +1177,18 @@ define(function(require) {
 		 * Bind App Restrictions step events
 		 * @param  {Object} args
 		 * @param  {jQuery} args.allowedAppIds  Allowed app IDs
+		 * @param  {Number} args.appCount  Total count of available apps
 		 * @param  {jQuery} args.template  Step template
 		 */
 		wizardAppRestrictionsBindEvents: function(args) {
 			var self = this,
 				slideAnimationDuration = self.appFlags.wizard.animationTimes.allowedApps,
+				appCount = args.appCount,
 				allowedAppIds = _.clone(args.allowedAppIds),	// Create a copy of the data, in order to not to alter the original one
 				$template = args.template,
 				$allowedAppsSection = $template.find('#section_allowed_apps'),
-				$appList = $allowedAppsSection.find('.app-list');
+				$appList = $allowedAppsSection.find('.app-list'),
+				$appAdd = $allowedAppsSection.find('.app-add');
 
 			$template.find('#access_level .radio-button').on('change', function() {
 				if (this.value === 'full') {
@@ -1178,7 +1208,7 @@ define(function(require) {
 				}
 			});
 
-			$template.find('.app-add .wizard-card').on('click', function() {
+			$appAdd.find('.wizard-card').on('click', function() {
 				monster.pub('common.appSelector.renderPopup', {
 					scope: 'account',
 					excludedApps: allowedAppIds,
@@ -1192,6 +1222,10 @@ define(function(require) {
 							});
 
 							$selectedAppCards.find('.app-selected').prop('checked', true);
+
+							if (allowedAppIds.length === appCount) {
+								$appAdd.removeClass('visible');
+							}
 
 							self.wizardToggleAppCard({
 								action: 'show',
@@ -1213,6 +1247,8 @@ define(function(require) {
 				_.pull(allowedAppIds, $appItem.data('id'));
 
 				$appSelectedInput.prop('checked', false);
+
+				$appAdd.addClass('visible');
 
 				self.wizardToggleAppCard({
 					action: 'hide',
@@ -1333,15 +1369,19 @@ define(function(require) {
 				delete admin.lastName;
 			});
 
-			// Replace representative's userId with its full name
-			if (_.has(formattedData.accountContacts, 'salesRep.representative')) {
-				formattedData.accountContacts.salesRep.representative = _
-					.chain(self.wizardGetStore('accountUsers'))	// At this point all the required data has been stored, so we can get it directly
-					.find({
-						id: formattedData.accountContacts.salesRep.representative
-					})
-					.thru(monster.util.getUserFullName)
-					.value();
+			// Replace representative's full data with user friendly data
+			formattedData.accountContacts.salesRep.representative = _.get(
+				formattedData.accountContacts.salesRep,
+				'representative.fullName'
+			);
+
+			if (_.has(formattedData.accountContacts.salesRep, 'contractEndDate')) {
+				var contractEndDate = formattedData.accountContacts.salesRep.contractEndDate,
+					// Convert to gregorian with current time zone, to prevent inconsistencies
+					// due to possible diff in browser's and account's time zones
+					contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(contractEndDate);
+
+				formattedData.accountContacts.salesRep.contractEndDate = monster.util.toFriendlyDate(contractEndDateGregorian, 'date', undefined, true);
 			}
 
 			// Get plan names and quote
@@ -1402,6 +1442,23 @@ define(function(require) {
 						monster.pub('common.navigationWizard.goToStep', {
 							stepId: stepId
 						});
+					});
+
+			$template
+				.find('.password-toggle')
+					.on('change', function(e) {
+						$(this)
+							.closest('.password-field')
+								.find('.password-value')
+									.toggleClass('password-hidden');
+					});
+
+			$template
+				.find('#step_print')
+					.on('click', function(e) {
+						e.preventDefault();
+
+						window.print();
 					});
 		},
 
@@ -1571,6 +1628,7 @@ define(function(require) {
 				accountContacts = wizardData.accountContacts,
 				billingContact = accountContacts.billingContact,
 				technicalContact = accountContacts.technicalContact,
+				salesRepresentative = accountContacts.salesRep,
 				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
 				accountDocument = {
 					call_restriction: _
@@ -1599,7 +1657,6 @@ define(function(require) {
 					},
 					language: accountInfo.language,
 					name: accountInfo.accountName,
-					realm: accountInfo.realm,
 					timezone: accountInfo.timezone,
 					ui_restrictions: {
 						myaccount: _
@@ -1629,9 +1686,25 @@ define(function(require) {
 					}
 				};
 
-			// Clean empty data
-			if (_.isEmpty(accountDocument.realm)) {
-				delete accountDocument.realm;
+			// Set optional data
+			if (_.has(accountInfo, 'realm')) {
+				accountDocument.realm = accountInfo.realm;
+			}
+			if (_.has(salesRepresentative, 'contractEndDate')) {
+				var contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(salesRepresentative.contractEndDate);
+
+				_.set(accountDocument, 'contract.end_date', contractEndDateGregorian);
+			}
+			if (_.has(salesRepresentative, 'representative')) {
+				_.set(
+					accountDocument,
+					'contract.representative',
+					{
+						account_id: self.accountId,
+						user_id: salesRepresentative.representative.userId,
+						name: salesRepresentative.representative.fullName
+					}
+				);
 			}
 
 			return accountDocument;
@@ -1880,6 +1953,7 @@ define(function(require) {
 						data: {
 							accountId: accountId,
 							data: _.merge(limits, newLimits),
+							acceptCharges: true,
 							generateError: false
 						},
 						success: function(data) {
@@ -1902,6 +1976,8 @@ define(function(require) {
 		 * @param  {String} args.resource  Resource name
 		 * @param  {String} args.accountId  Account ID
 		 * @param  {Object} args.data  New user data
+		 * @param  {Boolean} [args.acceptCharges=true]  Whether or not to accept charges without
+		 *                                              asking the user
 		 * @param  {Boolean} [args.generateError=false]  Whether or not show error dialog
 		 * @param  {Function} args.callback  Async.js callback
 		 */
@@ -1913,6 +1989,7 @@ define(function(require) {
 				data: {
 					accountId: args.accountId,
 					data: args.data,
+					acceptCharges: _.get(args, 'acceptCharges', true),
 					generateError: _.get(args, 'generateError', false)
 				},
 				success: function(data) {
@@ -2364,6 +2441,27 @@ define(function(require) {
 		 */
 		wizardScrollToTop: function() {
 			window.scrollTo(0, 0);
+		},
+
+		/**
+		 * Validates a form input field
+		 * @param  {Element} element  Input element
+		 */
+		wizardValidateFormField: function(element) {
+			$(element).valid();
+		},
+
+		/**
+		 * Converts the date part of a Javascript Date to gregorian time,
+		 * using the current time zone
+		 * @param  {Date} date  Date to convert
+		 * @returns  {Number}  Gregorian time
+		 */
+		wizardDateToGregorianWithCurrentTimeZone: function(date) {
+			return monster.util.dateToBeginningOfGregorianDay(
+				date,
+				monster.util.getCurrentTimeZone()
+			);
 		},
 
 		/* STORE FUNCTIONS */

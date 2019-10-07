@@ -16,7 +16,7 @@
     }, {
       "id": "743016d7-e022-4608-8ce8-c238ea7bf707",
       "comment": "",
-      "command": "setWindowSize",
+      "command": "//setWindowSize",
       "target": "1920x1052",
       "targets": [],
       "value": ""
@@ -363,38 +363,52 @@
     }, {
       "id": "3e483932-6c13-4766-aee8-e6c235d3f4e0",
       "comment": "",
-      "command": "//click",
+      "command": "click",
       "target": "css=.chosen-single > span",
       "targets": [],
       "value": ""
     }, {
-      "id": "c58f4869-4e91-4e35-bc17-a2187b04c355",
-      "comment": "",
-      "command": "//type",
-      "target": "css=input:nth-child(1)",
-      "targets": [],
-      "value": "e"
-    }, {
       "id": "01028202-c64c-431a-a618-e16f08990397",
       "comment": "",
-      "command": "//sendKeys",
+      "command": "sendKeys",
       "target": "css=input:nth-child(1)",
       "targets": [],
       "value": "${KEY_ENTER}"
     }, {
-      "id": "79a7ace7-28ab-4530-80ee-1c6c850ab839",
+      "id": "9a942b0f-54bf-4b4a-b2bd-db6b78be4a59",
       "comment": "",
-      "command": "//pause",
-      "target": "",
+      "command": "runScript",
+      "target": "window.jQuery('#sales_rep_contract_end_date').datepicker('show')",
       "targets": [],
-      "value": "1000"
+      "value": ""
     }, {
-      "id": "552afb2d-e255-42f1-8527-86ee0cd431fc",
+      "id": "dcf00d2c-e43c-4f3e-afb6-96a933100354",
       "comment": "",
-      "command": "//type",
-      "target": "id=sales_rep_contract_end_date",
+      "command": "click",
+      "target": "css=.ui-icon-circle-triangle-e",
       "targets": [],
-      "value": "31/12/2030"
+      "value": ""
+    }, {
+      "id": "8d4993e1-e611-4657-af1e-047524d201f1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ui-icon-circle-triangle-e",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7245192f-8827-4715-9c72-542791e03533",
+      "comment": "",
+      "command": "click",
+      "target": "xpath=//table[@class=\"ui-datepicker-calendar\"]//a[contains(text(),'1')]",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7c9440f2-3ce4-4fcc-af8f-68103e43e08b",
+      "comment": "",
+      "command": "click",
+      "target": "id=technical_contact_full_name",
+      "targets": [],
+      "value": ""
     }, {
       "id": "1d7a079c-d34f-4b67-901a-ff52d071c7ff",
       "comment": "",
@@ -548,8 +562,12 @@
       "id": "1d11e88a-df09-4696-ba2a-8354a3d89723",
       "comment": "",
       "command": "click",
-      "target": "css=.flex-item-3 > .monster-switch > span > span:nth-child(2)",
-      "targets": [],
+      "target": "css=.monster-checkbox > i",
+      "targets": [
+        ["css=.monster-checkbox > i", "css:finder"],
+        ["xpath=//form[@id='form_usage_and_call_restrictions']/div/div[2]/div[4]/label/i", "xpath:idRelative"],
+        ["xpath=//label/i", "xpath:position"]
+      ],
       "value": ""
     }, {
       "id": "8d75ab6c-e5ed-4128-9a0a-7b622679b532",
@@ -563,13 +581,6 @@
       "comment": "",
       "command": "click",
       "target": "id=next",
-      "targets": [],
-      "value": ""
-    }, {
-      "id": "0f54936d-4cba-47ce-96f3-907db40ffa8f",
-      "comment": "",
-      "command": "runScript",
-      "target": "window.scrollTo(0,0)",
       "targets": [],
       "value": ""
     }, {
