@@ -1,8 +1,20 @@
 @import "../../../../css/partials/base";
 
-$media-size-small: "all and (max-width : 736px)";
-$media-size-medium: "all and (max-width : 980px)";
+$media-size-small: "(max-width : 736px)";
+$media-size-medium: "(max-width : 980px)";
 $color-highlight: #dbdbde;
+
+@mixin media-small {
+	@media all and (#{$media-size-small})  {
+		@content;
+	}
+}
+
+@mixin media-medium-or-print {
+	@media all and (#{$media-size-medium}), print  {
+		@content;
+	}
+}
 
 #navigation_wizard_wrapper .wizard-step {
 	padding: 2rem 1.5rem;
@@ -106,6 +118,13 @@ $color-highlight: #dbdbde;
 		color: $woodsmoke;
 	}
 
+	.monster-button.step-action {
+		min-width: 2.375rem;	// To override monster-button's default min-width
+		height: 2.375rem;
+		margin-left: 0.75rem;
+		padding: 0.5rem;
+	}
+
 	.section-title {
 		margin-top: 1rem;
 		margin-bottom: 1.5rem;
@@ -115,10 +134,32 @@ $color-highlight: #dbdbde;
 		font-size: 1rem;
 		font-weight: 600;
 		color: $woodsmoke;
+
+		.help-tip {
+			color: $midgray2;
+
+			&:hover {
+				color: $woodsmoke;
+			}
+
+			.iconography-medium {
+				margin-top: -0.25rem;
+			}
+		}
 	}
 
 	.flex-container {
 		display: flex;
+
+		.flex-initial {
+			display: block;
+			flex: 0 0 initial;
+		}
+
+		.flex-fit {
+			display: block;
+			flex: 1;
+		}
 	}
 
 	.flex-row-container {
@@ -154,7 +195,7 @@ $color-highlight: #dbdbde;
 			width: 75%;
 		}
 
-		@media #{$media-size-medium} {
+		@include media-medium-or-print {
 			.flex-item-2 {
 				width: 100%;
 			}
@@ -172,7 +213,7 @@ $color-highlight: #dbdbde;
 			}
 		}
 
-		@media #{$media-size-small} {
+		@include media-small {
 			.flex-item-3 {
 				width: 100%;
 			}
@@ -182,8 +223,9 @@ $color-highlight: #dbdbde;
 	.wizard-card {
 		flex: 1;
 		padding: 1rem;
+		border-radius: 2px;
 		background-color: $panel-background-color;
-		box-shadow: 0px 1px 4px 0px rgba(46, 46, 50, 0.24);
+		box-shadow: 0px 1px 4px 0px rgba($shark2, 0.24);
 		display: flex;
 		flex-direction: column;
 
@@ -206,6 +248,10 @@ $color-highlight: #dbdbde;
 				margin-bottom: 0;
 			}
 		}
+	}
+
+	.app-add .wizard-card {
+		box-shadow: none;
 	}
 
 	.step-body {
@@ -244,28 +290,6 @@ $color-highlight: #dbdbde;
 			}
 		}
 
-		.field-label-after {
-			display: flex;
-
-			.monster-switch {
-				flex: 0 0 initial;
-			}
-
-			.monster-switch-label {
-				flex: 1;
-				display: block;
-				margin-left: 1rem;
-				line-height: 26px;
-
-				label {
-					display: inline-block;
-					margin-bottom: 0;
-					vertical-align: middle;
-					line-height: 14px;
-				}
-			}
-		}
-
 		.input-append.input-block-level {
 			display: flex;
 
@@ -298,8 +322,8 @@ $color-highlight: #dbdbde;
 				display: block;
 				width: 100%;
 				height: 30px;
-				margin-top: 4px;
-				margin-bottom: 4px;
+				margin-top: 0.25rem;
+				margin-bottom: 0.25rem;
 			}
 		}
 	}
@@ -418,9 +442,13 @@ $color-highlight: #dbdbde;
 			}
 
 			.iconography-medium {
-				margin-right: 4px;
+				margin-right: 0.25rem;
 				margin-top: -3px;
 			}
+		}
+
+		#service_plan_aggregate {
+			margin-top: 0.25rem;
 		}
 	}
 
@@ -447,7 +475,7 @@ $color-highlight: #dbdbde;
 					position: relative;
 					box-sizing: border-box;
 
-					a {
+					.feature-item-link {
 						display: block;
 						height: 2.5rem;
 						padding-left: 1rem;
@@ -466,8 +494,8 @@ $color-highlight: #dbdbde;
 
 					.feature-icon {
 						margin-left: 38px;
-						list-style: none;
 						margin-top: -3px;
+						color: $midgray2;
 					}
 
 					.monster-checkbox {
@@ -476,9 +504,7 @@ $color-highlight: #dbdbde;
 						line-height: 2.5rem;
 
 						i {
-							width: 1rem;
-							height: 1rem;
-							margin-top: 9px;
+							margin-top: 10px;
 						}
 
 						span {
@@ -497,7 +523,7 @@ $color-highlight: #dbdbde;
 						z-index: 10;
 					}
 
-					@media #{$media-size-medium} {
+					@include media-medium-or-print {
 						.monster-panel-text {
 							display: none;
 							left: 0;
@@ -506,15 +532,15 @@ $color-highlight: #dbdbde;
 						}
 					}
 
-					@media #{$media-size-small} {
+					@include media-small {
 						.monster-panel-text {
 							width: 100%;
 						}
 					}
 				}
 
-				ul.features > li a {
-					margin-left: 38px;
+				ul.features > li .feature-item-link {
+					margin-left: 2.5rem;
 				}
 			}
 		}
@@ -525,7 +551,7 @@ $color-highlight: #dbdbde;
 			margin-left: 20%;
 			width: auto;
 
-			@media #{$media-size-medium} {
+			@include media-medium-or-print {
 				margin-left: 0;
 			}
 		}
@@ -543,7 +569,7 @@ $color-highlight: #dbdbde;
 					transform-origin: top left;
 					transition: all 0.4s linear 0s;
 
-					&:not(.app-add):not(.visible) {
+					&:not(.visible) {
 						position: absolute;
 
 						.wizard-card {
@@ -612,8 +638,8 @@ $color-highlight: #dbdbde;
 		}
 
 		.field-label-horizontal, .field-value-horizontal {
-			margin-top: -4px;
-			margin-bottom: 4px;
+			margin-top: -0.25rem;
+			margin-bottom: 0.25rem;
 			padding-bottom: 1rem;
 			line-height: 21px;
 		}
@@ -635,7 +661,10 @@ $color-highlight: #dbdbde;
 		}
 
 		.field-value-vertical {
+			min-height: 1rem;
 			line-height: 14px;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.service-items-listing.monster-table tbody td:not(.category-cell) {
@@ -667,16 +696,82 @@ $color-highlight: #dbdbde;
 			}
 
 
-			@media #{$media-size-medium} {
-				.field-label-horizontal, .field-value-horizontal {
-					width: 100%;
+			@include media-medium-or-print() {
+				.field-label-horizontal {
+					width: 66.67%;
+				}
+				.field-value-horizontal {
+					width: 33.33%;
+
+					.iconography-text {
+						display: none;
+					}
 				}
 			}
 		}
 
-		@media #{$media-size-small} {
+		@include media-medium-or-print {
+			.field-value-horizontal:not(.field-value-multiple) {
+				width: 50%;
+			}
+		}
+
+		@include media-small {
 			.field-group-column {
 				width: 100%;
+			}
+		}
+
+		.password-field {
+			display: flex;
+			flex-wrap: wrap;
+
+			.password-value {
+				flex: 0 0 auto;
+				min-width: 50%;
+				max-width: 100%;
+				height: 0.875rem;
+				margin-right: 1rem;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				.password-mask {
+					display: none;
+					font-size: 1rem;
+				}
+
+				&.password-hidden {
+					.password-text {
+						display: none;
+					}
+
+					.password-mask {
+						display: inline;
+					}
+				}
+			}
+
+			.password-toggle-label {
+				flex: 0 0 initial;
+				line-height: 0.875rem;
+				font-size: 0.75rem;
+			}
+
+			.password-toggle {
+				display: none;
+
+				&:checked {
+					& ~ .password-hide {
+						display: inline;
+					}
+					& ~ .password-show {
+						display: none;
+					}
+				}
+			}
+
+			.password-hide {
+				display: none;
 			}
 		}
 
@@ -688,7 +783,42 @@ $color-highlight: #dbdbde;
 			}
 
 			.app-name {
+				flex: 1;
 				padding-bottom: 0;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+		}
+
+		#service_plan_aggregate {
+			margin-left: auto;
+		}
+
+		@media print {
+			padding: 0;
+
+			.edit-step,
+			.monster-button,
+			.password-toggle-label,
+			.password-text,
+			.app-list .app-item .app-icon {
+				display: none;
+			}
+
+			.password-field .password-value .password-mask {
+				display: inline;
+			}
+
+			.print-nobreak {
+				page-break-inside: avoid;
+			}
+
+			// Some elements that use display:flex might be truncated on page breaks in Firefox.
+			// This class sets them to display:block to avoid that behavior on print.
+			// See https://stackoverflow.com/a/45440750/806975
+			.print-block {
+				display: block;
 			}
 		}
 	}
