@@ -240,10 +240,13 @@ define(function(require) {
 							},
 							submodule: 'wizard'
 						})),
+						$countriesDropdown = $template.find('#account_info_country'),
 						$timezoneDropDown = $template.find('#account_info_timezone');
 
 					timezone.populateDropdown($timezoneDropDown, generalSettingsData.accountInfo.timezone);
 					monster.ui.chosen($timezoneDropDown);
+
+					monster.ui.countrySelector($countriesDropdown, generalSettingsData.accountInfo.country);
 
 					monster.ui.tooltips($template);
 
