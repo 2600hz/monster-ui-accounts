@@ -281,12 +281,17 @@ $color-highlight: #dbdbde;
 				height: 38px;
 
 				span {
+					font-size: 14px;
 					line-height: 38px;
 				}
 			}
 
 			.chosen-drop {
 				min-width: 100%;
+			}
+
+			&.chosen-container-single .chosen-search input[type="text"] {
+				height: auto;
 			}
 		}
 
