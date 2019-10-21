@@ -246,7 +246,13 @@ define(function(require) {
 					timezone.populateDropdown($timezoneDropDown, generalSettingsData.accountInfo.timezone);
 					monster.ui.chosen($timezoneDropDown);
 
-					monster.ui.countrySelector($countriesDropdown, generalSettingsData.accountInfo.country);
+					monster.ui.countrySelector(
+						$countriesDropdown,
+						generalSettingsData.accountInfo.country,
+						{
+							showEmptyOption: true
+						}
+					);
 
 					monster.ui.tooltips($template);
 
@@ -274,6 +280,7 @@ define(function(require) {
 								realm: true
 							}
 						},
+						ignore: [],	// Do not ignore hidden fields, which is the case for the ones that use the jQuery Chosen plugin
 						onfocusout: self.wizardValidateFormField,
 						autoScrollOnInvalid: true
 					});
