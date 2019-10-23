@@ -248,9 +248,11 @@ define(function(require) {
 
 					monster.ui.countrySelector(
 						$countriesDropdown,
-						generalSettingsData.accountInfo.country,
 						{
-							showEmptyOption: true
+							selectedValues: generalSettingsData.accountInfo.country,
+							options: {
+								showEmptyOption: true
+							}
 						}
 					);
 
