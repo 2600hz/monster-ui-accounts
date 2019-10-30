@@ -249,7 +249,7 @@ define(function(require) {
 					monster.ui.countrySelector(
 						$countriesDropdown,
 						{
-							selectedValues: generalSettingsData.accountInfo.country,
+							selectedValues: _.get(generalSettingsData, 'accountInfo.country', ''),
 							options: {
 								showEmptyOption: true
 							}
