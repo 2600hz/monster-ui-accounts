@@ -272,8 +272,8 @@ $color-highlight: #dbdbde;
 			height: 38px;
 		}
 
-		// Make chosen dropdown to fill container width
-		.chosen-container {
+		.chosen-container.chosen-container-single {
+			// Make chosen dropdown to fill container width
 			width: auto !important;
 			display: block;
 
@@ -281,12 +281,23 @@ $color-highlight: #dbdbde;
 				height: 38px;
 
 				span {
+					font-size: 14px;
 					line-height: 38px;
 				}
 			}
 
 			.chosen-drop {
 				min-width: 100%;
+
+				.chosen-search input[type="text"] {
+					height: auto;
+				}
+			}
+
+			.monster-country-item-flag {
+				margin-right: 0.75rem;
+				width: 18px;
+				max-height: 20px;
 			}
 		}
 

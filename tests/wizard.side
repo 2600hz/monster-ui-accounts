@@ -130,19 +130,41 @@
       ],
       "value": "94108"
     }, {
-      "id": "e820834a-97e6-44ca-a364-e0cc804171be",
+      "id": "a1221843-0520-4e31-a00a-baa5b9e935ae",
+      "comment": "",
+      "command": "click",
+      "target": "css=.chosen-default > span",
+      "targets": [
+        ["css=.chosen-default > span", "css:finder"],
+        ["xpath=//div[@id='account_info_country_chosen']/a/span", "xpath:idRelative"],
+        ["xpath=//div/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Country')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "84200599-4be7-4b58-82fb-15ed4e92fb60",
       "comment": "",
       "command": "type",
-      "target": "id=account_info_country",
+      "target": "css=#account_info_country_chosen input",
       "targets": [
-        ["id=account_info_country", "id"],
-        ["name=accountInfo.country", "name"],
-        ["css=#account_info_country", "css:finder"],
-        ["xpath=//input[@id='account_info_country']", "xpath:attributes"],
-        ["xpath=//form[@id='form_general_settings']/div/div[2]/div[8]/input", "xpath:idRelative"],
-        ["xpath=//div[8]/input", "xpath:position"]
+        ["css=#account_info_country_chosen input", "css:finder"],
+        ["xpath=(//input[@type='text'])[8]", "xpath:attributes"],
+        ["xpath=//div[@id='account_info_country_chosen']/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[8]/div/div/div/input", "xpath:position"]
       ],
-      "value": "USA"
+      "value": "united states"
+    }, {
+      "id": "08ffef15-ea61-4b70-98eb-ce150f99bd88",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "css=#account_info_country_chosen input",
+      "targets": [
+        ["css=#account_info_country_chosen input", "css:finder"],
+        ["xpath=(//input[@type='text'])[8]", "xpath:attributes"],
+        ["xpath=//div[@id='account_info_country_chosen']/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[8]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
     }, {
       "id": "f0de6f68-88b2-4b4e-bd50-b03f608905a2",
       "comment": "",
