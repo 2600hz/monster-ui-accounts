@@ -240,10 +240,21 @@ define(function(require) {
 							},
 							submodule: 'wizard'
 						})),
+						$countriesDropdown = $template.find('#account_info_country'),
 						$timezoneDropDown = $template.find('#account_info_timezone');
 
 					timezone.populateDropdown($timezoneDropDown, generalSettingsData.accountInfo.timezone);
 					monster.ui.chosen($timezoneDropDown);
+
+					monster.ui.countrySelector(
+						$countriesDropdown,
+						{
+							selectedValues: _.get(generalSettingsData, 'accountInfo.country', ''),
+							options: {
+								showEmptyOption: true
+							}
+						}
+					);
 
 					monster.ui.tooltips($template);
 
@@ -271,6 +282,7 @@ define(function(require) {
 								realm: true
 							}
 						},
+						ignore: [],	// Do not ignore hidden fields, which is the case for the ones that use the jQuery Chosen plugin
 						onfocusout: self.wizardValidateFormField,
 						autoScrollOnInvalid: true
 					});
