@@ -280,6 +280,11 @@ define(function(require) {
 						rules: {
 							'accountInfo.accountRealm': {
 								realm: true
+							},
+							'accountInfo.zip': {
+								digits: true,
+								minlength: 5,
+								maxlength: 5
 							}
 						},
 						ignore: [],	// Do not ignore hidden fields, which is the case for the ones that use the jQuery Chosen plugin
