@@ -132,7 +132,7 @@
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_account_name">{{ i18n.accountName }}</label>
 											<div class="controls">
-												<input required type="text" id="accountsmanager_account_name" name="name" value="{{account.name}}" data-original_value="{{account.name}}" maxlength="32" />
+												<input required type="text" id="accountsmanager_account_name" name="name" value="{{account.name}}" data-original_value="{{account.name}}" maxlength="32" required />
 											</div>
 										</div>
 										<div class="action-group clearfix">
@@ -164,7 +164,7 @@
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_account_realm">{{ i18n.accountRealm }}</label>
 											<div class="controls">
-												<input required type="text" id="accountsmanager_account_realm" name="realm" value="{{account.realm}}" data-original_value="{{account.realm}}" maxlength="32" />
+												<input required type="text" id="accountsmanager_account_realm" name="realm" value="{{account.realm}}" data-original_value="{{account.realm}}" maxlength="32" required />
 											</div>
 										</div>
 										<div class="action-group clearfix">
@@ -239,19 +239,19 @@
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_technical_contact_name">{{ i18n.technicalContact.name }}</label>
 											<div class="controls">
-												<input type="text" id="accountsmanager_technical_contact_name" name="contact.technical.name" value="{{account.contact.technical.name}}" data-original_value="{{account.contact.technical.name}}" />
+												<input type="text" id="accountsmanager_technical_contact_name" name="contact.technical.name" value="{{account.contact.technical.name}}" data-original_value="{{account.contact.technical.name}}" required />
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_technical_contact_email">{{ i18n.technicalContact.email }}</label>
 											<div class="controls">
-												<input type="email" id="accountsmanager_technical_contact_email" name="contact.technical.email" value="{{account.contact.technical.email}}" data-original_value="{{account.contact.technical.email}}" />
+												<input type="email" id="accountsmanager_technical_contact_email" name="contact.technical.email" value="{{account.contact.technical.email}}" data-original_value="{{account.contact.technical.email}}" required />
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_technical_contact_number">{{ i18n.technicalContact.number }}</label>
 											<div class="controls">
-												<input type="text" id="accountsmanager_technical_contact_number" name="contact.technical.number" value="{{account.contact.technical.number}}" data-original_value="{{account.contact.technical.number}}" maxlength="12" />
+												<input type="text" id="accountsmanager_technical_contact_number" name="contact.technical.number" value="{{account.contact.technical.number}}" data-original_value="{{account.contact.technical.number}}" maxlength="12" required />
 											</div>
 										</div>
 										<div class="action-group clearfix">
@@ -295,19 +295,19 @@
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_billing_contact_name">{{ i18n.billingContact.name }}</label>
 											<div class="controls">
-												<input type="text" id="accountsmanager_billing_contact_name" name="contact.billing.name" value="{{account.contact.billing.name}}" data-original_value="{{account.contact.billing.name}}" />
+												<input type="text" id="accountsmanager_billing_contact_name" name="contact.billing.name" value="{{account.contact.billing.name}}" data-original_value="{{account.contact.billing.name}}" required/>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_billing_contact_email">{{ i18n.billingContact.email }}</label>
 											<div class="controls">
-												<input type="email" id="accountsmanager_billing_contact_email" name="contact.billing.email" value="{{account.contact.billing.email}}" data-original_value="{{account.contact.billing.email}}" />
+												<input type="email" id="accountsmanager_billing_contact_email" name="contact.billing.email" value="{{account.contact.billing.email}}" data-original_value="{{account.contact.billing.email}}" required />
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_billing_contact_number">{{ i18n.billingContact.number }}</label>
 											<div class="controls">
-												<input type="text" id="accountsmanager_billing_contact_number" name="contact.billing.number" value="{{account.contact.billing.number}}" data-original_value="{{account.contact.billing.number}}" />
+												<input type="text" id="accountsmanager_billing_contact_number" name="contact.billing.number" value="{{account.contact.billing.number}}" data-original_value="{{account.contact.billing.number}}" required />
 											</div>
 										</div>
 										<div class="control-group">
@@ -315,10 +315,12 @@
 												{{i18n.billingContact.postalCode}}
 											</label>
 											<div class="controls">
-												<input type="text"
+												<input type="number"
 													id="accountsmanager_billing_contact_postalCode"
 													name="contact.billing.postal_code"
-													value="{{account.contact.billing.postal_code}}">
+													value="{{account.contact.billing.postal_code}}"
+													minlength="5"
+													required>
 											</div>
 										</div>
 										<div class="control-group">
@@ -329,7 +331,7 @@
 												<input type="text"
 													id="accountsmanager_billing_contact_streetAddress"
 													name="contact.billing.street_address"
-													value="{{account.contact.billing.street_address}}">
+													value="{{account.contact.billing.street_address}}" required>
 											</div>
 										</div>
 										<div class="control-group">
@@ -340,7 +342,7 @@
 												<input type="text"
 													id="accountsmanager_billing_contact_locality"
 													name="contact.billing.locality"
-													value="{{account.contact.billing.locality}}">
+													value="{{account.contact.billing.locality}}" required>
 											</div>
 										</div>
 										<div class="control-group">
@@ -351,7 +353,7 @@
 												<input type="text"
 													id="accountsmanager_billing_contact_region"
 													name="contact.billing.region"
-													value="{{account.contact.billing.region}}">
+													value="{{account.contact.billing.region}}" required>
 											</div>
 										</div>
 										<div class="control-group">
@@ -362,7 +364,7 @@
 												<input type="text"
 													id="accountsmanager_billing_contact_country"
 													name="contact.billing.country"
-													value="{{account.contact.billing.country}}">
+													value="{{account.contact.billing.country}}" required>
 											</div>
 										</div>
 										<div class="action-group clearfix">
