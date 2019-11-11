@@ -232,6 +232,7 @@ define(function(require) {
 					correlative: 1
 				},
 				generalSettingsData = data.generalSettings,
+				defaultCountry = _.get(monster.config, 'whitelabel.countryCode', 'US'),
 				initTemplate = function() {
 					var $template = $(self.getTemplate({
 							name: 'step-generalSettings',
@@ -249,7 +250,7 @@ define(function(require) {
 					monster.ui.countrySelector(
 						$countriesDropdown,
 						{
-							selectedValues: _.get(generalSettingsData, 'accountInfo.country', ''),
+							selectedValues: _.get(generalSettingsData, 'accountInfo.country', defaultCountry),
 							options: {
 								showEmptyOption: true
 							}
