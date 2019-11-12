@@ -232,7 +232,7 @@ define(function(require) {
 					correlative: 1
 				},
 				generalSettingsData = data.generalSettings,
-				defaultCountry = _.get(monster.config, 'whitelabel.countryCode', 'US'),
+				defaultCountry = monster.config.whitelabel.countryCode,
 				initTemplate = function() {
 					var $template = $(self.getTemplate({
 							name: 'step-generalSettings',
