@@ -295,7 +295,7 @@
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_billing_contact_name">{{ i18n.billingContact.name }}</label>
 											<div class="controls">
-												<input type="text" id="accountsmanager_billing_contact_name" name="contact.billing.name" value="{{account.contact.billing.name}}" data-original_value="{{account.contact.billing.name}}" />
+												<input type="text" id="accountsmanager_billing_contact_name" name="contact.billing.name" value="{{account.contact.billing.name}}" data-original_value="{{account.contact.billing.name}}"/>
 											</div>
 										</div>
 										<div class="control-group">
@@ -315,10 +315,12 @@
 												{{i18n.billingContact.postalCode}}
 											</label>
 											<div class="controls">
-												<input type="text"
+												<input type="number"
 													id="accountsmanager_billing_contact_postalCode"
 													name="contact.billing.postal_code"
-													value="{{account.contact.billing.postal_code}}">
+													value="{{account.contact.billing.postal_code}}"
+													minlength="5"
+													required>
 											</div>
 										</div>
 										<div class="control-group">
@@ -329,7 +331,7 @@
 												<input type="text"
 													id="accountsmanager_billing_contact_streetAddress"
 													name="contact.billing.street_address"
-													value="{{account.contact.billing.street_address}}">
+													value="{{account.contact.billing.street_address}}" required>
 											</div>
 										</div>
 										<div class="control-group">
@@ -340,7 +342,7 @@
 												<input type="text"
 													id="accountsmanager_billing_contact_locality"
 													name="contact.billing.locality"
-													value="{{account.contact.billing.locality}}">
+													value="{{account.contact.billing.locality}}" required>
 											</div>
 										</div>
 										<div class="control-group">
@@ -351,7 +353,7 @@
 												<input type="text"
 													id="accountsmanager_billing_contact_region"
 													name="contact.billing.region"
-													value="{{account.contact.billing.region}}">
+													value="{{account.contact.billing.region}}" required>
 											</div>
 										</div>
 										<div class="control-group">
@@ -362,7 +364,7 @@
 												<input type="text"
 													id="accountsmanager_billing_contact_country"
 													name="contact.billing.country"
-													value="{{account.contact.billing.country}}">
+													value="{{account.contact.billing.country}}" required>
 											</div>
 										</div>
 										<div class="action-group clearfix">
