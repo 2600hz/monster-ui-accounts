@@ -2028,12 +2028,13 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardRequestResourceList: function(args) {
-			var self = this;
+			var self = this,
+				accountId = args.resource === 'user.list' ? monster.apps.auth.resellerId : self.accountId;
 
 			self.callApi({
 				resource: args.resource,
 				data: {
-					accountId: self.accountId,
+					accountId: accountId,
 					filters: {
 						paginate: false
 					},
