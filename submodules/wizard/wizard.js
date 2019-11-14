@@ -471,10 +471,6 @@ define(function(require) {
 							minDate: moment().toDate()
 						});
 
-					if (!userList.length) {
-						$template.find('#sales_rep_section').hide();
-					}
-
 					if (_.has(formattedData, 'salesRep.contractEndDate')) {
 						$contractEndDatepicker.datepicker('setDate', formattedData.salesRep.contractEndDate);
 					}
