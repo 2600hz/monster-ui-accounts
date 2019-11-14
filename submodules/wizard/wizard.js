@@ -481,6 +481,8 @@ define(function(require) {
 
 					monster.ui.chosen($template.find('#sales_rep_representative'));
 
+					$template.find('#sales_rep_representative').val(monster.apps.auth.userId).trigger('chosen:updated');
+
 					$template.find('input[data-mask]').each(function() {
 						var $this = $(this);
 						monster.ui.mask($this, $this.data('mask'));
