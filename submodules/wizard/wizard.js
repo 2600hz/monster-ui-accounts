@@ -2034,18 +2034,17 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardRequestResourceList: function(args) {
-			var self = this,
-				accountId = args.resource === 'user.list' ? monster.apps.auth.resellerId : self.accountId;
+			var self = this;
 
 			self.callApi({
 				resource: args.resource,
-				data: {
-					accountId: accountId,
+				data: _.merge({
+					accountId: self.accountId,
 					filters: {
 						paginate: false
 					},
 					generateError: _.get(args, 'generateError', true)
-				},
+				}, args.data),
 				success: function(data) {
 					args.success(data.data);
 				},
@@ -2138,6 +2137,7 @@ define(function(require) {
 		 *                                              is an error while requesting the data
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
+		 * @param  {Object} [args.data] request data override
 		 */
 		wizardGetDataList: function(args) {
 			var self = this,
@@ -2157,7 +2157,7 @@ define(function(require) {
 			if (_.has(args, 'resource')) {
 				var requestResourceArgs = _
 					.chain(args)
-					.pick('resource', 'error', 'generateError')
+					.pick('resource', 'error', 'generateError', 'data')
 					.merge({
 						success: successCallback
 					})
@@ -2240,6 +2240,7 @@ define(function(require) {
 		 * Gets the stored list of users for the current account. If the list is not stored, then
 		 * it is requested to the API.
 		 * @param  {Object} args
+		 * @param {Object} [args.data] Request data override
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
