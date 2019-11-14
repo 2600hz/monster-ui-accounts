@@ -462,7 +462,11 @@ define(function(require) {
 						$template = $(self.getTemplate({
 							name: 'step-accountContacts',
 							data: {
-								data: formattedData,
+								data: _.merge({ salesRep: {
+									representative: {
+										userId: self.userId
+									}
+								} }, formattedData),
 								users: userList
 							},
 							submodule: 'wizard'
@@ -476,8 +480,6 @@ define(function(require) {
 					}
 
 					monster.ui.chosen($template.find('#sales_rep_representative'));
-
-					$template.find('#sales_rep_representative').val(monster.apps.auth.userId).trigger('chosen:updated');
 
 					$template.find('input[data-mask]').each(function() {
 						var $this = $(this);
