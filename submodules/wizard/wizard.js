@@ -518,6 +518,9 @@ define(function(require) {
 				container: $container,
 				loadData: function(asyncCallback) {
 					self.wizardGetUserList({
+						data: {
+							accountId: monster.util.isReseller(monster.apps.auth.currentAccount) ? self.accountId : monster.apps.auth.currentAccount.reseller_id
+						},
 						success: function(userList) {
 							asyncCallback(null, userList);
 						},
