@@ -563,22 +563,23 @@ define(function(require) {
 				});
 
 				// Replace representative's userId with its ID and full name
-				if (_.isEmpty(accountContactsData.salesRep.representative)) {
-					delete accountContactsData.salesRep.representative;
-				} else {
-					var representativeUserId = accountContactsData.salesRep.representative,
-						representativeFullName = _
-							.chain(self.wizardGetStore('accountUsers'))
-							.find({
-								id: representativeUserId
-							})
-							.thru(monster.util.getUserFullName)
-							.value();
-
-					accountContactsData.salesRep.representative = {
-						userId: representativeUserId,
-						fullName: representativeFullName
-					};
+				if (_.has(accountContactsData, 'salesRep')) {
+					if (_.isEmpty(accountContactsData.salesRep.representative)) {
+						delete accountContactsData.salesRep.representative;
+					} else {
+						var representativeUserId = accountContactsData.salesRep.representative,
+							representativeFullName = _
+								.chain(self.wizardGetStore('accountUsers'))
+								.find({
+									id: representativeUserId
+								})
+								.thru(monster.util.getUserFullName)
+								.value();
+						accountContactsData.salesRep.representative = {
+							userId: representativeUserId,
+							fullName: representativeFullName
+						};
+					}
 				}
 
 				// Format phone numbers
@@ -1393,18 +1394,19 @@ define(function(require) {
 			});
 
 			// Replace representative's full data with user friendly data
-			formattedData.accountContacts.salesRep.representative = _.get(
-				formattedData.accountContacts.salesRep,
-				'representative.fullName'
-			);
+			if (_.has(formattedData.accountContacts, 'salesRep')) {
+				formattedData.accountContacts.salesRep.representative = _.get(
+					formattedData.accountContacts.salesRep,
+					'representative.fullName'
+				);
 
-			if (_.has(formattedData.accountContacts.salesRep, 'contractEndDate')) {
-				var contractEndDate = formattedData.accountContacts.salesRep.contractEndDate,
-					// Convert to gregorian with current time zone, to prevent inconsistencies
-					// due to possible diff in browser's and account's time zones
-					contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(contractEndDate);
-
-				formattedData.accountContacts.salesRep.contractEndDate = monster.util.toFriendlyDate(contractEndDateGregorian, 'date', undefined, true);
+				if (_.has(formattedData.accountContacts.salesRep, 'contractEndDate')) {
+					var contractEndDate = formattedData.accountContacts.salesRep.contractEndDate,
+						// Convert to gregorian with current time zone, to prevent inconsistencies
+						// due to possible diff in browser's and account's time zones
+						contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(contractEndDate);
+					formattedData.accountContacts.salesRep.contractEndDate = monster.util.toFriendlyDate(contractEndDateGregorian, 'date', undefined, true);
+				}
 			}
 
 			// Get plan names and quote
