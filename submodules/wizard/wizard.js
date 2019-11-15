@@ -462,7 +462,11 @@ define(function(require) {
 						$template = $(self.getTemplate({
 							name: 'step-accountContacts',
 							data: {
-								data: formattedData,
+								data: _.merge({ salesRep: {
+									representative: {
+										userId: self.userId
+									}
+								} }, formattedData),
 								users: userList
 							},
 							submodule: 'wizard'
@@ -512,6 +516,10 @@ define(function(require) {
 				container: $container,
 				loadData: function(asyncCallback) {
 					self.wizardGetUserList({
+						data: {
+							accountId: monster.apps.auth.currentAccount.is_reseller ? self.accountId : monster.apps.auth.currentAccount.reseller_id,
+							generateError: false
+						},
 						success: function(userList) {
 							asyncCallback(null, userList);
 						},
@@ -558,22 +566,23 @@ define(function(require) {
 				});
 
 				// Replace representative's userId with its ID and full name
-				if (_.isEmpty(accountContactsData.salesRep.representative)) {
-					delete accountContactsData.salesRep.representative;
-				} else {
-					var representativeUserId = accountContactsData.salesRep.representative,
-						representativeFullName = _
-							.chain(self.wizardGetStore('accountUsers'))
-							.find({
-								id: representativeUserId
-							})
-							.thru(monster.util.getUserFullName)
-							.value();
-
-					accountContactsData.salesRep.representative = {
-						userId: representativeUserId,
-						fullName: representativeFullName
-					};
+				if (_.has(accountContactsData, 'salesRep')) {
+					if (_.isEmpty(accountContactsData.salesRep.representative)) {
+						delete accountContactsData.salesRep.representative;
+					} else {
+						var representativeUserId = accountContactsData.salesRep.representative,
+							representativeFullName = _
+								.chain(self.wizardGetStore('accountUsers'))
+								.find({
+									id: representativeUserId
+								})
+								.thru(monster.util.getUserFullName)
+								.value();
+						accountContactsData.salesRep.representative = {
+							userId: representativeUserId,
+							fullName: representativeFullName
+						};
+					}
 				}
 
 				// Format phone numbers
@@ -1388,18 +1397,19 @@ define(function(require) {
 			});
 
 			// Replace representative's full data with user friendly data
-			formattedData.accountContacts.salesRep.representative = _.get(
-				formattedData.accountContacts.salesRep,
-				'representative.fullName'
-			);
+			if (_.has(formattedData.accountContacts, 'salesRep')) {
+				formattedData.accountContacts.salesRep.representative = _.get(
+					formattedData.accountContacts.salesRep,
+					'representative.fullName'
+				);
 
-			if (_.has(formattedData.accountContacts.salesRep, 'contractEndDate')) {
-				var contractEndDate = formattedData.accountContacts.salesRep.contractEndDate,
-					// Convert to gregorian with current time zone, to prevent inconsistencies
-					// due to possible diff in browser's and account's time zones
-					contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(contractEndDate);
-
-				formattedData.accountContacts.salesRep.contractEndDate = monster.util.toFriendlyDate(contractEndDateGregorian, 'date', undefined, true);
+				if (_.has(formattedData.accountContacts.salesRep, 'contractEndDate')) {
+					var contractEndDate = formattedData.accountContacts.salesRep.contractEndDate,
+						// Convert to gregorian with current time zone, to prevent inconsistencies
+						// due to possible diff in browser's and account's time zones
+						contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(contractEndDate);
+					formattedData.accountContacts.salesRep.contractEndDate = monster.util.toFriendlyDate(contractEndDateGregorian, 'date', undefined, true);
+				}
 			}
 
 			// Get plan names and quote
@@ -2032,13 +2042,13 @@ define(function(require) {
 
 			self.callApi({
 				resource: args.resource,
-				data: {
+				data: _.merge({
 					accountId: self.accountId,
 					filters: {
 						paginate: false
 					},
 					generateError: _.get(args, 'generateError', true)
-				},
+				}, args.data),
 				success: function(data) {
 					args.success(data.data);
 				},
@@ -2131,6 +2141,7 @@ define(function(require) {
 		 *                                              is an error while requesting the data
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
+		 * @param  {Object} [args.data] request data override
 		 */
 		wizardGetDataList: function(args) {
 			var self = this,
@@ -2150,7 +2161,7 @@ define(function(require) {
 			if (_.has(args, 'resource')) {
 				var requestResourceArgs = _
 					.chain(args)
-					.pick('resource', 'error', 'generateError')
+					.pick('resource', 'error', 'generateError', 'data')
 					.merge({
 						success: successCallback
 					})
@@ -2233,6 +2244,7 @@ define(function(require) {
 		 * Gets the stored list of users for the current account. If the list is not stored, then
 		 * it is requested to the API.
 		 * @param  {Object} args
+		 * @param {Object} [args.data] Request data override
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
