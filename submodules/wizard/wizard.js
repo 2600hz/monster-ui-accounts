@@ -517,7 +517,7 @@ define(function(require) {
 				loadData: function(asyncCallback) {
 					self.wizardGetUserList({
 						data: {
-							accountId: monster.util.isReseller(monster.apps.auth.currentAccount) ? self.accountId : monster.apps.auth.currentAccount.reseller_id,
+							accountId: monster.apps.auth.currentAccount.is_reseller ? self.accountId : monster.apps.auth.currentAccount.reseller_id,
 							generateError: false
 						},
 						success: function(userList) {
