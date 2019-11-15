@@ -15,26 +15,28 @@
 		<form id="form_account_contacts">
 			<div class="step-section">
 			{{#with i18n.accountsApp.wizard.steps.accountContacts as |accountContactsI18n|}}
-				<div class="section-title">
-					{{accountContactsI18n.salesRep.title}}
-				</div>
-				<div class="section-body flex-row-container">
-					<div class="flex-item-3">
-						<label for="sales_rep_representative">{{accountContactsI18n.salesRep.labels.representative}}</label>
-						<select class="input-level-block" id="sales_rep_representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.placeholders.representative}}">
-						{{#select @root.data.salesRep.representative.userId}}
-							<option value=""></option>
-							{{#each @root.users}}
-								<option value="{{id}}">{{getUserFullName this}}</option>
-							{{/each}}
-						{{/select}}
-						</select>
+				{{#if @root.users}}
+					<div class="section-title">
+						{{accountContactsI18n.salesRep.title}}
 					</div>
-					<div class="flex-item-3">
-						<label for="sales_rep_contract_end_date">{{accountContactsI18n.salesRep.labels.contractEndDate}}</label>
-						<input class="input-block-level" type="text" name="salesRep.contractEndDate" id="sales_rep_contract_end_date" placeholder="{{accountContactsI18n.salesRep.placeholders.contractEndDate}}" readonly="true" />
+					<div class="section-body flex-row-container">
+						<div class="flex-item-3">
+							<label for="sales_rep_representative">{{accountContactsI18n.salesRep.labels.representative}}</label>
+							<select class="input-level-block" id="sales_rep_representative" name="salesRep.representative" data-placeholder="{{accountContactsI18n.salesRep.placeholders.representative}}">
+							{{#select @root.data.salesRep.representative.userId}}
+								<option value=""></option>
+								{{#each @root.users}}
+									<option value="{{id}}">{{getUserFullName this}}</option>
+								{{/each}}
+							{{/select}}
+							</select>
+						</div>
+						<div class="flex-item-3">
+							<label for="sales_rep_contract_end_date">{{accountContactsI18n.salesRep.labels.contractEndDate}}</label>
+							<input class="input-block-level" type="text" name="salesRep.contractEndDate" id="sales_rep_contract_end_date" placeholder="{{accountContactsI18n.salesRep.placeholders.contractEndDate}}" readonly="true" />
+						</div>
 					</div>
-				</div>
+				{{/if}}
 				<div class="section-title">
 					{{accountContactsI18n.technicalContact.title}}
 				</div>
