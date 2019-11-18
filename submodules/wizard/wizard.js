@@ -147,7 +147,7 @@ define(function(require) {
 					},
 					// App Restrictions defaults
 					appRestrictions: {
-						accessLevel: 'restricted',
+						accessLevel: 'full',
 						allowedAppIds: []
 					}
 				},
