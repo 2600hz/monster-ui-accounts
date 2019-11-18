@@ -27,22 +27,24 @@
 {{/inline}}
 
 {{#*inline "verticalFieldPartial"}}
-	<div class="flex-item-4">
-		<div class="field-label-vertical">
-		{{#if label}}
-			{{label}}
-		{{else}}
-			{{tryI18n (lookupPath (lookupPath @root.i18n.accountsApp.wizard.steps i18nSectionName) "labels") i18nFieldName}}
-		{{/if}}
+	{{#compare (lookupPath this (coalesce fieldPath i18nFieldName)) '!==' ''}}
+		<div class="flex-item-4">
+			<div class="field-label-vertical">
+			{{#if label}}
+				{{label}}
+			{{else}}
+				{{tryI18n (lookupPath (lookupPath @root.i18n.accountsApp.wizard.steps i18nSectionName) "labels") i18nFieldName}}
+			{{/if}}
+			</div>
+			<div class="field-value-vertical">
+			{{#if hasContent}}	{{!-- Necessary to know if there is a @partial-block to render, and to avoid endless recursion --}}
+				{{> @partial-block value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
+			{{else}}
+				{{lookupPath this (coalesce fieldPath i18nFieldName)}}
+			{{/if}}
+			</div>
 		</div>
-		<div class="field-value-vertical">
-		{{#if hasContent}}	{{!-- Necessary to know if there is a @partial-block to render, and to avoid endless recursion --}}
-			{{> @partial-block value=(lookupPath this (coalesce fieldPath i18nFieldName))}}
-		{{else}}
-			{{lookupPath this (coalesce fieldPath i18nFieldName)}}
-		{{/if}}
-		</div>
-	</div>
+	{{/compare}}
 {{/inline}}
 
 {{#*inline "booleanLabel"}}
