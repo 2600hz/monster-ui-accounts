@@ -547,7 +547,12 @@ define(function(require) {
 				$form = $template.find('form'),
 				// No need to validate if step won't be completed yet
 				isValid = !eventArgs.completeStep || monster.ui.valid($form),
-				accountContactsData;
+				accountContactsData,
+				arePropertiesEmpty = function(data) {
+					if (_.every(data, _.isEmpty)) {
+						_.merge(data, { isEmpty: true });
+					}
+				};
 
 			if (isValid) {
 				accountContactsData = monster.ui.getFormData($form.get(0));
@@ -583,6 +588,15 @@ define(function(require) {
 							fullName: representativeFullName
 						};
 					}
+
+					arePropertiesEmpty(accountContactsData.salesRep);
+				}
+
+				arePropertiesEmpty(accountContactsData.technicalContact);
+				arePropertiesEmpty(accountContactsData.billingContact);
+
+				if (_.every(accountContactsData, 'isEmpty')) {
+					_.merge(accountContactsData, { sectionEmpty: true });
 				}
 
 				// Format phone numbers
