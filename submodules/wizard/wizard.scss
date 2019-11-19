@@ -373,6 +373,12 @@ $color-highlight: #dbdbde;
 			letter-spacing: 0px;
 		}
 
+		.field-label-info {
+			@extend .field-label-horizontal;
+			font-style: italic;
+			font-size: 12px;
+		}
+
 		.field-value-horizontal .flex-row-container:last-child {
 			margin-bottom: -1.5rem;
 		}

@@ -589,6 +589,9 @@
 							"passwordMask": "**********",
 							"show": "Show",
 							"yes": "Yes"
+						},
+						"info": {
+							"noAccountData": "No account contacts have been added to this new account."
 						}
 					}
 				},
