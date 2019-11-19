@@ -550,7 +550,7 @@ define(function(require) {
 				accountContactsData,
 				arePropertiesEmpty = function(data) {
 					if (_.every(data, _.isEmpty)) {
-						_.merge(data, { isEmpty: true });
+						data.isEmpty = true;
 					}
 				};
 
@@ -596,7 +596,7 @@ define(function(require) {
 				arePropertiesEmpty(accountContactsData.billingContact);
 
 				if (_.every(accountContactsData, 'isEmpty')) {
-					_.merge(accountContactsData, { sectionEmpty: true });
+					accountContactsData.sectionEmpty = true;
 				}
 
 				// Format phone numbers
