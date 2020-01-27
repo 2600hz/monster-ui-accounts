@@ -198,6 +198,7 @@ define(function(require) {
 						var pascalCasedStepName = _.upperFirst(stepName);
 
 						return {
+							name: stepName,
 							label: _.get(i18nSteps, [ stepName, 'label' ]),
 							description: _.get(i18nSteps, [ stepName, 'description' ]),
 							template: 'wizard' + pascalCasedStepName + 'Render',
