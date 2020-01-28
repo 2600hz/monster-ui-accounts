@@ -122,6 +122,10 @@ define(function(require) {
 				function(waterfallCallback) {
 					var parallelFunctions = {
 						parentAccount: function(parallelCallback) {
+							if (parentAccountId === self.accountId) {
+								return parallelCallback(null, monster.apps.auth.currentAccount);
+							}
+
 							self.wizardRequestGetAccount({
 								accountId: parentAccountId,
 								callback: parallelCallback
