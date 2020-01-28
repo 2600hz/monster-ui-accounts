@@ -279,13 +279,38 @@ define(function(require) {
 					// Set static validations
 					monster.ui.validate($template.find('form'), {
 						rules: {
+							'accountInfo.accountName': {
+								required: true
+							},
+							'accountInfo.whitelabeledAccountRealm': generalSettingsData.accountInfo.whitelabeledAccountRealm
+								? { required: true }
+								: {},
 							'accountInfo.accountRealm': {
 								realm: true
 							},
+							'accountInfo.addressLine1': {
+								required: true
+							},
+							'accountInfo.city': {
+								required: true
+							},
+							'accountInfo.state': {
+								required: true
+							},
 							'accountInfo.zip': {
+								required: true,
 								digits: true,
 								minlength: 5,
 								maxlength: 5
+							},
+							'accountInfo.country': {
+								required: true
+							},
+							'accountInfo.timezone': {
+								required: true
+							},
+							'accountInfo.language': {
+								required: true
 							}
 						},
 						ignore: [],	// Do not ignore hidden fields, which is the case for the ones that use the jQuery Chosen plugin
