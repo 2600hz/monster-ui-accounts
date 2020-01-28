@@ -163,7 +163,15 @@ define(function(require) {
 						// General Settings defaults
 						generalSettings: {
 							accountInfo: _.merge({
-								country: _.get(parentAccount, 'contact.billing.country', defaultCountry),
+								country: _
+									.chain(parentAccount)
+									.get('contact.billing.country')
+									.thru(function(countryCode) {
+										return _.has(monster.timezone.getCountries(), countryCode)
+											? countryCode
+											: defaultCountry;
+									})
+									.value(),
 								language: _.get(parentAccount, 'language', defaultLanguage),
 								timezone: parentAccount.timezone
 							}, isRealmSuffixDefined ? {
