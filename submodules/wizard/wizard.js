@@ -314,7 +314,7 @@ define(function(require) {
 							}
 						},
 						ignore: [],	// Do not ignore hidden fields, which is the case for the ones that use the jQuery Chosen plugin
-						onfocusout: self.wizardValidateFormField,
+						onfocusout: _.partial(self.wizardValidateGeneralSettingsFormField, $template),
 						autoScrollOnInvalid: true
 					});
 
@@ -465,7 +465,8 @@ define(function(require) {
 			$adminItemTemplate
 				.find('input[type="email"]')
 					.rules('add', {
-						email: true
+						email: true,
+						notEqualTo: '.admin-user-list .admin-user-item input[type="email"]'
 					});
 
 			$adminItemTemplate
@@ -2531,6 +2532,31 @@ define(function(require) {
 		 */
 		wizardValidateFormField: function(element) {
 			$(element).valid();
+		},
+
+		/**
+		 * Validates a form input field on the General Settings step
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Element} element  Input element
+		 */
+		wizardValidateGeneralSettingsFormField: function($template, element) {
+			var $element = $(element),
+				elementName = $element.attr('name'),
+				isValid = $element.valid();
+
+			if (!(isValid && elementName.match(/^accountAdmins\[\d+\]\.email$/))) {
+				return;
+			}
+
+			// If the element is an e-mail field from an account administrator item, then
+			// re-validate other invalid e-mail fields, in case the current field had a duplicate
+			// (notEqualTo) error, which means that other field had the same value and maybe
+			// the same error too.
+			$template
+				.find('.admin-user-list .admin-user-item input[type="email"][aria-invalid="true"]')
+					.each(function() {
+						$(this).valid();
+					});
 		},
 
 		/**
