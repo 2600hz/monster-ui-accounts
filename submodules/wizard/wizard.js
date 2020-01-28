@@ -157,7 +157,6 @@ define(function(require) {
 				var defaultLanguage = _.get(monster.config, 'whitelabel.language', monster.defaultLanguage),
 					parentAccount = results.parentAccount,
 					defaultData = {
-						parentAccountId: parentAccountId,
 						parentAccount: parentAccount,
 						// General Settings defaults
 						generalSettings: {
@@ -1558,7 +1557,7 @@ define(function(require) {
 				function(waterfallCallback) {
 					self.wizardRequestResourceCreateOrUpdate({
 						resource: 'account.create',
-						accountId: wizardData.parentAccountId,
+						accountId: wizardData.parentAccount.id,
 						data: self.wizardSubmitGetFormattedAccount(wizardData),
 						generateError: true,
 						callback: function(err, newAccount) {
@@ -1909,12 +1908,14 @@ define(function(require) {
 		 * Loads the account manager, to replace the wizard view
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Main view container
-		 * @param  {String} args.parentAccountId  Parent Account ID
+		 * @param  {Object} args.data  Wizard data
+		 * @param  {Object} args.data.parentAccount  Parent Account
+		 * @param  {String} args.data.parentAccount.id  Parent Account ID
 		 */
 		wizardClose: function(args) {
 			var self = this,
 				$container = args.container,
-				parentAccountId = args.parentAccountId;
+				parentAccountId = args.data.parentAccount.id;
 
 			monster.pub('accountsManager.activate', {
 				container: $container,
