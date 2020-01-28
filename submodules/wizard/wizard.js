@@ -337,17 +337,8 @@ define(function(require) {
 		wizardGeneralSettingsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
-				isValid = false,
+				isValid = monster.ui.valid($form),
 				generalSettingsData;
-
-			// Set dynamic validations
-			$form.find('.admin-user-item input[type="password"]').each(function() {
-				$(this).rules('add', {
-					minlength: 6
-				});
-			});
-
-			isValid = monster.ui.valid($form);
 
 			if (isValid) {
 				generalSettingsData = monster.ui.getFormData($form.get(0));
@@ -460,6 +451,28 @@ define(function(require) {
 				listContainer: $listContainer,
 				animationDuration: animate ? self.appFlags.wizard.animationTimes.adminUser : 0
 			});
+
+			// Set validation rules. This is done after append, for the rules to be applied properly.
+			$adminItemTemplate
+				.find('input:not([type="checkbox"])')
+					.each(function() {
+						$(this)
+							.rules('add', {
+								required: true
+							});
+					});
+
+			$adminItemTemplate
+				.find('input[type="email"]')
+					.rules('add', {
+						email: true
+					});
+
+			$adminItemTemplate
+				.find('input[type="password"]')
+					.rules('add', {
+						minlength: 6
+					});
 		},
 
 		/* ACCOUNT CONTACTS STEP */
