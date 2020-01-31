@@ -9,7 +9,7 @@
 			</span>
 		{{/if}}
 		</label>
-		<input class="input-block-level" type="text" name="accountInfo.{{../name}}" id="account_info_{{coalesce ../id ../name}}" placeholder="{{coalesce (lookup accountInfoI18n.placeholders ../name) (tryI18n accountInfoI18n.labels ../name)}}"{{#if ../required}} required{{/if}} value="{{lookupPath @root.data.accountInfo ../name}}">
+		<input class="input-block-level" type="text" name="accountInfo.{{../name}}" id="account_info_{{coalesce ../id ../name}}" placeholder="{{coalesce (lookup accountInfoI18n.placeholders ../name) (tryI18n accountInfoI18n.labels ../name)}}" value="{{lookupPath @root.data.accountInfo ../name}}">
 	{{/with}}
 	</div>
 {{/inline}}
@@ -26,28 +26,28 @@
 					{{accountInfoI18n.title}}
 				</div>
 				<div class="section-body flex-row-container">
-					{{> accountInfoInputPartial id="account_name" name="accountName" required=true}}
+					{{> accountInfoInputPartial id="account_name" name="accountName"}}
 				{{#if @root.data.accountInfo.whitelabeledAccountRealm}}
-					{{> accountInfoInputPartial id="account_realm" name="whitelabeledAccountRealm" required=true}}
+					{{> accountInfoInputPartial id="account_realm" name="whitelabeledAccountRealm"}}
 				{{else}}
 					{{> accountInfoInputPartial id="account_realm" name="accountRealm"}}
 				{{/if}}
-					{{> accountInfoInputPartial id="address_line_1" name="addressLine1" required=true}}
+					{{> accountInfoInputPartial id="address_line_1" name="addressLine1"}}
 					{{> accountInfoInputPartial id="address_line_2" name="addressLine2"}}
-					{{> accountInfoInputPartial name="city" required=true}}
-					{{> accountInfoInputPartial name="state" required=true}}
-					{{> accountInfoInputPartial name="zip" required=true}}
+					{{> accountInfoInputPartial name="city"}}
+					{{> accountInfoInputPartial name="state"}}
+					{{> accountInfoInputPartial name="zip"}}
 					<div class="flex-item-2">
 						<label for="account_info_country">{{accountInfoI18n.labels.country}}</label>
-						<select id="account_info_country" name="accountInfo.country" data-placeholder="{{accountInfoI18n.labels.country}}" required></select>
+						<select id="account_info_country" name="accountInfo.country" data-placeholder="{{accountInfoI18n.labels.country}}"></select>
 					</div>
 					<div class="flex-item-2">
 						<label for="account_info_timezone">{{accountInfoI18n.labels.timezone}}</label>
-						<select id="account_info_timezone" name="accountInfo.timezone" data-placeholder="{{accountInfoI18n.labels.timezone}}" required></select>
+						<select id="account_info_timezone" name="accountInfo.timezone" data-placeholder="{{accountInfoI18n.labels.timezone}}"></select>
 					</div>
 					<div class="flex-item-2">
 						<label for="account_info_language">{{accountInfoI18n.labels.language}}</label>
-						{{languageSelector id="account_info_language" name="accountInfo.language" class="input-block-level" required="true" selectedLanguage=@root.data.accountInfo.language}}
+						{{languageSelector id="account_info_language" name="accountInfo.language" class="input-block-level" selectedLanguage=@root.data.accountInfo.language}}
 					</div>
 				</div>
 			{{/with}}
