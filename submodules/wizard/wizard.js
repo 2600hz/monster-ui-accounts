@@ -280,17 +280,42 @@ define(function(require) {
 					// Set static validations
 					monster.ui.validate($template.find('form'), {
 						rules: {
+							'accountInfo.accountName': {
+								required: true
+							},
+							'accountInfo.whitelabeledAccountRealm': generalSettingsData.accountInfo.whitelabeledAccountRealm
+								? { required: true }
+								: {},
 							'accountInfo.accountRealm': {
 								realm: true
 							},
+							'accountInfo.addressLine1': {
+								required: true
+							},
+							'accountInfo.city': {
+								required: true
+							},
+							'accountInfo.state': {
+								required: true
+							},
 							'accountInfo.zip': {
+								required: true,
 								digits: true,
 								minlength: 5,
 								maxlength: 5
+							},
+							'accountInfo.country': {
+								required: true
+							},
+							'accountInfo.timezone': {
+								required: true
+							},
+							'accountInfo.language': {
+								required: true
 							}
 						},
 						ignore: [],	// Do not ignore hidden fields, which is the case for the ones that use the jQuery Chosen plugin
-						onfocusout: self.wizardValidateFormField,
+						onfocusout: _.partial(self.wizardValidateGeneralSettingsFormField, $template),
 						autoScrollOnInvalid: true
 					});
 
@@ -313,17 +338,8 @@ define(function(require) {
 		wizardGeneralSettingsUtil: function($template, args) {
 			var self = this,
 				$form = $template.find('form'),
-				isValid = false,
+				isValid = monster.ui.valid($form),
 				generalSettingsData;
-
-			// Set dynamic validations
-			$form.find('.admin-user-item input[type="password"]').each(function() {
-				$(this).rules('add', {
-					minlength: 6
-				});
-			});
-
-			isValid = monster.ui.valid($form);
 
 			if (isValid) {
 				generalSettingsData = monster.ui.getFormData($form.get(0));
@@ -436,6 +452,29 @@ define(function(require) {
 				listContainer: $listContainer,
 				animationDuration: animate ? self.appFlags.wizard.animationTimes.adminUser : 0
 			});
+
+			// Set validation rules. This is done after append, for the rules to be applied properly.
+			$adminItemTemplate
+				.find('input:not([type="checkbox"])')
+					.each(function() {
+						$(this)
+							.rules('add', {
+								required: true
+							});
+					});
+
+			$adminItemTemplate
+				.find('input[type="email"]')
+					.rules('add', {
+						email: true,
+						notEqualTo: '.admin-user-list .admin-user-item input[type="email"]'
+					});
+
+			$adminItemTemplate
+				.find('input[type="password"]')
+					.rules('add', {
+						minlength: 6
+					});
 		},
 
 		/* ACCOUNT CONTACTS STEP */
@@ -2497,6 +2536,31 @@ define(function(require) {
 		 */
 		wizardValidateFormField: function(element) {
 			$(element).valid();
+		},
+
+		/**
+		 * Validates a form input field on the General Settings step
+		 * @param  {jQuery} $template  Step template
+		 * @param  {Element} element  Input element
+		 */
+		wizardValidateGeneralSettingsFormField: function($template, element) {
+			var $element = $(element),
+				elementName = $element.attr('name'),
+				isValid = $element.valid();
+
+			if (!(isValid && elementName.match(/^accountAdmins\[\d+\]\.email$/))) {
+				return;
+			}
+
+			// If the element is an e-mail field from an account administrator item, then
+			// re-validate other invalid e-mail fields, in case the current field had a duplicate
+			// (notEqualTo) error, which means that other field had the same value and maybe
+			// the same error too.
+			$template
+				.find('.admin-user-list .admin-user-item input[type="email"][aria-invalid="true"]')
+					.each(function() {
+						$(this).valid();
+					});
 		},
 
 		/**
