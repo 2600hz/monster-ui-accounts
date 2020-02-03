@@ -198,6 +198,7 @@ define(function(require) {
 						var pascalCasedStepName = _.upperFirst(stepName);
 
 						return {
+							name: stepName,
 							label: _.get(i18nSteps, [ stepName, 'label' ]),
 							description: _.get(i18nSteps, [ stepName, 'description' ]),
 							template: 'wizard' + pascalCasedStepName + 'Render',
@@ -1366,7 +1367,8 @@ define(function(require) {
 					});
 
 					self.wizardReviewBindEvents({
-						template: $template
+						template: $template,
+						steps: _.map(args.steps, 'name')
 					});
 
 					return $template;
@@ -1507,10 +1509,12 @@ define(function(require) {
 		 * Bind Review step events
 		 * @param  {Object} args
 		 * @param  {jQuery} args.template  Step template
+		 * @param  {String[]} args.steps  Step names
 		 */
 		wizardReviewBindEvents: function(args) {
 			var self = this,
-				$template = args.template;
+				$template = args.template,
+				steps = args.steps;
 
 			$template
 				.find('.edit-step')
@@ -1518,7 +1522,7 @@ define(function(require) {
 						e.preventDefault();
 
 						var stepName = $(this).data('step_name'),
-							stepId = _.indexOf(self.appFlags.wizard.stepNames, stepName);
+							stepId = _.indexOf(steps, stepName);
 
 						monster.pub('common.navigationWizard.goToStep', {
 							stepId: stepId
