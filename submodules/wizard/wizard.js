@@ -107,58 +107,10 @@ define(function(require) {
 				parentAccountId = args.parentAccountId,
 				i18n = self.i18n.active().accountsApp.wizard,
 				i18nSteps = i18n.steps,
-				defaultLanguage = _.get(monster.config, 'whitelabel.language', monster.defaultLanguage),
-				defaultData = {
-					parentAccountId: parentAccountId,
-					// General Settings defaults
-					generalSettings: {
-						accountInfo: {
-							language: defaultLanguage,
-							timezone: monster.apps.auth.currentAccount.timezone
-						}
-					},
-					// Usage and Call Restrictions defaults
-					usageAndCallRestrictions: {
-						trunkLimits: {
-							inbound: 0,
-							outbound: 0,
-							twoway: 0
-						},
-						allowPerMinuteCalls: false,
-						callRestrictions: {
-							_all: true
-						}
-					},
-					// Credit Balance and Features defaults
-					creditBalanceAndFeatures: {
-						controlCenterAccess: {
-							features: {
-								user: true,
-								account: true,
-								billing: true,
-								balance: true,
-								credit: true,
-								minutes: true,
-								service_plan: true,
-								transactions: true,
-								error_tracker: true
-							}
-						}
-					},
-					// App Restrictions defaults
-					appRestrictions: {
-						accessLevel: 'full',
-						allowedAppIds: []
-					}
-				},
 				stepNames = self.appFlags.wizard.stepNames;
 
 			// Clean store, in case it was not empty, to avoid using old data
 			self.wizardSetStore({});
-
-			if (!_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value()) {
-				defaultData.generalSettings.accountInfo.whitelabeledAccountRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
-			}
 
 			monster.waterfall([
 				function(waterfallCallback) {
@@ -168,25 +120,90 @@ define(function(require) {
 					});
 				},
 				function(waterfallCallback) {
-					if (monster.util.isReseller() || monster.util.isSuperDuper()) {
-						return waterfallCallback(null);
-					}
-					waterfallCallback({
-						nonReseller: true
-					});
-				},
-				function(waterfallCallback) {
-					self.wizardGetServicePlanList({
-						success: function(plans) {
-							waterfallCallback(null, plans);
+					var parallelFunctions = {
+						parentAccount: function(parallelCallback) {
+							if (parentAccountId === self.accountId) {
+								return parallelCallback(null, monster.apps.auth.currentAccount);
+							}
+
+							self.wizardRequestGetAccount({
+								accountId: parentAccountId,
+								callback: parallelCallback
+							});
 						},
-						error: function() {
-							waterfallCallback(null, []);
+						servicePlans: function(parallelCallback) {
+							self.wizardGetServicePlanList({
+								success: function(plans) {
+									parallelCallback(null, plans);
+								},
+								error: function() {
+									parallelCallback(null, []);
+								}
+							});
 						}
-					});
+					};
+
+					if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
+						delete parallelFunctions.servicePlans;
+					}
+
+					monster.parallel(parallelFunctions, waterfallCallback);
 				}
-			], function(err, plans) {
-				if (_.isEmpty(plans)) {
+			], function(err, results) {
+				if (err) {
+					return;
+				}
+
+				var defaultLanguage = _.get(monster.config, 'whitelabel.language', monster.defaultLanguage),
+					parentAccount = results.parentAccount,
+					isRealmSuffixDefined = !_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value(),
+					defaultData = {
+						parentAccount: parentAccount,
+						// General Settings defaults
+						generalSettings: {
+							accountInfo: _.merge({
+								language: defaultLanguage,
+								timezone: parentAccount.timezone
+							}, isRealmSuffixDefined ? {
+								whitelabeledAccountRealm: monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix
+							} : {})
+						},
+						// Usage and Call Restrictions defaults
+						usageAndCallRestrictions: {
+							trunkLimits: {
+								inbound: 0,
+								outbound: 0,
+								twoway: 0
+							},
+							allowPerMinuteCalls: false,
+							callRestrictions: {
+								_all: true
+							}
+						},
+						// Credit Balance and Features defaults
+						creditBalanceAndFeatures: {
+							controlCenterAccess: {
+								features: {
+									user: true,
+									account: true,
+									billing: true,
+									balance: true,
+									credit: true,
+									minutes: true,
+									service_plan: true,
+									transactions: true,
+									error_tracker: true
+								}
+							}
+						},
+						// App Restrictions defaults
+						appRestrictions: {
+							accessLevel: 'full',
+							allowedAppIds: []
+						}
+					};
+
+				if (_.isEmpty(results.servicePlans)) {
 					stepNames = _.without(stepNames, 'servicePlan');
 				}
 
@@ -1582,7 +1599,7 @@ define(function(require) {
 				function(waterfallCallback) {
 					self.wizardRequestResourceCreateOrUpdate({
 						resource: 'account.create',
-						accountId: wizardData.parentAccountId,
+						accountId: wizardData.parentAccount.id,
 						data: self.wizardSubmitGetFormattedAccount(wizardData),
 						generateError: true,
 						callback: function(err, newAccount) {
@@ -1933,12 +1950,14 @@ define(function(require) {
 		 * Loads the account manager, to replace the wizard view
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Main view container
-		 * @param  {String} args.parentAccountId  Parent Account ID
+		 * @param  {Object} args.data  Wizard data
+		 * @param  {Object} args.data.parentAccount  Parent Account
+		 * @param  {String} args.data.parentAccount.id  Parent Account ID
 		 */
 		wizardClose: function(args) {
 			var self = this,
 				$container = args.container,
-				parentAccountId = args.parentAccountId;
+				parentAccountId = args.data.parentAccount.id;
 
 			monster.pub('accountsManager.activate', {
 				container: $container,
@@ -1947,6 +1966,29 @@ define(function(require) {
 		},
 
 		/* API REQUESTS */
+
+		/**
+		 * Request an account document
+		 * @param  {Object} args
+		 * @param  {String} args.accountId  Account ID
+		 * @param  {Function} args.callback  Async.js callback
+		 */
+		wizardRequestGetAccount: function(args) {
+			var self = this;
+
+			self.callApi({
+				resource: 'account.get',
+				data: {
+					accountId: args.accountId
+				},
+				success: function(data) {
+					args.callback(null, data.data);
+				},
+				error: function(parsedError) {
+					args.callback(parsedError);
+				}
+			});
+		},
 
 		/**
 		 * Request apps blacklist update for an account
