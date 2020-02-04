@@ -156,14 +156,17 @@ define(function(require) {
 
 				var defaultLanguage = _.get(monster.config, 'whitelabel.language', monster.defaultLanguage),
 					parentAccount = results.parentAccount,
+					isRealmSuffixDefined = !_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value(),
 					defaultData = {
 						parentAccount: parentAccount,
 						// General Settings defaults
 						generalSettings: {
-							accountInfo: {
+							accountInfo: _.merge({
 								language: defaultLanguage,
 								timezone: parentAccount.timezone
-							}
+							}, isRealmSuffixDefined ? {
+								whitelabeledAccountRealm: monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix
+							} : {})
 						},
 						// Usage and Call Restrictions defaults
 						usageAndCallRestrictions: {
@@ -199,10 +202,6 @@ define(function(require) {
 							allowedAppIds: []
 						}
 					};
-
-				if (!_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value()) {
-					defaultData.generalSettings.accountInfo.whitelabeledAccountRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
-				}
 
 				if (_.isEmpty(results.servicePlans)) {
 					stepNames = _.without(stepNames, 'servicePlan');
