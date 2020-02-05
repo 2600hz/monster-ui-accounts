@@ -155,6 +155,7 @@ define(function(require) {
 				}
 
 				var defaultLanguage = _.get(monster.config, 'whitelabel.language', monster.defaultLanguage),
+					defaultCountry = _.get(monster.config, 'whitelabel.countryCode'),
 					parentAccount = results.parentAccount,
 					isRealmSuffixDefined = !_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value(),
 					defaultData = {
@@ -162,7 +163,16 @@ define(function(require) {
 						// General Settings defaults
 						generalSettings: {
 							accountInfo: _.merge({
-								language: defaultLanguage,
+								country: _
+									.chain(parentAccount)
+									.get('contact.billing.country')
+									.thru(function(countryCode) {
+										return _.has(monster.timezone.getCountries(), countryCode)
+											? countryCode
+											: defaultCountry;
+									})
+									.value(),
+								language: _.get(parentAccount, 'language', defaultLanguage),
 								timezone: parentAccount.timezone
 							}, isRealmSuffixDefined ? {
 								whitelabeledAccountRealm: monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix
@@ -250,7 +260,6 @@ define(function(require) {
 					correlative: 1
 				},
 				generalSettingsData = data.generalSettings,
-				defaultCountry = monster.config.whitelabel.countryCode,
 				initTemplate = function() {
 					var $template = $(self.getTemplate({
 							name: 'step-generalSettings',
@@ -268,7 +277,7 @@ define(function(require) {
 					monster.ui.countrySelector(
 						$countriesDropdown,
 						{
-							selectedValues: _.get(generalSettingsData, 'accountInfo.country', defaultCountry),
+							selectedValues: generalSettingsData.accountInfo.country,
 							options: {
 								showEmptyOption: true
 							}
