@@ -603,9 +603,9 @@ define(function(require) {
 		 * @param  {jQuery} $template  Step template
 		 * @param  {Object} args  Wizard's arguments
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
-		 * @param  {Object} args.eventArgs  Event arguments
-		 * @param  {Boolean} args.eventArgs.completeStep  Whether or not the current step will be
-		 *                                                completed
+		 * @param  {Object} eventArgs  Event arguments
+		 * @param  {Boolean} eventArgs.completeStep  Whether or not the current step will be
+		 *                                           completed
 		 * @returns  {Object}  Object that contains the updated step data, and if it is valid
 		 */
 		wizardAccountContactsUtil: function($template, args, eventArgs) {
