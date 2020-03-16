@@ -1741,7 +1741,8 @@ define(function(require) {
 				technicalContact = accountContacts.technicalContact,
 				salesRepresentative = accountContacts.salesRep,
 				controlCenterFeatures = wizardData.creditBalanceAndFeatures.controlCenterAccess.features,
-				accountDocument = {
+				omitEmpty = _.partialRight(_.omitBy, _.isEmpty),
+				accountDocument = _.merge({
 					call_restriction: _
 						.mapValues(wizardData.usageAndCallRestrictions.callRestrictions, function(value) {
 							return {
@@ -1749,7 +1750,7 @@ define(function(require) {
 							};
 						}),
 					contact: {
-						billing: {
+						billing: omitEmpty({
 							country: accountInfo.country,
 							region: accountInfo.state,
 							locality: accountInfo.city,
@@ -1759,12 +1760,7 @@ define(function(require) {
 							email: billingContact.email,
 							name: billingContact.fullName,
 							number: billingContact.phoneNumber.e164Number
-						},
-						technical: {
-							email: technicalContact.email,
-							name: technicalContact.fullName,
-							number: technicalContact.phoneNumber.e164Number
-						}
+						})
 					},
 					language: accountInfo.language,
 					name: accountInfo.accountName,
@@ -1795,28 +1791,33 @@ define(function(require) {
 							})
 							.value()
 					}
-				};
-
-			// Set optional data
-			if (_.has(accountInfo, 'realm')) {
-				accountDocument.realm = accountInfo.realm;
-			}
-			if (_.has(salesRepresentative, 'contractEndDate')) {
-				var contractEndDateGregorian = self.wizardDateToGregorianWithCurrentTimeZone(salesRepresentative.contractEndDate);
-
-				_.set(accountDocument, 'contract.end_date', contractEndDateGregorian);
-			}
-			if (_.has(salesRepresentative, 'representative')) {
-				_.set(
-					accountDocument,
-					'contract.representative',
-					{
-						account_id: self.accountId,
-						user_id: salesRepresentative.representative.userId,
-						name: salesRepresentative.representative.fullName
+				},
+				technicalContact.isEmpty ? {} : {
+					contact: {
+						technical: omitEmpty({
+							email: technicalContact.email,
+							name: technicalContact.fullName,
+							number: technicalContact.phoneNumber.e164Number
+						})
 					}
-				);
-			}
+				},
+				_.has(accountInfo, 'accountRealm') ? {
+					realm: accountInfo.accountRealm
+				} : {},
+				_.has(salesRepresentative, 'contractEndDate') ? {
+					contract: {
+						end_date: self.wizardDateToGregorianWithCurrentTimeZone(salesRepresentative.contractEndDate)
+					}
+				} : {},
+				_.has(salesRepresentative, 'representative') ? {
+					contract: {
+						representative: {
+							account_id: self.accountId,
+							user_id: salesRepresentative.representative.userId,
+							name: salesRepresentative.representative.fullName
+						}
+					}
+				} : {});
 
 			return accountDocument;
 		},
