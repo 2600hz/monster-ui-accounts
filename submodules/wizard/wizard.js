@@ -76,7 +76,7 @@ define(function(require) {
 							category: 'misc',
 							features: [
 								{
-									name: 'error_tracker',
+									name: 'errorTracker',
 									icon: 'bug'
 								}
 							]
@@ -202,7 +202,7 @@ define(function(require) {
 									minutes: true,
 									service_plan: true,
 									transactions: true,
-									error_tracker: true
+									errorTracker: true
 								}
 							}
 						},
