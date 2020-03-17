@@ -512,7 +512,7 @@
 								"balance": "Usage Charges",
 								"billing": "Credit Card",
 								"credit": "Credit Info",
-								"error_tracker": "UI Errors Log",
+								"errorTracker": "UI Errors Log",
 								"minutes": "Minute Info",
 								"service_plan": "Service Plan",
 								"transactions": "Transactions",
