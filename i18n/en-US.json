@@ -512,10 +512,13 @@
 								"balance": "Usage Charges",
 								"billing": "Credit Card",
 								"credit": "Credit Info",
-								"error_tracker": "UI Errors Log",
+								"errorTracker": "UI Errors Log",
+								"inbound": "Inbound",
 								"minutes": "Minute Info",
+								"outbound": "Outbound",
 								"service_plan": "Service Plan",
 								"transactions": "Transactions",
+								"twoway": "Two-way",
 								"user": "User"
 							},
 							"help": {
