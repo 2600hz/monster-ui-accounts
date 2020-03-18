@@ -73,10 +73,27 @@ define(function(require) {
 							]
 						},
 						{
+							category: 'trunking',
+							features: [
+								{
+									name: 'inbound',
+									icon: 'arrow-right'
+								},
+								{
+									name: 'outbound',
+									icon: 'arrow-left'
+								},
+								{
+									name: 'twoway',
+									icon: 'two-way'
+								}
+							]
+						},
+						{
 							category: 'misc',
 							features: [
 								{
-									name: 'error_tracker',
+									name: 'errorTracker',
 									icon: 'bug'
 								}
 							]
@@ -202,7 +219,10 @@ define(function(require) {
 									minutes: true,
 									service_plan: true,
 									transactions: true,
-									error_tracker: true
+									inbound: true,
+									outbound: true,
+									twoway: true,
+									errorTracker: true
 								}
 							}
 						},
@@ -1780,18 +1800,6 @@ define(function(require) {
 								}, {
 									show_tab: controlCenterFeatures[feature.name]
 								});
-							})
-							// Merge trunk features with default values, as they were not set in the wizard
-							.merge({
-								inbound: {
-									show_tab: true
-								},
-								outbound: {
-									show_tab: true
-								},
-								twoway: {
-									show_tab: true
-								}
 							})
 							.value()
 					}
