@@ -603,7 +603,7 @@ define(function(require) {
 				loadData: function(asyncCallback) {
 					self.wizardGetUserList({
 						data: {
-							accountId: monster.apps.auth.currentAccount.is_reseller ? self.accountId : monster.apps.auth.currentAccount.reseller_id,
+							accountId: self.wizardGetSalesRepresentativeAccountId(),
 							generateError: false
 						},
 						success: function(userList) {
@@ -670,6 +670,7 @@ define(function(require) {
 								.thru(monster.util.getUserFullName)
 								.value();
 						accountContactsData.salesRep.representative = {
+							accountId: self.wizardGetSalesRepresentativeAccountId(),
 							userId: representativeUserId,
 							fullName: representativeFullName
 						};
@@ -1820,7 +1821,7 @@ define(function(require) {
 				_.has(salesRepresentative, 'representative') ? {
 					contract: {
 						representative: {
-							account_id: self.accountId,
+							account_id: salesRepresentative.representative.accountId,
 							user_id: salesRepresentative.representative.userId,
 							name: salesRepresentative.representative.fullName
 						}
@@ -2330,6 +2331,18 @@ define(function(require) {
 				storeKey: 'numberClassifiers',
 				requestData: requestData
 			}, args));
+		},
+
+		/**
+		 * Gets the account ID for the sales representative, depending on whether the current
+		 * account is a reseller
+		 */
+		wizardGetSalesRepresentativeAccountId: function() {
+			var self = this;
+
+			return monster.apps.auth.currentAccount.is_reseller
+				? self.accountId
+				: monster.apps.auth.currentAccount.reseller_id;
 		},
 
 		/**
