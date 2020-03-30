@@ -255,7 +255,6 @@ define(function(require) {
 					.union(singleDiscountsQtys, cumulativeDiscountsQtys)
 					.sortBy()
 					.value(),
-				lastQty = 0,
 				formattedItemList = [],
 				addRow = function(item) {
 					// If we add multiple lines for the same item, then we don't want to repeat the label every time
@@ -274,7 +273,9 @@ define(function(require) {
 
 			_.chain(allRateQtys)
 				.map(function(qty, index) {
-					var formattedItem = _.cloneDeep(defaultItem),
+					var formattedItem = _.merge({}, defaultItem, {
+							quantity: _.isFinite(qty) ? '0 - ' + qty : '0 - ∞'
+						}),
 						priceHasChanged = index === 0 && price;
 
 					if (price && price.qty < qty) {
@@ -306,15 +307,6 @@ define(function(require) {
 							value: cumulativeDiscount.rate
 						}, cumulativeDiscountExtra);
 					}
-
-					if (!_.isFinite(qty)) {
-						formattedItem.quantity = lastQty + ' - ∞';
-					} else if (lastQty === qty) {
-						formattedItem.quantity = _.toString(qty);
-					} else {
-						formattedItem.quantity = lastQty + ' - ' + qty;
-					}
-					lastQty = qty;
 
 					return formattedItem;
 				})
