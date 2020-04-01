@@ -513,7 +513,10 @@ define(function(require) {
 				.find('input[type="email"]')
 					.rules('add', {
 						email: true,
-						notEqualTo: '.admin-user-list .admin-user-item input[type="email"]'
+						notEqualTo: '.admin-user-list .admin-user-item input[type="email"]',
+						normalizer: function(value) {
+							return _.toLower(value);
+						}
 					});
 
 			$adminItemTemplate
