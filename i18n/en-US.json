@@ -400,7 +400,7 @@
 					},
 					"accountAdmins": {
 						"title": "Account Administrators",
-						"description": "You have the option to create administrators under this new account during this step. For each administrator added below,  a corresponding user will be created in SmartPBX. You can add as many administrators as your sitation requires.",
+						"description": "You have the option to create administrators under this new account during this step. For each administrator added below,  a corresponding user will be created in SmartPBX. You can add as many administrators as your situation requires.",
 						"adminLabel": "Administrator",
 						"labels": {
 							"firstName": "First Name",
