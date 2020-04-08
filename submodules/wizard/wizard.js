@@ -1416,12 +1416,6 @@ define(function(require) {
 				initTemplate = function() {
 					monster.ui.tooltips($template);
 
-					// The numbering is dynamically set through jQuery
-					// because some steps may be omitted from the template
-					$template.find('.step-number').each(function(idx, el) {
-						$(el).text(idx + 1);
-					});
-
 					self.wizardReviewBindEvents({
 						template: $template,
 						steps: _.map(args.steps, 'name')
