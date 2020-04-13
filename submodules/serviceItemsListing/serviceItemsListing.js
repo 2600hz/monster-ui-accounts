@@ -255,27 +255,20 @@ define(function(require) {
 					.union(singleDiscountsQtys, cumulativeDiscountsQtys)
 					.sortBy()
 					.value(),
-				lastQty = 0,
-				formattedItemList = [],
-				addRow = function(item) {
-					// If we add multiple lines for the same item, then we don't want to repeat the label every time
-					if (formattedItemList.length > 0) {
-						if (!item.isActivationCharges) {
-							item.label = '';
-						}
-					}
-
-					formattedItemList.push(item);
-				},
 				price = priceRates.head,
 				singleDiscount = singleDiscountRates.head,
 				cumulativeDiscount = cumulativeDiscountRates.head,
-				cumulativeDiscountExtra = _.has(item, 'discounts.cumulative.maximum') ? { maximum: item.discounts.cumulative.maximum } : {};
-
-			_.chain(allRateQtys)
-				.map(function(qty, index) {
-					var formattedItem = _.cloneDeep(defaultItem),
+				cumulativeDiscountExtra = _.has(item, 'discounts.cumulative.maximum') ? { maximum: item.discounts.cumulative.maximum } : {},
+				formattedItemList = _.map(allRateQtys, function(qty, index) {
+					var formattedItem = _.merge({}, defaultItem, {
+							quantity: _.isFinite(qty) ? '0 - ' + qty : '0 - ∞'
+						}),
 						priceHasChanged = index === 0 && price;
+
+					if (index > 0) {
+						// If we add multiple lines for the same item, then we don't want to repeat the label every time
+						formattedItem.label = '';
+					}
 
 					if (price && price.qty < qty) {
 						price = price.next;
@@ -307,21 +300,8 @@ define(function(require) {
 						}, cumulativeDiscountExtra);
 					}
 
-					if (!_.isFinite(qty)) {
-						formattedItem.quantity = lastQty + ' - ∞';
-					} else if (lastQty === qty) {
-						formattedItem.quantity = _.toString(qty);
-					} else {
-						formattedItem.quantity = lastQty + ' - ' + qty;
-					}
-					lastQty = qty;
-
 					return formattedItem;
-				})
-				.each(function(formattedItem) {
-					addRow(formattedItem);
-				})
-				.value();
+				});
 
 			if (_.has(item, 'activation_charge') && item.activation_charge > 0) {
 				var formattedItem = _.cloneDeep(defaultItem);
@@ -335,12 +315,12 @@ define(function(require) {
 				});
 				formattedItem.rate.value = item.activation_charge;
 
-				addRow(formattedItem);
+				formattedItemList.push(formattedItem);
 			}
 
-			// Else if no lines were added, we still want to add it to the list, so user knows it's in there
+			// If no lines were added, we still want to add it to the list, so user knows it's in there
 			if (_.isEmpty(formattedItemList)) {
-				addRow(defaultItem);
+				formattedItemList.push(defaultItem);
 			}
 
 			return formattedItemList;
