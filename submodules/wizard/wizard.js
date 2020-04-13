@@ -248,7 +248,9 @@ define(function(require) {
 							name: stepName,
 							label: _.get(i18nSteps, [ stepName, 'label' ]),
 							description: _.get(i18nSteps, [ stepName, 'description' ]),
-							template: 'wizard' + pascalCasedStepName + 'Render',
+							render: {
+								callback: _.get(self, 'wizard' + pascalCasedStepName + 'Render')
+							},
 							util: 'wizard' + pascalCasedStepName + 'Util'
 						};
 					}),
@@ -269,12 +271,11 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @param  {Object} [args.data.generalSettings]  Data specific for the current step
-		 * @param  {jQuery} args.container  Step container element
+		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
-		wizardGeneralSettingsRender: function(args) {
+		wizardGeneralSettingsRender: function(args, callback) {
 			var self = this,
 				data = args.data,
-				$container = args.container,
 				adminUserCounters = {
 					index: 0,
 					correlative: 1
@@ -305,23 +306,6 @@ define(function(require) {
 					);
 
 					monster.ui.tooltips($template);
-
-					// Append admin users
-					_.chain(data)
-						.get('generalSettings.accountAdmins', [])
-						.each(function(admin) {
-							self.wizardGeneralSettingsAddAdminUser({
-								listContainer: $template.find('.admin-user-list'),
-								counters: adminUserCounters,
-								data: admin
-							});
-						})
-						.value();
-
-					self.wizardGeneralSettingsBindEvents({
-						adminUserCounters: adminUserCounters,
-						template: $template
-					});
 
 					// Set static validations
 					monster.ui.validate($template.find('form'), {
@@ -362,12 +346,31 @@ define(function(require) {
 						autoScrollOnInvalid: true
 					});
 
+					// Append admin users. This is done after setting the validation rules because
+					// each admin item adds its own validation rules, and this requires the form
+					// to be already initialized for validation
+					_.chain(data)
+						.get('generalSettings.accountAdmins', [])
+						.each(function(admin) {
+							self.wizardGeneralSettingsAddAdminUser({
+								listContainer: $template.find('.admin-user-list'),
+								counters: adminUserCounters,
+								data: admin
+							});
+						})
+						.value();
+
+					self.wizardGeneralSettingsBindEvents({
+						adminUserCounters: adminUserCounters,
+						template: $template
+					});
+
 					return $template;
 				};
 
-			self.wizardRenderStep({
-				container: $container,
-				initTemplate: initTemplate
+			callback({
+				template: initTemplate(),
+				callback: self.wizardScrollToTop
 			});
 		},
 
@@ -490,13 +493,8 @@ define(function(require) {
 			counters.correlative += 1;
 			counters.index += 1;
 
-			self.wizardAppendListItem({
-				item: $adminItemTemplate,
-				listContainer: $listContainer,
-				animationDuration: animate ? self.appFlags.wizard.animationTimes.adminUser : 0
-			});
-
-			// Set validation rules. This is done after append, for the rules to be applied properly.
+			// Note: The additional validation rules can be added only after the form has been
+			// initialized for validation via monster.ui.validate()
 			$adminItemTemplate
 				.find('input:not([type="checkbox"])')
 					.each(function() {
@@ -521,6 +519,12 @@ define(function(require) {
 					.rules('add', {
 						minlength: 6
 					});
+
+			self.wizardAppendListItem({
+				item: $adminItemTemplate,
+				listContainer: $listContainer,
+				animationDuration: animate ? self.appFlags.wizard.animationTimes.adminUser : 0
+			});
 		},
 
 		/* ACCOUNT CONTACTS STEP */
@@ -530,12 +534,11 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @param  {Object} [args.data.accountContacts]  Data specific for the current step
-		 * @param  {jQuery} args.container  Step container element
+		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
-		wizardAccountContactsRender: function(args) {
+		wizardAccountContactsRender: function(args, callback) {
 			var self = this,
 				data = args.data,
-				$container = args.container,
 				getFormattedData = function() {
 					return _.cloneDeepWith(data.accountContacts, function(value, key) {
 						if (key === 'phoneNumber' && _.isPlainObject(value)) {
@@ -598,23 +601,26 @@ define(function(require) {
 					return $template;
 				};
 
-			self.wizardRenderStep({
-				container: $container,
-				loadData: function(asyncCallback) {
+			monster.waterfall([
+				function(waterfallCallback) {
 					self.wizardGetUserList({
 						data: {
 							accountId: self.wizardGetSalesRepresentativeAccountId(),
 							generateError: false
 						},
 						success: function(userList) {
-							asyncCallback(null, userList);
+							waterfallCallback(null, userList);
 						},
 						error: function() {
-							asyncCallback(null, []);
+							waterfallCallback(null, []);
 						}
 					});
-				},
-				initTemplate: initTemplate
+				}
+			], function(err, userList) {
+				callback({
+					template: initTemplate(userList),
+					callback: self.wizardScrollToTop
+				});
 			});
 		},
 
@@ -709,12 +715,11 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @param  {Object} [args.data.servicePlan]  Data specific for the current step
-		 * @param  {jQuery} args.container  Step container element
+		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
-		wizardServicePlanRender: function(args) {
+		wizardServicePlanRender: function(args, callback) {
 			var self = this,
 				selectedPlanIds = _.get(args.data, 'servicePlan.selectedPlanIds', []),
-				$container = args.container,
 				$template = $(self.getTemplate({
 					name: 'step-servicePlan',
 					submodule: 'wizard'
@@ -772,38 +777,37 @@ define(function(require) {
 					return $template;
 				};
 
-			self.wizardRenderStep({
-				container: $container,
-				loadData: function(asyncCallback) {
-					monster.parallel({
-						servicePlanList: function(parallelCallback) {
-							self.wizardGetServicePlanList({
-								success: function(servicePlanList) {
-									parallelCallback(null, servicePlanList);
-								},
-								error: function() {
-									parallelCallback(null, []);
-								}
-							});
+			monster.parallel({
+				servicePlanList: function(parallelCallback) {
+					self.wizardGetServicePlanList({
+						success: function(servicePlanList) {
+							parallelCallback(null, servicePlanList);
 						},
-						serviceItemsListingRender: function(parallelCallback) {
-							self.serviceItemsListingRender({
-								planIds: selectedPlanIds,
-								container: $template.find('#service_plan_aggregate'),
-								showProgressPanel: false,
-								success: function() {
-									parallelCallback(null);
-								},
-								error: function() {
-									parallelCallback(null);
-								}
-							});
+						error: function() {
+							parallelCallback(null, []);
 						}
-					}, function(err, results) {
-						asyncCallback(null, _.get(results, 'servicePlanList'));
 					});
 				},
-				initTemplate: initTemplate
+				serviceItemsListingRender: function(parallelCallback) {
+					self.serviceItemsListingRender({
+						planIds: selectedPlanIds,
+						container: $template.find('#service_plan_aggregate'),
+						showProgressPanel: false,
+						success: function() {
+							parallelCallback(null);
+						},
+						error: function() {
+							parallelCallback(null);
+						}
+					});
+				}
+			}, function(err, results) {
+				var planList = _.get(results, 'servicePlanList');
+
+				callback({
+					template: initTemplate(planList),
+					callback: self.wizardScrollToTop
+				});
 			});
 		},
 
@@ -1047,11 +1051,10 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @param  {Object} [args.data.usageAndCallRestrictions]  Data specific for the current step
-		 * @param  {jQuery} args.container  Step container element
+		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
-		wizardUsageAndCallRestrictionsRender: function(args) {
+		wizardUsageAndCallRestrictionsRender: function(args, callback) {
 			var self = this,
-				$container = args.container,
 				initTemplate = function(classifierList) {
 					var usageAndCallRestrictionsData = args.data.usageAndCallRestrictions,
 						dataTemplate = {
@@ -1078,19 +1081,22 @@ define(function(require) {
 					return $template;
 				};
 
-			self.wizardRenderStep({
-				container: $container,
-				loadData: function(asyncCallback) {
+			monster.waterfall([
+				function(waterfallCallback) {
 					self.wizardGetPhoneNumberClassifierList({
 						success: function(classifierList) {
-							asyncCallback(null, classifierList);
+							waterfallCallback(null, classifierList);
 						},
 						error: function() {
-							asyncCallback(null, []);
+							waterfallCallback(null, []);
 						}
 					});
-				},
-				initTemplate: initTemplate
+				}
+			], function(err, classifierList) {
+				callback({
+					template: initTemplate(classifierList),
+					callback: self.wizardScrollToTop
+				});
 			});
 		},
 
@@ -1124,11 +1130,10 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @param  {Object} args.data.usageAndCallRestrictions  Data specific for the current step
-		 * @param  {jQuery} args.container  Step container element
+		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
-		wizardCreditBalanceAndFeaturesRender: function(args) {
+		wizardCreditBalanceAndFeaturesRender: function(args, callback) {
 			var self = this,
-				$container = args.container,
 				initTemplate = function() {
 					var creditBalanceAndFeaturesData = args.data.creditBalanceAndFeatures,
 						$template = $(self.getTemplate({
@@ -1158,9 +1163,9 @@ define(function(require) {
 					return $template;
 				};
 
-			self.wizardRenderStep({
-				container: $container,
-				initTemplate: initTemplate
+			callback({
+				template: initTemplate(),
+				callback: self.wizardScrollToTop
 			});
 		},
 
@@ -1230,11 +1235,10 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
 		 * @param  {Object} args.data.appRestrictions  Data specific for the current step
-		 * @param  {jQuery} args.container  Step container element
+		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
-		wizardAppRestrictionsRender: function(args) {
+		wizardAppRestrictionsRender: function(args, callback) {
 			var self = this,
-				$container = args.container,
 				initTemplate = function(appList) {
 					var appRestrictionsData = args.data.appRestrictions,
 						$template = $(self.getTemplate({
@@ -1258,20 +1262,23 @@ define(function(require) {
 					return $template;
 				};
 
-			self.wizardRenderStep({
-				container: $container,
-				loadData: function(asyncCallback) {
+			monster.waterfall([
+				function(waterfallCallback) {
 					self.wizardGetAppList({
 						scope: 'account',
 						success: function(appList) {
-							asyncCallback(null, appList);
+							waterfallCallback(null, appList);
 						},
 						error: function() {
-							asyncCallback(null, []);
+							waterfallCallback(null, []);
 						}
 					});
-				},
-				initTemplate: initTemplate
+				}
+			], function(err, appList) {
+				callback({
+					template: initTemplate(appList),
+					callback: self.wizardScrollToTop
+				});
 			});
 		},
 
@@ -1392,12 +1399,11 @@ define(function(require) {
 		 * Render Review step
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
-		 * @param  {jQuery} args.container  Step container element
+		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
-		wizardReviewRender: function(args) {
+		wizardReviewRender: function(args, callback) {
 			var self = this,
 				data = args.data,
-				$container = args.container,
 				dataTemplate = self.wizardReviewFormatData(data),
 				$template = $(self.getTemplate({
 					name: 'step-review',
@@ -1419,29 +1425,32 @@ define(function(require) {
 					});
 
 					return $template;
-				},
-				renderStepArgs = {
-					container: $container,
-					initTemplate: initTemplate
 				};
 
-			if (_.has(data, 'servicePlan')) {
-				renderStepArgs.loadData = function(asyncCallback) {
+			monster.waterfall([
+				function(waterfallCallback) {
+					if (!_.has(data, 'servicePlan')) {
+						return waterfallCallback(null);
+					}
+
 					self.serviceItemsListingRender({
 						planIds: data.servicePlan.selectedPlanIds,
 						container: $template.find('#service_plan_aggregate'),
 						showProgressPanel: false,
 						success: function() {
-							asyncCallback(null);
+							waterfallCallback(null);
 						},
 						error: function(err) {
-							asyncCallback(null);
+							waterfallCallback(null);
 						}
 					});
-				};
-			}
-
-			self.wizardRenderStep(renderStepArgs);
+				}
+			], function() {
+				callback({
+					template: initTemplate(),
+					callback: self.wizardScrollToTop
+				});
+			});
 		},
 
 		/**
@@ -2385,44 +2394,6 @@ define(function(require) {
 				storeKey: 'accountUsers',
 				resource: 'user.list'
 			}, args));
-		},
-
-		/**
-		 * Render a step view
-		 * @param  {Object} args
-		 * @param  {jQuery} args.container  Wizard container element
-		 * @param  {Function}  [args.loadData]  Optional load callback, which can be used to load
-		 *                                      data for the template before its initialization
-		 * @param  {Function}  args.initTemplate  Template initialization callback
-		 */
-		wizardRenderStep: function(args) {
-			var self = this,
-				loadData = args.loadData,
-				initTemplate = args.initTemplate,
-				$container = args.container,
-				seriesFunctions = [
-					function(seriesCallback) {
-						monster.ui.insertTemplate($container.find('.right-content'), function(insertTemplateCallback) {
-							seriesCallback(null, insertTemplateCallback);
-						});
-					}
-				];
-
-			if (_.isFunction(loadData)) {
-				seriesFunctions.push(loadData);
-			}
-
-			monster.series(seriesFunctions, function(err, results) {
-				if (err) {
-					return;
-				}
-
-				var insertTemplateCallback = results[0],
-					data = _.get(results, 1);
-
-				// Deferred, to ensure that the loading template does not replace the step template
-				_.defer(insertTemplateCallback, initTemplate(data), self.wizardScrollToTop);
-			});
 		},
 
 		/**
