@@ -345,10 +345,7 @@ define(function(require) {
 								required: true
 							},
 							'accountInfo.zip': {
-								required: true,
-								digits: true,
-								minlength: 5,
-								maxlength: 5
+								required: true
 							},
 							'accountInfo.country': {
 								required: true
