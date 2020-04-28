@@ -79,6 +79,7 @@ define(function(require) {
 		_render: function(pArgs) {
 			var self = this,
 				args = pArgs || {},
+				parentId = args.parentId,
 				container = args.container,
 				accountsManager = $(self.getTemplate({
 					name: 'accountsManager'
@@ -93,9 +94,10 @@ define(function(require) {
 
 			parent.empty()
 					.append(accountsManager);
-
+					
 			self.renderAccountsManager({
 				container: accountsManager,
+				parentId: parentId,
 				selectedId: args.selectedId,
 				selectedTab: args.selectedTab,
 				callback: args.callback
@@ -105,19 +107,21 @@ define(function(require) {
 		renderAccountsManager: function(args) {
 			var self = this,
 				parent = args.container,
+				parentId = args.parentId,
 				selectedId = args.selectedId,
 				selectedTab = args.selectedTab,
 				callback = args.callback,
 				$window = $(window);
-
+				
 			monster.pub('common.accountBrowser.render', {
 				container: parent.find('.edition-view .left-menu'),
+				parentId: parentId,
 				selectedId: selectedId,
 				addBackButton: true,
 				noFocus: true,
-				onNewAccountClick: function(parentAccountId, breadcrumbs) {
+				onNewAccountClick: function(parentAccountId) {
 					$(window).off('resize.accountsManager');
-
+					
 					monster.pub('accounts.wizard.render', {
 						container: parent,
 						parentAccountId: parentAccountId || self.accountId
