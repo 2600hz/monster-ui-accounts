@@ -493,8 +493,15 @@ define(function(require) {
 			counters.correlative += 1;
 			counters.index += 1;
 
+			self.wizardAppendListItem({
+				item: $adminItemTemplate,
+				listContainer: $listContainer,
+				animationDuration: animate ? self.appFlags.wizard.animationTimes.adminUser : 0
+			});
+
 			// Note: The additional validation rules can be added only after the form has been
-			// initialized for validation via monster.ui.validate()
+			// initialized for validation via monster.ui.validate(), and after the elements have
+			// been added to the DOM
 			$adminItemTemplate
 				.find('input:not([type="checkbox"])')
 					.each(function() {
@@ -519,12 +526,6 @@ define(function(require) {
 					.rules('add', {
 						minlength: 6
 					});
-
-			self.wizardAppendListItem({
-				item: $adminItemTemplate,
-				listContainer: $listContainer,
-				animationDuration: animate ? self.appFlags.wizard.animationTimes.adminUser : 0
-			});
 		},
 
 		/* ACCOUNT CONTACTS STEP */
