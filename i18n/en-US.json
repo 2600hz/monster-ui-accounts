@@ -59,7 +59,7 @@
 	"tabTitles": {
 		"overview": "Overview",
 		"limits": "Limits",
-		"restrictions": "Restrictions",
+		"restrictions": "Control Center Access",
 		"notes": "Notes",
 		"__comment": "UI-1508: Adding appstore restrictions",
 		"__version": "3.22",
