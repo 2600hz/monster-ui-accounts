@@ -174,26 +174,23 @@ define(function(require) {
 		serviceItemsListingFormatServiceQuote: function(args) {
 			var self = this,
 				serviceQuote = args.serviceQuote,
-				items = _.get(serviceQuote, 'invoices[0].items', []),
-				plan = _.get(serviceQuote, 'invoices[0].plan', {});
+				invoicePlan = _.get(serviceQuote, 'invoices[0].plan', {});
 
 			return _
-				.chain(items)
-				.groupBy('category')
-				.map(function(categoryItems, category) {
+				.chain(invoicePlan)
+				.map(function(categoryItems, categoryKey) {
 					return {
-						title: monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, category),
-						category: category,
+						title: monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, categoryKey),
 						items: _
 							.chain(categoryItems)
-							.flatMap(function(categoryItem) {
+							.keys()
+							.flatMap(function(itemKey) {
 								return self.serviceItemsListingFormatItemData({
-									plan: plan,
-									category: category,
-									subCategory: categoryItem.item
+									categoryItems: categoryItems,
+									itemKey: itemKey
 								});
 							})
-							.sortBy('name')
+							.sortBy('label')
 							.value()
 					};
 				})
@@ -204,27 +201,24 @@ define(function(require) {
 		/**
 		 * Formats an item's data into a list of one or more data rows
 		 * @param  {Object} args
-		 * @param  {Object} args.plan  Service plan details
-		 * @param  {String} args.category  Item category name
-		 * @param  {String} args.subCategory  Item sub-category name
+		 * @param  {Object} args.categoryItems  Category items
+		 * @param  {String} args.itemKey  Current item key
 		 */
 		serviceItemsListingFormatItemData: function(args) {
 			var self = this,
-				plan = args.plan,
-				categoryName = args.category,
-				subCategoryName = args.subCategory,
-				subCategoryItem = _.get(plan, [categoryName, subCategoryName], {}),
+				categoryItems = args.categoryItems,
+				itemKey = args.itemKey,
+				currentItem = _.get(categoryItems, itemKey, {}),
 				item = _
-					.chain(plan)
-					.get([categoryName, '_all'], {})	// Get default category item
+					.chain(categoryItems)
+					.get('_all', {})	// Get default category item
 					.cloneDeep()	// Clone, to not alter the original one for future use
-					.merge(subCategoryItem)	// Merge the specific sub-category item
+					.merge(currentItem)	// Merge the specific sub-category item
 					.value(),
-				itemLabel = item.name || monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, subCategoryName),
-				defaultItem = {
-					name: itemLabel,
+				itemLabel = currentItem.name || monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, itemKey),
+				defaultFormattedItem = {
 					label: itemLabel,
-					subCategory: subCategoryName,
+					subCategory: itemKey,
 					quantity: null,
 					rate: {
 						isCascade: _.get(item, 'cascade', false)
@@ -260,7 +254,7 @@ define(function(require) {
 				cumulativeDiscount = cumulativeDiscountRates.head,
 				cumulativeDiscountExtra = _.has(item, 'discounts.cumulative.maximum') ? { maximum: item.discounts.cumulative.maximum } : {},
 				formattedItemList = _.map(allRateQtys, function(qty, index) {
-					var formattedItem = _.merge({}, defaultItem, {
+					var formattedItem = _.merge({}, defaultFormattedItem, {
 							quantity: _.isFinite(qty) ? '0 - ' + qty : '0 - ∞'
 						}),
 						priceHasChanged = index === 0 && price;
@@ -304,13 +298,13 @@ define(function(require) {
 				});
 
 			if (_.has(item, 'activation_charge') && item.activation_charge > 0) {
-				var formattedItem = _.cloneDeep(defaultItem);
+				var formattedItem = _.cloneDeep(defaultFormattedItem);
 
 				formattedItem.isActivationCharges = true;
 				formattedItem.label = self.getTemplate({
 					name: '!' + self.i18n.active().accountsApp.serviceItemsListing.labels.activationCharge,
 					data: {
-						itemName: formattedItem.name
+						itemName: formattedItem.label
 					}
 				});
 				formattedItem.rate.value = item.activation_charge;
@@ -320,7 +314,7 @@ define(function(require) {
 
 			// If no lines were added, we still want to add it to the list, so user knows it's in there
 			if (_.isEmpty(formattedItemList)) {
-				formattedItemList.push(defaultItem);
+				formattedItemList.push(defaultFormattedItem);
 			}
 
 			return formattedItemList;
