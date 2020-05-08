@@ -1615,6 +1615,7 @@ define(function(require) {
 		wizardSubmit: function(args) {
 			var self = this,
 				wizardData = args.data,
+				parentAccountId = wizardData.parentAccount.id,
 				$container = args.container,
 				// This function creates a new async.js callback, to allow the parallel tasks to
 				// continue regardless if one of them fail, because it packs the error as part of
@@ -1751,9 +1752,10 @@ define(function(require) {
 						return;
 					}
 				}
-
+				
 				monster.pub('accountsManager.activate', {
 					container: $container,
+					parentId: parentAccountId,
 					selectedId: newAccountId
 				});
 			});
