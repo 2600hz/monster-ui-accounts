@@ -22,9 +22,7 @@
 						{{#compare rate.value "===" null}}
 							<span>--</span>
 						{{else}}
-							{{#if rate.value}}
-								{{formatPrice rate.value 2}}
-							{{/if}}
+							{{formatPrice rate.value 2}}
 						{{/compare}}
 						{{#if rate.isCascade}}
 							<span class="iconography" title="{{@root.i18n.accountsApp.serviceItemsListing.labels.cascadeTooltip}}" data-toggle="tooltip">
