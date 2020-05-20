@@ -183,14 +183,18 @@ define(function(require) {
 						title: monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, categoryKey),
 						items: _
 							.chain(categoryItems)
-							.keys()
-							.flatMap(function(itemKey) {
-								return self.serviceItemsListingFormatItemData({
-									categoryItems: categoryItems,
-									itemKey: itemKey
-								});
+							.map(function(item, itemKey) {
+								return _.merge({
+									label: item.name || monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, itemKey)
+								}, item);
 							})
 							.sortBy('label')
+							.flatMap(function(item) {
+								return self.serviceItemsListingFormatItemData({
+									item: item,
+									categoryItems: categoryItems
+								});
+							})
 							.value()
 					};
 				})
@@ -202,23 +206,20 @@ define(function(require) {
 		 * Formats an item's data into a list of one or more data rows
 		 * @param  {Object} args
 		 * @param  {Object} args.categoryItems  Category items
-		 * @param  {String} args.itemKey  Current item key
+		 * @param  {String} args.item  Current item
 		 */
 		serviceItemsListingFormatItemData: function(args) {
 			var self = this,
 				categoryItems = args.categoryItems,
-				itemKey = args.itemKey,
-				currentItem = _.get(categoryItems, itemKey, {}),
+				currentItem = args.item,
 				item = _
 					.chain(categoryItems)
 					.get('_all', {})	// Get default category item
 					.cloneDeep()	// Clone, to not alter the original one for future use
 					.merge(currentItem)	// Merge the specific sub-category item
 					.value(),
-				itemLabel = currentItem.name || monster.util.tryI18n(self.i18n.active().accountsApp.serviceItemsListing.keys, itemKey),
 				defaultFormattedItem = {
-					label: itemLabel,
-					subCategory: itemKey,
+					label: currentItem.label,
 					quantity: null,
 					rate: {
 						isCascade: _.get(item, 'cascade', false)
