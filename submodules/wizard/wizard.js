@@ -534,12 +534,14 @@ define(function(require) {
 		 * Render Account Contacts step
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} args.data.parentAccount  Parent account for the new account to be created
 		 * @param  {Object} [args.data.accountContacts]  Data specific for the current step
 		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
 		wizardAccountContactsRender: function(args, callback) {
 			var self = this,
 				data = args.data,
+				parentAccount = data.parentAccount,
 				getFormattedData = function() {
 					return _.cloneDeepWith(data.accountContacts, function(value, key) {
 						if (key === 'phoneNumber' && _.isPlainObject(value)) {
@@ -606,7 +608,7 @@ define(function(require) {
 				function(waterfallCallback) {
 					self.wizardGetUserList({
 						data: {
-							accountId: self.wizardGetSalesRepresentativeAccountId(),
+							accountId: self.wizardGetResellerAccountId(parentAccount),
 							generateError: false
 						},
 						success: function(userList) {
@@ -630,6 +632,7 @@ define(function(require) {
 		 * @param  {jQuery} $template  Step template
 		 * @param  {Object} args  Wizard's arguments
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} args.data.parentAccount  Parent account for the new account to be created
 		 * @param  {Object} eventArgs  Event arguments
 		 * @param  {Boolean} eventArgs.completeStep  Whether or not the current step will be
 		 *                                           completed
@@ -638,6 +641,7 @@ define(function(require) {
 		wizardAccountContactsUtil: function($template, args, eventArgs) {
 			var self = this,
 				$form = $template.find('form'),
+				parentAccount = args.data.parentAccount,
 				// No need to validate if step won't be completed yet
 				isValid = !eventArgs.completeStep || monster.ui.valid($form),
 				accountContactsData,
@@ -677,7 +681,7 @@ define(function(require) {
 								.thru(monster.util.getUserFullName)
 								.value();
 						accountContactsData.salesRep.representative = {
-							accountId: self.wizardGetSalesRepresentativeAccountId(),
+							accountId: self.wizardGetResellerAccountId(parentAccount),
 							userId: representativeUserId,
 							fullName: representativeFullName
 						};
@@ -1752,7 +1756,7 @@ define(function(require) {
 						return;
 					}
 				}
-				
+
 				monster.pub('accountsManager.activate', {
 					container: $container,
 					parentId: parentAccountId,
@@ -2346,15 +2350,13 @@ define(function(require) {
 		},
 
 		/**
-		 * Gets the account ID for the sales representative, depending on whether the current
-		 * account is a reseller
+		 * Gets the reseller account ID for the provided parent account
+		 * @param  {Object} parentAccount  Parent account for the new account to be created
 		 */
-		wizardGetSalesRepresentativeAccountId: function() {
-			var self = this;
-
-			return monster.apps.auth.currentAccount.is_reseller
-				? self.accountId
-				: monster.apps.auth.currentAccount.reseller_id;
+		wizardGetResellerAccountId: function(parentAccount) {
+			return parentAccount.is_reseller
+				? parentAccount.id
+				: parentAccount.reseller_id;
 		},
 
 		/**
