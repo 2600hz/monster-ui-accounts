@@ -137,34 +137,44 @@ define(function(require) {
 					});
 				},
 				function(waterfallCallback) {
-					var parallelFunctions = {
-						parentAccount: function(parallelCallback) {
+					var waterfallFunctions = [
+						function(waterfallCallback) {
 							if (parentAccountId === self.accountId) {
-								return parallelCallback(null, monster.apps.auth.currentAccount);
+								return waterfallCallback(null, monster.apps.auth.currentAccount);
 							}
 
 							self.wizardRequestGetAccount({
 								accountId: parentAccountId,
-								callback: parallelCallback
+								callback: waterfallCallback
 							});
 						},
-						servicePlans: function(parallelCallback) {
+						function(parentAccount, waterfallCallback) {
+							var results = {
+								parentAccount: parentAccount,
+								servicePlans: []
+							};
+
+							if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
+								waterfallCallback(null, results);
+							}
+
 							self.wizardGetServicePlanList({
+								data: {
+									accountId: self.wizardGetResellerAccountId(parentAccount)
+								},
 								success: function(plans) {
-									parallelCallback(null, plans);
+									waterfallCallback(null, _.merge(results, {
+										servicePlans: plans
+									}));
 								},
 								error: function() {
-									parallelCallback(null, []);
+									waterfallCallback(null, results);
 								}
 							});
 						}
-					};
+					];
 
-					if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
-						delete parallelFunctions.servicePlans;
-					}
-
-					monster.parallel(parallelFunctions, waterfallCallback);
+					monster.waterfall(waterfallFunctions, waterfallCallback);
 				}
 			], function(err, results) {
 				if (err) {
@@ -719,11 +729,13 @@ define(function(require) {
 		 * Render Account Contacts step
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
+		 * @param  {Object} args.data.parentAccount  Parent account for the new account to be created
 		 * @param  {Object} [args.data.servicePlan]  Data specific for the current step
 		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
 		wizardServicePlanRender: function(args, callback) {
 			var self = this,
+				parentAccount = args.data.parentAccount,
 				selectedPlanIds = _.get(args.data, 'servicePlan.selectedPlanIds', []),
 				$template = $(self.getTemplate({
 					name: 'step-servicePlan',
@@ -785,6 +797,9 @@ define(function(require) {
 			monster.parallel({
 				servicePlanList: function(parallelCallback) {
 					self.wizardGetServicePlanList({
+						data: {
+							accountId: self.wizardGetResellerAccountId(parentAccount)
+						},
 						success: function(servicePlanList) {
 							parallelCallback(null, servicePlanList);
 						},
@@ -1986,7 +2001,7 @@ define(function(require) {
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Main view container
 		 * @param  {Object} args.data  Wizard data
-		 * @param  {Object} args.data.parentAccount  Parent Account
+		 * @param  {Object} args.data.parentAccount  Parent account
 		 * @param  {String} args.data.parentAccount.id  Parent Account ID
 		 */
 		wizardClose: function(args) {
@@ -2363,6 +2378,8 @@ define(function(require) {
 		 * Gets the stored list of plans available for the current account. If the list is not
 		 * stored, then it is requested to the API.
 		 * @param  {Object} args
+		 * @param {Object} args.data  Request data override
+		 * @param {Object} args.data.accountId  ID of the account from where to get the plan list
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
@@ -2388,7 +2405,8 @@ define(function(require) {
 		 * Gets the stored list of users for the current account. If the list is not stored, then
 		 * it is requested to the API.
 		 * @param  {Object} args
-		 * @param {Object} [args.data] Request data override
+		 * @param {Object} args.data Request data override
+		 * @param {Object} args.data.accountId  ID of the account from where to get the user list
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
