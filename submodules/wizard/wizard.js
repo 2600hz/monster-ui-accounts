@@ -2256,7 +2256,9 @@ define(function(require) {
 				storeKey: ['apps', scope],
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
+						accountId: self.wizardGetStore('resellerAccountId'),
 						scope: scope,
+						forceFetch: true,
 						success: function(appList) {
 							appList = _.sortBy(appList, 'label');
 							reqArgs.success(appList);
