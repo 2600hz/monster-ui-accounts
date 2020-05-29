@@ -126,8 +126,11 @@ define(function(require) {
 				i18nSteps = i18n.steps,
 				stepNames = self.appFlags.wizard.stepNames;
 
-			// Clean store, in case it was not empty, to avoid using old data
-			self.wizardSetStore({});
+			// Clean store and save parentAccountId only (in case it was not empty,
+			// to avoid using old data)
+			self.wizardSetStore({
+				parentAccountId: parentAccountId
+			});
 
 			monster.waterfall([
 				function(waterfallCallback) {
@@ -150,9 +153,12 @@ define(function(require) {
 						},
 						function(parentAccount, waterfallCallback) {
 							var results = {
-								parentAccount: parentAccount,
-								servicePlans: []
-							};
+									parentAccount: parentAccount,
+									servicePlans: []
+								},
+								resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
+
+							self.wizardSetStore('resellerAccountId', resellerAccountId);
 
 							if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
 								waterfallCallback(null, results);
@@ -160,7 +166,7 @@ define(function(require) {
 
 							self.wizardGetServicePlanList({
 								data: {
-									accountId: self.wizardGetResellerAccountId(parentAccount)
+									accountId: resellerAccountId
 								},
 								success: function(plans) {
 									waterfallCallback(null, _.merge(results, {
@@ -186,7 +192,6 @@ define(function(require) {
 					parentAccount = results.parentAccount,
 					isRealmSuffixDefined = !_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value(),
 					defaultData = {
-						parentAccount: parentAccount,
 						// General Settings defaults
 						generalSettings: {
 							accountInfo: _.merge({
@@ -544,14 +549,12 @@ define(function(require) {
 		 * Render Account Contacts step
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
-		 * @param  {Object} args.data.parentAccount  Parent account for the new account to be created
 		 * @param  {Object} [args.data.accountContacts]  Data specific for the current step
 		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
 		wizardAccountContactsRender: function(args, callback) {
 			var self = this,
 				data = args.data,
-				parentAccount = data.parentAccount,
 				getFormattedData = function() {
 					return _.cloneDeepWith(data.accountContacts, function(value, key) {
 						if (key === 'phoneNumber' && _.isPlainObject(value)) {
@@ -618,7 +621,7 @@ define(function(require) {
 				function(waterfallCallback) {
 					self.wizardGetUserList({
 						data: {
-							accountId: self.wizardGetResellerAccountId(parentAccount),
+							accountId: self.wizardGetStore('resellerAccountId'),
 							generateError: false
 						},
 						success: function(userList) {
@@ -642,7 +645,7 @@ define(function(require) {
 		 * @param  {jQuery} $template  Step template
 		 * @param  {Object} args  Wizard's arguments
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
-		 * @param  {Object} args.data.parentAccount  Parent account for the new account to be created
+		 * @param  {Object} [args.data.accountContacts]  Data specific for the current step
 		 * @param  {Object} eventArgs  Event arguments
 		 * @param  {Boolean} eventArgs.completeStep  Whether or not the current step will be
 		 *                                           completed
@@ -651,7 +654,6 @@ define(function(require) {
 		wizardAccountContactsUtil: function($template, args, eventArgs) {
 			var self = this,
 				$form = $template.find('form'),
-				parentAccount = args.data.parentAccount,
 				// No need to validate if step won't be completed yet
 				isValid = !eventArgs.completeStep || monster.ui.valid($form),
 				accountContactsData,
@@ -691,7 +693,7 @@ define(function(require) {
 								.thru(monster.util.getUserFullName)
 								.value();
 						accountContactsData.salesRep.representative = {
-							accountId: self.wizardGetResellerAccountId(parentAccount),
+							accountId: self.wizardGetStore('resellerAccountId'),
 							userId: representativeUserId,
 							fullName: representativeFullName
 						};
@@ -729,13 +731,11 @@ define(function(require) {
 		 * Render Account Contacts step
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
-		 * @param  {Object} args.data.parentAccount  Parent account for the new account to be created
 		 * @param  {Object} [args.data.servicePlan]  Data specific for the current step
 		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
 		wizardServicePlanRender: function(args, callback) {
 			var self = this,
-				parentAccount = args.data.parentAccount,
 				selectedPlanIds = _.get(args.data, 'servicePlan.selectedPlanIds', []),
 				$template = $(self.getTemplate({
 					name: 'step-servicePlan',
@@ -798,7 +798,7 @@ define(function(require) {
 				servicePlanList: function(parallelCallback) {
 					self.wizardGetServicePlanList({
 						data: {
-							accountId: self.wizardGetResellerAccountId(parentAccount)
+							accountId: self.wizardGetStore('resellerAccountId')
 						},
 						success: function(servicePlanList) {
 							parallelCallback(null, servicePlanList);
@@ -1634,8 +1634,8 @@ define(function(require) {
 		wizardSubmit: function(args) {
 			var self = this,
 				wizardData = args.data,
-				parentAccountId = wizardData.parentAccount.id,
 				$container = args.container,
+				parentAccountId = self.wizardGetStore('parentAccountId'),
 				// This function creates a new async.js callback, to allow the parallel tasks to
 				// continue regardless if one of them fail, because it packs the error as part of
 				// the result, and returns a null value as error
@@ -1659,7 +1659,7 @@ define(function(require) {
 				function(waterfallCallback) {
 					self.wizardRequestResourceCreateOrUpdate({
 						resource: 'account.create',
-						accountId: wizardData.parentAccount.id,
+						accountId: parentAccountId,
 						data: self.wizardSubmitGetFormattedAccount(wizardData),
 						generateError: true,
 						callback: function(err, newAccount) {
@@ -2000,14 +2000,11 @@ define(function(require) {
 		 * Loads the account manager, to replace the wizard view
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Main view container
-		 * @param  {Object} args.data  Wizard data
-		 * @param  {Object} args.data.parentAccount  Parent account
-		 * @param  {String} args.data.parentAccount.id  Parent Account ID
 		 */
 		wizardClose: function(args) {
 			var self = this,
 				$container = args.container,
-				parentAccountId = args.data.parentAccount.id;
+				parentAccountId = self.wizardGetStore('parentAccountId');
 
 			monster.pub('accountsManager.activate', {
 				container: $container,
