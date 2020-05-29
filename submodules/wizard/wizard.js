@@ -165,9 +165,6 @@ define(function(require) {
 							}
 
 							self.wizardGetServicePlanList({
-								data: {
-									accountId: resellerAccountId
-								},
 								success: function(plans) {
 									waterfallCallback(null, _.merge(results, {
 										servicePlans: plans
@@ -621,7 +618,6 @@ define(function(require) {
 				function(waterfallCallback) {
 					self.wizardGetUserList({
 						data: {
-							accountId: self.wizardGetStore('resellerAccountId'),
 							generateError: false
 						},
 						success: function(userList) {
@@ -797,9 +793,6 @@ define(function(require) {
 			monster.parallel({
 				servicePlanList: function(parallelCallback) {
 					self.wizardGetServicePlanList({
-						data: {
-							accountId: self.wizardGetStore('resellerAccountId')
-						},
 						success: function(servicePlanList) {
 							parallelCallback(null, servicePlanList);
 						},
@@ -2309,6 +2302,9 @@ define(function(require) {
 					.chain(args)
 					.pick('resource', 'error', 'generateError', 'data')
 					.merge({
+						data: {
+							accountId: self.wizardGetStore('resellerAccountId')
+						},
 						success: successCallback
 					})
 					.value();
@@ -2375,8 +2371,6 @@ define(function(require) {
 		 * Gets the stored list of plans available for the current account. If the list is not
 		 * stored, then it is requested to the API.
 		 * @param  {Object} args
-		 * @param {Object} args.data  Request data override
-		 * @param {Object} args.data.accountId  ID of the account from where to get the plan list
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
@@ -2402,8 +2396,6 @@ define(function(require) {
 		 * Gets the stored list of users for the current account. If the list is not stored, then
 		 * it is requested to the API.
 		 * @param  {Object} args
-		 * @param {Object} args.data Request data override
-		 * @param {Object} args.data.accountId  ID of the account from where to get the user list
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
