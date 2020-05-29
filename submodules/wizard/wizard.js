@@ -802,16 +802,12 @@ define(function(require) {
 					});
 				},
 				serviceItemsListingRender: function(parallelCallback) {
-					self.serviceItemsListingRender({
+					self.wizardRenderServicePlanItemList({
 						planIds: selectedPlanIds,
 						container: $template.find('#service_plan_aggregate'),
 						showProgressPanel: false,
-						success: function() {
-							parallelCallback(null);
-						},
-						error: function() {
-							parallelCallback(null);
-						}
+						raiseError: false,
+						callback: parallelCallback
 					});
 				}
 			}, function(err, results) {
@@ -934,15 +930,10 @@ define(function(require) {
 							return;
 						}
 
-						self.serviceItemsListingRender({
+						self.wizardRenderServicePlanItemList({
 							planIds: selectedPlanIds,
 							container: $planAggregateContainer,
-							success: function() {
-								parallelCallback(null);
-							},
-							error: function() {
-								parallelCallback(true);
-							}
+							callback: parallelCallback
 						});
 					},
 					function(parallelCallback) {
@@ -991,15 +982,10 @@ define(function(require) {
 
 				monster.parallel([
 					function(parallelCallback) {
-						self.serviceItemsListingRender({
+						self.wizardRenderServicePlanItemList({
 							planIds: selectedPlanIds,
 							container: $planAggregateContainer,
-							success: function() {
-								parallelCallback(null);
-							},
-							error: function() {
-								parallelCallback(true);
-							}
+							callback: parallelCallback
 						});
 					},
 					function(parallelCallback) {
@@ -1446,16 +1432,12 @@ define(function(require) {
 						return waterfallCallback(null);
 					}
 
-					self.serviceItemsListingRender({
+					self.wizardRenderServicePlanItemList({
 						planIds: data.servicePlan.selectedPlanIds,
 						container: $template.find('#service_plan_aggregate'),
 						showProgressPanel: false,
-						success: function() {
-							waterfallCallback(null);
-						},
-						error: function(err) {
-							waterfallCallback(null);
-						}
+						raiseError: false,
+						callback: waterfallCallback
 					});
 				}
 			], function() {
@@ -2332,6 +2314,9 @@ define(function(require) {
 				requestData = function(reqArgs) {
 					self.wizardRequestResourceList({
 						resource: 'numbers.listClassifiers',
+						data: {
+							accountId: self.wizardGetStore('resellerAccountId')
+						},
 						success: function(classifierList) {
 							var formattedClassifierList = _
 								.chain(classifierList)
@@ -2408,6 +2393,36 @@ define(function(require) {
 				storeKey: 'accountUsers',
 				resource: 'user.list'
 			}, args));
+		},
+
+		/**
+		 * Render the service plan item list
+		 * @param  {Object} args
+		 * @param  {jQuery} args.container  Container element
+		 * @param  {String} args.planIds  ID's of the selected plans to merge and render
+		 * @param  {Boolean} [args.showProgressPanel=true]  Show the progress panel while loading
+		 * @param  {Boolean} [args.raiseError=true]  Return a value in the callback to let know the caller
+		 *                                    that an error happened while loading the merged plan
+		 * @param  {Function} args.callback  Async.js callback
+		 */
+		wizardRenderServicePlanItemList: function(args) {
+			var self = this,
+				raiseError = _.get(args, 'raiseError', true),
+				renderArgs = _
+					.chain(args)
+					.pick(['container', 'planIds', 'showProgressPanel'])
+					.merge({
+						accountId: self.wizardGetStore('resellerAccountId'),
+						success: function() {
+							args.callback(null);
+						},
+						error: function(err) {
+							args.callback(raiseError ? err : null);
+						}
+					})
+					.value();
+
+			self.serviceItemsListingRender(renderArgs);
 		},
 
 		/**
