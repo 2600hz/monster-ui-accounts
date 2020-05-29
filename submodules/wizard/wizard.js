@@ -2282,7 +2282,7 @@ define(function(require) {
 		 * requested to the API, for which either the resource name or the request data
 		 * function should be provided.
 		 * @param  {Object} args
-		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans')} args.storeKey  Key used to save/retrieve the data in the store
+		 * @param  {(String|String[])} args.storeKey  Key used to save/retrieve the data in the store
 		 * @param  {String} [args.resource]  Resource name to request the data from the API
 		 * @param  {Function} [args.requestData]  Function to be used to request the data, if a
 		 *                                        resource name is not provided
@@ -2665,7 +2665,7 @@ define(function(require) {
 
 		/**
 		 * Store setter
-		 * @param  {('accountUsers'|'numberClassifiers'|'servicePlans'|String[])} path|value
+		 * @param  {(String|String[])} path|value
 		 * @param  {*} [value]
 		 */
 		wizardSetStore: function(path, value) {
