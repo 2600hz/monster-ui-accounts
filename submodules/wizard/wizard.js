@@ -1264,7 +1264,6 @@ define(function(require) {
 			monster.waterfall([
 				function(waterfallCallback) {
 					self.wizardGetAppList({
-						scope: 'account',
 						success: function(appList) {
 							waterfallCallback(null, appList);
 						},
@@ -1344,7 +1343,8 @@ define(function(require) {
 
 			$appAdd.find('.wizard-card').on('click', function() {
 				monster.pub('common.appSelector.renderPopup', {
-					scope: 'account',
+					accountId: self.wizardGetStore('resellerAccountId'),
+					scope: 'all',
 					excludedApps: allowedAppIds,
 					callbacks: {
 						accept: function(selectedAppIds) {
@@ -1551,7 +1551,7 @@ define(function(require) {
 			formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
 
 			// Set app list
-			formattedData.appRestrictions.apps = self.wizardGetStore(['apps', 'account']);
+			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
 
 			return formattedData;
 		},
@@ -2034,7 +2034,6 @@ define(function(require) {
 					}
 
 					self.wizardGetAppList({
-						scope: 'all',
 						success: function(appList) {
 							waterfallCallback(null, appList);
 						},
@@ -2226,26 +2225,24 @@ define(function(require) {
 		 * Gets the stored list of apps available. If the list is not stored, then it is
 		 * requested to the API.
 		 * @param  {Object} args
-		 * @param  {('all'|'account'|'user')} args.scope  App list scope
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetAppList: function(args) {
-			var self = this,
-				scope = args.scope;
+			var self = this;
 
 			self.wizardGetDataList(_.merge({
-				storeKey: ['apps', scope],
+				storeKey: 'apps',
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
 						accountId: self.wizardGetStore('resellerAccountId'),
-						scope: scope,
+						scope: 'all',
 						forceFetch: true,
 						success: function(appList) {
 							appList = _.sortBy(appList, 'label');
 							reqArgs.success(appList);
 						},
-						error: args.error
+						error: reqArgs.error
 					});
 				}
 			}, args));
