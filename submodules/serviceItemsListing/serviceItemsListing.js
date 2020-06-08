@@ -15,6 +15,7 @@ define(function(require) {
 		 * Renders a service items listing
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Element that will contain the listing
+		 * @param  {String} [args.accountId]  ID of the account to which the plans belong
 		 * @param  {String[]} args.planIds  Array of plan IDs to be used to generate the listing
 		 * @param  {Boolean} [args.showProgressPanel=true]  Whether or not to display the
 		 *                                                      progress panel while loading data
@@ -24,6 +25,7 @@ define(function(require) {
 		 */
 		serviceItemsListingRender: function(args) {
 			var self = this,
+				accountId = args.accountId,
 				planIds = args.planIds,
 				showProgressPanel = _.get(args, 'showProgressPanel', true),
 				$container = args.container,
@@ -58,6 +60,7 @@ define(function(require) {
 				},
 				function(seriesCallback) {
 					self.serviceItemsListingGetFormattedServicePlanCategories({
+						accountId: accountId,
 						planIds: planIds,
 						success: function(formattedPlanCategories) {
 							seriesCallback(null, formattedPlanCategories);
@@ -92,12 +95,14 @@ define(function(require) {
 		/**
 		 * Gets the categories for a group of plans, already formatted to be rendered
 		 * @param  {Object} args
+		 * @param  {String} [args.accountId]  ID of the account to which the plans belong
 		 * @param  {String[]} args.planIds  Plan IDs for which the categories will be obtained
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		serviceItemsListingGetFormattedServicePlanCategories: function(args) {
 			var self = this,
+				accountId = args.accountId,
 				planIds = args.planIds,
 				successCallback = args.success,
 				errorCallback = args.error,
@@ -139,6 +144,7 @@ define(function(require) {
 
 			// Try to get service plan quote from API
 			self.serviceItemsListingRequestServiceQuote({
+				accountId: accountId,
 				planIds: planIds,
 				success: function(serviceQuote) {
 					// Format plan, and add to store
@@ -376,17 +382,19 @@ define(function(require) {
 		/**
 		 * Request the aggregate or "quote" for a set of plans
 		 * @param  {Object} args
+		 * @param  {String} [args.accountId]  ID of the account to which the plans belong
 		 * @param  {String[]} args.planIds  List of plans to be included for the quote
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		serviceItemsListingRequestServiceQuote: function(args) {
-			var self = this;
+			var self = this,
+				accountId = args.accountId;
 
 			self.callApi({
 				resource: 'services.quote',
 				data: {
-					accountId: self.accountId,
+					accountId: _.isNil(accountId) ? self.accountId : accountId,
 					data: {
 						plans: args.planIds
 					}
@@ -410,7 +418,7 @@ define(function(require) {
 		 */
 		serviceItemsListingGetStore: function(path, defaultValue) {
 			var self = this,
-				store = ['_store', 'wizard'];
+				store = ['_store', 'serviceItemsListing'];
 			return _.get(
 				self,
 				_.isUndefined(path)
@@ -428,7 +436,7 @@ define(function(require) {
 		serviceItemsListingSetStore: function(path, value) {
 			var self = this,
 				hasValue = _.toArray(arguments).length === 2,
-				store = ['_store', 'wizard'];
+				store = ['_store', 'serviceItemsListing'];
 			_.set(
 				self,
 				hasValue
