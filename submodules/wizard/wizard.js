@@ -126,8 +126,11 @@ define(function(require) {
 				i18nSteps = i18n.steps,
 				stepNames = self.appFlags.wizard.stepNames;
 
-			// Clean store, in case it was not empty, to avoid using old data
-			self.wizardSetStore({});
+			// Clean store and save parentAccountId only (in case it was not empty,
+			// to avoid using old data)
+			self.wizardSetStore({
+				parentAccountId: parentAccountId
+			});
 
 			monster.waterfall([
 				function(waterfallCallback) {
@@ -137,34 +140,44 @@ define(function(require) {
 					});
 				},
 				function(waterfallCallback) {
-					var parallelFunctions = {
-						parentAccount: function(parallelCallback) {
+					var waterfallFunctions = [
+						function(waterfallCallback) {
 							if (parentAccountId === self.accountId) {
-								return parallelCallback(null, monster.apps.auth.currentAccount);
+								return waterfallCallback(null, monster.apps.auth.currentAccount);
 							}
 
 							self.wizardRequestGetAccount({
 								accountId: parentAccountId,
-								callback: parallelCallback
+								callback: waterfallCallback
 							});
 						},
-						servicePlans: function(parallelCallback) {
+						function(parentAccount, waterfallCallback) {
+							var results = {
+									parentAccount: parentAccount,
+									servicePlans: []
+								},
+								resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
+
+							self.wizardSetStore('resellerAccountId', resellerAccountId);
+
+							if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
+								waterfallCallback(null, results);
+							}
+
 							self.wizardGetServicePlanList({
 								success: function(plans) {
-									parallelCallback(null, plans);
+									waterfallCallback(null, _.merge(results, {
+										servicePlans: plans
+									}));
 								},
 								error: function() {
-									parallelCallback(null, []);
+									waterfallCallback(null, results);
 								}
 							});
 						}
-					};
+					];
 
-					if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
-						delete parallelFunctions.servicePlans;
-					}
-
-					monster.parallel(parallelFunctions, waterfallCallback);
+					monster.waterfall(waterfallFunctions, waterfallCallback);
 				}
 			], function(err, results) {
 				if (err) {
@@ -176,7 +189,6 @@ define(function(require) {
 					parentAccount = results.parentAccount,
 					isRealmSuffixDefined = !_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value(),
 					defaultData = {
-						parentAccount: parentAccount,
 						// General Settings defaults
 						generalSettings: {
 							accountInfo: _.merge({
@@ -534,14 +546,12 @@ define(function(require) {
 		 * Render Account Contacts step
 		 * @param  {Object} args
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
-		 * @param  {Object} args.data.parentAccount  Parent account for the new account to be created
 		 * @param  {Object} [args.data.accountContacts]  Data specific for the current step
 		 * @param  {Function} callback  Callback to pass the step template to be rendered
 		 */
 		wizardAccountContactsRender: function(args, callback) {
 			var self = this,
 				data = args.data,
-				parentAccount = data.parentAccount,
 				getFormattedData = function() {
 					return _.cloneDeepWith(data.accountContacts, function(value, key) {
 						if (key === 'phoneNumber' && _.isPlainObject(value)) {
@@ -608,7 +618,6 @@ define(function(require) {
 				function(waterfallCallback) {
 					self.wizardGetUserList({
 						data: {
-							accountId: self.wizardGetResellerAccountId(parentAccount),
 							generateError: false
 						},
 						success: function(userList) {
@@ -632,7 +641,7 @@ define(function(require) {
 		 * @param  {jQuery} $template  Step template
 		 * @param  {Object} args  Wizard's arguments
 		 * @param  {Object} args.data  Wizard's data that is shared across steps
-		 * @param  {Object} args.data.parentAccount  Parent account for the new account to be created
+		 * @param  {Object} [args.data.accountContacts]  Data specific for the current step
 		 * @param  {Object} eventArgs  Event arguments
 		 * @param  {Boolean} eventArgs.completeStep  Whether or not the current step will be
 		 *                                           completed
@@ -641,7 +650,6 @@ define(function(require) {
 		wizardAccountContactsUtil: function($template, args, eventArgs) {
 			var self = this,
 				$form = $template.find('form'),
-				parentAccount = args.data.parentAccount,
 				// No need to validate if step won't be completed yet
 				isValid = !eventArgs.completeStep || monster.ui.valid($form),
 				accountContactsData,
@@ -681,7 +689,7 @@ define(function(require) {
 								.thru(monster.util.getUserFullName)
 								.value();
 						accountContactsData.salesRep.representative = {
-							accountId: self.wizardGetResellerAccountId(parentAccount),
+							accountId: self.wizardGetStore('resellerAccountId'),
 							userId: representativeUserId,
 							fullName: representativeFullName
 						};
@@ -794,16 +802,12 @@ define(function(require) {
 					});
 				},
 				serviceItemsListingRender: function(parallelCallback) {
-					self.serviceItemsListingRender({
+					self.wizardRenderServicePlanItemList({
 						planIds: selectedPlanIds,
 						container: $template.find('#service_plan_aggregate'),
 						showProgressPanel: false,
-						success: function() {
-							parallelCallback(null);
-						},
-						error: function() {
-							parallelCallback(null);
-						}
+						raiseError: false,
+						callback: parallelCallback
 					});
 				}
 			}, function(err, results) {
@@ -926,15 +930,10 @@ define(function(require) {
 							return;
 						}
 
-						self.serviceItemsListingRender({
+						self.wizardRenderServicePlanItemList({
 							planIds: selectedPlanIds,
 							container: $planAggregateContainer,
-							success: function() {
-								parallelCallback(null);
-							},
-							error: function() {
-								parallelCallback(true);
-							}
+							callback: parallelCallback
 						});
 					},
 					function(parallelCallback) {
@@ -983,15 +982,10 @@ define(function(require) {
 
 				monster.parallel([
 					function(parallelCallback) {
-						self.serviceItemsListingRender({
+						self.wizardRenderServicePlanItemList({
 							planIds: selectedPlanIds,
 							container: $planAggregateContainer,
-							success: function() {
-								parallelCallback(null);
-							},
-							error: function() {
-								parallelCallback(true);
-							}
+							callback: parallelCallback
 						});
 					},
 					function(parallelCallback) {
@@ -1270,7 +1264,6 @@ define(function(require) {
 			monster.waterfall([
 				function(waterfallCallback) {
 					self.wizardGetAppList({
-						scope: 'account',
 						success: function(appList) {
 							waterfallCallback(null, appList);
 						},
@@ -1350,7 +1343,8 @@ define(function(require) {
 
 			$appAdd.find('.wizard-card').on('click', function() {
 				monster.pub('common.appSelector.renderPopup', {
-					scope: 'account',
+					accountId: self.wizardGetStore('resellerAccountId'),
+					scope: 'all',
 					excludedApps: allowedAppIds,
 					callbacks: {
 						accept: function(selectedAppIds) {
@@ -1438,16 +1432,12 @@ define(function(require) {
 						return waterfallCallback(null);
 					}
 
-					self.serviceItemsListingRender({
+					self.wizardRenderServicePlanItemList({
 						planIds: data.servicePlan.selectedPlanIds,
 						container: $template.find('#service_plan_aggregate'),
 						showProgressPanel: false,
-						success: function() {
-							waterfallCallback(null);
-						},
-						error: function(err) {
-							waterfallCallback(null);
-						}
+						raiseError: false,
+						callback: waterfallCallback
 					});
 				}
 			], function() {
@@ -1561,7 +1551,7 @@ define(function(require) {
 			formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
 
 			// Set app list
-			formattedData.appRestrictions.apps = self.wizardGetStore(['apps', 'account']);
+			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
 
 			return formattedData;
 		},
@@ -1619,8 +1609,8 @@ define(function(require) {
 		wizardSubmit: function(args) {
 			var self = this,
 				wizardData = args.data,
-				parentAccountId = wizardData.parentAccount.id,
 				$container = args.container,
+				parentAccountId = self.wizardGetStore('parentAccountId'),
 				// This function creates a new async.js callback, to allow the parallel tasks to
 				// continue regardless if one of them fail, because it packs the error as part of
 				// the result, and returns a null value as error
@@ -1644,7 +1634,7 @@ define(function(require) {
 				function(waterfallCallback) {
 					self.wizardRequestResourceCreateOrUpdate({
 						resource: 'account.create',
-						accountId: wizardData.parentAccount.id,
+						accountId: parentAccountId,
 						data: self.wizardSubmitGetFormattedAccount(wizardData),
 						generateError: true,
 						callback: function(err, newAccount) {
@@ -1985,14 +1975,11 @@ define(function(require) {
 		 * Loads the account manager, to replace the wizard view
 		 * @param  {Object} args
 		 * @param  {jQuery} args.container  Main view container
-		 * @param  {Object} args.data  Wizard data
-		 * @param  {Object} args.data.parentAccount  Parent Account
-		 * @param  {String} args.data.parentAccount.id  Parent Account ID
 		 */
 		wizardClose: function(args) {
 			var self = this,
 				$container = args.container,
-				parentAccountId = args.data.parentAccount.id;
+				parentAccountId = self.wizardGetStore('parentAccountId');
 
 			monster.pub('accountsManager.activate', {
 				container: $container,
@@ -2047,7 +2034,6 @@ define(function(require) {
 					}
 
 					self.wizardGetAppList({
-						scope: 'all',
 						success: function(appList) {
 							waterfallCallback(null, appList);
 						},
@@ -2239,24 +2225,24 @@ define(function(require) {
 		 * Gets the stored list of apps available. If the list is not stored, then it is
 		 * requested to the API.
 		 * @param  {Object} args
-		 * @param  {('all'|'account'|'user')} args.scope  App list scope
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetAppList: function(args) {
-			var self = this,
-				scope = args.scope;
+			var self = this;
 
 			self.wizardGetDataList(_.merge({
-				storeKey: ['apps', scope],
+				storeKey: 'apps',
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
-						scope: scope,
+						accountId: self.wizardGetStore('resellerAccountId'),
+						scope: 'all',
+						forceFetch: true,
 						success: function(appList) {
 							appList = _.sortBy(appList, 'label');
 							reqArgs.success(appList);
 						},
-						error: args.error
+						error: reqArgs.error
 					});
 				}
 			}, args));
@@ -2267,7 +2253,7 @@ define(function(require) {
 		 * requested to the API, for which either the resource name or the request data
 		 * function should be provided.
 		 * @param  {Object} args
-		 * @param  {('accountUsers'|'apps'|'numberClassifiers'|'servicePlans')} args.storeKey  Key used to save/retrieve the data in the store
+		 * @param  {(String|String[])} args.storeKey  Key used to save/retrieve the data in the store
 		 * @param  {String} [args.resource]  Resource name to request the data from the API
 		 * @param  {Function} [args.requestData]  Function to be used to request the data, if a
 		 *                                        resource name is not provided
@@ -2297,6 +2283,9 @@ define(function(require) {
 					.chain(args)
 					.pick('resource', 'error', 'generateError', 'data')
 					.merge({
+						data: {
+							accountId: self.wizardGetStore('resellerAccountId')
+						},
 						success: successCallback
 					})
 					.value();
@@ -2322,6 +2311,9 @@ define(function(require) {
 				requestData = function(reqArgs) {
 					self.wizardRequestResourceList({
 						resource: 'numbers.listClassifiers',
+						data: {
+							accountId: self.wizardGetStore('resellerAccountId')
+						},
 						success: function(classifierList) {
 							var formattedClassifierList = _
 								.chain(classifierList)
@@ -2388,7 +2380,6 @@ define(function(require) {
 		 * Gets the stored list of users for the current account. If the list is not stored, then
 		 * it is requested to the API.
 		 * @param  {Object} args
-		 * @param {Object} [args.data] Request data override
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
@@ -2399,6 +2390,36 @@ define(function(require) {
 				storeKey: 'accountUsers',
 				resource: 'user.list'
 			}, args));
+		},
+
+		/**
+		 * Render the service plan item list
+		 * @param  {Object} args
+		 * @param  {jQuery} args.container  Container element
+		 * @param  {String} args.planIds  ID's of the selected plans to merge and render
+		 * @param  {Boolean} [args.showProgressPanel=true]  Show the progress panel while loading
+		 * @param  {Boolean} [args.raiseError=true]  Return a value in the callback to let know the caller
+		 *                                    that an error happened while loading the merged plan
+		 * @param  {Function} args.callback  Async.js callback
+		 */
+		wizardRenderServicePlanItemList: function(args) {
+			var self = this,
+				raiseError = _.get(args, 'raiseError', true),
+				renderArgs = _
+					.chain(args)
+					.pick(['container', 'planIds', 'showProgressPanel'])
+					.merge({
+						accountId: self.wizardGetStore('resellerAccountId'),
+						success: function() {
+							args.callback(null);
+						},
+						error: function(err) {
+							args.callback(raiseError ? err : null);
+						}
+					})
+					.value();
+
+			self.serviceItemsListingRender(renderArgs);
 		},
 
 		/**
@@ -2647,7 +2668,7 @@ define(function(require) {
 
 		/**
 		 * Store setter
-		 * @param  {('accountUsers'|'numberClassifiers'|'servicePlans'|String[])} path|value
+		 * @param  {(String|String[])} path|value
 		 * @param  {*} [value]
 		 */
 		wizardSetStore: function(path, value) {
