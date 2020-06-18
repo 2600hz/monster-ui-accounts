@@ -8,7 +8,13 @@
 			{{tryI18n accountAdminsI18n.labels ../name}}
 		{{/if}}
 		</label>
-		<input class="input-block-level" type="{{#if ../type}}{{../type}}{{else}}text{{/if}}" name="accountAdmins[{{../index}}].{{../name}}" id="account_admins_{{../index}}_{{coalesce ../id ../name}}" placeholder="{{coalesce (lookup accountAdminsI18n.placeholders ../name) label (tryI18n accountAdminsI18n.labels ../name)}}" value="{{#if ../value}}{{../value}}{{else}}{{lookupPath @root.data ../name}}{{/if}}">
+		{{#compare ../type "===" "password"}}
+			<div class="input-box iconography-input-left">
+				<input class="input-block-level" type="password" name="accountAdmins[{{../index}}].{{../name}}" id="account_admins_{{../index}}_{{coalesce ../id ../name}}" placeholder="{{coalesce (lookup accountAdminsI18n.placeholders ../name) label (tryI18n accountAdminsI18n.labels ../name)}}" value="{{#if ../value}}{{../value}}{{else}}{{lookupPath @root.data ../name}}{{/if}}">
+			</div>
+		{{else}}
+			<input class="input-block-level" type="{{#if ../type}}{{../type}}{{else}}text{{/if}}" name="accountAdmins[{{../index}}].{{../name}}" id="account_admins_{{../index}}_{{coalesce ../id ../name}}" placeholder="{{coalesce (lookup accountAdminsI18n.placeholders ../name) label (tryI18n accountAdminsI18n.labels ../name)}}" value="{{#if ../value}}{{../value}}{{else}}{{lookupPath @root.data ../name}}{{/if}}">
+		{{/compare}}
 	{{/with}}
 	</div>
 {{/inline}}

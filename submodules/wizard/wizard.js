@@ -505,6 +505,14 @@ define(function(require) {
 			counters.correlative += 1;
 			counters.index += 1;
 
+			monster.ui.showPasswordStrength(
+				$adminItemTemplate.find('[type="password"]'),
+				{
+					display: 'emoji',
+					showInitialStatus: true
+				}
+			);
+
 			self.wizardAppendListItem({
 				item: $adminItemTemplate,
 				listContainer: $listContainer,
