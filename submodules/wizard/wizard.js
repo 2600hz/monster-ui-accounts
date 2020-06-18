@@ -161,7 +161,7 @@ define(function(require) {
 							self.wizardSetStore('resellerAccountId', resellerAccountId);
 
 							if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
-								waterfallCallback(null, results);
+								return waterfallCallback(null, results);
 							}
 
 							self.wizardGetServicePlanList({
