@@ -141,7 +141,7 @@ define(function(require) {
 				},
 				function(waterfallCallback) {
 					var waterfallFunctions = [
-						function(waterfallCallback) {
+						function getParentAccount(waterfallCallback) {
 							if (parentAccountId === self.accountId) {
 								return waterfallCallback(null, monster.apps.auth.currentAccount);
 							}
@@ -151,17 +151,37 @@ define(function(require) {
 								callback: waterfallCallback
 							});
 						},
-						function(parentAccount, waterfallCallback) {
+						function getResellerAccount(parentAccount, waterfallCallback) {
 							var results = {
 									parentAccount: parentAccount,
 									servicePlans: []
 								},
 								resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
 
-							self.wizardSetStore('resellerAccountId', resellerAccountId);
+							self.wizardRequestGetAccount({
+								accountId: resellerAccountId,
+								callback: function(err) {
+									var status = _.get(err, 'status'),
+										isResellerUnavailable = _.includes([ 403, 404 ], status);
 
-							if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
-								waterfallCallback(null, results);
+									if (!isResellerUnavailable) {
+										self.wizardSetStore('resellerAccountId', resellerAccountId);
+									}
+
+									return waterfallCallback(null, _.merge({
+										isResellerUnavailable: isResellerUnavailable
+									}, results));
+								}
+							});
+						},
+						function getServicePlans(results, waterfallCallback) {
+							var isResellerUnavailable = results.isResellerUnavailable,
+								isCurrentAccountReseller = monster.util.isReseller(),
+								isCurrentUserSuperDuperAdmin = monster.util.isSuperDuper(),
+								skipServicePlans = isResellerUnavailable || !(isCurrentAccountReseller || isCurrentUserSuperDuperAdmin);
+
+							if (skipServicePlans) {
+								return waterfallCallback(null, results);
 							}
 
 							self.wizardGetServicePlanList({
