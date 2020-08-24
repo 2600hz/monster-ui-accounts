@@ -636,6 +636,12 @@ define(function(require) {
 
 			monster.waterfall([
 				function(waterfallCallback) {
+					var resellerAccountId = self.wizardGetStore('resellerAccountId');
+
+					if (!resellerAccountId) {
+						return waterfallCallback(null, []);
+					}
+
 					self.wizardGetUserList({
 						data: {
 							generateError: false
