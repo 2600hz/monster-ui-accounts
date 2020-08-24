@@ -1341,6 +1341,7 @@ define(function(require) {
 		 */
 		wizardAppRestrictionsBindEvents: function(args) {
 			var self = this,
+				parentAccountId = self.wizardGetStore('parentAccountId'),
 				slideAnimationDuration = self.appFlags.wizard.animationTimes.allowedApps,
 				appCount = args.appCount,
 				allowedAppIds = _.clone(args.allowedAppIds),	// Create a copy of the data, in order to not to alter the original one
@@ -1369,7 +1370,7 @@ define(function(require) {
 
 			$appAdd.find('.wizard-card').on('click', function() {
 				monster.pub('common.appSelector.renderPopup', {
-					accountId: self.wizardGetStore('resellerAccountId'),
+					accountId: self.wizardGetStore('resellerAccountId', parentAccountId),
 					scope: 'all',
 					excludedApps: allowedAppIds,
 					callbacks: {
@@ -2255,13 +2256,14 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetAppList: function(args) {
-			var self = this;
+			var self = this,
+				parentAccountId = self.wizardGetStore('parentAccountId');
 
 			self.wizardGetDataList(_.merge({
 				storeKey: 'apps',
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
-						accountId: self.wizardGetStore('resellerAccountId'),
+						accountId: self.wizardGetStore('resellerAccountId', parentAccountId),
 						scope: 'all',
 						forceFetch: true,
 						success: function(appList) {
@@ -2334,11 +2336,12 @@ define(function(require) {
 		 */
 		wizardGetPhoneNumberClassifierList: function(args) {
 			var self = this,
+				parentAccountId = self.wizardGetStore('parentAccountId'),
 				requestData = function(reqArgs) {
 					self.wizardRequestResourceList({
 						resource: 'numbers.listClassifiers',
 						data: {
-							accountId: self.wizardGetStore('resellerAccountId')
+							accountId: self.wizardGetStore('resellerAccountId', parentAccountId)
 						},
 						success: function(classifierList) {
 							var formattedClassifierList = _
