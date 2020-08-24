@@ -584,11 +584,13 @@ define(function(require) {
 						$template = $(self.getTemplate({
 							name: 'step-accountContacts',
 							data: {
-								data: _.merge({ salesRep: {
-									representative: {
-										userId: self.userId
+								data: _.merge({
+									salesRep: {
+										representative: {
+											userId: self.userId
+										}
 									}
-								} }, formattedData),
+								}, formattedData),
 								users: userList
 							},
 							submodule: 'wizard'
