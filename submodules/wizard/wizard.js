@@ -133,72 +133,74 @@ define(function(require) {
 			});
 
 			monster.waterfall([
-				function(waterfallCallback) {
+				function showLoadingTemplate(waterfallCallback) {
 					monster.ui.insertTemplate($container, function() {
 						// Defer to ensure that the loading template does not replace the step template
 						_.defer(waterfallCallback, null);
 					});
 				},
-				function(waterfallCallback) {
-					var waterfallFunctions = [
-						function getParentAccount(waterfallCallback) {
-							if (parentAccountId === self.accountId) {
-								return waterfallCallback(null, monster.apps.auth.currentAccount);
+				function getParentAccount(waterfallCallback) {
+					if (parentAccountId === self.accountId) {
+						return waterfallCallback(null, monster.apps.auth.currentAccount);
+					}
+
+					self.wizardRequestGetAccount({
+						accountId: parentAccountId,
+						callback: waterfallCallback
+					});
+				},
+				function tryGetResellerAccount(parentAccount, waterfallCallback) {
+					var results = {
+							parentAccount: parentAccount,
+							servicePlans: []
+						},
+						resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
+
+					if (resellerAccountId === parentAccountId) {
+						self.wizardSetStore('resellerAccountId', parentAccountId);
+
+						return waterfallCallback(null, _.merge({
+							isResellerUnavailable: false
+						}, results));
+					}
+
+					self.wizardRequestGetAccount({
+						accountId: resellerAccountId,
+						generateError: false,
+						callback: function(err) {
+							var status = _.get(err, 'status'),
+								isResellerUnavailable = _.includes([ 403, 404 ], status);
+
+							if (!isResellerUnavailable) {
+								self.wizardSetStore('resellerAccountId', resellerAccountId);
 							}
 
-							self.wizardRequestGetAccount({
-								accountId: parentAccountId,
-								callback: waterfallCallback
-							});
-						},
-						function tryGetResellerAccount(parentAccount, waterfallCallback) {
-							var results = {
-									parentAccount: parentAccount,
-									servicePlans: []
-								},
-								resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
-
-							self.wizardRequestGetAccount({
-								accountId: resellerAccountId,
-								generateError: false,
-								callback: function(err) {
-									var status = _.get(err, 'status'),
-										isResellerUnavailable = _.includes([ 403, 404 ], status);
-
-									if (!isResellerUnavailable) {
-										self.wizardSetStore('resellerAccountId', resellerAccountId);
-									}
-
-									return waterfallCallback(null, _.merge({
-										isResellerUnavailable: isResellerUnavailable
-									}, results));
-								}
-							});
-						},
-						function getServicePlans(results, waterfallCallback) {
-							var isResellerUnavailable = results.isResellerUnavailable,
-								isCurrentAccountReseller = monster.util.isReseller(),
-								isCurrentUserSuperDuperAdmin = monster.util.isSuperDuper(),
-								skipServicePlans = isResellerUnavailable || !(isCurrentAccountReseller || isCurrentUserSuperDuperAdmin);
-
-							if (skipServicePlans) {
-								return waterfallCallback(null, results);
-							}
-
-							self.wizardGetServicePlanList({
-								success: function(plans) {
-									waterfallCallback(null, _.merge(results, {
-										servicePlans: plans
-									}));
-								},
-								error: function() {
-									waterfallCallback(null, results);
-								}
-							});
+							return waterfallCallback(null, _.merge({
+								isResellerUnavailable: isResellerUnavailable
+							}, results));
 						}
-					];
+					});
+				},
+				function getServicePlans(results, waterfallCallback) {
+					var isResellerUnavailable = results.isResellerUnavailable,
+						isCurrentAccountReseller = monster.util.isReseller(),
+						isCurrentUserSuperDuperAdmin = monster.util.isSuperDuper(),
+						skipServicePlans = isResellerUnavailable || !(isCurrentAccountReseller || isCurrentUserSuperDuperAdmin);
 
-					monster.waterfall(waterfallFunctions, waterfallCallback);
+					if (skipServicePlans) {
+						return waterfallCallback(null, results);
+					}
+
+					self.wizardGetServicePlanList({
+						success: function(plans) {
+							waterfallCallback(null, _.merge(results, {
+								servicePlans: plans
+							}));
+						},
+						error: function() {
+							waterfallCallback(null, results);
+						}
+					});
 				}
 			], function(err, results) {
 				if (err) {
