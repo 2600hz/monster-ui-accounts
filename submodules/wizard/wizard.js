@@ -151,7 +151,7 @@ define(function(require) {
 								callback: waterfallCallback
 							});
 						},
-						function getResellerAccount(parentAccount, waterfallCallback) {
+						function tryGetResellerAccount(parentAccount, waterfallCallback) {
 							var results = {
 									parentAccount: parentAccount,
 									servicePlans: []
@@ -160,6 +160,7 @@ define(function(require) {
 
 							self.wizardRequestGetAccount({
 								accountId: resellerAccountId,
+								generateError: false,
 								callback: function(err) {
 									var status = _.get(err, 'status'),
 										isResellerUnavailable = _.includes([ 403, 404 ], status);
@@ -2022,15 +2023,18 @@ define(function(require) {
 		 * Request an account document
 		 * @param  {Object} args
 		 * @param  {String} args.accountId  Account ID
+		 * @param  {Boolean} [args.generateError=true]  Whether or not show error dialog
 		 * @param  {Function} args.callback  Async.js callback
 		 */
 		wizardRequestGetAccount: function(args) {
-			var self = this;
+			var self = this,
+				generateError = _.get(args, 'generateError', true);
 
 			self.callApi({
 				resource: 'account.get',
 				data: {
-					accountId: args.accountId
+					accountId: args.accountId,
+					generateError: generateError
 				},
 				success: function(data) {
 					args.callback(null, data.data);
