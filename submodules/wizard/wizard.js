@@ -183,8 +183,9 @@ define(function(require) {
 				function getServicePlans(results, waterfallCallback) {
 					var isResellerUnavailable = results.isResellerUnavailable,
 						isCurrentAccountReseller = monster.util.isReseller(),
-						isCurrentUserSuperDuperAdmin = monster.util.isSuperDuper(),
-						skipServicePlans = isResellerUnavailable || !(isCurrentAccountReseller || isCurrentUserSuperDuperAdmin);
+						isCurrentAccountSuperDuperAdmin = monster.util.isSuperDuper(),
+						isElevatedAccount = isCurrentAccountReseller || isCurrentAccountSuperDuperAdmin,
+						skipServicePlans = isResellerUnavailable || !isElevatedAccount;
 
 					if (skipServicePlans) {
 						return waterfallCallback(null, results);
