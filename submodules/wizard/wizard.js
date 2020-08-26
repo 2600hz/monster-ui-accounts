@@ -132,13 +132,12 @@ define(function(require) {
 				parentAccountId: parentAccountId
 			});
 
+			// Show loading template while loading data
+			monster.ui.insertTemplate($container, null, {
+				hasBackground: false
+			});
+
 			monster.waterfall([
-				function showLoadingTemplate(waterfallCallback) {
-					monster.ui.insertTemplate($container, function() {
-						// Defer to ensure that the loading template does not replace the step template
-						_.defer(waterfallCallback, null);
-					});
-				},
 				function getParentAccount(waterfallCallback) {
 					if (parentAccountId === self.accountId) {
 						return waterfallCallback(null, monster.apps.auth.currentAccount);
