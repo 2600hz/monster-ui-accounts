@@ -193,7 +193,7 @@ define(function(require) {
 
 					self.wizardGetServicePlanList({
 						success: function(plans) {
-							waterfallCallback(null, _.merge(results, {
+							waterfallCallback(null, _.merge({}, results, {
 								servicePlans: plans
 							}));
 						},
