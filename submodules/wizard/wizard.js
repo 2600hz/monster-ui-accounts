@@ -132,52 +132,75 @@ define(function(require) {
 				parentAccountId: parentAccountId
 			});
 
+			// Show loading template while loading data
+			monster.ui.insertTemplate($container, null, {
+				hasBackground: false
+			});
+
 			monster.waterfall([
-				function(waterfallCallback) {
-					monster.ui.insertTemplate($container, function() {
-						// Defer to ensure that the loading template does not replace the step template
-						_.defer(waterfallCallback, null);
+				function getParentAccount(waterfallCallback) {
+					if (parentAccountId === self.accountId) {
+						return waterfallCallback(null, monster.apps.auth.currentAccount);
+					}
+
+					self.wizardRequestGetAccount({
+						accountId: parentAccountId,
+						callback: waterfallCallback
 					});
 				},
-				function(waterfallCallback) {
-					var waterfallFunctions = [
-						function(waterfallCallback) {
-							if (parentAccountId === self.accountId) {
-								return waterfallCallback(null, monster.apps.auth.currentAccount);
-							}
-
-							self.wizardRequestGetAccount({
-								accountId: parentAccountId,
-								callback: waterfallCallback
-							});
+				function tryGetResellerAccount(parentAccount, waterfallCallback) {
+					var results = {
+							parentAccount: parentAccount,
+							servicePlans: []
 						},
-						function(parentAccount, waterfallCallback) {
-							var results = {
-									parentAccount: parentAccount,
-									servicePlans: []
-								},
-								resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
+						resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
 
-							self.wizardSetStore('resellerAccountId', resellerAccountId);
+					if (resellerAccountId === parentAccountId) {
+						self.wizardSetStore('resellerAccountId', parentAccountId);
 
-							if (!monster.util.isReseller() && !monster.util.isSuperDuper()) {
-								waterfallCallback(null, results);
+						return waterfallCallback(null, _.merge({
+							isResellerUnavailable: false
+						}, results));
+					}
+
+					self.wizardRequestGetAccount({
+						accountId: resellerAccountId,
+						generateError: false,
+						callback: function(err) {
+							var status = _.get(err, 'status'),
+								isResellerUnavailable = _.includes([ 403, 404 ], status);
+
+							if (!isResellerUnavailable) {
+								self.wizardSetStore('resellerAccountId', resellerAccountId);
 							}
 
-							self.wizardGetServicePlanList({
-								success: function(plans) {
-									waterfallCallback(null, _.merge(results, {
-										servicePlans: plans
-									}));
-								},
-								error: function() {
-									waterfallCallback(null, results);
-								}
-							});
+							return waterfallCallback(null, _.merge({
+								isResellerUnavailable: isResellerUnavailable
+							}, results));
 						}
-					];
+					});
+				},
+				function getServicePlans(results, waterfallCallback) {
+					var isResellerUnavailable = results.isResellerUnavailable,
+						isCurrentAccountReseller = monster.util.isReseller(),
+						isCurrentAccountSuperDuperAdmin = monster.util.isSuperDuper(),
+						isElevatedAccount = isCurrentAccountReseller || isCurrentAccountSuperDuperAdmin,
+						skipServicePlans = isResellerUnavailable || !isElevatedAccount;
 
-					monster.waterfall(waterfallFunctions, waterfallCallback);
+					if (skipServicePlans) {
+						return waterfallCallback(null, results);
+					}
+
+					self.wizardGetServicePlanList({
+						success: function(plans) {
+							waterfallCallback(null, _.merge({}, results, {
+								servicePlans: plans
+							}));
+						},
+						error: function() {
+							waterfallCallback(null, results);
+						}
+					});
 				}
 			], function(err, results) {
 				if (err) {
@@ -564,11 +587,13 @@ define(function(require) {
 						$template = $(self.getTemplate({
 							name: 'step-accountContacts',
 							data: {
-								data: _.merge({ salesRep: {
-									representative: {
-										userId: self.userId
+								data: _.merge({
+									salesRep: {
+										representative: {
+											userId: self.userId
+										}
 									}
-								} }, formattedData),
+								}, formattedData),
 								users: userList
 							},
 							submodule: 'wizard'
@@ -616,6 +641,12 @@ define(function(require) {
 
 			monster.waterfall([
 				function(waterfallCallback) {
+					var resellerAccountId = self.wizardGetStore('resellerAccountId');
+
+					if (!resellerAccountId) {
+						return waterfallCallback(null, []);
+					}
+
 					self.wizardGetUserList({
 						data: {
 							generateError: false
@@ -1315,6 +1346,7 @@ define(function(require) {
 		 */
 		wizardAppRestrictionsBindEvents: function(args) {
 			var self = this,
+				parentAccountId = self.wizardGetStore('parentAccountId'),
 				slideAnimationDuration = self.appFlags.wizard.animationTimes.allowedApps,
 				appCount = args.appCount,
 				allowedAppIds = _.clone(args.allowedAppIds),	// Create a copy of the data, in order to not to alter the original one
@@ -1343,7 +1375,7 @@ define(function(require) {
 
 			$appAdd.find('.wizard-card').on('click', function() {
 				monster.pub('common.appSelector.renderPopup', {
-					accountId: self.wizardGetStore('resellerAccountId'),
+					accountId: self.wizardGetStore('resellerAccountId', parentAccountId),
 					scope: 'all',
 					excludedApps: allowedAppIds,
 					callbacks: {
@@ -1993,15 +2025,18 @@ define(function(require) {
 		 * Request an account document
 		 * @param  {Object} args
 		 * @param  {String} args.accountId  Account ID
+		 * @param  {Boolean} [args.generateError=true]  Whether or not show error dialog
 		 * @param  {Function} args.callback  Async.js callback
 		 */
 		wizardRequestGetAccount: function(args) {
-			var self = this;
+			var self = this,
+				generateError = _.get(args, 'generateError', true);
 
 			self.callApi({
 				resource: 'account.get',
 				data: {
-					accountId: args.accountId
+					accountId: args.accountId,
+					generateError: generateError
 				},
 				success: function(data) {
 					args.callback(null, data.data);
@@ -2229,13 +2264,14 @@ define(function(require) {
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetAppList: function(args) {
-			var self = this;
+			var self = this,
+				parentAccountId = self.wizardGetStore('parentAccountId');
 
 			self.wizardGetDataList(_.merge({
 				storeKey: 'apps',
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
-						accountId: self.wizardGetStore('resellerAccountId'),
+						accountId: self.wizardGetStore('resellerAccountId', parentAccountId),
 						scope: 'all',
 						forceFetch: true,
 						success: function(appList) {
@@ -2308,11 +2344,12 @@ define(function(require) {
 		 */
 		wizardGetPhoneNumberClassifierList: function(args) {
 			var self = this,
+				parentAccountId = self.wizardGetStore('parentAccountId'),
 				requestData = function(reqArgs) {
 					self.wizardRequestResourceList({
 						resource: 'numbers.listClassifiers',
 						data: {
-							accountId: self.wizardGetStore('resellerAccountId')
+							accountId: self.wizardGetStore('resellerAccountId', parentAccountId)
 						},
 						success: function(classifierList) {
 							var formattedClassifierList = _
