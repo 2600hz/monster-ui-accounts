@@ -133,7 +133,7 @@ define(function(require) {
 			});
 
 			// Show loading template while loading data
-			monster.ui.insertTemplate($container, null, {
+			monster.ui.insertTemplate($container, function() { }, {
 				hasBackground: false
 			});
 
