@@ -168,7 +168,8 @@ define(function(require) {
 						generateError: false,
 						callback: function(err) {
 							var status = _.get(err, 'status'),
-								isResellerUnavailable = _.includes([ 403, 404 ], status);
+								httpStatus = _.get(err, 'httpErrorStatus', status),
+								isResellerUnavailable = _.includes([ 403, 404 ], httpStatus);
 
 							if (!isResellerUnavailable) {
 								self.wizardSetStore('resellerAccountId', resellerAccountId);
