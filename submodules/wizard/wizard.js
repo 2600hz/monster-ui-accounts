@@ -492,6 +492,11 @@ define(function(require) {
 								.each(function(idx, el) {
 									$(el).text(idx + 1);
 								});
+
+						// Re-validate possible duplicates
+						$adminUserListContainer
+							.find('.admin-user-item input[type="email"][aria-invalid="true"]')
+								.valid();
 					});
 
 				// Notice that the index is not decremented, because its sole purpose is to
