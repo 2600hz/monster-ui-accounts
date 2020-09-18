@@ -345,6 +345,7 @@ define(function(require) {
 
 					// Set static validations
 					monster.ui.validate($template.find('form'), {
+						ignore: '.chosen-search-input',
 						rules: {
 							'accountInfo.accountName': {
 								required: true
@@ -492,6 +493,11 @@ define(function(require) {
 								.each(function(idx, el) {
 									$(el).text(idx + 1);
 								});
+
+						// Re-validate possible duplicates
+						$adminUserListContainer
+							.find('.admin-user-item input[type="email"][aria-invalid="true"]')
+								.valid();
 					});
 
 				// Notice that the index is not decremented, because its sole purpose is to
@@ -2653,7 +2659,7 @@ define(function(require) {
 		 */
 		wizardValidateGeneralSettingsFormField: function($template, element) {
 			var $element = $(element),
-				elementName = $element.attr('name'),
+				elementName = $element.attr('name') || '',
 				isValid = $element.valid();
 
 			if (!(isValid && elementName.match(/^accountAdmins\[\d+\]\.email$/))) {
