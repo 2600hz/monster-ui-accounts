@@ -454,14 +454,12 @@ $color-highlight: #dbdbde;
 
 		.password-field {
 			display: flex;
-			flex-wrap: wrap;
+			flex-wrap: nowrap;
 
 			.password-value {
-				flex: 0 0 auto;
-				min-width: 50%;
-				max-width: 100%;
+				flex: 0 1 auto;
 				height: 0.875rem;
-				margin-right: 1rem;
+				margin-right: 0.5rem;
 				overflow: hidden;
 				text-overflow: ellipsis;
 
@@ -484,7 +482,7 @@ $color-highlight: #dbdbde;
 			}
 
 			.password-toggle-label {
-				flex: 0 0 initial;
+				flex: 0 0;
 				line-height: 0.875rem;
 				font-size: 0.75rem;
 			}
