@@ -92,8 +92,10 @@
 			{{#> horizontalFieldPartial i18nSectionName="generalSettings.accountInfo" i18nFieldName="addressLine1" hasContent=true}}
 				{{generalSettings.accountInfo.addressLine1}}
 				<br/>
-				{{generalSettings.accountInfo.addressLine2}}
-				<br/>
+				{{#if generalSettings.accountInfo.addressLine2}}
+					{{generalSettings.accountInfo.addressLine2}}
+					<br/>
+				{{/if}}
 				{{generalSettings.accountInfo.addressLine3}}
 				<br />
 				{{generalSettings.accountInfo.countryName}}
