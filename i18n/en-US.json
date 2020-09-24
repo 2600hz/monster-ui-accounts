@@ -390,7 +390,6 @@
 							"accountName": "The name of the account should be unique system-wide.",
 							"accountRealm": "A custom account realm can be set. However, it will be auto-generated if left empty.",
 							"whitelabeledAccountRealm": "The account realm has been auto-generated. However it can be edited if required, but must not be left empty.",
-							"addressLine1": "Primary service address."
 						},
 						"placeholders": {
 							"accountRealm": "Auto-generated realm",
