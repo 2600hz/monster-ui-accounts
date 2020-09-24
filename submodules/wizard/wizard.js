@@ -345,7 +345,7 @@ define(function(require) {
 
 					// Set static validations
 					monster.ui.validate($template.find('form'), {
-						ignore: '.chosen-search-input',
+						ignore: '.chosen-search-input', // Ignore only search input fields in jQuery Chosen controls. Don't ignore hidden fields.
 						rules: {
 							'accountInfo.accountName': {
 								required: true
@@ -378,7 +378,6 @@ define(function(require) {
 								required: true
 							}
 						},
-						ignore: [],	// Do not ignore hidden fields, which is the case for the ones that use the jQuery Chosen plugin
 						onfocusout: _.partial(self.wizardValidateGeneralSettingsFormField, $template),
 						autoScrollOnInvalid: true
 					});
