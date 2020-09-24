@@ -137,13 +137,13 @@ $color-highlight: #dbdbde;
 
 					.service-plan-remove {
 						flex: initial;
+						min-width: 38px;
 						width: 38px;
 						height: 38px;
 						padding: 0;
 						margin-left: 0.5rem;
 
 						.iconography-medium {
-							margin-left: -6px;
 							margin-top: -3px;
 						}
 
