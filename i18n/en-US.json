@@ -522,7 +522,7 @@
 								"user": "User"
 							},
 							"help": {
-								"account": "Allows users to view/change account name, account realm, technical contact, account timezone/language preferences...",
+								"account": "Allows users to view/change account name, account realm, technical contact and account timezone/language preferences.",
 								"balance": "Allows users to view the \"Per Minute\" tab of Usage Charges.",
 								"billing": "Allows users to view/change the card on file and billing contact.",
 								"credit": "Allows users to view the \"Credit Info\" tab in their Control Center.",
@@ -530,7 +530,7 @@
 								"minutes": "Allows users to view the \"Minutes Info\" tab in their Control Center.",
 								"service_plan": "Allows users to view/download a copy of the Service Plan applied to the account.",
 								"transactions": "Allows users to view the Transactions log.",
-								"user": "Allows users to view/change their passwords, timezone & language preferences, date/time display, colorblind mode, and more..."
+								"user": "Allows users to view/change their passwords, timezone & language preferences, date/time display, colorblind mode, and more."
 							}
 						}
 					}
