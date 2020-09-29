@@ -1515,7 +1515,8 @@ define(function(require) {
 								addressLine3: self.getTemplate({
 									name: '!' + self.i18n.active().accountsApp.wizard.steps.review.generalSettings.formats.addressLine3,
 									data: data.generalSettings.accountInfo
-								})
+								}),
+								countryName: monster.timezone.getCountryName(data.generalSettings.accountInfo.country)
 							}
 						}
 					})
