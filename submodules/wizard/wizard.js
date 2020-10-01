@@ -100,6 +100,7 @@ define(function(require) {
 						}
 					]
 				},
+				hideSalesRepSection: true, // Hide sales representative section temporarily
 				stepNames: [
 					'generalSettings',
 					'accountContacts',
@@ -647,9 +648,10 @@ define(function(require) {
 
 			monster.waterfall([
 				function(waterfallCallback) {
-					var resellerAccountId = self.wizardGetStore('resellerAccountId');
+					var hideSalesRepSection = self.appFlags.wizard.hideSalesRepSection,
+						resellerAccountId = self.wizardGetStore('resellerAccountId');
 
-					if (!resellerAccountId) {
+					if (hideSalesRepSection || !resellerAccountId) {
 						return waterfallCallback(null, []);
 					}
 
