@@ -467,16 +467,16 @@
 							"caribbean": "Caribbean",
 							"did_us": "US DID",
 							"international": "US International",
-							"unknowkn": "Other"
+							"unknown": "Other"
 						},
 						"help": {
-							"tollfree_us": "Allows calls on the account to be placed to US TollFree numbers.",
-							"toll_us": "Allows calls on the account to be placed to US Toll numbers.",
-							"emergency": "Allows calls on the account to be placed to Emergency Dispatch numbers.",
-							"caribbean": "Allows calls on the account to be placed to Caribbean numbers.",
-							"did_us": "Allows calls on the account to be placed to US DID numbers.",
-							"international": "Allows calls on the account to be placed to International numbers.",
-							"unknowkn": "Allows calls on the account to be placed to all other numbers."
+							"tollfree_us": "Allows calls to US TollFree numbers.",
+							"toll_us": "Allows calls to US Toll numbers.",
+							"emergency": "Allows calls to Emergency Dispatch numbers.",
+							"caribbean": "Allows calls to Caribbean numbers.",
+							"did_us": "Allows calls to US DID numbers.",
+							"international": "Allows calls to International numbers.",
+							"unknown": "Allows calls to all other numbers."
 						}
 					}
 				},
