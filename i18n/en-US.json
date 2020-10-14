@@ -545,7 +545,7 @@
 						"description": "By default, new accounts have access to <strong>ALL</strong> available applications on the App Exchange. If you wish to customize application access for this new account, you can choose ‘Restricted Access’ below. This will <strong>BLOCK ACCESS TO ALL APPLICATIONS</strong>, requiring you to manually whitelist the applications you want this account to have access to.",
 						"help": "Restricted Access will <strong>BLOCK ACCESS TO ALL APPLICATIONS</strong>, requiring you to manually whitelist the applications you want this account to have access to.",
 						"important": "Important",
-						"notice": "This step merely sets the access restrictions for applications on this new account. It DOES NOT enable the applications on the account itself. To enable applications, you or another account administrator will need to do so within this new account’s App Exchange.",
+						"notice": "This step merely sets the access restrictions for applications on this new account. It <strong>DOES NOT</strong> enable the applications on the account itself. To enable applications, you or another account administrator will need to do so within this new account’s App Exchange.",
 						"types": {
 							"full": "Full Access",
 							"restricted": "Restricted Access"
