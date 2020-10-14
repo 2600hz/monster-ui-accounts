@@ -1300,7 +1300,11 @@ define(function(require) {
 
 			monster.waterfall([
 				function(waterfallCallback) {
+					var parentAccountId = self.wizardGetStore('parentAccountId'),
+						appsAccountId = self.wizardGetStore('resellerAccountId', parentAccountId);
+
 					self.wizardGetAppList({
+						accountId: appsAccountId,
 						success: function(appList) {
 							waterfallCallback(null, appList);
 						},
@@ -1504,6 +1508,8 @@ define(function(require) {
 		 */
 		wizardReviewFormatData: function(data) {
 			var self = this,
+				parentAccountId = self.wizardGetStore('parentAccountId'),
+				appsAccountId = self.wizardGetStore('resellerAccountId', parentAccountId),
 				wizardAppFlags = self.appFlags.wizard,
 				formattedData = _
 					.chain(data)
@@ -1590,7 +1596,7 @@ define(function(require) {
 			formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
 
 			// Set app list
-			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
+			formattedData.appRestrictions.apps = self.wizardGetStore(['apps', appsAccountId]);
 
 			return formattedData;
 		},
@@ -2070,32 +2076,48 @@ define(function(require) {
 				callback = args.callback;
 
 			monster.waterfall([
-				function(waterfallCallback) {
-					if (appRestrictions.accessLevel === 'full') {
-						return waterfallCallback(null, []);
+				function getAllowedAppIds(waterfallCallback) {
+					if (appRestrictions.accessLevel === 'restricted') {
+						return waterfallCallback(null, appRestrictions.allowedAppIds);
 					}
 
+					var parentAccountId = self.wizardGetStore('parentAccountId'),
+						appsAccountId = self.wizardGetStore('resellerAccountId', parentAccountId);
+
+					// List all apps that the reseller or parent account has enabled
 					self.wizardGetAppList({
+						accountId: appsAccountId,
 						success: function(appList) {
-							waterfallCallback(null, appList);
+							waterfallCallback(null, _.map(appList, 'id'));
 						},
 						error: function(err) {
 							waterfallCallback(err);
 						}
 					});
 				},
-				function(appList, waterfallCallback) {
-					var blacklist = _
-						.chain(appList)
-						.map('id')
-						.difference(appRestrictions.allowedAppIds)
-						.value();
+				function getDefaultAppList(allowedAppIds, waterfallCallback) {
+					self.wizardGetAppList({
+						accountId: accountId,
+						success: function(appList) {
+							waterfallCallback(null, allowedAppIds, _.map(appList, 'id'));
+						},
+						error: function(err) {
+							waterfallCallback(err);
+						}
+					});
+				},
+				function saveAppBlacklist(allowedAppIds, defaultAppIds, waterfallCallback) {
+					var blacklistAppIds = _.difference(defaultAppIds, allowedAppIds);
+
+					if (_.isEmpty(blacklistAppIds)) {
+						return waterfallCallback(null, []);
+					}
 
 					self.wizardRequestResourceCreateOrUpdate({
 						resource: 'appsStore.updateBlacklist',
 						accountId: accountId,
 						data: {
-							blacklist: blacklist
+							blacklist: blacklistAppIds
 						},
 						callback: waterfallCallback
 					});
@@ -2267,18 +2289,19 @@ define(function(require) {
 		 * Gets the stored list of apps available. If the list is not stored, then it is
 		 * requested to the API.
 		 * @param  {Object} args
+		 * @param  {String} args.accountId  Account ID from which the app list will be obtained
 		 * @param  {Function} args.success  Success callback
 		 * @param  {Function} [args.error]  Optional error callback
 		 */
 		wizardGetAppList: function(args) {
 			var self = this,
-				parentAccountId = self.wizardGetStore('parentAccountId');
+				accountId = args.accountId;
 
 			self.wizardGetDataList(_.merge({
-				storeKey: 'apps',
+				storeKey: 'apps.' + accountId,
 				requestData: function(reqArgs) {
 					monster.pub('apploader.getAppList', {
-						accountId: self.wizardGetStore('resellerAccountId', parentAccountId),
+						accountId: accountId,
 						scope: 'all',
 						forceFetch: true,
 						success: function(appList) {
