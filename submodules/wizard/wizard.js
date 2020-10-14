@@ -2110,7 +2110,7 @@ define(function(require) {
 					var blacklistAppIds = _.difference(defaultAppIds, allowedAppIds);
 
 					if (_.isEmpty(blacklistAppIds)) {
-						return waterfallCallback(null, []);
+						return waterfallCallback(null);
 					}
 
 					self.wizardRequestResourceCreateOrUpdate({
