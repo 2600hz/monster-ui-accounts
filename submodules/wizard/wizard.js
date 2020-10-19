@@ -149,11 +149,12 @@ define(function(require) {
 					});
 				},
 				function tryGetResellerAccount(parentAccount, waterfallCallback) {
-					var results = {
+					var resellerAccountId = self.wizardGetResellerAccountId(parentAccount),
+						results = {
+							resellerAccountId: resellerAccountId,
 							parentAccount: parentAccount,
 							servicePlans: []
-						},
-						resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
+						};
 
 					if (resellerAccountId === parentAccountId) {
 						self.wizardSetStore('resellerAccountId', parentAccountId);
@@ -183,9 +184,9 @@ define(function(require) {
 				},
 				function getServicePlans(results, waterfallCallback) {
 					var isResellerUnavailable = results.isResellerUnavailable,
-						isCurrentAccountReseller = monster.util.isReseller(),
-						isCurrentAccountSuperDuperAdmin = monster.util.isSuperDuper(),
-						isElevatedAccount = isCurrentAccountReseller || isCurrentAccountSuperDuperAdmin,
+						isResellerAccount = monster.util.isReseller(),
+						isSuperDuperAccount = monster.util.isSuperDuper(),
+						isElevatedAccount = isResellerAccount || isSuperDuperAccount,
 						skipServicePlans = isResellerUnavailable || !isElevatedAccount;
 
 					if (skipServicePlans) {
@@ -212,6 +213,9 @@ define(function(require) {
 					defaultCountry = _.get(monster.config, 'whitelabel.countryCode'),
 					parentAccount = results.parentAccount,
 					isRealmSuffixDefined = !_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value(),
+					noServicePlans = _.isEmpty(results.servicePlans),
+					isSuperDuperAccount = monster.util.isSuperDuper(),
+					isCurrentResellerAccount = monster.apps.auth.originalAccount.id === results.resellerAccountId,
 					defaultData = {
 						// General Settings defaults
 						generalSettings: {
@@ -269,7 +273,11 @@ define(function(require) {
 						}
 					};
 
-				if (_.isEmpty(results.servicePlans)) {
+				if (!isSuperDuperAccount && !isCurrentResellerAccount) {
+					stepNames = _.without(stepNames, 'usageAndCallRestrictions', 'creditBalanceAndFeatures');
+				}
+
+				if (noServicePlans) {
 					stepNames = _.without(stepNames, 'servicePlan');
 				}
 
