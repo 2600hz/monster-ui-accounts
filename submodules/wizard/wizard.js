@@ -203,6 +203,20 @@ define(function(require) {
 							waterfallCallback(null, results);
 						}
 					});
+				},
+				function getClassifierList(results, waterfallCallback) {
+					self.wizardGetPhoneNumberClassifierList({
+						success: function(classifierList) {
+							waterfallCallback(null, _.merge({
+								classifiers: classifierList
+							}, results));
+						},
+						error: function() {
+							waterfallCallback(null, _.merge({
+								classifiers: []
+							}, results));
+						}
+					});
 				}
 			], function(err, results) {
 				if (err) {
@@ -216,6 +230,7 @@ define(function(require) {
 					noServicePlans = _.isEmpty(results.servicePlans),
 					isSuperDuperAccount = monster.util.isSuperDuper(),
 					isCurrentResellerAccount = monster.apps.auth.originalAccount.id === results.resellerAccountId,
+					areLimitsAllowed = isSuperDuperAccount || isCurrentResellerAccount,
 					defaultData = {
 						// General Settings defaults
 						generalSettings: {
@@ -236,17 +251,22 @@ define(function(require) {
 							} : {})
 						},
 						// Usage and Call Restrictions defaults
-						usageAndCallRestrictions: {
+						usageAndCallRestrictions: _.merge({
+							callRestrictions: _
+								.chain(results.classifiers)
+								.mapKeys('type')
+								.mapValues(function() {
+									return true;
+								})
+								.value()
+						}, areLimitsAllowed && {
 							trunkLimits: {
 								inbound: 0,
 								outbound: 0,
 								twoway: 0
 							},
-							allowPerMinuteCalls: false,
-							callRestrictions: {
-								_all: true
-							}
-						},
+							allowPerMinuteCalls: false
+						}),
 						// Credit Balance and Features defaults
 						creditBalanceAndFeatures: {
 							controlCenterAccess: {
@@ -273,7 +293,7 @@ define(function(require) {
 						}
 					};
 
-				if (!isSuperDuperAccount && !isCurrentResellerAccount) {
+				if (!areLimitsAllowed) {
 					stepNames = _.without(stepNames, 'usageAndCallRestrictions', 'creditBalanceAndFeatures');
 				}
 
@@ -1099,7 +1119,7 @@ define(function(require) {
 		 */
 		wizardUsageAndCallRestrictionsRender: function(args, callback) {
 			var self = this,
-				initTemplate = function(classifierList) {
+				initTemplate = function() {
 					var usageAndCallRestrictionsData = args.data.usageAndCallRestrictions,
 						dataTemplate = {
 							trunkTypes: [
@@ -1107,7 +1127,7 @@ define(function(require) {
 								'outbound',
 								'twoway'
 							],
-							callRestrictionTypes: classifierList,
+							callRestrictionTypes: self.wizardGetStore('numberClassifiers'),
 							data: usageAndCallRestrictionsData
 						},
 						$template = $(self.getTemplate({
@@ -1125,22 +1145,9 @@ define(function(require) {
 					return $template;
 				};
 
-			monster.waterfall([
-				function(waterfallCallback) {
-					self.wizardGetPhoneNumberClassifierList({
-						success: function(classifierList) {
-							waterfallCallback(null, classifierList);
-						},
-						error: function() {
-							waterfallCallback(null, []);
-						}
-					});
-				}
-			], function(err, classifierList) {
-				callback({
-					template: initTemplate(classifierList),
-					callback: self.wizardScrollToTop
-				});
+			callback({
+				template: initTemplate(),
+				callback: self.wizardScrollToTop
 			});
 		},
 
@@ -1708,6 +1715,10 @@ define(function(require) {
 								});
 							},
 							limits: function(parallelCallback) {
+								if (!_.has(wizardData.usageAndCallRestrictions, 'trunkLimits')) {
+									return parallelCallback(null);
+								}
+
 								self.wizardRequestLimitsUpdate({
 									accountId: newAccountId,
 									limits: self.wizardSubmitGetFormattedLimits(wizardData),
@@ -1891,7 +1902,10 @@ define(function(require) {
 		 */
 		wizardSubmitGetFormattedLedgerCredit: function(wizardData) {
 			var self = this,
-				amount = _.toNumber(wizardData.creditBalanceAndFeatures.accountCredit.initialBalance);
+				amount = _.chain(wizardData)
+					.get('creditBalanceAndFeatures.accountCredit.initialBalance', 0)
+					.toNumber()
+					.value();
 
 			if (amount === 0) {
 				return null;
