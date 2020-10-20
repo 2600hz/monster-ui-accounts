@@ -198,6 +198,7 @@
 {{/if}}
 
 	<!-- USAGE + CALL RESTRICTIONS -->
+{{#if usageAndCallRestrictions}}
 	<div class="section print-nobreak">
 		{{> sectionTitle stepName="usageAndCallRestrictions"}}
 		<div class="section-body">
@@ -235,8 +236,10 @@
 			</div>
 		</div>
 	</div>
+{{/if}}
 
 	<!-- CREDIT BALANCE + FEATURES -->
+{{#if creditBalanceAndFeatures}}
 	<div class="section print-nobreak">
 		{{> sectionTitle stepName="creditBalanceAndFeatures"}}
 		<div class="section-body">
@@ -274,6 +277,7 @@
 			</div>
 		</div>
 	</div>
+{{/if}}
 
 	<!-- APP RESTRICTIONS -->
 	<div class="section">

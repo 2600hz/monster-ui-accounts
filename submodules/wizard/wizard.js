@@ -252,6 +252,7 @@ define(function(require) {
 						},
 						// Usage and Call Restrictions defaults
 						usageAndCallRestrictions: _.merge({
+							disabled: !areLimitsAllowed,
 							callRestrictions: _
 								.chain(results.classifiers)
 								.mapKeys('type')
@@ -269,6 +270,7 @@ define(function(require) {
 						}),
 						// Credit Balance and Features defaults
 						creditBalanceAndFeatures: {
+							disabled: !areLimitsAllowed,
 							controlCenterAccess: {
 								features: {
 									user: true,
@@ -1522,6 +1524,7 @@ define(function(require) {
 				wizardAppFlags = self.appFlags.wizard,
 				formattedData = _
 					.chain(data)
+					.omitBy('disabled')
 					.cloneDeep()	// To not to alter data to save
 					.merge({
 						generalSettings: {
@@ -1594,15 +1597,20 @@ define(function(require) {
 			}
 
 			// Add static data from appFlags
-			if (!_.has(wizardAppFlags.controlCenterFeatures, 'list')) {
-				wizardAppFlags.controlCenterFeatures.list = _
-					.chain(wizardAppFlags.controlCenterFeatures.tree)
-					.flatMap('features')
-					.thru(featureTreeToList)
-					.value();
+			if (_.has(formattedData, 'creditBalanceAndFeatures')) {
+				if (!_.has(wizardAppFlags.controlCenterFeatures, 'list')) {
+					wizardAppFlags.controlCenterFeatures.list = _
+						.chain(wizardAppFlags.controlCenterFeatures.tree)
+						.flatMap('features')
+						.thru(featureTreeToList)
+						.value();
+				}
+				formattedData.creditBalanceAndFeatures.controlCenterAccess.featureList = wizardAppFlags.controlCenterFeatures.list;
 			}
-			formattedData.creditBalanceAndFeatures.controlCenterAccess.featureList = wizardAppFlags.controlCenterFeatures.list;
-			formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
+
+			if (_.has(formattedData, 'usageAndCallRestrictions')) {
+				formattedData.usageAndCallRestrictions.callRestrictionTypes = self.wizardGetStore('numberClassifiers');
+			}
 
 			// Set app list
 			formattedData.appRestrictions.apps = self.wizardGetStore('apps');
