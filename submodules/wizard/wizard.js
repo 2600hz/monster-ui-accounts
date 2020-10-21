@@ -149,11 +149,12 @@ define(function(require) {
 					});
 				},
 				function tryGetResellerAccount(parentAccount, waterfallCallback) {
-					var results = {
+					var resellerAccountId = self.wizardGetResellerAccountId(parentAccount),
+						results = {
+							resellerAccountId: resellerAccountId,
 							parentAccount: parentAccount,
 							servicePlans: []
-						},
-						resellerAccountId = self.wizardGetResellerAccountId(parentAccount);
+						};
 
 					if (resellerAccountId === parentAccountId) {
 						self.wizardSetStore('resellerAccountId', parentAccountId);
@@ -183,9 +184,9 @@ define(function(require) {
 				},
 				function getServicePlans(results, waterfallCallback) {
 					var isResellerUnavailable = results.isResellerUnavailable,
-						isCurrentAccountReseller = monster.util.isReseller(),
-						isCurrentAccountSuperDuperAdmin = monster.util.isSuperDuper(),
-						isElevatedAccount = isCurrentAccountReseller || isCurrentAccountSuperDuperAdmin,
+						isResellerAccount = monster.util.isReseller(),
+						isSuperDuperAccount = monster.util.isSuperDuper(),
+						isElevatedAccount = isResellerAccount || isSuperDuperAccount,
 						skipServicePlans = isResellerUnavailable || !isElevatedAccount;
 
 					if (skipServicePlans) {
@@ -212,6 +213,10 @@ define(function(require) {
 					defaultCountry = _.get(monster.config, 'whitelabel.countryCode'),
 					parentAccount = results.parentAccount,
 					isRealmSuffixDefined = !_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value(),
+					noServicePlans = _.isEmpty(results.servicePlans),
+					isSuperDuperAccount = monster.util.isSuperDuper(),
+					isCurrentResellerAccount = monster.apps.auth.originalAccount.id === results.resellerAccountId,
+					masterOrResellerAccount = isSuperDuperAccount || isCurrentResellerAccount,
 					defaultData = {
 						// General Settings defaults
 						generalSettings: {
@@ -232,36 +237,47 @@ define(function(require) {
 							} : {})
 						},
 						// Usage and Call Restrictions defaults
-						usageAndCallRestrictions: {
-							trunkLimits: {
-								inbound: 0,
-								outbound: 0,
-								twoway: 0
+						usageAndCallRestrictions: _.merge(
+							{
+								callRestrictions: {
+									_all: true
+								}
 							},
-							allowPerMinuteCalls: false,
-							callRestrictions: {
-								_all: true
+							masterOrResellerAccount && {
+								trunkLimits: {
+									inbound: 0,
+									outbound: 0,
+									twoway: 0
+								},
+								allowPerMinuteCalls: false
 							}
-						},
+						),
 						// Credit Balance and Features defaults
-						creditBalanceAndFeatures: {
-							controlCenterAccess: {
-								features: {
-									user: true,
-									account: true,
-									billing: true,
-									balance: true,
-									credit: true,
-									minutes: true,
-									service_plan: true,
-									transactions: true,
-									inbound: true,
-									outbound: true,
-									twoway: true,
-									errorTracker: true
+						creditBalanceAndFeatures: _.merge(
+							{
+								controlCenterAccess: {
+									features: {
+										user: true,
+										account: true,
+										billing: true,
+										balance: true,
+										credit: true,
+										minutes: true,
+										service_plan: true,
+										transactions: true,
+										inbound: true,
+										outbound: true,
+										twoway: true,
+										errorTracker: true
+									}
+								}
+							},
+							masterOrResellerAccount && {
+								accountCredit: {
+									initialBalance: 0
 								}
 							}
-						},
+						),
 						// App Restrictions defaults
 						appRestrictions: {
 							accessLevel: 'full',
@@ -269,7 +285,7 @@ define(function(require) {
 						}
 					};
 
-				if (_.isEmpty(results.servicePlans)) {
+				if (noServicePlans) {
 					stepNames = _.without(stepNames, 'servicePlan');
 				}
 
@@ -1706,6 +1722,10 @@ define(function(require) {
 								});
 							},
 							limits: function(parallelCallback) {
+								if (!_.has(wizardData.usageAndCallRestrictions, 'trunkLimits')) {
+									return parallelCallback(null);
+								}
+
 								self.wizardRequestLimitsUpdate({
 									accountId: newAccountId,
 									limits: self.wizardSubmitGetFormattedLimits(wizardData),
@@ -1889,7 +1909,11 @@ define(function(require) {
 		 */
 		wizardSubmitGetFormattedLedgerCredit: function(wizardData) {
 			var self = this,
-				amount = _.toNumber(wizardData.creditBalanceAndFeatures.accountCredit.initialBalance);
+				amount = _
+					.chain(wizardData)
+					.get('creditBalanceAndFeatures.accountCredit.initialBalance', 0)
+					.toNumber()
+					.value();
 
 			if (amount === 0) {
 				return null;
