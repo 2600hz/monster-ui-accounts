@@ -5,6 +5,7 @@
 	</div>
 	<div class="step-body">
 		<form id="form_usage_and_call_restrictions">
+		{{#if @root.data.trunkLimits}}
 			<div class="step-section">
 				<div class="section-title">
 					{{usageAndCallRestrictionsI18n.trunkLimits.title}}
@@ -28,6 +29,7 @@
 					</div>
 				</div>
 			</div>
+		{{/if}}
 			<div class="step-section">
 				<div class="section-title">
 					{{usageAndCallRestrictionsI18n.callRestrictions.title}}
