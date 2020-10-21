@@ -2073,12 +2073,10 @@ define(function(require) {
 			var self = this,
 				accountId = args.accountId,
 				appRestrictions = args.appRestrictions,
-				callback = args.callback;
-
-			monster.waterfall([
-				function getAllowedAppIds(waterfallCallback) {
+				callback = args.callback,
+				getAllowedAppIds = function(next) {
 					if (appRestrictions.accessLevel === 'restricted') {
-						return waterfallCallback(null, appRestrictions.allowedAppIds);
+						return next(null, appRestrictions.allowedAppIds);
 					}
 
 					var parentAccountId = self.wizardGetStore('parentAccountId'),
@@ -2088,27 +2086,35 @@ define(function(require) {
 					self.wizardGetAppList({
 						accountId: appsAccountId,
 						success: function(appList) {
-							waterfallCallback(null, _.map(appList, 'id'));
+							next(null, _.map(appList, 'id'));
 						},
 						error: function(err) {
-							waterfallCallback(err);
+							next(err);
 						}
 					});
 				},
-				function getDefaultAppList(allowedAppIds, waterfallCallback) {
+				getDefaultAppIds = function(next) {
 					self.wizardGetAppList({
 						accountId: accountId,
 						success: function(appList) {
-							waterfallCallback(null, allowedAppIds, _.map(appList, 'id'));
+							next(null, _.map(appList, 'id'));
 						},
 						error: function(err) {
-							waterfallCallback(err);
+							next(err);
 						}
 					});
-				},
-				function saveAppBlacklist(allowedAppIds, defaultAppIds, waterfallCallback) {
-					var blacklistAppIds = _.difference(defaultAppIds, allowedAppIds);
+				};
 
+			monster.waterfall([
+				function getBlacklistAppIds(waterfallCallback) {
+					monster.parallel({
+						allowed: getAllowedAppIds,
+						defaults: getDefaultAppIds
+					}, function(err, appIds) {
+						waterfallCallback(err, _.difference(appIds.defaults, appIds.allowed));
+					});
+				},
+				function saveAppBlacklist(blacklistAppIds, waterfallCallback) {
 					if (_.isEmpty(blacklistAppIds)) {
 						return waterfallCallback(null);
 					}
