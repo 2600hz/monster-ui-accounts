@@ -202,6 +202,7 @@
 		{{> sectionTitle stepName="usageAndCallRestrictions"}}
 		<div class="section-body">
 			<div class="flex-row-container">
+			{{#if @root.usageAndCallRestrictions.trunkLimits}}
 				<div class="flex-item field-group-column">
 					<div class="flex-row-container">
 						<div class="flex-item-1 column-title">
@@ -215,6 +216,7 @@
 						{{> booleanLabel mode="Status"}}
 					{{/horizontalFieldPartial}}
 				</div>
+			{{/if}}
 				<div class="flex-item field-group-column">
 					<div class="flex-row-container">
 						<div class="flex-item-1 column-title">
@@ -241,6 +243,7 @@
 		{{> sectionTitle stepName="creditBalanceAndFeatures"}}
 		<div class="section-body">
 			<div class="flex-row-container">
+			{{#if @root.creditBalanceAndFeatures.accountCredit}}
 				<div class="flex-item field-group-column">
 					<div class="flex-row-container">
 						<div class="flex-item-1 column-title">
@@ -251,6 +254,7 @@
 						{{formatPrice value 2}}
 					{{/horizontalFieldPartial}}
 				</div>
+			{{/if}}
 				<div class="flex-item field-group-column">
 					<div class="flex-row-container">
 						<div class="flex-item-1 column-title">
