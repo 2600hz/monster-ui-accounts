@@ -2333,7 +2333,6 @@ define(function(require) {
 					monster.pub('apploader.getAppList', {
 						accountId: accountId,
 						scope: 'all',
-						forceFetch: true,
 						success: function(appList) {
 							appList = _.sortBy(appList, 'label');
 							reqArgs.success(appList);
