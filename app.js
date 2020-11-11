@@ -94,7 +94,7 @@ define(function(require) {
 
 			parent.empty()
 					.append(accountsManager);
-					
+
 			self.renderAccountsManager({
 				container: accountsManager,
 				parentId: parentId,
@@ -112,7 +112,7 @@ define(function(require) {
 				selectedTab = args.selectedTab,
 				callback = args.callback,
 				$window = $(window);
-				
+
 			monster.pub('common.accountBrowser.render', {
 				container: parent.find('.edition-view .left-menu'),
 				parentId: parentId,
@@ -121,7 +121,7 @@ define(function(require) {
 				noFocus: true,
 				onNewAccountClick: function(parentAccountId) {
 					$(window).off('resize.accountsManager');
-					
+
 					monster.pub('accounts.wizard.render', {
 						container: parent,
 						parentAccountId: parentAccountId || self.accountId
@@ -1036,27 +1036,11 @@ define(function(require) {
 					});
 				},
 				appsList: function(callback) {
-					self.callApi({
-						resource: 'appsStore.list',
-						data: {
-							accountId: self.accountId
-						},
-						success: function(data, status) {
-							var parallelRequest = {};
-							_.each(data.data, function(val) {
-								parallelRequest[val.id] = function(parallelCallback) {
-									val.icon = monster.util.getAppIconPath(val);
-									parallelCallback && parallelCallback(null, val);
-								};
-							});
-
-							monster.parallel(parallelRequest, function(err, results) {
-								callback(null, results);
-							});
-						},
-						error: function(data, status) {
-							callback(null, null);
-						}
+					monster.pub('apploader.getAppList', {
+						scope: 'all',
+						accountId: self.accountId,
+						success: _.partial(callback, null),
+						error: _.partial(callback, null, [])
 					});
 				},
 				appsBlacklist: function(callback) {
@@ -1066,10 +1050,10 @@ define(function(require) {
 							accountId: accountId
 						},
 						success: function(data, status) {
-							callback(null, data.data && data.data.blacklist ? data.data.blacklist : null);
+							callback(null, _.get(data.data, 'blacklist', []));
 						},
 						error: function(data, status) {
-							callback(null, null);
+							callback(null, []);
 						}
 					});
 				},
@@ -1085,9 +1069,7 @@ define(function(require) {
 					});
 				}
 			}, function(err, results) {
-				var lang = monster.config.whitelabel.language,
-					isoFormattedLang = lang.substr(0, 3).concat(lang.substr(lang.length - 2, 2).toUpperCase()),
-					params = {
+				var params = {
 						accountData: results.account,
 						accountUsers: results.users.sort(function(a, b) {
 							return (a.first_name + a.last_name).toLowerCase() > (b.first_name + b.last_name).toLowerCase() ? 1 : -1;
@@ -1101,16 +1083,15 @@ define(function(require) {
 						noMatch: results.noMatch,
 						selectedTab: selectedTab,
 						appsList: _.map(results.appsList, function(app) {
-							var currentLang = app.i18n.hasOwnProperty(isoFormattedLang) ? isoFormattedLang : 'en-US';
-							app.description = app.i18n[currentLang].description;
-							app.friendlyName = app.i18n[currentLang].label;
-
-							if (results.appsBlacklist && results.appsBlacklist.indexOf(app.id) >= 0) {
-								app.blacklisted = true;
-							}
-
-							monster.ui.formatIconApp(app);
-							return app;
+							return _.merge({
+								friendlyName: app.label,
+								blacklisted: _.includes(results.appsBlacklist, app.id)
+							}, _.pick(app, [
+								'description',
+								'extraCssClass',
+								'icon',
+								'id'
+							]));
 						}),
 						appsBlacklist: results.appsBlacklist,
 						listParents: results.listParents
