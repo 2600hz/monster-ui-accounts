@@ -113,6 +113,17 @@ $color-highlight: #dbdbde;
 			font-weight: bold;
 			color: $woodsmoke;
 		}
+
+		.monster-password-strength-icon {
+			position: absolute;
+			top: 9px;
+			right: 0.75rem;
+			font-size: 1.5rem;
+		}
+
+		.monster-password-strength-label {
+			line-height: 14px;
+		}
 	}
 
 	&#step_service_plan {
