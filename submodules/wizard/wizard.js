@@ -212,7 +212,7 @@ define(function(require) {
 				var defaultLanguage = _.get(monster.config, 'whitelabel.language', monster.defaultLanguage),
 					defaultCountry = _.get(monster.config, 'whitelabel.countryCode'),
 					parentAccount = results.parentAccount,
-					isRealmSuffixDefined = !_.chain(monster.config).get('whitelabel.realm_suffix').isEmpty().value(),
+					isRealmSuffixDefined = !_.isUndefined(monster.util.getRealmSuffix()),
 					noServicePlans = _.isEmpty(results.servicePlans),
 					isSuperDuperAccount = monster.util.isSuperDuper(),
 					isCurrentResellerAccount = monster.apps.auth.originalAccount.id === results.resellerAccountId,
@@ -233,7 +233,7 @@ define(function(require) {
 								language: _.get(parentAccount, 'language', defaultLanguage),
 								timezone: parentAccount.timezone
 							}, isRealmSuffixDefined ? {
-								whitelabeledAccountRealm: monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix
+								whitelabeledAccountRealm: monster.util.generateAccountRealm()
 							} : {})
 						},
 						// Usage and Call Restrictions defaults

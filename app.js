@@ -187,10 +187,11 @@ define(function(require) {
 			var self = this,
 				parent = params.parent || $('#accounts_manager_view'),
 				parentAccountId = params.accountId || self.accountId,
-				dataTemplate = {};
+				dataTemplate = {},
+				hasRealmSuffix = !_.isUndefined(monster.util.getRealmSuffix());
 
-			if (monster.config.whitelabel.hasOwnProperty('realm_suffix') && monster.config.whitelabel.realm_suffix.length) {
-				dataTemplate.whitelabeledRealm = monster.util.randomString(7) + '.' + monster.config.whitelabel.realm_suffix;
+			if (hasRealmSuffix) {
+				dataTemplate.whitelabeledRealm = monster.util.generateAccountRealm();
 			}
 
 			var newAccountWizard = $(self.getTemplate({
