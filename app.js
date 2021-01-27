@@ -1243,6 +1243,10 @@ define(function(require) {
 					return ret;
 				}),
 				templateData = {
+					resellerUsers: _.sortBy(self.getStore('edit.reseller.userList'), _.flow(
+						monster.util.getUserFullName,
+						_.toLower
+					)),
 					disableNumbersFeatures: monster.config.whitelabel.disableNumbersFeatures,
 					account: $.extend(true, {}, accountData),
 					accountAdmins: admins,
