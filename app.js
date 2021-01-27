@@ -1479,6 +1479,64 @@ define(function(require) {
 				);
 			}
 
+			notesTab.find('#accountmanager_sales_save').on('click', function(event) {
+				event.preventDefault();
+
+				var $button = $(this),
+					userId = notesTab.find('#sales_representative').val(),
+					gregorianEndDate = monster.util.dateToBeginningOfGregorianDay(
+						notesTab.find('#sales_end_date').datepicker('getDate'),
+						monster.util.getCurrentTimeZone()
+					);
+
+				$button.prop('disabled', 'disabled');
+
+				self.updateData(
+					accountData,
+					{
+						contract: {
+							end_date: gregorianEndDate,
+							representative: {
+								account_id: self.getStore('edit.reseller.accountId'),
+								user_id: userId,
+								name: _
+									.chain(self.getStore('edit.reseller.userList'))
+									.find({ id: userId })
+									.thru(monster.util.getUserFullName)
+									.value()
+							}
+						}
+					},
+					function(data, status) {
+						accountData = data.data;
+						self.render({
+							selectedId: accountData.id,
+							selectedTab: 'tab-notes',
+							callback: function() {
+								monster.ui.toast({
+									type: 'success',
+									message: self.i18n.active().toastrMessages.salesContractUpdate.success,
+									options: {
+										timeOut: 5000
+									}
+								});
+							}
+						});
+					},
+					function(data, status) {
+						$button.prop('disabled', false);
+
+						monster.ui.toast({
+							type: 'error',
+							message: self.i18n.active().toastrMessages.salesContractUpdate.error,
+							options: {
+								timeOut: 5000
+							}
+						});
+					}
+				);
+			});
+
 			monster.ui.wysiwyg(notesTab.find('.wysiwyg-container.notes')).html(accountData.custom_notes);
 
 			notesTab.find('#accountsmanager_notes_save').on('click', function() {
