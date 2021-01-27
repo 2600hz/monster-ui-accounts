@@ -1009,31 +1009,21 @@ define(function(require) {
 						}
 					});
 				},
-				noMatch: function(callback) {
+				noMatch: function(next) {
 					self.callApi({
 						resource: 'callflow.list',
 						data: {
 							accountId: accountId,
 							filters: {
+								full_docs: true,
 								filter_numbers: 'no_match'
 							}
 						},
-						success: function(listCallflows) {
-							if (listCallflows.data.length === 1) {
-								self.callApi({
-									resource: 'callflow.get',
-									data: {
-										callflowId: listCallflows.data[0].id,
-										accountId: accountId
-									},
-									success: function(callflow) {
-										callback(null, callflow.data);
-									}
-								});
-							} else {
-								callback(null, null);
-							}
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data'),
+							_.head,
+							_.partial(next, null)
+						)
 					});
 				},
 				appsList: function(callback) {
@@ -1102,7 +1092,7 @@ define(function(require) {
 						self.editAccount(params);
 					};
 
-				if (!_.isObject(params.noMatch)) {
+				if (!_.isPlainObject(params.noMatch)) {
 					self.createNoMatchCallflow({
 						accountId: params.accountData.id,
 						resellerId: params.accountData.reseller_id
