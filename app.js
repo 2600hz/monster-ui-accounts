@@ -939,124 +939,129 @@ define(function(require) {
 			var self = this,
 				accountId = args.accountId,
 				selectedTab = args.selectedTab,
-				parent = args.parent;
+				parent = args.parent,
+				fetchData = function(callback) {
+					monster.parallel({
+						account: function(next) {
+							self.callApi({
+								resource: 'account.get',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								)
+							});
+						},
+						users: function(next) {
+							self.callApi({
+								resource: 'user.list',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, {})
+							});
+						},
+						limits: function(next) {
+							self.callApi({
+								resource: 'limits.get',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, {})
+							});
+						},
+						classifiers: function(next) {
+							self.callApi({
+								resource: 'numbers.listClassifiers',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, {})
+							});
+						},
+						currentBalance: function(next) {
+							self.callApi({
+								resource: 'ledgers.total',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data.amount'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, {})
+							});
+						},
+						noMatch: function(next) {
+							self.callApi({
+								resource: 'callflow.list',
+								data: {
+									accountId: accountId,
+									filters: {
+										full_docs: true,
+										filter_numbers: 'no_match'
+									}
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.head,
+									_.partial(next, null)
+								)
+							});
+						},
+						appsList: function(next) {
+							monster.pub('apploader.getAppList', {
+								scope: 'all',
+								accountId: self.accountId,
+								success: _.partial(next, null),
+								error: _.partial(next, null, [])
+							});
+						},
+						appsBlacklist: function(next) {
+							self.callApi({
+								resource: 'appsStore.getBlacklist',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data.blacklist', []),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, [])
+							});
+						},
+						listParents: function(next) {
+							self.callApi({
+								resource: 'account.listParents',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								)
+							});
+						}
+					}, callback);
+				};
 
-			monster.parallel({
-				account: function(next) {
-					self.callApi({
-						resource: 'account.get',
-						data: {
-							accountId: accountId
-						},
-						success: _.flow(
-							_.partial(_.get, _, 'data'),
-							_.partial(next, null)
-						)
-					});
-				},
-				users: function(next) {
-					self.callApi({
-						resource: 'user.list',
-						data: {
-							accountId: accountId
-						},
-						success: _.flow(
-							_.partial(_.get, _, 'data'),
-							_.partial(next, null)
-						),
-						error: _.partial(next, null, {})
-					});
-				},
-				limits: function(next) {
-					self.callApi({
-						resource: 'limits.get',
-						data: {
-							accountId: accountId
-						},
-						success: _.flow(
-							_.partial(_.get, _, 'data'),
-							_.partial(next, null)
-						),
-						error: _.partial(next, null, {})
-					});
-				},
-				classifiers: function(next) {
-					self.callApi({
-						resource: 'numbers.listClassifiers',
-						data: {
-							accountId: accountId
-						},
-						success: _.flow(
-							_.partial(_.get, _, 'data'),
-							_.partial(next, null)
-						),
-						error: _.partial(next, null, {})
-					});
-				},
-				currentBalance: function(next) {
-					self.callApi({
-						resource: 'ledgers.total',
-						data: {
-							accountId: accountId
-						},
-						success: _.flow(
-							_.partial(_.get, _, 'data.amount'),
-							_.partial(next, null)
-						),
-						error: _.partial(next, null, {})
-					});
-				},
-				noMatch: function(next) {
-					self.callApi({
-						resource: 'callflow.list',
-						data: {
-							accountId: accountId,
-							filters: {
-								full_docs: true,
-								filter_numbers: 'no_match'
-							}
-						},
-						success: _.flow(
-							_.partial(_.get, _, 'data'),
-							_.head,
-							_.partial(next, null)
-						)
-					});
-				},
-				appsList: function(next) {
-					monster.pub('apploader.getAppList', {
-						scope: 'all',
-						accountId: self.accountId,
-						success: _.partial(next, null),
-						error: _.partial(next, null, [])
-					});
-				},
-				appsBlacklist: function(next) {
-					self.callApi({
-						resource: 'appsStore.getBlacklist',
-						data: {
-							accountId: accountId
-						},
-						success: _.flow(
-							_.partial(_.get, _, 'data.blacklist', []),
-							_.partial(next, null)
-						),
-						error: _.partial(next, null, [])
-					});
-				},
-				listParents: function(next) {
-					self.callApi({
-						resource: 'account.listParents',
-						data: {
-							accountId: accountId
-						},
-						success: _.flow(
-							_.partial(_.get, _, 'data'),
-							_.partial(next, null)
-						)
-					});
-				}
-			}, function(err, results) {
+			monster.waterfall([
+				fetchData
+			], function(err, results) {
 				var params = {
 						accountData: results.account,
 						accountUsers: results.users.sort(function(a, b) {
