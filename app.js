@@ -1093,10 +1093,30 @@ define(function(require) {
 							});
 						}
 					}, callback);
+				},
+				fetchResellerUsers = function fetchResellerUsers(data, next) {
+					var resellerId = _.find([
+						_.get(data.account, 'contract.representative.account_id'),
+						_.get(data.account, data.account.is_reseller ? 'id' : 'reseller_id')
+					], _.isString);
+
+					self.callApi({
+						resource: 'user.list',
+						data: {
+							generateError: false,
+							filters: {
+								paginate: false
+							},
+							accountId: resellerId
+						},
+						success: _.partial(next, null, data),
+						error: _.partial(next, null, data)
+					});
 				};
 
 			monster.waterfall([
-				fetchData
+				fetchData,
+				fetchResellerUsers
 			], function(err, results) {
 				var params = {
 						accountData: results.account,
