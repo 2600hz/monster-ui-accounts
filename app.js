@@ -63,6 +63,42 @@ define(function(require) {
 			});
 		},
 
+		/**
+		 * Store getter
+		 * @param  {Array|String} [path]
+		 * @param  {*} [defaultValue]
+		 * @return {*}
+		 */
+		getStore: function(path, defaultValue) {
+			var self = this,
+				store = ['_data', 'store'];
+			return _.get(
+				self,
+				_.isUndefined(path)
+					? store
+					: _.flatten([store, _.isString(path) ? path.split('.') : path]),
+				defaultValue
+			);
+		},
+
+		/**
+		 * Store setter
+		 * @param {Array|String} [path]
+		 * @param {*} [value]
+		 */
+		setStore: function(path, value) {
+			var self = this,
+				hasValue = _.toArray(arguments).length === 2,
+				store = ['_data', 'store'];
+			_.set(
+				self,
+				hasValue
+					? _.flatten([store, _.isString(path) ? path.split('.') : path])
+					: store,
+				hasValue ? value : path
+			);
+		},
+
 		/* Available args *
 		 * `container`: Container of the App, defaults to $('#monster_content')
 		 * `parentId`: ID of the parent account used to display the list
