@@ -1399,8 +1399,7 @@ define(function(require) {
 					.keydown('esc', function() {
 						this.value = '';
 						$(this).change();
-					}
-			);
+					});
 			monster.ui.wysiwyg(notesTab.find('.wysiwyg-container.notes')).html(accountData.custom_notes);
 
 			notesTab.find('#accountsmanager_notes_save').on('click', function() {
@@ -1670,26 +1669,26 @@ define(function(require) {
 					addValueField = template.find('#amount_add'),
 					removeValueField = template.find('#amount_remove'),
 					changeValueDisplayed = function(accountId, field) {
-					    self.callApi({
-						resource: 'ledgers.total',
-						data: {
-						    accountId: accountId
-						},
-						success: function(data, status) {
-                                                    params.balance = data.data.amount;
-						    var formattedValue = monster.util.formatPrice({
-							price: params.balance,
-							digits: 2
-						    });
-						    popupAmount.html(formattedValue);
-						    accountsAppAmount.html(formattedValue);
-						    field.val('');
-						    monster.ui.toast({
-							type: 'success',
-							message: self.i18n.active().updateCreditDialog.successfulUpdate
-						    });
-						}
-					    });
+						self.callApi({
+							resource: 'ledgers.total',
+							data: {
+								accountId: accountId
+							},
+							success: function(data, status) {
+								params.balance = data.data.amount;
+								var formattedValue = monster.util.formatPrice({
+									price: params.balance,
+									digits: 2
+								});
+								popupAmount.html(formattedValue);
+								accountsAppAmount.html(formattedValue);
+								field.val('');
+								monster.ui.toast({
+									type: 'success',
+									message: self.i18n.active().updateCreditDialog.successfulUpdate
+								});
+							}
+						});
 					},
 					addForm = template.find('#add_credit_form'),
 					removeForm = template.find('#remove_credit_form'),
@@ -2164,7 +2163,7 @@ define(function(require) {
 		},
 
 		addCredit: function(accountId, value, success, error) {
-                        var description = 'Credit added by administrator';
+			var description = 'Credit added by administrator';
 			var self = this,
 				apiData = {
 					resource: 'ledgers.credit',
