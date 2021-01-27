@@ -942,71 +942,68 @@ define(function(require) {
 				parent = args.parent;
 
 			monster.parallel({
-				account: function(callback) {
+				account: function(next) {
 					self.callApi({
 						resource: 'account.get',
 						data: {
 							accountId: accountId
 						},
-						success: function(data, status) {
-							callback(null, data.data);
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data'),
+							_.partial(next, null)
+						)
 					});
 				},
-				users: function(callback) {
+				users: function(next) {
 					self.callApi({
 						resource: 'user.list',
 						data: {
 							accountId: accountId
 						},
-						success: function(data, status) {
-							callback(null, data.data);
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data'),
+							_.partial(next, null)
+						),
+						error: _.partial(next, null, {})
 					});
 				},
-				limits: function(callback) {
+				limits: function(next) {
 					self.callApi({
 						resource: 'limits.get',
 						data: {
 							accountId: accountId
 						},
-						success: function(data, status) {
-							callback(null, data.data);
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data'),
+							_.partial(next, null)
+						),
+						error: _.partial(next, null, {})
 					});
 				},
-				classifiers: function(callback) {
+				classifiers: function(next) {
 					self.callApi({
 						resource: 'numbers.listClassifiers',
 						data: {
 							accountId: accountId
 						},
-						success: function(data, status) {
-							callback(null, data.data);
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data'),
+							_.partial(next, null)
+						),
+						error: _.partial(next, null, {})
 					});
 				},
-				currentBalance: function(callback) {
+				currentBalance: function(next) {
 					self.callApi({
 						resource: 'ledgers.total',
 						data: {
 							accountId: accountId
 						},
-						success: function(data, status) {
-							callback(null, data.data.amount);
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data.amount'),
+							_.partial(next, null)
+						),
+						error: _.partial(next, null, {})
 					});
 				},
 				noMatch: function(next) {
@@ -1026,37 +1023,37 @@ define(function(require) {
 						)
 					});
 				},
-				appsList: function(callback) {
+				appsList: function(next) {
 					monster.pub('apploader.getAppList', {
 						scope: 'all',
 						accountId: self.accountId,
-						success: _.partial(callback, null),
-						error: _.partial(callback, null, [])
+						success: _.partial(next, null),
+						error: _.partial(next, null, [])
 					});
 				},
-				appsBlacklist: function(callback) {
+				appsBlacklist: function(next) {
 					self.callApi({
 						resource: 'appsStore.getBlacklist',
 						data: {
 							accountId: accountId
 						},
-						success: function(data, status) {
-							callback(null, _.get(data.data, 'blacklist', []));
-						},
-						error: function(data, status) {
-							callback(null, []);
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data.blacklist', []),
+							_.partial(next, null)
+						),
+						error: _.partial(next, null, [])
 					});
 				},
-				listParents: function(callback) {
+				listParents: function(next) {
 					self.callApi({
 						resource: 'account.listParents',
 						data: {
 							accountId: accountId
 						},
-						success: function(data, status) {
-							callback(null, data.data);
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data'),
+							_.partial(next, null)
+						)
 					});
 				}
 			}, function(err, results) {
