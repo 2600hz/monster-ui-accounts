@@ -1461,6 +1461,24 @@ define(function(require) {
 						this.value = '';
 						$(this).change();
 					});
+
+			monster.ui.chosen(notesTab.find('#sales_representative'));
+
+			monster.ui.datepicker(notesTab.find('#sales_end_date'), {
+				minDate: new Date()
+			});
+
+			if (_.has(accountData, 'contract.end_date')) {
+				notesTab.find('#sales_end_date').datepicker('setDate',
+					monster.util.toFriendlyDate(
+						_.get(accountData, 'contract.end_date'),
+						'date',
+						undefined,
+						true
+					)
+				);
+			}
+
 			monster.ui.wysiwyg(notesTab.find('.wysiwyg-container.notes')).html(accountData.custom_notes);
 
 			notesTab.find('#accountsmanager_notes_save').on('click', function() {
