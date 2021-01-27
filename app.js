@@ -1100,6 +1100,8 @@ define(function(require) {
 						_.get(data.account, data.account.is_reseller ? 'id' : 'reseller_id')
 					], _.isString);
 
+					self.setStore('edit.reseller.accountId', resellerId);
+
 					self.callApi({
 						resource: 'user.list',
 						data: {
@@ -1109,8 +1111,15 @@ define(function(require) {
 							},
 							accountId: resellerId
 						},
-						success: _.partial(next, null, data),
-						error: _.partial(next, null, data)
+						success: _.flow(
+							_.partial(_.get, _, 'data'),
+							_.bind(self.setStore, self, 'edit.reseller.userList'),
+							_.partial(next, null, data)
+						),
+						error: _.flow(
+							_.bind(self.setStore, self, 'edit.reseller.userList', []),
+							_.partial(next, null, data)
+						)
 					});
 				};
 
