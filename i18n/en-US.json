@@ -290,6 +290,15 @@
 	"toggleAll": "Toggle All",
 
 	"accountsApp": {
+		"edit": {
+			"notes": {
+				"contract": {
+					"title": "Sales Information",
+					"representative": "Representative",
+					"endDate": "Contract End Date"
+				}
+			}
+		},
 		"serviceItemsListing": {
 			"columns": {
 				"item": "Service Items",
