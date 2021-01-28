@@ -63,6 +63,42 @@ define(function(require) {
 			});
 		},
 
+		/**
+		 * Store getter
+		 * @param  {Array|String} [path]
+		 * @param  {*} [defaultValue]
+		 * @return {*}
+		 */
+		getStore: function(path, defaultValue) {
+			var self = this,
+				store = ['_data', 'store'];
+			return _.get(
+				self,
+				_.isUndefined(path)
+					? store
+					: _.flatten([store, _.isString(path) ? path.split('.') : path]),
+				defaultValue
+			);
+		},
+
+		/**
+		 * Store setter
+		 * @param {Array|String} [path]
+		 * @param {*} [value]
+		 */
+		setStore: function(path, value) {
+			var self = this,
+				hasValue = _.toArray(arguments).length === 2,
+				store = ['_data', 'store'];
+			_.set(
+				self,
+				hasValue
+					? _.flatten([store, _.isString(path) ? path.split('.') : path])
+					: store,
+				hasValue ? value : path
+			);
+		},
+
 		/* Available args *
 		 * `container`: Container of the App, defaults to $('#monster_content')
 		 * `parentId`: ID of the parent account used to display the list
@@ -939,137 +975,158 @@ define(function(require) {
 			var self = this,
 				accountId = args.accountId,
 				selectedTab = args.selectedTab,
-				parent = args.parent;
-
-			monster.parallel({
-				account: function(callback) {
-					self.callApi({
-						resource: 'account.get',
-						data: {
-							accountId: accountId
+				parent = args.parent,
+				fetchData = function(callback) {
+					monster.parallel({
+						account: function(next) {
+							self.callApi({
+								resource: 'account.get',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								)
+							});
 						},
-						success: function(data, status) {
-							callback(null, data.data);
+						users: function(next) {
+							self.callApi({
+								resource: 'user.list',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, {})
+							});
+						},
+						limits: function(next) {
+							self.callApi({
+								resource: 'limits.get',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, {})
+							});
+						},
+						classifiers: function(next) {
+							self.callApi({
+								resource: 'numbers.listClassifiers',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, {})
+							});
+						},
+						currentBalance: function(next) {
+							self.callApi({
+								resource: 'ledgers.total',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data.amount'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, {})
+							});
+						},
+						noMatch: function(next) {
+							self.callApi({
+								resource: 'callflow.list',
+								data: {
+									accountId: accountId,
+									filters: {
+										full_docs: true,
+										filter_numbers: 'no_match'
+									}
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.head,
+									_.partial(next, null)
+								)
+							});
+						},
+						appsList: function(next) {
+							monster.pub('apploader.getAppList', {
+								scope: 'all',
+								accountId: self.accountId,
+								success: _.partial(next, null),
+								error: _.partial(next, null, [])
+							});
+						},
+						appsBlacklist: function(next) {
+							self.callApi({
+								resource: 'appsStore.getBlacklist',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data.blacklist', []),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null, [])
+							});
+						},
+						listParents: function(next) {
+							self.callApi({
+								resource: 'account.listParents',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								)
+							});
 						}
-					});
+					}, callback);
 				},
-				users: function(callback) {
+				fetchResellerUsers = function fetchResellerUsers(data, next) {
+					var resellerId = _.find([
+						_.get(data.account, 'contract.representative.account_id'),
+						_.get(data.account, data.account.is_reseller ? 'id' : 'reseller_id')
+					], _.isString);
+
+					self.setStore('edit.reseller.accountId', resellerId);
+
 					self.callApi({
 						resource: 'user.list',
 						data: {
-							accountId: accountId
-						},
-						success: function(data, status) {
-							callback(null, data.data);
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
-					});
-				},
-				limits: function(callback) {
-					self.callApi({
-						resource: 'limits.get',
-						data: {
-							accountId: accountId
-						},
-						success: function(data, status) {
-							callback(null, data.data);
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
-					});
-				},
-				classifiers: function(callback) {
-					self.callApi({
-						resource: 'numbers.listClassifiers',
-						data: {
-							accountId: accountId
-						},
-						success: function(data, status) {
-							callback(null, data.data);
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
-					});
-				},
-				currentBalance: function(callback) {
-					self.callApi({
-						resource: 'ledgers.total',
-						data: {
-							accountId: accountId
-						},
-						success: function(data, status) {
-							callback(null, data.data.amount);
-						},
-						error: function(data, status) {
-							callback(null, {});
-						}
-					});
-				},
-				noMatch: function(callback) {
-					self.callApi({
-						resource: 'callflow.list',
-						data: {
-							accountId: accountId,
+							generateError: false,
 							filters: {
-								filter_numbers: 'no_match'
-							}
+								paginate: false
+							},
+							accountId: resellerId
 						},
-						success: function(listCallflows) {
-							if (listCallflows.data.length === 1) {
-								self.callApi({
-									resource: 'callflow.get',
-									data: {
-										callflowId: listCallflows.data[0].id,
-										accountId: accountId
-									},
-									success: function(callflow) {
-										callback(null, callflow.data);
-									}
-								});
-							} else {
-								callback(null, null);
-							}
-						}
+						success: _.flow(
+							_.partial(_.get, _, 'data'),
+							_.bind(self.setStore, self, 'edit.reseller.userList'),
+							_.partial(next, null, data)
+						),
+						error: _.flow(
+							_.bind(self.setStore, self, 'edit.reseller.userList', []),
+							_.partial(next, null, data)
+						)
 					});
-				},
-				appsList: function(callback) {
-					monster.pub('apploader.getAppList', {
-						scope: 'all',
-						accountId: self.accountId,
-						success: _.partial(callback, null),
-						error: _.partial(callback, null, [])
-					});
-				},
-				appsBlacklist: function(callback) {
-					self.callApi({
-						resource: 'appsStore.getBlacklist',
-						data: {
-							accountId: accountId
-						},
-						success: function(data, status) {
-							callback(null, _.get(data.data, 'blacklist', []));
-						},
-						error: function(data, status) {
-							callback(null, []);
-						}
-					});
-				},
-				listParents: function(callback) {
-					self.callApi({
-						resource: 'account.listParents',
-						data: {
-							accountId: accountId
-						},
-						success: function(data, status) {
-							callback(null, data.data);
-						}
-					});
-				}
-			}, function(err, results) {
+				};
+
+			monster.waterfall([
+				fetchData,
+				fetchResellerUsers
+			], function(err, results) {
 				var params = {
 						accountData: results.account,
 						accountUsers: results.users.sort(function(a, b) {
@@ -1102,7 +1159,7 @@ define(function(require) {
 						self.editAccount(params);
 					};
 
-				if (!_.isObject(params.noMatch)) {
+				if (!_.isPlainObject(params.noMatch)) {
 					self.createNoMatchCallflow({
 						accountId: params.accountData.id,
 						resellerId: params.accountData.reseller_id
@@ -1186,6 +1243,10 @@ define(function(require) {
 					return ret;
 				}),
 				templateData = {
+					resellerUsers: _.sortBy(self.getStore('edit.reseller.userList'), _.flow(
+						monster.util.getUserFullName,
+						_.toLower
+					)),
 					disableNumbersFeatures: monster.config.whitelabel.disableNumbersFeatures,
 					account: $.extend(true, {}, accountData),
 					accountAdmins: admins,
@@ -1399,8 +1460,83 @@ define(function(require) {
 					.keydown('esc', function() {
 						this.value = '';
 						$(this).change();
+					});
+
+			monster.ui.chosen(notesTab.find('#sales_representative'));
+
+			monster.ui.datepicker(notesTab.find('#sales_end_date'), {
+				minDate: new Date()
+			});
+
+			if (_.has(accountData, 'contract.end_date')) {
+				notesTab.find('#sales_end_date').datepicker('setDate',
+					monster.util.toFriendlyDate(
+						_.get(accountData, 'contract.end_date'),
+						'date',
+						undefined,
+						true
+					)
+				);
+			}
+
+			notesTab.find('#accountmanager_sales_save').on('click', function(event) {
+				event.preventDefault();
+
+				var $button = $(this),
+					userId = notesTab.find('#sales_representative').val(),
+					gregorianEndDate = monster.util.dateToBeginningOfGregorianDay(
+						notesTab.find('#sales_end_date').datepicker('getDate'),
+						monster.util.getCurrentTimeZone()
+					);
+
+				$button.prop('disabled', 'disabled');
+
+				self.updateData(
+					accountData,
+					{
+						contract: {
+							end_date: gregorianEndDate,
+							representative: {
+								account_id: self.getStore('edit.reseller.accountId'),
+								user_id: userId,
+								name: _
+									.chain(self.getStore('edit.reseller.userList'))
+									.find({ id: userId })
+									.thru(monster.util.getUserFullName)
+									.value()
+							}
+						}
+					},
+					function(data, status) {
+						accountData = data.data;
+						self.render({
+							selectedId: accountData.id,
+							selectedTab: 'tab-notes',
+							callback: function() {
+								monster.ui.toast({
+									type: 'success',
+									message: self.i18n.active().toastrMessages.salesContractUpdate.success,
+									options: {
+										timeOut: 5000
+									}
+								});
+							}
+						});
+					},
+					function(data, status) {
+						$button.prop('disabled', false);
+
+						monster.ui.toast({
+							type: 'error',
+							message: self.i18n.active().toastrMessages.salesContractUpdate.error,
+							options: {
+								timeOut: 5000
+							}
+						});
 					}
-			);
+				);
+			});
+
 			monster.ui.wysiwyg(notesTab.find('.wysiwyg-container.notes')).html(accountData.custom_notes);
 
 			notesTab.find('#accountsmanager_notes_save').on('click', function() {
@@ -1670,26 +1806,26 @@ define(function(require) {
 					addValueField = template.find('#amount_add'),
 					removeValueField = template.find('#amount_remove'),
 					changeValueDisplayed = function(accountId, field) {
-					    self.callApi({
-						resource: 'ledgers.total',
-						data: {
-						    accountId: accountId
-						},
-						success: function(data, status) {
-                                                    params.balance = data.data.amount;
-						    var formattedValue = monster.util.formatPrice({
-							price: params.balance,
-							digits: 2
-						    });
-						    popupAmount.html(formattedValue);
-						    accountsAppAmount.html(formattedValue);
-						    field.val('');
-						    monster.ui.toast({
-							type: 'success',
-							message: self.i18n.active().updateCreditDialog.successfulUpdate
-						    });
-						}
-					    });
+						self.callApi({
+							resource: 'ledgers.total',
+							data: {
+								accountId: accountId
+							},
+							success: function(data, status) {
+								params.balance = data.data.amount;
+								var formattedValue = monster.util.formatPrice({
+									price: params.balance,
+									digits: 2
+								});
+								popupAmount.html(formattedValue);
+								accountsAppAmount.html(formattedValue);
+								field.val('');
+								monster.ui.toast({
+									type: 'success',
+									message: self.i18n.active().updateCreditDialog.successfulUpdate
+								});
+							}
+						});
 					},
 					addForm = template.find('#add_credit_form'),
 					removeForm = template.find('#remove_credit_form'),
@@ -2164,7 +2300,7 @@ define(function(require) {
 		},
 
 		addCredit: function(accountId, value, success, error) {
-                        var description = 'Credit added by administrator';
+			var description = 'Credit added by administrator';
 			var self = this,
 				apiData = {
 					resource: 'ledgers.credit',

@@ -123,6 +123,10 @@
 		"password": "Password:"
 	},
 	"toastrMessages": {
+		"salesContractUpdate": {
+			"success": "Sales info updated successfully!",
+			"error": "An unexpected error occurred when updating sales info, please try again later."
+		},
 		"limitsUpdateSuccess": "Limits updated successfully!",
 		"limitsUpdateError": "An unexpected error occured when updating the limits, please try again later.",
 		"creditAddSuccess": "Credit successfully added to the current balance!",
@@ -290,6 +294,15 @@
 	"toggleAll": "Toggle All",
 
 	"accountsApp": {
+		"edit": {
+			"notes": {
+				"contract": {
+					"title": "Sales Information",
+					"representative": "Representative",
+					"endDate": "Contract End Date"
+				}
+			}
+		},
 		"serviceItemsListing": {
 			"columns": {
 				"item": "Service Items",
