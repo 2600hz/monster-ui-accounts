@@ -488,6 +488,42 @@
 			{{/unless}}
 
 			<div class="tab-pane" id="accountsmanager_notes_tab">
+			{{#if resellerUsers}}
+				<legend>
+					{{@root.i18n.accountsApp.edit.notes.contract.title}}
+				</legend>
+				<div class="clearfix row-fluid">
+					<div class="span3">
+						<label for="sales_rep_representative">
+							{{@root.i18n.accountsApp.edit.notes.contract.representative}}
+						</label>
+						<select id="sales_representative">
+						{{#select account.contract.representative.user_id}}
+							{{#unless account.contract.representative.user_id}}
+								<option value=""></option>
+							{{/unless}}
+							{{#each @root.resellerUsers as |user|}}
+								<option value="{{user.id}}">
+									{{getUserFullName user}}
+								</option>
+							{{/each}}
+						{{/select}}
+						</select>
+					</div>
+					<div class="span3">
+						<label for="">
+							{{@root.i18n.accountsApp.edit.notes.contract.endDate}}
+						</label>
+						<input class="" type="text" id="sales_end_date" readonly="true">
+					</div>
+				</div>
+				<div class="clearfix buttons-div">
+					<button type="button" id="accountmanager_sales_save" class="monster-button-success">
+						{{ i18n.update }}
+					</button>
+				</div>
+			{{/if}}
+
 				<legend>{{ i18n.announcementLegend }}</legend>
 				<div class="clearfix wysiwyg-container announcement"></div>
 				<div class="clearfix buttons-div">
