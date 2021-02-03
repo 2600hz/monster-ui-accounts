@@ -976,6 +976,44 @@ define(function(require) {
 				accountId = args.accountId,
 				selectedTab = args.selectedTab,
 				parent = args.parent,
+				getNoMatchCallflow = _.partial(function(accountId, callback) {
+					monster.waterfall([
+						function getNoMatchCallflowId(next) {
+							self.callApi({
+								resource: 'callflow.list',
+								data: {
+									accountId: accountId,
+									filters: {
+										filter_numbers: 'no_match'
+									}
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.head,
+									_.partial(_.get, _, 'id'),
+									_.partial(next, null)
+								)
+							});
+						},
+						function getCallflow(callflowId, next) {
+							if (_.isUndefined(callflowId)) {
+								return next(null);
+							}
+							self.callApi({
+								resource: 'callflow.get',
+								data: {
+									accountId: accountId,
+									callflowId: callflowId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								),
+								error: _.partial(next, null)
+							});
+						}
+					], callback);
+				}, accountId),
 				fetchData = function(callback) {
 					monster.parallel({
 						account: function(next) {
@@ -1042,23 +1080,7 @@ define(function(require) {
 								error: _.partial(next, null, {})
 							});
 						},
-						noMatch: function(next) {
-							self.callApi({
-								resource: 'callflow.list',
-								data: {
-									accountId: accountId,
-									filters: {
-										full_docs: true,
-										filter_numbers: 'no_match'
-									}
-								},
-								success: _.flow(
-									_.partial(_.get, _, 'data'),
-									_.head,
-									_.partial(next, null)
-								)
-							});
-						},
+						noMatch: getNoMatchCallflow,
 						appsList: function(next) {
 							monster.pub('apploader.getAppList', {
 								scope: 'all',
