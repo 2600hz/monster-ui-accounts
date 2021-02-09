@@ -44,7 +44,8 @@
 		"locality": "City",
 		"region": "State",
 		"postalCode": "Postal Code",
-		"streetAddress": "Street Address"
+		"streetAddress": "Street Address",
+		"streetAddressExtra": "Street Address 2"
 	},
 	"technicalContact": {
 		"label": "Technical Contact",
