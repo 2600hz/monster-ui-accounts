@@ -1441,6 +1441,7 @@ define(function(require) {
 			timezone.populateDropdown(contentTemplate.find('#accountsmanager_account_timezone'), accountData.timezone);
 
 			monster.ui.chosen(contentTemplate.find('#accountsmanager_account_timezone'));
+			monster.ui.chosen(contentTemplate.find('#user_language'));
 
 			monster.ui.tooltips(contentTemplate);
 
