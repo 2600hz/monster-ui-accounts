@@ -15,14 +15,15 @@
 		},
 		"en-US": {
 			"label": "Accounts",
-			"description": "The Accounts app allows you to create, customize, and manage of all your client accounts.",
-			"extended_description": "The Accounts app is the ideal tool for managing multiple customer accounts. Save time and reduce stress with our streamlined interface. Add as many accounts as necessary with our true multi-tenant account structure. Give each sub-account the same functions as the parent account, reset devices, accounts, enforce specific limitations or restrict what the end user sees based on what your customer desires.",
+			"description": "Accounts is the ideal tool for easily managing all of your customer accounts. ",
+			"extended_description": "KAZOO’s streamlined interface and true multi-tenant account structure allows you to add as many accounts as necessary and to easily navigate between them. With Accounts, you have the flexibility to customize settings for each sub-account based on the customer’s individual needs or to apply all of the same settings to all of your sub-accounts.",
 			"features": [
-				"Multi-tenant sub accounts",
-				"Usage controls",
-				"Account creation wizard",
-				"Account limits and carrier restrictions",
-				"Easily navigate between your accounts"
+				"See an overview of each customer account",
+				"Choose which apps are enabled on each account",
+				"Set account-specific call limits and restrictions",
+				"Select the carrier strategy for each account",
+				"Enable and disable e911 and CNAM features",
+				"Create customized announcements and notes"
 			]
 		}
 	},
