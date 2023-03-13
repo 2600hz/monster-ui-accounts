@@ -1014,6 +1014,9 @@ define(function(require) {
 						}
 					], callback);
 				}, accountId),
+				mergeResults = function(data) {
+					return _.chain(data.metadata).pick(['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions']).merge(data.data).value();
+				},
 				fetchData = function(callback) {
 					monster.parallel({
 						account: function(next) {
@@ -1023,7 +1026,7 @@ define(function(require) {
 									accountId: accountId
 								},
 								success: _.flow(
-									_.partial(_.get, _, 'data'),
+									_.partial(mergeResults, _, 'data'),
 									_.partial(next, null)
 								)
 							});
