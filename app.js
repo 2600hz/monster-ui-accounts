@@ -1026,7 +1026,7 @@ define(function(require) {
 									accountId: accountId
 								},
 								success: _.flow(
-									_.partial(mergeResults, _, 'data'),
+									mergeResults,
 									_.partial(next, null)
 								)
 							});
