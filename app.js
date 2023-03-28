@@ -1015,7 +1015,7 @@ define(function(require) {
 					], callback);
 				}, accountId),
 				mergeResults = function(data) {
-					return _.chain(data.metadata).pick(['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions']).merge(data.data).value();
+					return _.chain(data.metadata).pick(['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller']).merge(data.data).value();
 				},
 				fetchData = function(callback) {
 					monster.parallel({
