@@ -2086,7 +2086,10 @@ define(function(require) {
 					generateError: generateError
 				},
 				success: function(data) {
-					args.callback(null, data.data);
+					args.callback(
+						null,
+						_.chain(data.metadata).pick(['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id']).merge(data.data).value()
+					);
 				},
 				error: function(parsedError) {
 					args.callback(parsedError);
