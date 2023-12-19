@@ -4,19 +4,13 @@ define(function(require) {
 		monster = require('monster'),
 		timezone = require('monster-timezone');
 
-	var appSubmodules = [
-		'serviceItemsListing',
-		'wizard'
-	];
-
-	require(_.map(appSubmodules, function(name) {
-		return './submodules/' + name + '/' + name;
-	}));
-
 	var app = {
 		name: 'accounts',
 
-		subModules: appSubmodules,
+		subModules: [
+			'serviceItemsListing',
+			'wizard'
+		],
 
 		css: [ 'app' ],
 
