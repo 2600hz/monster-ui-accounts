@@ -328,7 +328,7 @@ define(function(require) {
 						resource: 'account.create',
 						data: {
 							accountId: parentAccountId,
-							data: _.omit(formData.account, ['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id'])
+							data: self.formatAccountData(formData.account)
 						},
 						success: function(data, status) {
 							var newAccountId = data.data.id;
@@ -1946,7 +1946,7 @@ define(function(require) {
 								resource: 'account.update',
 								data: {
 									accountId: accountData.id,
-									data: _.omit(accountData, ['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id'])
+									data: self.formatAccountData(accountData)
 								},
 								success: function(data, status) {
 									monster.ui.toast({
@@ -2238,7 +2238,7 @@ define(function(require) {
 				resource: 'account.update',
 				data: {
 					accountId: data.id,
-					data: _.omit(data, ['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id'])
+					data: self.formatAccountData(data)
 				},
 				success: function(_data, status) {
 					success && success(_data, status);
@@ -2247,6 +2247,10 @@ define(function(require) {
 					error && error(_data, status);
 				}
 			});
+		},
+
+		formatAccountData: function(data) {
+			return _.omit(data, ['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id']);
 		},
 
 		autoGeneratePassword: function() {
