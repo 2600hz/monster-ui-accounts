@@ -2250,7 +2250,7 @@ define(function(require) {
 		},
 
 		formatAccountData: function(data) {
-			return _.omit(data, ['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id']);
+			return _.omit(data, ['billing_mode', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id']);
 		},
 
 		autoGeneratePassword: function() {
