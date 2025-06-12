@@ -505,7 +505,7 @@ define(function(require) {
 							accountId: self.accountId
 						},
 						success: function(data, status) {
-							callback(null, self.formatClassifiers(data.data));
+							callback(null, self.formatClassifiers(data));
 						},
 						error: function(data, status) {
 							callback(null, {});
