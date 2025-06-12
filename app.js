@@ -505,7 +505,7 @@ define(function(require) {
 							accountId: self.accountId
 						},
 						success: function(data, status) {
-							callback(null, data.data);
+							callback(null, self.formatClassifiers(data.data));
 						},
 						error: function(data, status) {
 							callback(null, {});
@@ -965,6 +965,17 @@ define(function(require) {
 			});
 		},
 
+
+		formatClassifiers: function(data) {
+			var classifiers = {};
+
+			_.each(data.data, function(classifier) {
+				classifiers[classifier.name] = classifier;
+			});
+
+			return classifiers;
+		},
+
 		edit: function(args) {
 			var self = this,
 				accountId = args.accountId,
@@ -1058,7 +1069,7 @@ define(function(require) {
 									accountId: accountId
 								},
 								success: _.flow(
-									_.partial(_.get, _, 'data'),
+									self.formatClassifiers,
 									_.partial(next, null)
 								),
 								error: _.partial(next, null, {})
