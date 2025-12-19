@@ -505,7 +505,7 @@ define(function(require) {
 							accountId: self.accountId
 						},
 						success: function(data, status) {
-							callback(null, self.formatClassifiers(data));
+							callback(null, _.get(data, 'data'));
 						},
 						error: function(data, status) {
 							callback(null, {});
@@ -599,11 +599,11 @@ define(function(require) {
 		renderLimitsStep: function(params) {
 			var self = this,
 				parent = params.parent,
-				formattedClassifiers = $.map(params.classifiers, function(val, key) {
+				formattedClassifiers = $.map(params.classifiers, function(classifier) {
 					return {
-						id: key,
-						name: (self.i18n.active().classifiers[key] || {}).name || val.friendly_name,
-						help: (self.i18n.active().classifiers[key] || {}).help,
+						id: classifier.name,
+						name: classifier.friendly_name,
+						help: (self.i18n.active().classifiers[classifier.name] || {}).help,
 						checked: true
 					};
 				}),
@@ -965,17 +965,6 @@ define(function(require) {
 			});
 		},
 
-
-		formatClassifiers: function(data) {
-			var classifiers = {};
-
-			_.each(data.data, function(classifier) {
-				classifiers[classifier.name] = classifier;
-			});
-
-			return classifiers;
-		},
-
 		edit: function(args) {
 			var self = this,
 				accountId = args.accountId,
@@ -1069,7 +1058,7 @@ define(function(require) {
 									accountId: accountId
 								},
 								success: _.flow(
-									self.formatClassifiers,
+									_.partial(_.get, _, 'data'),
 									_.partial(next, null)
 								),
 								error: _.partial(next, null, {})
@@ -1260,14 +1249,14 @@ define(function(require) {
 				regularUsers = $.map(accountUsers, function(val) {
 					return val.priv_level !== 'admin' ? val : null;
 				}),
-				formattedClassifiers = $.map(params.classifiers, function(val, key) {
+				formattedClassifiers = $.map(params.classifiers, function(val) {
 					var ret = {
-						id: key,
-						name: (self.i18n.active().classifiers[key] || {}).name || val.friendly_name,
-						help: (self.i18n.active().classifiers[key] || {}).help,
+						id: val.name,
+						name: val.friendly_name,
+						help: (self.i18n.active().classifiers[val.name] || {}).help,
 						checked: true
 					};
-					if (accountData.call_restriction && key in accountData.call_restriction && accountData.call_restriction[key].action === 'deny') {
+					if (accountData.call_restriction && val.name in accountData.call_restriction && accountData.call_restriction[val.name].action === 'deny') {
 						ret.checked = false;
 					}
 					return ret;
