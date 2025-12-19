@@ -505,7 +505,7 @@ define(function(require) {
 							accountId: self.accountId
 						},
 						success: function(data, status) {
-							callback(null, data.data);
+							callback(null, _.get(data, 'data'));
 						},
 						error: function(data, status) {
 							callback(null, {});
@@ -599,11 +599,11 @@ define(function(require) {
 		renderLimitsStep: function(params) {
 			var self = this,
 				parent = params.parent,
-				formattedClassifiers = $.map(params.classifiers, function(val) {
+				formattedClassifiers = $.map(params.classifiers, function(classifier) {
 					return {
-						id: val.name,
-						name: val.friendly_name,
-						help: (self.i18n.active().classifiers[val.name] || {}).help,
+						id: classifier.name,
+						name: classifier.friendly_name,
+						help: (self.i18n.active().classifiers[classifier.name] || {}).help,
 						checked: true
 					};
 				}),
