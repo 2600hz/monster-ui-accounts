@@ -1011,6 +1011,16 @@ define(function(require) {
 				mergeResults = function(data) {
 					return _.chain(data.metadata).pick(['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id']).merge(data.data).value();
 				},
+				getOtpMultiFactor = function(data) {
+					var multiFactorConfig;
+
+					_.each(_.get(data, 'data.multi_factor_providers'), function(mfa) {
+						if (!multiFactorConfig && mfa.provider_name ==='otp' && mfa.enabled) {
+							multiFactorConfig = mfa;
+						}
+					});
+					return multiFactorConfig;
+				},
 				fetchData = function(callback) {
 					monster.parallel({
 						account: function(next) {
@@ -1110,6 +1120,30 @@ define(function(require) {
 									_.partial(next, null)
 								)
 							});
+						},
+						getOptMfa: function(next) {
+							self.callApi({
+								resource: 'multifactor.list',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									getOtpMultiFactor,
+									_.partial(next, null)
+								)
+							});
+						},
+						securitySettings: function(next) {
+							self.callApi({
+								resource: 'security.get',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								)
+							});
 						}
 					}, callback);
 				},
@@ -1171,7 +1205,9 @@ define(function(require) {
 							]));
 						}),
 						appsBlacklist: results.appsBlacklist,
-						listParents: results.listParents
+						listParents: results.listParents,
+						getOptMfa: results.getOptMfa,
+						securitySettings: results.securitySettings
 					},
 					editCallback = function(params) {
 						params = self.formatDataEditAccount(params);
@@ -1273,7 +1309,8 @@ define(function(require) {
 					isReseller: monster.apps.auth.isReseller,
 					carrierInfo: carrierInfo,
 					accountIsReseller: accountData.is_reseller,
-					appsList: _.sortBy(appsList, 'name')
+					appsList: _.sortBy(appsList, 'name'),
+					isMfaEnabled: _.get(params, 'securitySettings.account.auth_modules.cb_user_auth.multi_factor.enabled', false)
 				};
 
 			if ($.isNumeric(templateData.account.created)) {
@@ -1418,6 +1455,32 @@ define(function(require) {
 				var $this = $(this),
 					fieldName = $this.data('field'),
 					newData = self.cleanFormData(monster.ui.getFormData('form_' + fieldName));
+
+				if (fieldName === 'accountsmanager_mfa') {
+					//Update MFA account
+					var MFAData = {
+						'auth_modules': {
+							'cb_user_auth': {
+								'multi_factor': {
+									'configuration_id': _.get(params, 'getOptMfa.id'),
+									'account_id': accountData.id,
+									'enabled': newData.mfa
+								}
+							}
+						},
+						accountId: accountData.id
+					};
+
+					self.accountsUpdateSecurity({
+						data: MFAData,
+						accountId: accountData.id,
+						success: function(mfaData) {
+							console.log(mfaData);
+							callback(null, mfaData);
+						}
+					});
+
+				}
 
 				if (monster.ui.valid(contentTemplate.find('#form_' + fieldName))) {
 					self.updateData(accountData, newData,
@@ -2418,6 +2481,50 @@ define(function(require) {
 				},
 				error: function(parsedError) {
 					args.hasOwnProperty('error') && args.error(parsedError);
+				}
+			});
+		},
+
+		accountsGetMFAConfig: function(id, callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'multifactor.get',
+				data: {
+					accountId: self.accountId,
+					mfaId: id
+				},
+				success: function(data) {
+					callback && callback(data.data);
+				}
+			});
+		},
+
+		accountsGetSecurity: function(callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'security.get',
+				data: {
+					accountId: self.accountId
+				},
+				success: function(data) {
+					callback && callback(data.data);
+				}
+			});
+		},
+
+		accountsUpdateSecurity: function(data, callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'security.update',
+				data: {
+					accountId: data.accountId,
+					data: data.data
+				},
+				success: function(data) {
+					callback && callback(data.data);
 				}
 			});
 		}
