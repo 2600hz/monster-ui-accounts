@@ -24,6 +24,13 @@
 	"accountId": "ID учётной записи клиента",
 	"accountName": "Название клиента",
 	"accountRealm": "SIP-домен (realm)",
+	        "multiFactorAuthentication": {
+               "label": "Multi-Factor Authentication",
+               "name": "Enable Multi-factor authentication (MFA)",
+               "description": "Enabling multi-factor authentication (MFA) strengthens the security of your entire account and all users within it.",
+               "enabled": "Enabled",
+               "disabled": "Disabled"
+        },
 	"accountTimezone": "Часовой пояс",
 	"accountLanguage": "Язык",
 	"accountTimezoneTitle": "Часовой пояс и язык",
