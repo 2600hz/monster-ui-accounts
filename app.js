@@ -1015,7 +1015,7 @@ define(function(require) {
 					var multiFactorConfig;
 
 					_.each(_.get(data, 'data.multi_factor_providers'), function(mfa) {
-						if (!multiFactorConfig && mfa.provider_name ==='otp' && mfa.enabled) {
+						if (!multiFactorConfig && mfa.provider_name === 'otp' && mfa.enabled) {
 							multiFactorConfig = mfa;
 						}
 					});
@@ -1475,8 +1475,7 @@ define(function(require) {
 			contentTemplate.find('.enableMFA').on('click', function(e) {
 				e.preventDefault();
 
-				var $this = $(this),
-					formData = self.cleanFormData(monster.ui.getFormData('form_accountsmanager_mfa'));
+				var formData = self.cleanFormData(monster.ui.getFormData('form_accountsmanager_mfa'));
 
 				//Update MFA in the account
 				var MFAData = {
@@ -1491,18 +1490,22 @@ define(function(require) {
 					dialogTexts = self.i18n.active().multiFactorAuthentication.confirmDialog;
 
 				if (formData.mfa) {
-					MFAData.configuration_id = _.get(params, 'getOptMFA.id');
-					MFAData.account_id = accountData.id;
-					MFAData.enabled = formData.mfa;
+					var multiFactor = {
+						'configuration_id': _.get(params, 'getOptMFA.id'),
+						'account_id': accountData.id,
+						'enabled': formData.mfa
+					};
+
+					MFAData.auth_modules.cb_user_auth.multi_factor = multiFactor;
 
 					monster.ui.confirm(dialogTexts.description, function() {
-						self.updateMFAConfiguration(MFAData, accountData.id);
+						self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa);
 					}, function() {}, {
 						title: dialogTexts.title,
 						confirmButtonText: dialogTexts.confirmButton
 					});
 				} else {
-					self.updateMFAConfiguration(MFAData, accountData.id);
+					self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa);
 				}
 			});
 
@@ -1834,19 +1837,76 @@ define(function(require) {
 			}
 		},
 
-		updateMFAConfiguration: function(MFAData, accountId) {
+		updateMFAConfiguration: function(MFAData, accountId, isOn) {
 			var self = this,
 				toastrMessages = self.i18n.active().multiFactorAuthentication.toastr;
 
-			self.accountsUpdateSecurity({
-				data: MFAData,
-				accountId: accountId,
-			}, function() {
-				monster.ui.toast({
-					type: 'success',
-					message: self.getTemplate({
-						name: '!' + toastrMessages.success
-					})
+			monster.waterfall([
+				function(callback) {
+					self.accountsGetPhoneNumbers({
+						accountId: accountId
+					}, function(phoneNumbers) {
+						var allNumbers = _.get(phoneNumbers, 'numbers'),
+							numbersWithMessaging = [];
+
+						_.each(allNumbers, function(number, key) {
+							var hasMessaging = false;
+
+							_.each(number.features, function(feature) {
+								if (['sms', 'mms'].indexOf(feature) > -1) {
+									hasMessaging = true;
+								}
+							});
+
+							if (hasMessaging) {
+								numbersWithMessaging.push(key);
+							}
+						});
+						callback(null, numbersWithMessaging);
+					});
+				},
+				function(numbersWithMessaging, callback) {
+					var oomaBoxList = [];
+
+					self.accountsGetOomaSMSBoxes({
+						accountId: accountId
+					}, function(oomaSmsBoxes) {
+						_.each(oomaSmsBoxes, function(oomaSmsBox) {
+							_.each(oomaSmsBox.numbers, function(number) {
+								if (numbersWithMessaging.indexOf(number) > -1) {
+									oomaBoxList.push(number);
+								}
+							});
+						});
+
+						callback(null, oomaBoxList);
+					});
+				}
+			], function(err, numbersWithMessaging) {
+				if (numbersWithMessaging.length > 0 && !isOn) {
+					monster.ui.toast({
+						type: 'error',
+						message: self.getTemplate({
+							name: '!' + toastrMessages.error
+						})
+					});
+					return;
+				}
+
+				self.accountsUpdateSecurity({
+					data: MFAData,
+					accountId: accountId
+				}, function() {
+					monster.ui.toast({
+						type: 'success',
+						message: self.getTemplate({
+							name: '!' + toastrMessages.success
+						})
+					});
+
+					self.render({
+						selectedId: accountId
+					});
 				});
 			});
 		},
@@ -2510,35 +2570,6 @@ define(function(require) {
 			});
 		},
 
-		accountsGetMFAConfig: function(id, callback) {
-			var self = this;
-
-			self.callApi({
-				resource: 'multifactor.get',
-				data: {
-					accountId: self.accountId,
-					mfaId: id
-				},
-				success: function(data) {
-					callback && callback(data.data);
-				}
-			});
-		},
-
-		accountsGetSecurity: function(callback) {
-			var self = this;
-
-			self.callApi({
-				resource: 'security.get',
-				data: {
-					accountId: self.accountId
-				},
-				success: function(data) {
-					callback && callback(data.data);
-				}
-			});
-		},
-
 		accountsUpdateSecurity: function(data, callback) {
 			var self = this;
 
@@ -2547,6 +2578,41 @@ define(function(require) {
 				data: {
 					accountId: data.accountId,
 					data: data.data
+				},
+				success: function(data) {
+					callback && callback(data.data);
+				}
+			});
+		},
+
+		accountsGetPhoneNumbers: function(data, callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'numbers.list',
+				data: {
+					accountId: data.accountId,
+					filters: {
+						pagiante: false
+					}
+				},
+				success: function(data) {
+					callback && callback(data.data);
+				}
+			});
+		},
+
+		accountsGetOomaSMSBoxes: function(data, callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'oomasmsboxes.list',
+				data: {
+					accountId: data.accountId,
+					filters: {
+						paginate: false
+					},
+					generateError: false
 				},
 				success: function(data) {
 					callback && callback(data.data);
