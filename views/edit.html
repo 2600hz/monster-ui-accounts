@@ -183,8 +183,8 @@
 						<a class="settings-link clearfix">
 							<span class="title">{{ i18n.multiFactorAuthentication.label }}</span>
 							<span class="description">
-								{{#if isMfaEnabled }}
-									{{ i18n.multiFactorAuthentication.enabled }}
+								{{#if isMFAEnabled }}
+									<span class="mfa-enabled">{{ i18n.multiFactorAuthentication.enabled }}</span>
 								{{else}}
 									{{ i18n.multiFactorAuthentication.disabled }}
 								{{/if}}
@@ -203,7 +203,7 @@
 											<label class="control-label" for="accountsmanager_mfa">{{ i18n.multiFactorAuthentication.label }}</label>
 											<div class="controls">
 												{{#monsterCheckbox i18n.multiFactorAuthentication.name}}
-													<input type="checkbox" name="mfa" {{#if isMfaEnabled}}checked{{/if}}>
+													<input type="checkbox" name="mfa" {{#if isMFAEnabled}}checked{{/if}}>
 												{{/monsterCheckbox}}
 												<div class="mfa-description">{{ i18n.multiFactorAuthentication.description }}</div>
 											</div>
@@ -211,7 +211,7 @@
 										<div class="action-group clearfix">
 											<div class="action-bar">
 												<button type="button" class="cancel monster-button">{{ i18n.cancel }}</button>
-												<button type="submit" class="monster-button-success change" data-field="accountsmanager_mfa">{{ i18n.saveChanges }}</button>
+												<button type="submit" class="monster-button-success enableMFA" data-field="accountsmanager_mfa">{{ i18n.saveChanges }}</button>
 											</div>
 										</div>
 									</form>
