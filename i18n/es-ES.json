@@ -29,7 +29,16 @@
                "name": "Enable Multi-factor authentication (MFA)",
                "description": "Enabling multi-factor authentication (MFA) strengthens the security of your entire account and all users within it.",
                "enabled": "Enabled",
-               "disabled": "Disabled"
+               "disabled": "Disabled",
+	       "toastr": {
+                       "success": "Multi-factor authentication updated successfully!",
+                       "error": "Multi-factor authentication cannot be disabled because at least 1 number is enabled for messaging."
+               },
+               "confirmDialog": {
+                       "title": "Are you sure you want to enable MFA?",
+                       "description": "Multi-factor authentication (MFA) will be enabled to your entire account. This requirement ensures ongoing compliance and secure access to Messaging features.",
+                       "confirmButton": "Enable MFA"
+               }
         },
 	"accountTimezone": "Zona de Horaria",
 	"accountLanguage": "Idioma",

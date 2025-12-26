@@ -1121,7 +1121,7 @@ define(function(require) {
 								)
 							});
 						},
-						getOptMfa: function(next) {
+						getOptMFA: function(next) {
 							self.callApi({
 								resource: 'multifactor.list',
 								data: {
@@ -1206,7 +1206,7 @@ define(function(require) {
 						}),
 						appsBlacklist: results.appsBlacklist,
 						listParents: results.listParents,
-						getOptMfa: results.getOptMfa,
+						getOptMFA: results.getOptMFA,
 						securitySettings: results.securitySettings
 					},
 					editCallback = function(params) {
@@ -1310,7 +1310,7 @@ define(function(require) {
 					carrierInfo: carrierInfo,
 					accountIsReseller: accountData.is_reseller,
 					appsList: _.sortBy(appsList, 'name'),
-					isMfaEnabled: _.get(params, 'securitySettings.account.auth_modules.cb_user_auth.multi_factor.enabled', false)
+					isMFAEnabled: _.get(params, 'securitySettings.account.auth_modules.cb_user_auth.multi_factor.enabled', false)
 				};
 
 			if ($.isNumeric(templateData.account.created)) {
@@ -1456,32 +1456,6 @@ define(function(require) {
 					fieldName = $this.data('field'),
 					newData = self.cleanFormData(monster.ui.getFormData('form_' + fieldName));
 
-				if (fieldName === 'accountsmanager_mfa') {
-					//Update MFA account
-					var MFAData = {
-						'auth_modules': {
-							'cb_user_auth': {
-								'multi_factor': {
-									'configuration_id': _.get(params, 'getOptMfa.id'),
-									'account_id': accountData.id,
-									'enabled': newData.mfa
-								}
-							}
-						},
-						accountId: accountData.id
-					};
-
-					self.accountsUpdateSecurity({
-						data: MFAData,
-						accountId: accountData.id,
-						success: function(mfaData) {
-							console.log(mfaData);
-							callback(null, mfaData);
-						}
-					});
-
-				}
-
 				if (monster.ui.valid(contentTemplate.find('#form_' + fieldName))) {
 					self.updateData(accountData, newData,
 						function(data) {
@@ -1495,6 +1469,40 @@ define(function(require) {
 							}
 						}
 					);
+				}
+			});
+
+			contentTemplate.find('.enableMFA').on('click', function(e) {
+				e.preventDefault();
+
+				var $this = $(this),
+					formData = self.cleanFormData(monster.ui.getFormData('form_accountsmanager_mfa'));
+
+				//Update MFA in the account
+				var MFAData = {
+						'auth_modules': {
+							'cb_user_auth': {
+								'multi_factor': {
+								}
+							}
+						},
+						accountId: accountData.id
+					},
+					dialogTexts = self.i18n.active().multiFactorAuthentication.confirmDialog;
+
+				if (formData.mfa) {
+					MFAData.configuration_id = _.get(params, 'getOptMFA.id');
+					MFAData.account_id = accountData.id;
+					MFAData.enabled = formData.mfa;
+
+					monster.ui.confirm(dialogTexts.description, function() {
+						self.updateMFAConfiguration(MFAData, accountData.id);
+					}, function() {}, {
+						title: dialogTexts.title,
+						confirmButtonText: dialogTexts.confirmButton
+					});
+				} else {
+					self.updateMFAConfiguration(MFAData, accountData.id);
 				}
 			});
 
@@ -1527,7 +1535,7 @@ define(function(require) {
 			});
 
 			parent.find('.main-content').empty()
-										.append(contentTemplate);
+				.append(contentTemplate);
 
 			if (selectedTab) {
 				contentTemplate.find('.' + selectedTab + ' > a').tab('show');
@@ -1824,6 +1832,23 @@ define(function(require) {
 			if (typeof callback === 'function') {
 				callback(contentTemplate);
 			}
+		},
+
+		updateMFAConfiguration: function(MFAData, accountId) {
+			var self = this,
+				toastrMessages = self.i18n.active().multiFactorAuthentication.toastr;
+
+			self.accountsUpdateSecurity({
+				data: MFAData,
+				accountId: accountId,
+			}, function() {
+				monster.ui.toast({
+					type: 'success',
+					message: self.getTemplate({
+						name: '!' + toastrMessages.success
+					})
+				});
+			});
 		},
 
 		confirmDeleteDialog: function(accountName, callbackSuccess) {
