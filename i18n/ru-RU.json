@@ -39,7 +39,7 @@
 			"description": "Multi-factor authentication (MFA) will be enabled to your entire account. This requirement ensures ongoing compliance and secure access to Messaging features.",
 			"confirmButton": "Enable MFA"
 		}
-        },
+	},
 	"accountTimezone": "Часовой пояс",
 	"accountLanguage": "Язык",
 	"accountTimezoneTitle": "Часовой пояс и язык",

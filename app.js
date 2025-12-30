@@ -1012,14 +1012,13 @@ define(function(require) {
 					return _.chain(data.metadata).pick(['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id']).merge(data.data).value();
 				},
 				getOtpMultiFactor = function(data) {
-					var multiFactorConfig;
-
-					_.each(_.get(data, 'data.multi_factor_providers'), function(mfa) {
-						if (!multiFactorConfig && mfa.provider_name === 'otp' && mfa.enabled) {
-							multiFactorConfig = mfa;
-						}
-					});
-					return multiFactorConfig;
+					return _.chain(data)
+						.get('data.multi_factor_providers')
+						.find({
+							provider_name: 'otp',
+							enabled: true
+						})
+						.value();
 				},
 				fetchData = function(callback) {
 					monster.parallel({
@@ -1475,7 +1474,8 @@ define(function(require) {
 			contentTemplate.find('.enableMFA').on('click', function(e) {
 				e.preventDefault();
 
-				var formData = self.cleanFormData(monster.ui.getFormData('form_accountsmanager_mfa'));
+				var formData = self.cleanFormData(monster.ui.getFormData('form_accountsmanager_mfa')),
+					checkboxTemplate = contentTemplate.find('#form_accountsmanager_mfa .monster-checkbox');
 
 				//Update MFA in the account
 				var MFAData = {
@@ -1499,13 +1499,13 @@ define(function(require) {
 					MFAData.auth_modules.cb_user_auth.multi_factor = multiFactor;
 
 					monster.ui.confirm(dialogTexts.description, function() {
-						self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa);
+						self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa, checkboxTemplate);
 					}, function() {}, {
 						title: dialogTexts.title,
 						confirmButtonText: dialogTexts.confirmButton
 					});
 				} else {
-					self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa);
+					self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa, checkboxTemplate);
 				}
 			});
 
@@ -1837,7 +1837,7 @@ define(function(require) {
 			}
 		},
 
-		updateMFAConfiguration: function(MFAData, accountId, isOn) {
+		updateMFAConfiguration: function(MFAData, accountId, isOn, checkboxTemplate) {
 			var self = this,
 				toastrMessages = self.i18n.active().multiFactorAuthentication.toastr;
 
@@ -1846,38 +1846,27 @@ define(function(require) {
 					self.accountsGetPhoneNumbers({
 						accountId: accountId
 					}, function(phoneNumbers) {
-						var allNumbers = _.get(phoneNumbers, 'numbers'),
-							numbersWithMessaging = [];
+						var numbersWithMessaging = _.chain(phoneNumbers)
+							.get('numbers', {})
+							.pickBy(function(number) {
+								return _.some(number.features, function(feature) {
+									return _.includes(['sms', 'mms'], feature);
+								});
+							})
+							.keys()
+							.value();
 
-						_.each(allNumbers, function(number, key) {
-							var hasMessaging = false;
-
-							_.each(number.features, function(feature) {
-								if (['sms', 'mms'].indexOf(feature) > -1) {
-									hasMessaging = true;
-								}
-							});
-
-							if (hasMessaging) {
-								numbersWithMessaging.push(key);
-							}
-						});
 						callback(null, numbersWithMessaging);
 					});
 				},
 				function(numbersWithMessaging, callback) {
-					var oomaBoxList = [];
-
-					self.accountsGetOomaSMSBoxes({
+					self.accountsGetOomaSmsBoxes({
 						accountId: accountId
 					}, function(oomaSmsBoxes) {
-						_.each(oomaSmsBoxes, function(oomaSmsBox) {
-							_.each(oomaSmsBox.numbers, function(number) {
-								if (numbersWithMessaging.indexOf(number) > -1) {
-									oomaBoxList.push(number);
-								}
-							});
-						});
+						var oomaBoxList = _.chain(oomaSmsBoxes)
+							.flatMap('numbers')
+							.intersection(numbersWithMessaging)
+							.value();
 
 						callback(null, oomaBoxList);
 					});
@@ -1890,6 +1879,9 @@ define(function(require) {
 							name: '!' + toastrMessages.error
 						})
 					});
+
+					//don't leave checkbox unchecked after error
+					checkboxTemplate.find('input').click();
 					return;
 				}
 
@@ -2602,7 +2594,7 @@ define(function(require) {
 			});
 		},
 
-		accountsGetOomaSMSBoxes: function(data, callback) {
+		accountsGetOomaSmsBoxes: function(data, callback) {
 			var self = this;
 
 			self.callApi({
@@ -2616,6 +2608,9 @@ define(function(require) {
 				},
 				success: function(data) {
 					callback && callback(data.data);
+				},
+				error: function(data, status) {
+					callback && callback(data);
 				}
 			});
 		}

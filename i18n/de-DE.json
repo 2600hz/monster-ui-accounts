@@ -31,8 +31,8 @@
 		"enabled": "Enabled",
 		"disabled": "Disabled",
 		"toastr": {
-		       "success": "Multi-factor authentication updated successfully!",
-		       "error": "Multi-factor authentication cannot be disabled because at least 1 number is enabled for messaging."
+			"success": "Multi-factor authentication updated successfully!",
+			"error": "Multi-factor authentication cannot be disabled because at least 1 number is enabled for messaging."
 		},
 		"confirmDialog": {
 			"title": "Are you sure you want to enable MFA?",
