@@ -1011,6 +1011,15 @@ define(function(require) {
 				mergeResults = function(data) {
 					return _.chain(data.metadata).pick(['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id']).merge(data.data).value();
 				},
+				getOtpMultiFactor = function(data) {
+					return _.chain(data)
+						.get('data.multi_factor_providers')
+						.find({
+							provider_name: 'otp',
+							enabled: true
+						})
+						.value();
+				},
 				fetchData = function(callback) {
 					monster.parallel({
 						account: function(next) {
@@ -1110,6 +1119,30 @@ define(function(require) {
 									_.partial(next, null)
 								)
 							});
+						},
+						getOptMFA: function(next) {
+							self.callApi({
+								resource: 'multifactor.list',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									getOtpMultiFactor,
+									_.partial(next, null)
+								)
+							});
+						},
+						securitySettings: function(next) {
+							self.callApi({
+								resource: 'security.get',
+								data: {
+									accountId: accountId
+								},
+								success: _.flow(
+									_.partial(_.get, _, 'data'),
+									_.partial(next, null)
+								)
+							});
 						}
 					}, callback);
 				},
@@ -1171,7 +1204,9 @@ define(function(require) {
 							]));
 						}),
 						appsBlacklist: results.appsBlacklist,
-						listParents: results.listParents
+						listParents: results.listParents,
+						getOptMFA: results.getOptMFA,
+						securitySettings: results.securitySettings
 					},
 					editCallback = function(params) {
 						params = self.formatDataEditAccount(params);
@@ -1273,7 +1308,8 @@ define(function(require) {
 					isReseller: monster.apps.auth.isReseller,
 					carrierInfo: carrierInfo,
 					accountIsReseller: accountData.is_reseller,
-					appsList: _.sortBy(appsList, 'name')
+					appsList: _.sortBy(appsList, 'name'),
+					isMFAEnabled: _.get(params, 'securitySettings.account.auth_modules.cb_user_auth.multi_factor.enabled', false)
 				};
 
 			if ($.isNumeric(templateData.account.created)) {
@@ -1435,6 +1471,44 @@ define(function(require) {
 				}
 			});
 
+			contentTemplate.find('.enableMFA').on('click', function(e) {
+				e.preventDefault();
+
+				var formData = self.cleanFormData(monster.ui.getFormData('form_accountsmanager_mfa')),
+					checkboxTemplate = contentTemplate.find('#form_accountsmanager_mfa .monster-checkbox');
+
+				//Update MFA in the account
+				var MFAData = {
+						'auth_modules': {
+							'cb_user_auth': {
+								'multi_factor': {
+								}
+							}
+						},
+						accountId: accountData.id
+					},
+					dialogTexts = self.i18n.active().multiFactorAuthentication.confirmDialog;
+
+				if (formData.mfa) {
+					var multiFactor = {
+						'configuration_id': _.get(params, 'getOptMFA.id'),
+						'account_id': accountData.id,
+						'enabled': formData.mfa
+					};
+
+					MFAData.auth_modules.cb_user_auth.multi_factor = multiFactor;
+
+					monster.ui.confirm(dialogTexts.description, function() {
+						self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa, checkboxTemplate);
+					}, function() {}, {
+						title: dialogTexts.title,
+						confirmButtonText: dialogTexts.confirmButton
+					});
+				} else {
+					self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa, checkboxTemplate);
+				}
+			});
+
 			timezone.populateDropdown(contentTemplate.find('#accountsmanager_account_timezone'), accountData.timezone);
 
 			monster.ui.chosen(contentTemplate.find('#accountsmanager_account_timezone'));
@@ -1464,7 +1538,7 @@ define(function(require) {
 			});
 
 			parent.find('.main-content').empty()
-										.append(contentTemplate);
+				.append(contentTemplate);
 
 			if (selectedTab) {
 				contentTemplate.find('.' + selectedTab + ' > a').tab('show');
@@ -1761,6 +1835,72 @@ define(function(require) {
 			if (typeof callback === 'function') {
 				callback(contentTemplate);
 			}
+		},
+
+		updateMFAConfiguration: function(MFAData, accountId, isOn, checkboxTemplate) {
+			var self = this,
+				toastrMessages = self.i18n.active().multiFactorAuthentication.toastr;
+
+			monster.waterfall([
+				function(callback) {
+					self.accountsGetPhoneNumbers({
+						accountId: accountId
+					}, function(phoneNumbers) {
+						var numbersWithMessaging = _.chain(phoneNumbers)
+							.get('numbers', {})
+							.pickBy(function(number) {
+								return _.some(number.features, function(feature) {
+									return _.includes(['sms', 'mms'], feature);
+								});
+							})
+							.keys()
+							.value();
+
+						callback(null, numbersWithMessaging);
+					});
+				},
+				function(numbersWithMessaging, callback) {
+					self.accountsGetOomaSmsBoxes({
+						accountId: accountId
+					}, function(oomaSmsBoxes) {
+						var oomaBoxList = _.chain(oomaSmsBoxes)
+							.flatMap('numbers')
+							.intersection(numbersWithMessaging)
+							.value();
+
+						callback(null, oomaBoxList);
+					});
+				}
+			], function(err, numbersWithMessaging) {
+				if (numbersWithMessaging.length > 0 && !isOn) {
+					monster.ui.toast({
+						type: 'error',
+						message: self.getTemplate({
+							name: '!' + toastrMessages.error
+						})
+					});
+
+					//don't leave checkbox unchecked after error
+					checkboxTemplate.find('input').click();
+					return;
+				}
+
+				self.accountsUpdateSecurity({
+					data: MFAData,
+					accountId: accountId
+				}, function() {
+					monster.ui.toast({
+						type: 'success',
+						message: self.getTemplate({
+							name: '!' + toastrMessages.success
+						})
+					});
+
+					self.render({
+						selectedId: accountId
+					});
+				});
+			});
 		},
 
 		confirmDeleteDialog: function(accountName, callbackSuccess) {
@@ -2418,6 +2558,59 @@ define(function(require) {
 				},
 				error: function(parsedError) {
 					args.hasOwnProperty('error') && args.error(parsedError);
+				}
+			});
+		},
+
+		accountsUpdateSecurity: function(data, callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'security.update',
+				data: {
+					accountId: data.accountId,
+					data: data.data
+				},
+				success: function(data) {
+					callback && callback(data.data);
+				}
+			});
+		},
+
+		accountsGetPhoneNumbers: function(data, callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'numbers.list',
+				data: {
+					accountId: data.accountId,
+					filters: {
+						pagiante: false
+					}
+				},
+				success: function(data) {
+					callback && callback(data.data);
+				}
+			});
+		},
+
+		accountsGetOomaSmsBoxes: function(data, callback) {
+			var self = this;
+
+			self.callApi({
+				resource: 'oomasmsboxes.list',
+				data: {
+					accountId: data.accountId,
+					filters: {
+						paginate: false
+					},
+					generateError: false
+				},
+				success: function(data) {
+					callback && callback(data.data);
+				},
+				error: function(data, status) {
+					callback && callback(data);
 				}
 			});
 		}
