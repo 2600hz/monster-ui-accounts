@@ -203,7 +203,7 @@
 											<label class="control-label" for="accountsmanager_mfa">{{ i18n.multiFactorAuthentication.label }}</label>
 											<div class="controls">
 												{{#monsterCheckbox i18n.multiFactorAuthentication.name}}
-													<input type="checkbox" name="mfa" {{#if isMFAEnabled}}checked{{/if}}>
+													<input type="checkbox" name="mfa" {{#if isMFAEnabled}}checked{{/if}} data-original_value="{{#if isMFAEnabled}}checked{{/if}}">
 												{{/monsterCheckbox}}
 												<div class="mfa-description">{{ i18n.multiFactorAuthentication.description }}</div>
 											</div>
