@@ -1868,15 +1868,15 @@ define(function(require) {
 					});
 				},
 				function(numbersWithMessaging, callback) {
-					self.accountsGetOomaSmsBoxes({
+					self.accountsGetTelexSmsBoxes({
 						accountId: accountId
-					}, function(oomaSmsBoxes) {
-						var oomaBoxList = _.chain(oomaSmsBoxes)
+					}, function(telexSmsBoxes) {
+						var telexBoxList = _.chain(telexSmsBoxes)
 							.flatMap('numbers')
 							.intersection(numbersWithMessaging)
 							.value();
 
-						callback(null, oomaBoxList);
+						callback(null, telexBoxList);
 					});
 				}
 			], function(err, numbersWithMessaging) {
@@ -2602,11 +2602,11 @@ define(function(require) {
 			});
 		},
 
-		accountsGetOomaSmsBoxes: function(data, callback) {
+		accountsGetTelexSmsBoxes: function(data, callback) {
 			var self = this;
 
 			self.callApi({
-				resource: 'oomasmsboxes.list',
+				resource: 'telexsmsboxes.list',
 				data: {
 					accountId: data.accountId,
 					filters: {
