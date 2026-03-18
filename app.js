@@ -1377,15 +1377,7 @@ define(function(require) {
 				closeTabsContent();
 
 				$(this).parents('form').first().find('input, select').each(function(k, v) {
-					var type = $(v).attr('type');
-
-					if (type === 'checkbox') {
-						var wasChecked = $(v).data('original_value') === 'checked';
-
-						$(v).prop('checked', wasChecked);
-					} else {
-						$(v).val($(v).data('original_value'));
-					}
+					$(v).val($(v).data('original_value'));
 				});
 
 				e.stopPropagation();
