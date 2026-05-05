@@ -285,8 +285,21 @@
 	margin-left: 20px;
 }
 
+#accounts_manager_view .main-content .list-settings .settings-item .disable-mfa .monster-checkbox {
+	cursor: unset;
+	opacity:0.6;
+}
+
 #accounts_manager_view .main-content .list-settings .settings-item .mfa-description {
 	font-size: 12px;
+}
+
+#accounts_manager_view .main-content .list-settings .settings-item .mfa-provider {
+	margin-left: 20px;
+
+	span {
+		font-weight: bold;
+	}
 }
 
 #accounts_manager_view .main-content .list-settings .settings-item .mfa-enabled {
