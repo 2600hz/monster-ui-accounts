@@ -201,17 +201,22 @@
 									<form class="form-horizontal" id="form_accountsmanager_mfa">
 										<div class="control-group">
 											<label class="control-label" for="accountsmanager_mfa">{{ i18n.multiFactorAuthentication.label }}</label>
-											<div class="controls">
+											<div class="controls{{#if disableMFASection}} disable-mfa{{/if}}">
 												{{#monsterCheckbox i18n.multiFactorAuthentication.name}}
-													<input type="checkbox" name="mfa" {{#if isMFAEnabled}}checked{{/if}} data-original_value="{{#if isMFAEnabled}}checked{{/if}}">
+													<input type="checkbox" name="mfa" {{#if isMFAEnabled}}checked{{/if}} data-original_value="{{#if isMFAEnabled}}checked{{/if}}" {{#if disableMFASection}} disabled{{/if}}>
 												{{/monsterCheckbox}}
 												<div class="mfa-description">{{ i18n.multiFactorAuthentication.description }}</div>
+												{{#if isMFAEnabled}}
+												<div class="mfa-provider">
+													{{ i18n.multiFactorAuthentication.provider }} <span>{{MFAProvider}}</span>
+												</div>
+												{{/if}}
 											</div>
 										</div>
 										<div class="action-group clearfix">
 											<div class="action-bar">
 												<button type="button" class="cancel monster-button">{{ i18n.cancel }}</button>
-												<button type="submit" class="monster-button-success enableMFA" data-field="accountsmanager_mfa">{{ i18n.saveChanges }}</button>
+												<button type="submit" class="monster-button-success enableMFA {{#if disableMFASection}} disabled{{/if}}" data-field="accountsmanager_mfa">{{ i18n.saveChanges }}</button>
 											</div>
 										</div>
 									</form>
