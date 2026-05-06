@@ -30,7 +30,6 @@
 		"description": "Enabling multi-factor authentication (MFA) strengthens the security of your entire account and all users within it.",
 		"enabled": "Enabled",
 		"disabled": "Disabled",
-		"provider": "MFA Provider: ",
 		"toastr": {
 			"success": "Multi-factor authentication updated successfully!",
 			"error": "Multi-factor authentication cannot be disabled because at least 1 number is enabled for messaging."

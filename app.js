@@ -1011,7 +1011,7 @@ define(function(require) {
 				mergeResults = function(data) {
 					return _.chain(data.metadata).pick(['billing_mode', 'enabled', 'superduper_admin', 'wnm_allow_additions', 'created', 'is_reseller', 'reseller_id']).merge(data.data).value();
 				},
-				getOtpMultifactor = function(data) {
+				getOtpMultiFactor = function(data) {
 					return _.chain(data)
 						.get('data.multi_factor_providers')
 						.find({
@@ -1120,14 +1120,14 @@ define(function(require) {
 								)
 							});
 						},
-						getOtpMFA: function(next) {
+						getOptMFA: function(next) {
 							self.callApi({
 								resource: 'multifactor.list',
 								data: {
 									accountId: accountId
 								},
 								success: _.flow(
-									getOtpMultifactor,
+									getOtpMultiFactor,
 									_.partial(next, null)
 								)
 							});
@@ -1205,7 +1205,7 @@ define(function(require) {
 						}),
 						appsBlacklist: results.appsBlacklist,
 						listParents: results.listParents,
-						getOtpMFA: results.getOtpMFA,
+						getOptMFA: results.getOptMFA,
 						securitySettings: results.securitySettings
 					},
 					editCallback = function(params) {
@@ -1296,10 +1296,6 @@ define(function(require) {
 					}
 					return ret;
 				}),
-				accountMultifactor = _.get(params, 'securitySettings.account.auth_modules.cb_user_auth.multi_factor'),
-				isMFAPlatform =
-					!_.isUndefined(_.get(accountMultifactor, 'configuration_id')) &&
-					_.get(accountMultifactor, 'configuration_id') === _.get(params, 'getOtpMFA.id'),
 				templateData = {
 					resellerUsers: _.sortBy(self.getStore('edit.reseller.userList'), _.flow(
 						monster.util.getUserFullName,
@@ -1313,9 +1309,7 @@ define(function(require) {
 					carrierInfo: carrierInfo,
 					accountIsReseller: accountData.is_reseller,
 					appsList: _.sortBy(appsList, 'name'),
-					isMFAEnabled: _.get(accountMultifactor, 'enabled', false),
-					MFAProvider: isMFAPlatform ? 'Platform' : 'Duo',
-					disableMFASection: !isMFAPlatform && !_.isUndefined(_.get(accountMultifactor, 'configuration_id'))
+					isMFAEnabled: _.get(params, 'securitySettings.account.auth_modules.cb_user_auth.multi_factor.enabled', false)
 				};
 
 			if ($.isNumeric(templateData.account.created)) {
@@ -1488,17 +1482,13 @@ define(function(require) {
 			contentTemplate.find('.enableMFA').on('click', function(e) {
 				e.preventDefault();
 
-				if ($(this).hasClass('disabled')) {
-					return;
-				}
-
 				var formData = self.cleanFormData(monster.ui.getFormData('form_accountsmanager_mfa')),
 					checkboxTemplate = contentTemplate.find('#form_accountsmanager_mfa .monster-checkbox'),
 					securitySettings = params.securitySettings;
 					dialogTexts = self.i18n.active().multiFactorAuthentication.confirmDialog,
 					multifactorData = {
 						multi_factor: {
-							'configuration_id': _.get(params, 'getOtpMFA.id'),
+							'configuration_id': _.get(params, 'getOptMFA.id'),
 							'account_id': accountData.id,
 							'enabled': true
 						}
