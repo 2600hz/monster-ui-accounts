@@ -1483,44 +1483,37 @@ define(function(require) {
 				e.preventDefault();
 
 				var formData = self.cleanFormData(monster.ui.getFormData('form_accountsmanager_mfa')),
-					checkboxTemplate = contentTemplate.find('#form_accountsmanager_mfa .monster-checkbox'),
-					securitySettings = params.securitySettings;
-					dialogTexts = self.i18n.active().multiFactorAuthentication.confirmDialog,
-					multifactorData = {
-						multi_factor: {
-							'configuration_id': _.get(params, 'getOptMFA.id'),
-							'account_id': accountData.id,
-							'enabled': true
-						}
+					checkboxTemplate = contentTemplate.find('#form_accountsmanager_mfa .monster-checkbox');
+
+				//Update MFA in the account
+				var MFAData = {
+						'auth_modules': {
+							'cb_user_auth': {
+								'multi_factor': {
+								}
+							}
+						},
+						accountId: accountData.id
 					},
-					data = _.merge(
-						{},
-						_.get(securitySettings, 'account', {}),
-						{
-							auth_modules: {
-								cb_user_auth: multifactorData,
-								cb_desktop_auth: multifactorData,
-								cb_mobile_auth: multifactorData,
-								cb_web_auth: multifactorData
-							},
-							accountId: accountData.id
-						}
-					);
+					dialogTexts = self.i18n.active().multiFactorAuthentication.confirmDialog;
 
 				if (formData.mfa) {
+					var multiFactor = {
+						'configuration_id': _.get(params, 'getOptMFA.id'),
+						'account_id': accountData.id,
+						'enabled': formData.mfa
+					};
+
+					MFAData.auth_modules.cb_user_auth.multi_factor = multiFactor;
+
 					monster.ui.confirm(dialogTexts.description, function() {
-						self.updateMFAConfiguration(data, accountData.id, formData.mfa, checkboxTemplate);
+						self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa, checkboxTemplate);
 					}, function() {}, {
 						title: dialogTexts.title,
 						confirmButtonText: dialogTexts.confirmButton
 					});
 				} else {
-					_.each(_.get(data, 'auth_modules', {}), function (module, id) {
-						module.multi_factor = {};
-						delete module.scopes;
-					});
-
-					self.updateMFAConfiguration(data, accountData.id, formData.mfa, checkboxTemplate);
+					self.updateMFAConfiguration(MFAData, accountData.id, formData.mfa, checkboxTemplate);
 				}
 			});
 
